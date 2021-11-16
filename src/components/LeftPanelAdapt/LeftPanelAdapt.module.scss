@@ -1,0 +1,78 @@
+.mainBlockAdapt {
+  width: 100%;
+  margin-bottom: 1rem;
+  background: #fff;
+  box-shadow: var(--boxShadowIndex);
+  z-index: 2;
+}
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 15rem;
+  .Li {
+    color: var(--textBrown);
+    font-size: .9rem;
+    height: 4rem;
+    cursor: pointer;
+    transition: background .5s;
+  }
+  .Li:hover {
+    background: var(--gold);
+  }
+}
+.userinfo {
+  background: var(--gold);
+  display: flex;
+  flex-direction: row;
+  height: 3.7rem;
+}
+.imageUser {
+  margin: 1rem 0 0 1rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50px;
+  background: #fff;
+}
+.circle {
+  background: #e2e2e2;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50px;
+  margin: 1rem 0 0 2rem;
+}
+.containerLi {
+  display: flex;
+  flex-direction: row;
+  font-weight: bold;
+}
+.textSpan {
+  text-align: center;
+  font-size: .77rem;
+  margin: 1.4rem 0 0 1rem;
+}
+.modalBlock {
+  position: absolute;
+  left: 12rem;
+  top: 20%;
+  background: #fdc000;
+  padding: 0 2rem;
+  width: 23rem;
+  box-shadow: var(--boxShadowIndex);
+}
+.modalContent {
+  padding: 1rem 0 ;
+  h1{
+    font-weight: 300;
+    font-size: 2.5rem;
+    color: #d59900;
+  }
+  ul li {
+    color: #fff;
+    font-weight: bold;
+    margin-top: .7rem;
+    border-top: .5px solid #fff;
+    padding-top: .7rem;
+    width: 126%;
+  }
+}

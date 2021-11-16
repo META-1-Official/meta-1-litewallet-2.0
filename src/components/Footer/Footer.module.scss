@@ -1,0 +1,30 @@
+.container {
+  height: 3rem;
+  background: #d8dbe4;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: var(--textGrey);
+  font-weight: 600;
+  ul{
+    display: flex;
+    flex-direction: row;
+    width: 30rem;
+    li{
+      width: 7rem;
+      text-align: center;
+      font-size: .7rem;
+      padding: 1rem 0;
+      cursor: pointer;
+    }
+  }
+  @media (max-width: 600px) {
+    height: 100%;
+    flex-direction: column;
+  }
+}
+.mainDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

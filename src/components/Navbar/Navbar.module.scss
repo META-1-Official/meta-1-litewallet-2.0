@@ -1,0 +1,62 @@
+.navbar {
+  background: var(--headerBgColor) !important;
+  margin: 0!important;
+  padding: 0!important;
+}
+
+.adaptNeed {
+  @media screen and (max-width: 600px){
+    display: none!important;
+  }
+}
+
+.img {
+  width: 10rem;
+}
+.line {
+  border-left: 1px solid #000;
+  height: 3rem;
+  margin: .5rem;
+}
+
+.userImg {
+  background: #fff;
+  border-radius: 50px;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin: 1rem .5rem 0 0;
+}
+.btnDisabled {
+  border: none;
+  border-radius: 3px;
+  width: 8rem;
+  height: 2.3rem;
+  margin: .8rem .2rem;
+  font-weight: bold;
+  color: rgba(36, 0, 0, 0.82);
+  background: rgba(253, 192, 0, 0.53);
+  font-size: .85rem;
+  padding: .6rem 0 ;
+  cursor: not-allowed;
+}
+
+.btn {
+  border: none;
+  border-radius: 3px;
+  width: 8rem;
+  height: 2.3rem;
+  margin: .8rem .2rem;
+  font-weight: bold;
+  color: var(--textBrown);
+  background: var(--gold);
+  cursor: pointer;
+  font-size: .85rem;
+  padding: .6rem 0 ;
+}
+.blockhelp {
+  color: #fff;
+  font-weight: 500;
+  font-size: .9rem;
+  margin: 1.4rem 1rem;
+  cursor: pointer;
+}

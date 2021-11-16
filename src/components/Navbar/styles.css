@@ -1,0 +1,25 @@
+.navbar-toggler {
+    border: none!important;
+}
+.nav-link {
+    display: flex;
+    flex-direction: row;
+    padding: .1rem 0 0 1rem;
+}
+.dropdown-toggle::after {
+    margin-top: 1.7rem;
+    color: var(--gold);
+    font-size: 1rem;
+}
+.dropdown-menu {
+    background: var(--gold);
+    border: none;
+
+}
+.dropdown-item {
+    color: #fff;
+}
+.dropdown-item:hover {
+    background: var(--textGold);
+    color: #fff;
+}

@@ -1,0 +1,5 @@
+.needToBeYellow {
+    background: var(--gold);
+    color: #fff;
+    margin-left: 3.5rem;
+}
