@@ -16,6 +16,7 @@
     "@types/react-dom": "^17.0.9",
     "axios": "^0.23.0",
     "immutable": "^4.0.0-rc.12",
+    "jquery": "^3.6.0",
     "jspdf": "^2.3.1",
     "lodash": "^4.17.20",
     "meta1dex": "^0.6.13",
@@ -70,7 +71,8 @@
   },
   "react-dotenv": {
     "whitelist": [
-      "KEY"
+      "KEY",
+      "BACK_URL"
     ]
   }
 }

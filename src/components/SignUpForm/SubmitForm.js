@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MetaLoader from "../../UI/loader/Loader";
-import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import {
   Button,
@@ -22,34 +22,34 @@ export default function SubmitForm(props) {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const isAllChecked = access && recover && stored && living;
-  
 
   return (
     <Grid>
-      <Grid.Column width={16}>
+      <Grid.Column style={{ marginTop: "1rem" }} width={16}>
         <Form>
           <Form.Field>
-          <label>Password</label>
-          <div className="ui action input">
-            <input value={props.password} type="text" disabled />
-            <Popup
+            <label>Password</label>
+            <div className="ui action input">
+              <input value={props.password} type="text" disabled />
+              <Popup
                 content="Copy to Clipboard."
                 trigger={
-                    <CopyToClipboard
-                        text={props.password}
-                        onCopy={() => {}}
+                  <CopyToClipboard text={props.password} onCopy={() => {}}>
+                    <button
+                      name="copyToken"
+                      style={{ color: "#240000" }}
+                      class="ui yellow right icon button"
                     >
-                        <button name="copyToken" style={{color: '#240000'}} class="ui yellow right icon button">
-                          <i class="copy icon"/>
-                        </button>
-                    </CopyToClipboard>
+                      <i class="copy icon" />
+                    </button>
+                  </CopyToClipboard>
                 }
-            />
+              />
             </div>
           </Form.Field>
 
           <Message
-              className={'messageRed'}
+            className={"messageRed"}
             icon="attention"
             header="Important information"
             content="If you forget your password phrase you will be unable to access your account and your funds. We cannot reset or restore your password! Memorize or write down your username and password!"
@@ -87,12 +87,10 @@ export default function SubmitForm(props) {
             />
           </Form.Field>
 
-          {isSubmitted && (
-            <MetaLoader size={'small'} />
-          )}
+          {isSubmitted && <MetaLoader size={"small"} />}
           {!isSubmitted && (
             <Button
-            className="sbBtn"
+              className="sbBtn"
               onClick={() => {
                 setIsSubmitted(true);
                 props.onSubmit();

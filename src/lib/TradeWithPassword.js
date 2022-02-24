@@ -17,7 +17,7 @@ export default class TradeWithPassword {
                 parseFloat(amount),
                 pair.lowest_ask,
                 false,
-                new Date('12/12/2021')
+                new Date('12/12/2031')
             )
 
             return { result: buyResult, error: null }

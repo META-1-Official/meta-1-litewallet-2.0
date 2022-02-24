@@ -17,6 +17,7 @@ export default function LoginScreen(props) {
     const handleSubmit = (e) => {
         e.preventDefault()
         onSubmit(login)
+        
     }
 
     useEffect(() => {
@@ -40,16 +41,16 @@ export default function LoginScreen(props) {
                         Instructions</a> and META <a data-bs-toggle="modal" data-bs-target="#video" style={{cursor: 'pointer', textDecoration: 'underline'}}>Wallet tutorial video.</a><br/> Then click the 'Create META Wallet' button below
                         to create your wallet.</span>
                         <br/>
-                        <button onClick={handleSignUpClick} className={styles.Button}>Create {portfolio != null? 'new' : null} META Wallet</button>
+                        <button onClick={handleSignUpClick} style={{marginTop: "1rem"}} className={styles.Button}>Create {portfolio != null? 'new' : null} META Wallet</button>
                     </div>
 
                         {portfolio === null ?
                             <div className={styles.linkMeta}>
                             <span>For those already having a META Wallet, to enable functionality, you must 'link' your wallet
-                                by typing in your wallet 'Account Name' in the box <br/> below and clicking the 'Link META Wallet'
+                                by typing in your wallet 'Account Name' in the box below and clicking the 'Link META Wallet'
                                 button.
                             </span>
-                            <form style={{marginTop: '1.5rem', marginBottom: '11rem'}}>
+                            <form className={styles.FormLink}>
                                 <input
                                     className={styles.input}
                                     onChange={e => {
@@ -60,14 +61,15 @@ export default function LoginScreen(props) {
                                     value={login}
                                     type="text"
                                 />
-                                <button className={styles.Button} onClick={handleSubmit} type={'submit'} style={{marginLeft: '2rem', marginTop: '0'}}>Link META Wallet</button>
+                                <p className={styles.ErrorP} style={error ? null : {display: "none"}}>Invalid Account Name</p>
+                                <button className={styles.Button} style={{fontSize: '100%'}} onClick={handleSubmit} type={'submit'} style={{marginTop: '0'}}>Link META Wallet</button>
                             </form>
                             </div>
                             :
                             <div className={styles.linkMeta}>
                                 <h5><strong>To unlink your account, click here</strong></h5>
                                 <br/>
-                                <button className={styles.Button} onClick={() => {window.location.reload()}} type={'button'} style={{marginTop: '0'}}>Unlink META Wallet</button>
+                                <button className={styles.Button} onClick={() => {localStorage.setItem('login', null); window.location.reload()}} type={'button'} style={{marginTop: '0'}}>Unlink META Wallet</button>
                             </div>
                         }
 
@@ -85,52 +87,6 @@ export default function LoginScreen(props) {
 
     )
 }
-
-// <div
-//     style={{
-//         display: 'flex',
-//         flexDirection: 'column',
-//         width: '100%',
-//         height: '100%'
-//     }}
-// >
-//     <h1 className="loginTitle">META Lite Wallet</h1>
-//
-//     <div className="login-grid ui grid stackable horizontally divided">
-//         <div className="two column row">
-//             <div className="column">
-//                 <button className="ui button fluid" onClick={handleSignUpClick}>
-//                     Create
-//                 </button>
-//             </div>
-//             <form className="column">
-//                 <div className="ui action input fluid">
-//                     <input type="text" value={login} placeholder="account name"
-//                            onChange={(e) => {
-//                                e.preventDefault()
-//                                setLogin(e.target.value)
-//                            }} />
-//                     <button type="submit" className="ui button yellow" onClick={handleSubmit}>
-//                         Link
-//                     </button>
-//                     {error && (
-//                         <>
-//                             <div style={{ color: 'red' }}>{error}</div>
-//                         </>
-//                     )}
-//                 </div>
-//             </form>
-//         </div>
-//     </div>
-//     <VideoModal
-//         setOpenVideoModal={setOpenVideoModal}
-//         openVideoModal={openVideoModal}
-//     />
-//     <ModalWalletInstructions
-//         openModal={openModal}
-//         setOpenModal={setOpenModal}
-//     />
-// </div>
 
 const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
     return (
