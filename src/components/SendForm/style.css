@@ -1,65 +1,73 @@
 .send-grid .ui.label.label {
-    min-width: 80px;
+  min-width: 80px;
 }
 .cryptoInput {
-    height: 5rem;
+  height: 5rem;
 }
 .MuiTextField-root {
-    width: 100%;
-    margin-top: 1rem;
-    background: #fff!important;
+  width: 100%;
+  margin-top: 1rem;
+  background: #fff !important;
 }
 .MuiTextField-root:hover {
-    background-color: #fff;
+  background-color: #fff;
 }
 .Mui-disabled {
-    background: #fff!important;
+  background: #fff !important;
 }
-input[type='number'] {
-    -moz-appearance:textfield;
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input:focus {
+  border: none !important;
+}
+
+.css-1pw81iq-MuiInputBase-root-MuiFilledInput-root {
+  background: #fff !important;
+  border: 1px solid #e2e2e1 !important;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+  -webkit-appearance: none;
 }
-.css-88kbi2-MuiFormControl-root-MuiTextField-root{
-    width: 100%;
+.css-88kbi2-MuiFormControl-root-MuiTextField-root {
+  width: 100%;
 }
 #reddit-input-label {
-    color: var(--textGrey) !important;
+  color: var(--textGrey) !important;
 }
 .max-button-new {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 .btn {
-    box-shadow: var(--boxShadowIndex) !important;
+  box-shadow: var(--boxShadowIndex) !important;
 }
 .css-au3a9q-MuiFormLabel-root-MuiInputLabel-root {
-    color: var(--textGrey)!important;
+  color: var(--textGrey) !important;
 }
 .buttonSend {
-    margin: .5rem 0 2rem 1.5rem!important;
-    width: 20%;
+  margin: 0.5rem 0 2rem 1.5rem !important;
+  width: 20%;
 }
 .Mui-focused {
-    border-color: var(--gold)!important;
-    box-shadow: none!important;
+  border-color: var(--gold) !important;
+  box-shadow: none !important;
 }
 @media (max-width: 600px) {
-    .widthh100 {
-        width: 100% !important;
-    }
-    .bottomBlockAdapt {
-        flex-direction: column;
-        display: flex;
-        width: 100% !important;
-    }
-    .text-center-s {
-        margin: 2rem auto!important;
-    }
-    .buttSend {
-        padding: 1rem 2rem 1rem .1rem!important;
-    }
+  .widthh100 {
+    width: 100% !important;
+  }
+  .bottomBlockAdapt {
+    flex-direction: column;
+    display: flex;
+    width: 100% !important;
+  }
+  .text-center-s {
+    margin: 2rem auto !important;
+  }
+  .buttSend {
+    padding: 1rem 2rem 1rem 0.1rem !important;
+  }
 }
-

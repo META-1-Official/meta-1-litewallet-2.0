@@ -3,6 +3,7 @@ import styles from "./Settings.module.scss";
 import axios from "axios";
 import RightSideHelpMenuThirdType from "../RightSideHelpMenuThirdType/RightSideHelpMenuThirdType";
 import env from "react-dotenv";
+import DefaultIcon from "../../images/default-pic1.png";
 
 const Settings = (props) => {
   const {
@@ -11,7 +12,6 @@ const Settings = (props) => {
     account,
     cryptoData,
     userIcon,
-    getAvatarFromBack,
   } = props;
 
   const [currency, setCurrency] = useState(localStorage.getItem("currency"));
@@ -28,27 +28,41 @@ const Settings = (props) => {
     alert("Your currency has been saved successfully");
   };
 
+  async function removePhoto() {
+    const formData = new FormData();
+    formData.append("login", account);
+    formData.append("file", null);
+    await axios.post(`https://${env.BACK_URL}/saveAvatar`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
+
   async function uploadFile(e) {
     e.preventDefault();
-    let type = e.target.files[0].name.split(".")[1];
-    console.log(e.target.files[0]);
-    if (type === "png" || type === "jpeg" || type === "jpg") {
-      if (e.target.files[0].size < 73400320) {
-        const formData = new FormData();
-        formData.append("login", account);
-        formData.append(
-          "file",
-          document.getElementById("file_upload").files[0]
-        );
-        await axios.post(`https://${env.BACK_URL}/saveAvatar`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "Access-Control-Allow-Origin": "*",
-          },
-        });
+    if (e.target?.files[0]?.name) {
+      let type = e.target?.files[0]?.name.split(".")[1];
+      console.log(e.target?.files[0]);
+      if (type === "png" || type === "jpeg" || type === "jpg") {
+        if (e.target?.files[0]?.size < 73400320) {
+          const formData = new FormData();
+          formData.append("login", account);
+          formData.append(
+            "file",
+            document.getElementById("file_upload")?.files[0]
+          );
+          await axios.post(`https://${env.BACK_URL}/saveAvatar`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+        }
+      } else {
+        alert("Invalid file");
       }
     } else {
-      alert("Invalid file");
+      alert("Please select a file");
     }
   }
 
@@ -83,12 +97,21 @@ const Settings = (props) => {
                 <div className={styles.extraInfoBlock}>
                   <div style={{ fontFamily: "Poppins, sans-serif" }}>
                     <h4 style={{ margin: "0" }}>Upload a Photo</h4>
-                    <input
-                      type="file"
-                      id="file_upload"
-                      onChange={(e) => uploadFile(e)}
-                      className={styles.ButtonFile}
-                    />
+                    <div>
+                      <input
+                        type="file"
+                        id="file_upload"
+                        onChange={(e) => uploadFile(e)}
+                        className={styles.ButtonFile}
+                      />
+                      <button
+                        className={styles.Button}
+                        style={{ marginLeft: "1rem" }}
+                        onClick={removePhoto}
+                      >
+                        Remove the Photo
+                      </button>
+                    </div>
                   </div>
                   <div className={styles.extraText}>
                     <span>Acceptable formates: jpg, png only</span>

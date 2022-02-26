@@ -81,6 +81,27 @@ function Application(props) {
   }, []);
 
   useEffect(() => {
+    setInterval(() => {
+      async function intervalGettingAvatar() {
+        await getAvatarFromBack(localStorage.getItem("login"));
+      }
+      intervalGettingAvatar();
+    }, 2500);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener(
+      "touchmove",
+      function (event) {
+        if (event.scale !== 1) {
+          event.preventDefault();
+        }
+      },
+      false
+    );
+  }, []);
+
+  useEffect(() => {
     setInterval(async () => {
       if (accountName) {
         await getAvatarFromBack(accountName);
@@ -529,7 +550,7 @@ function Application(props) {
                             setActiveScreen("deposit");
                           }}
                           onAssetSelect={(name) => {
-                            setTradeAsset(name === "META1" ? "USDT" : name);
+                            setTradeAsset(name);
                             setActiveScreen("exchange");
                           }}
                           account={account}

@@ -13,7 +13,7 @@
 }
 .paperWalletStyles {
   background: #fff;
-  box-shadow: 0 0 10px 6px rgba(0,0,0, 0.11);
+  box-shadow: 0 0 10px 6px rgba(0, 0, 0, 0.11);
   width: 50%;
   padding: 2rem;
   margin: 1.5rem;
@@ -26,19 +26,21 @@
   height: 100%;
 }
 
-span.css-1fzkqb4, span.css-llftvd {
-    border:0 !important;
-    background-image: url('/src/757.svg') !important;
-    background-size: cover !important;
-    display: flex;
-    animation: none;
-    margin: 50px auto;
+span.css-1fzkqb4,
+span.css-llftvd {
+  border: 0 !important;
+  background-image: url("/src/757.svg") !important;
+  background-size: cover !important;
+  display: flex;
+  animation: none;
+  margin: 50px auto;
 }
-.ui.checkbox input:checked~.box:before, .ui.checkbox input:checked~label:before {
+.ui.checkbox input:checked ~ .box:before,
+.ui.checkbox input:checked ~ label:before {
   background: #fc0 !important;
   /* border-color: rgba(34,36,38,.35); */
 }
-.sbBtn{
+.sbBtn {
   background: #fc0 !important;
   color: black !important;
 }
@@ -63,7 +65,7 @@ span.css-1fzkqb4, span.css-llftvd {
   }
 }
 .blockInfoYourCrypto {
-  margin: .1rem;
+  margin: 0.1rem;
   padding: 1rem;
   border-radius: 4px;
   width: 73%;
@@ -97,22 +99,19 @@ span.css-1fzkqb4, span.css-llftvd {
 /*  bottom: 0!important;*/
 /*}*/
 
-@media screen and (max-width: 600px){
+@media screen and (max-width: 600px) {
   .fullBlockWithAdapt {
-    flex-direction: column!important;
-  }
-  body {
-    width: 128%;
+    flex-direction: column !important;
   }
 }
-@media screen and (max-width: 600px){
+@media screen and (max-width: 600px) {
   .bottomAdaptBlock {
-    display: flex!important;
-    flex-direction:  column!important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
   }
   .justFlexAndDirect {
-    flex-direction: column!important;
+    flex-direction: column !important;
   }
   .paperWalletStyles {
     width: 88% !important;

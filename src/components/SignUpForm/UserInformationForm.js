@@ -38,6 +38,8 @@ const UserInformationForm = (props) => {
   const [accountError, setAccountError] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
   const [emailError, setEmailError] = useState(null);
+  const [firstNameError, setFirstNameError] = useState(null);
+  const [lastNameError, setLastNameError] = useState(null);
   useEffect(() => {
     if (accountName) {
       AccountApi.lookupAccounts(accountName, 1)
@@ -98,10 +100,22 @@ const UserInformationForm = (props) => {
                     <label>First Name</label>
                     <input
                       value={firstName}
-                      onChange={(event) => setFirstName(event.target.value)}
+                      onChange={(event) => {
+                        setFirstName(event.target.value);
+                        if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
+                          setFirstNameError(
+                            "Your First Name must not contain special characters"
+                          );
+                        } else {
+                          setFirstNameError(null);
+                        }
+                      }}
                       placeholder="First Name"
                       required
                     />
+                    {firstNameError && (
+                      <p style={{ color: "red" }}> {firstNameError}</p>
+                    )}
                   </Form.Field>
                   <Form.Field>
                     <label>Email</label>
@@ -136,10 +150,20 @@ const UserInformationForm = (props) => {
                       value={lastName}
                       onChange={(event) => {
                         setLastName(event.target.value);
+                        if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
+                          setLastNameError(
+                            "Your Last Name must not contain special characters"
+                          );
+                        } else {
+                          setLastNameError(null);
+                        }
                       }}
                       placeholder="Last Name"
                       required
                     />
+                    {lastNameError && (
+                      <p style={{ color: "red" }}> {lastNameError}</p>
+                    )}
                   </Form.Field>
                   <Form.Field>
                     <label>Phone Number</label>
@@ -179,12 +203,9 @@ const UserInformationForm = (props) => {
                 type="text"
                 error={accountNameErrors}
                 placeholder="Account Name"
-                onChange={(event) => {
-                  setAccountName(event.target.value.toLocaleLowerCase());
-                  if (
-                    event.target.value.length < 4 ||
-                    event.target.value > 63
-                  ) {
+                onChange={({ target }) => {
+                  setAccountName(target.value.toLocaleLowerCase());
+                  if (target.value.length < 4 || target.value > 63) {
                     setAccountError(
                       "Your Account Name must be more than 4 characters and less than 63"
                     );

@@ -71,7 +71,7 @@ const Navbar = (props) => {
             src={logo}
             alt="logo"
           />
-          {isMobile && name ? (
+          {isMobile && portfolio ? (
             <div className={styles.mobileName}>
               <p>
                 <strong>Hello, {name}</strong>

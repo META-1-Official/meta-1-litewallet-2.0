@@ -9,14 +9,11 @@ import { Modal, Icon, Button, Grid, Header, Popup } from "semantic-ui-react";
 import Input from "@mui/material/Input";
 import { helpSendTo, helpAmount, helpMax1, helpSwap } from "../../config/help";
 import "./style.css";
-import Select from "react-select";
-import ExchangeSelect from "../ExchangeForm/ExchangeSelect";
 import InputAdornment from "@mui/material/InputAdornment";
-import { $ } from "jquery";
 
-const FEE = 0.00035;
+const FEE = 0.0035;
 
-export default function SendForm(props) {
+const SendForm = React.memo((props) => {
   const {
     portfolio,
     onBackClick,
@@ -53,20 +50,25 @@ export default function SendForm(props) {
   const [options, setOptions] = useState([]);
   const [priceForAsset, setPriceForAsset] = useState(0);
   const [blockPrice, setBlockPrice] = useState(0);
+  const [modalErrorOpened, setModalErrorOpened] = useState(false);
 
-  useEffect(async () => {
-    if (asset !== "USDT" && asset !== "META1") {
-      const response = await fetch(
-        `https://api.binance.com/api/v3/ticker/24hr?symbol=${asset}USDT`
-      );
-      await setPriceForAsset((await response.json()).lastPrice);
-    } else {
-      setPriceForAsset(1);
+  useEffect(() => {
+    async function getData() {
+      if (asset !== "USDT" && asset !== "META1") {
+        const response = await fetch(
+          `https://api.binance.com/api/v3/ticker/24hr?symbol=${asset}USDT`
+        );
+        await setPriceForAsset((await response.json()).lastPrice);
+      } else {
+        setPriceForAsset(1);
+      }
     }
+    getData();
   }, [asset]);
 
   useEffect(() => {
-    if (parseFloat(feeAsset?.qty) < FEE) {
+    console.log(portfolio);
+    if (parseFloat(feeAsset?.qty) < FEE && feeAsset) {
       setError("Not enough FEE");
     }
   }, [feeAsset]);
@@ -91,29 +93,31 @@ export default function SendForm(props) {
     }, 50);
   }, []);
 
-  const RedditTextField = styled((props) => (
-    <TextField InputProps={{ disableUnderline: true }} {...props} />
-  ))(({ theme }) => ({
-    "& .MuiFilledInput-root": {
-      border: "1px solid #e2e2e1",
-      overflow: "hidden",
-      backgroundColor: theme.palette.mode === "light" ? "#fcfcfb" : "#2b2b2b",
-      borderRadius: "8px !important",
-      transition: theme.transitions.create([
-        "border-color",
-        "background-color",
-        "box-shadow",
-      ]),
-      "&:hover": {
-        backgroundColor: "transparent",
+  const RedditTextField = React.memo(
+    styled((props) => (
+      <TextField InputProps={{ disableUnderline: true }} {...props} />
+    ))(({ theme }) => ({
+      "& .MuiFilledInput-root": {
+        border: "1px solid #e2e2e1",
+        overflow: "hidden",
+        backgroundColor: theme.palette.mode === "light" ? "#fcfcfb" : "#2b2b2b",
+        borderRadius: "8px !important",
+        transition: theme.transitions.create([
+          "border-color",
+          "background-color",
+          "box-shadow",
+        ]),
+        "&:hover": {
+          backgroundColor: "transparent",
+        },
+        "&.Mui-focused": {
+          backgroundColor: "transparent",
+          boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
+          borderColor: theme.palette.primary.main,
+        },
       },
-      "&.Mui-focused": {
-        backgroundColor: "transparent",
-        boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
-        borderColor: theme.palette.primary.main,
-      },
-    },
-  }));
+    }))
+  );
 
   const setSelected = (value) => {
     setAssetCh(value.value);
@@ -287,7 +291,7 @@ export default function SendForm(props) {
         <Modal
           size="tiny"
           id={"modal"}
-          open={modalOpened}
+          open={modalErrorOpened}
           onClose={() => {
             setModalOpened(false);
           }}
@@ -425,11 +429,12 @@ export default function SendForm(props) {
                     </div>
                   </div>
                   <Grid.Column>
-                    <RedditTextField
+                    <TextField
+                      InputProps={{ disableUnderline: true }}
                       label="Password"
                       className={styles.input}
-                      id="reddit-input pass"
                       type={"password"}
+                      id="reddit-input pass"
                       variant="filled"
                       style={{ marginBottom: "1rem", borderRadius: "8px" }}
                     />
@@ -456,14 +461,11 @@ export default function SendForm(props) {
                 </div>
                 <div className={styles.rightBlockSend}>
                   <h2 style={{ textAlign: "center" }}>Receive</h2>
-                  <RedditTextField
+                  <TextField
+                    InputProps={{ disableUnderline: true }}
                     label="To"
                     className={styles.input}
                     id="reddit-input receiver"
-                    value={receiver}
-                    onChange={(event) => {
-                      setReceiver(event.target.value);
-                    }}
                     variant="filled"
                     style={{ marginBottom: "1rem", borderRadius: "8px" }}
                   />
@@ -489,7 +491,7 @@ export default function SendForm(props) {
               {!askForPassword && !inProgress && (
                 <Grid.Row className={"buttonSend"} columns={1}>
                   <Popup
-                    content={`After clicking this button you will be request to enter password.`}
+                    disabled
                     trigger={
                       <button
                         className={"btnSend ui button yellow buttSend"}
@@ -512,16 +514,24 @@ export default function SendForm(props) {
                               document.getElementById(
                                 "reddit-input pass"
                               ).value;
-                            if (rcvr && password) {
-                              performTransfer({
-                                ...{ to: rcvr },
-                                ...{
-                                  password,
-                                  amount,
-                                  assetCh,
-                                  message,
-                                },
-                              });
+                            if (rcvr !== "" && password !== "" && amount) {
+                              if (parseFloat(feeAsset?.qty) < FEE) {
+                                setError("Not enough FEE");
+                              } else {
+                                performTransfer({
+                                  ...{ to: rcvr },
+                                  ...{
+                                    password,
+                                    amount,
+                                    assetCh,
+                                    message,
+                                  },
+                                });
+                              }
+                            } else {
+                              setError(
+                                "You have entered incorrect data, please check it."
+                              );
                             }
                           }
                         }}
@@ -552,4 +562,6 @@ export default function SendForm(props) {
       </div>
     </>
   );
-}
+});
+
+export default SendForm;

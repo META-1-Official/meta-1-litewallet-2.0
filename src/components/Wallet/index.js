@@ -28,6 +28,7 @@ import PaperWalletLogin from "../PaperWalletLogin/PaperWalletLogin";
 import Meta1 from "meta1dex";
 import { helpTextPortfolio } from "../../config/help";
 import { compareCrypto } from "../requests/compareCrypto";
+import React from "react";
 
 // Трансферы между мета1 аккаунтами
 // вместо BitShares ставь Meta1
@@ -400,7 +401,6 @@ function Wallet(props) {
   const [xlm, setXlm] = useState(0);
   const [ltc, setLtc] = useState(0);
   const [check, setCheck] = useState(false);
-  const [choosenNotFiatCurrency, setChoosenNotFiatCurrency] = useState(null);
 
   useEffect(async () => {
     if (!check) {
@@ -495,7 +495,6 @@ function Wallet(props) {
   }, [portfolio, meta1]);
 
   const changeCurrencyToFiat = async () => {
-    setChoosenNotFiatCurrency(null);
     document.getElementById("switchContainer").style.display = "none";
     setCurrentCurrency(currentCurrency + 1);
     document.getElementById("forCheck").innerText = localStorage
@@ -541,7 +540,6 @@ function Wallet(props) {
           document.getElementById("valueTitle").innerText = `VALUE (${crypto})`;
           document.getElementById("priceTitle").innerText = `PRICE (${crypto})`;
           document.getElementById("forCheck").innerText = crypto;
-          setChoosenNotFiatCurrency(crypto);
         }, 2000);
       } else {
         let data = await getAllByOne(chosen, crypto);
@@ -558,7 +556,6 @@ function Wallet(props) {
         document.getElementById("valueTitle").innerText = `VALUE (${crypto})`;
         document.getElementById("priceTitle").innerText = `PRICE (${crypto})`;
         document.getElementById("forCheck").innerText = crypto;
-        setChoosenNotFiatCurrency(crypto);
       }
     } else {
       setCurrentCurrency(currentCurrency + 1);
@@ -566,16 +563,22 @@ function Wallet(props) {
         let crypto = "META1";
         let values = document.getElementsByClassName("currencyValues");
         let prices = document.getElementsByClassName("currencyPrices");
+        console.log(meta1.latest);
         for (let i = 0; i < values.length; i++) {
-          values[i].innerText = Number(values[i].innerText * meta1.latest)
+          values[i].innerText = Number(
+            Number(values[i].innerText) / Number(meta1.latest)
+          )
             .toFixed(7)
             .toString();
-          prices[i].innerText = Number(prices[i].innerText * meta1.latest)
+          prices[i].innerText = Number(
+            Number(prices[i].innerText) / Number(meta1.latest)
+          )
             .toFixed(7)
             .toString();
         }
+        document.getElementById("valueTitle").innerText = `VALUE (${crypto})`;
+        document.getElementById("priceTitle").innerText = `PRICE (${crypto})`;
         document.getElementById("forCheck").innerText = crypto;
-        setChoosenNotFiatCurrency(crypto);
       }, 2000);
     }
   };
@@ -665,9 +668,7 @@ function Wallet(props) {
             </noscript>
             <div className={"blockChoosen"} onClick={openDrop}>
               <span style={{ textAlign: "center" }}>
-                {choosenNotFiatCurrency
-                  ? `All displayed in ${choosenNotFiatCurrency}...`
-                  : "Select currency to display..."}
+                Select currency to display...
               </span>
               <i
                 className="fas fa-chevron-down"
@@ -679,27 +680,31 @@ function Wallet(props) {
               style={{ position: "relative", display: "none" }}
             >
               <ul className={"chooseContainer"}>
-                <li style={{ padding: ".5rem" }} onClick={changeCurrencyToFiat}>
+                <li
+                  className={"choosenContainerItem"}
+                  onClick={changeCurrencyToFiat}
+                >
                   <img
                     src={fiatIcon}
-                    style={{ width: "35px" }}
                     alt="cryptoImage"
+                    className="imgContainer"
                   />
-                  <span style={{ marginLeft: "3rem" }}>
+                  <span className="spanDrop">
                     Fiat ({localStorage.getItem("currency").split(" ")[0]})
                   </span>
                 </li>
                 {assets.map((el) => (
                   <li
-                    style={{ padding: ".5rem" }}
                     onClick={changeCryptoCurrency}
+                    className={"choosenContainerItem"}
                   >
                     <img
                       src={el.image}
                       style={{ width: "35px" }}
                       alt="cryptoImage"
+                      className="imgContainer"
                     />
-                    <span style={{ marginLeft: "3rem" }}>{el.symbol}</span>
+                    <span className="spanDrop">{el.symbol}</span>
                   </li>
                 ))}
               </ul>

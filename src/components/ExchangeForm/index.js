@@ -90,10 +90,12 @@ export default function ExchangeForm(props) {
       const from = asset
         ? newOptions.find((el) => el.value === asset)
         : newOptions[0];
-      const to = asset
+      let to = asset
         ? newOptions.find((el) => el.value === "META1")
         : newOptions[1];
-
+      if (asset === "META1") {
+        to = newOptions.find((el) => el.value === "USDT");
+      }
       setSelectedTo(to);
       setSelectedFrom(from);
     } else {
@@ -109,48 +111,50 @@ export default function ExchangeForm(props) {
   }, [selectedTo, selectedFrom]);
 
   useEffect(() => {
-    setTimeout(() => {
-      document.getElementById("eosBlock").addEventListener("click", () => {
-        setSelectedFrom({
-          image: "/static/media/EOS.fb40b8e0.svg",
-          value: "EOS",
-          label: "EOS",
-          pre: 4,
-          balance: 0,
+    if (document.getElementById("eosBlock")) {
+      setTimeout(() => {
+        document.getElementById("eosBlock").addEventListener("click", () => {
+          setSelectedFrom({
+            image: "/static/media/EOS.fb40b8e0.svg",
+            value: "EOS",
+            label: "EOS",
+            pre: 4,
+            balance: 0,
+          });
+          portfolio.map((el) => {
+            if (el.name === "EOS") {
+              setSelectedFrom({
+                image: "/static/media/EOS.fb40b8e0.svg",
+                value: "EOS",
+                label: "EOS",
+                pre: 4,
+                balance: el.qty,
+              });
+            }
+          });
         });
-        portfolio.map((el) => {
-          if (el.name === "EOS") {
-            setSelectedFrom({
-              image: "/static/media/EOS.fb40b8e0.svg",
-              value: "EOS",
-              label: "EOS",
-              pre: 4,
-              balance: el.qty,
-            });
-          }
+        document.getElementById("usdtBlock").addEventListener("click", () => {
+          setSelectedFrom({
+            image: "/static/media/USDT.004b5e55.svg",
+            value: "USDT",
+            label: "USDT",
+            pre: 2,
+            balance: 0,
+          });
+          portfolio.map((el) => {
+            if (el.name === "USDT") {
+              setSelectedFrom({
+                image: "/static/media/USDT.004b5e55.svg",
+                value: "USDT",
+                label: "USDT",
+                pre: 2,
+                balance: el.qty,
+              });
+            }
+          });
         });
-      });
-      document.getElementById("usdtBlock").addEventListener("click", () => {
-        setSelectedFrom({
-          image: "/static/media/USDT.004b5e55.svg",
-          value: "USDT",
-          label: "USDT",
-          pre: 2,
-          balance: 0,
-        });
-        portfolio.map((el) => {
-          if (el.name === "USDT") {
-            setSelectedFrom({
-              image: "/static/media/USDT.004b5e55.svg",
-              value: "USDT",
-              label: "USDT",
-              pre: 2,
-              balance: el.qty,
-            });
-          }
-        });
-      });
-    }, 50);
+      }, 1000);
+    }
   }, [portfolio]);
 
   useEffect(() => {
@@ -170,9 +174,11 @@ export default function ExchangeForm(props) {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      document.getElementById("mainBlock").style.height = "92vh";
-    }, 25);
+    if (!isMobile) {
+      setTimeout(() => {
+        document.getElementById("mainBlock").style.height = "92vh";
+      }, 25);
+    }
   }, []);
 
   const calculateUsdPriceHandler = (e) => {
@@ -299,12 +305,6 @@ export default function ExchangeForm(props) {
 
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
-
-  useEffect(() => {
-    if (isMobile) {
-      document.querySelector("navbar-toggler").style.filter = "inver(1)";
-    }
-  }, []);
 
   const prepareTrade = () => {
     localStorage.setItem("selectFrom", selectedFromAmount);
@@ -655,6 +655,7 @@ export default function ExchangeForm(props) {
                               selectedFrom?.value
                             )}
                             position="bottom center"
+                            disabled
                             trigger={
                               <div className={styles.inputForAmount}>
                                 <Input
@@ -736,9 +737,13 @@ export default function ExchangeForm(props) {
                         : 0}
                     </span>
                   </div>
-                  <div style={{ margin: ".5rem 0 0 1rem" }}>
+                  <div style={{ display: "flex" }}>
                     <img
-                      style={{ width: "80px", height: "80px" }}
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        margin: "0 auto",
+                      }}
                       src={selectedFrom.image}
                       alt=""
                     />
@@ -755,12 +760,13 @@ export default function ExchangeForm(props) {
                   </div>
                 </div>
                 <div className={styles.rightBlockCrypt}>
-                  <div
-                    className={"imgToCenter"}
-                    style={{ margin: ".5rem 1rem 0 0" }}
-                  >
+                  <div className={"imgToCenter"} style={{ display: "flex" }}>
                     <img
-                      style={{ width: "80px", height: "80px" }}
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        margin: "0 auto",
+                      }}
                       src={selectedTo.image}
                       alt=""
                     />
