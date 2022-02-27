@@ -70,12 +70,12 @@ function Application(props) {
     setAccountName(account);
     setPassword(password);
   };
+  const [login, setLogin] = useState(localStorage.getItem("login"));
   const [loginError, setLoginError] = useState(null);
 
   useEffect(() => {
-    let login = localStorage.getItem("login");
-    console.log(login);
-    if (login) {
+    if (login !== null) {
+      console.log(login);
       onLogin(login);
     }
   }, []);
@@ -87,18 +87,6 @@ function Application(props) {
       }
       intervalGettingAvatar();
     }, 2500);
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener(
-      "touchmove",
-      function (event) {
-        if (event.scale !== 1) {
-          event.preventDefault();
-        }
-      },
-      false
-    );
   }, []);
 
   useEffect(() => {
@@ -119,14 +107,16 @@ function Application(props) {
   };
 
   async function getAvatarFromBack(login) {
-    let avatar = await getAvatar(login);
-    if (avatar?.message !== "There is no such login") {
-      let avatarImage = `https://${env.BACK_URL}${
-        avatar.message.split(".")[2] + "." + avatar.message.split(".")[3]
-      }`;
-      setUserImageDefault(avatarImage);
-      setUserImageNavbar(avatarImage);
-    }
+    try {
+      let avatar = await getAvatar(login);
+      if (avatar?.message !== "There is no such login") {
+        let avatarImage = `https://${env.BACK_URL}${
+          avatar.message.split(".")[2] + "." + avatar.message.split(".")[3]
+        }`;
+        setUserImageDefault(avatarImage);
+        setUserImageNavbar(avatarImage);
+      }
+    } catch (e) {}
   }
 
   useEffect(async () => {
@@ -145,11 +135,6 @@ function Application(props) {
       if (portfolioReceiver === null) return;
       if (portfolio !== null) return;
       if (accountName === null || accountName.length === 0) return;
-      if (
-        localStorage.getItem("login") === null ||
-        localStorage.getItem("login").length === 0
-      )
-        return;
       try {
         const fetched = await portfolioReceiver.fetch();
         setAssets(fetched.assets);
