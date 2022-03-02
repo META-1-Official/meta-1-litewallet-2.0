@@ -4,6 +4,7 @@
   background: #fff;
   box-shadow: var(--boxShadowIndex);
   z-index: 2;
+  min-width: 12rem;
   @media screen and (max-width: 599px) {
     display: none;
   }

@@ -162,7 +162,7 @@ const Navbar = (props) => {
                               window.location.reload();
                             }}
                           >
-                            LogOut
+                            Log Out
                           </p>
                         </li>
                       </ul>

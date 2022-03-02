@@ -61,6 +61,7 @@ export default function ExchangeSelect(props) {
       components={{ SingleValue: MySingleValue, Option: MyOption }}
       options={options}
       value={selectedValue}
+      isSearchable={false}
     />
   );
 }

@@ -80,30 +80,15 @@ function Application(props) {
     }
   }, []);
 
-  useEffect(() => {
-    setInterval(() => {
-      async function intervalGettingAvatar() {
-        await getAvatarFromBack(localStorage.getItem("login"));
-      }
-      intervalGettingAvatar();
-    }, 2500);
-  }, []);
-
-  useEffect(() => {
-    setInterval(async () => {
-      if (accountName) {
-        await getAvatarFromBack(accountName);
-      }
-    }, 5000);
-  }, []);
-
-  const onLogin = async (login) => {
+  const onLogin = async (login, clicked = false) => {
     setLoginError(null);
-    linkAccount(domEmail, login, linkAccountUrl);
+    let res = await linkAccount(domEmail, login, linkAccountUrl);
     setAccountName(login);
     await getAvatarFromBack(login);
     localStorage.setItem("login", login);
-    setActiveScreen("wallet");
+    if (res && clicked) {
+      setLoginError(true);
+    }
   };
 
   async function getAvatarFromBack(login) {
@@ -140,13 +125,14 @@ function Application(props) {
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
-        window.localStorage.setItem("account", accountName);
+        localStorage.setItem("account", accountName);
+        setActiveScreen("wallet");
       } catch (e) {
         setActiveScreen("login");
       }
     }
     fetchPortfolio();
-  }, [portfolioReceiver, portfolio]);
+  }, [portfolioReceiver, portfolio, accountName]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -191,7 +177,9 @@ function Application(props) {
   }, [accountName]);
 
   const onRegistration = (acc, pass, regEmail) => {
-    window.localStorage.setItem("account", acc);
+    localStorage.setItem("account", acc);
+    localStorage.setItem("login", acc);
+    onLogin(acc);
     setCredentials(acc, pass);
     linkAccount(domEmail || regEmail, acc);
     setActiveScreen("wallet");
@@ -336,9 +324,7 @@ function Application(props) {
                     setActiveScreen("exchange");
                   }}
                   userIcon={userImageDefault}
-                  getAvatarFromBack={async () =>
-                    await getAvatarFromBack(accountName)
-                  }
+                  getAvatarFromBack={getAvatarFromBack}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {

@@ -116,18 +116,27 @@
 .input {
   width: 22rem;
   height: 3rem;
-  border: 1px solid rgb(229, 232, 235);
+  border: 1px solid rgb(229, 232, 235) !important;
   border-radius: 5px;
   font-family: "Poppins", sans-serif !important;
   font-weight: 500;
   box-shadow: var(--boxShadowIndex);
   padding-left: 1rem;
+  outline: rgb(229, 232, 235) !important;
   font-size: 0.8rem;
   margin-right: 2rem;
-  outline: none;
+  &:focus {
+    outline: rgb(229, 232, 235) !important;
+    border: 1px solid rgb(229, 232, 235) !important;
+  }
   @media (max-width: 600px) {
     width: 100%;
   }
+}
+
+.modalDiv {
+  // padding: 20;
+  width: 100%;
 }
 .intro {
   height: 15rem;

@@ -148,6 +148,9 @@
 .css-1x51dt5-MuiInputBase-input-MuiInput-input:focus {
   border: none !important;
 }
+.css-1laao21-a11yText {
+  display: none !important;
+}
 .max-button {
   margin-top: 6rem;
 }

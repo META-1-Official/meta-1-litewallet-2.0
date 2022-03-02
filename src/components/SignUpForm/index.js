@@ -53,6 +53,8 @@ export default function SignUpForm(props) {
         lastName,
         firstName
       );
+      localStorage.setItem("login", accountName);
+      window.location.reload();
       onRegistration(accountName, password, email);
     } catch (e) {
       console.log(e);
@@ -61,7 +63,16 @@ export default function SignUpForm(props) {
 
   const stepForm =
     step === 1 ? (
-      <UserInformationForm {...props} onSubmit={stepFirstSubmit} />
+      <UserInformationForm
+        {...props}
+        onSubmit={stepFirstSubmit}
+        accountName={accountName}
+        lastName={lastName}
+        firstName={firstName}
+        password={password}
+        email={email}
+        phone={phone}
+      />
     ) : (
       <SubmitForm onSubmit={stepSecondSubmit} password={password} />
     );

@@ -69,14 +69,9 @@ code {
   font-size: 1.71428571rem;
   border-bottom: solid 1px #d5d6d7;
 }
-
-input:active {
-  border: 1px solid rgba(34, 36, 38, 0.15) !important;
-  outline: rgba(34, 36, 38, 0.15);
-}
 input:focus {
-  border: 1px solid rgba(34, 36, 38, 0.15);
-  outline: rgba(34, 36, 38, 0.15);
+  border: 1px solid rgb(229, 232, 235) !important;
+  outline: rgb(229, 232, 235) !important;
 }
 
 /* Btn yellow */

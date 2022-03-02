@@ -51,6 +51,7 @@ const SendForm = React.memo((props) => {
   const [priceForAsset, setPriceForAsset] = useState(0);
   const [blockPrice, setBlockPrice] = useState(0);
   const [modalErrorOpened, setModalErrorOpened] = useState(false);
+  const [precisionAssets, setPrecisionAssets] = useState();
 
   useEffect(() => {
     async function getData() {
@@ -65,6 +66,18 @@ const SendForm = React.memo((props) => {
     }
     getData();
   }, [asset]);
+
+  useEffect(() => {
+    function filterPrec() {
+      let preObj = {};
+      for (let i = 0; i < assets.length; i++) {
+        preObj[assets[i].symbol] = assets[i].precision;
+      }
+      console.log(preObj);
+      setPrecisionAssets(preObj);
+    }
+    filterPrec();
+  }, [assets]);
 
   useEffect(() => {
     console.log(portfolio);
@@ -135,7 +148,7 @@ const SendForm = React.memo((props) => {
   const calculateUsdPriceHandler = (e) => {
     let priceForOne = Number(e.target.value) * priceForAsset;
     setBlockPrice(
-      Number(priceForOne).toFixed(2) *
+      Number(priceForOne).toFixed(precisionAssets[asset]) *
         Number(localStorage.getItem("currency").split(" ")[2])
     );
   };
@@ -154,7 +167,7 @@ const SendForm = React.memo((props) => {
       Number(e.target.value.split("$")[0]) /
       priceForAsset /
       Number(localStorage.getItem("currency").split(" ")[2])
-    ).toFixed(4);
+    ).toFixed(precisionAssets[asset]);
     setAmount(priceForOne);
     setBlockPrice(e.target.value);
   };
@@ -200,20 +213,20 @@ const SendForm = React.memo((props) => {
       asset,
     });
     if (result.error) {
-      setError(result.error);
+      setError("Invalid Receiver");
       setRepeat(true);
     } else {
       setModalOpened(true);
     }
     setInProgress(false);
-    setAskForPassword(false);
   };
 
   const setAssetMax = () => {
     setAmount(assetData.balance);
     setBlockPrice(
-      Number(assetData.balance * priceForAsset).toFixed(2) *
-        Number(localStorage.getItem("currency").split(" ")[2])
+      Number(assetData.balance * priceForAsset).toFixed(
+        precisionAssets[asset]
+      ) * Number(localStorage.getItem("currency").split(" ")[2])
     );
   };
 
@@ -291,7 +304,7 @@ const SendForm = React.memo((props) => {
         <Modal
           size="tiny"
           id={"modal"}
-          open={modalErrorOpened}
+          open={modalOpened}
           onClose={() => {
             setModalOpened(false);
           }}
@@ -354,7 +367,7 @@ const SendForm = React.memo((props) => {
                     <Input
                       id={"inputForAmount"}
                       type="number"
-                      value={amount}
+                      value={Number(amount) ? amount : ""}
                       endAdornment={
                         <InputAdornment position="end">
                           {assetData.label}
@@ -385,7 +398,7 @@ const SendForm = React.memo((props) => {
                       }}
                     >
                       <input
-                        type="text"
+                        type="number"
                         className={styles.inputDollars}
                         onChange={(e) => {
                           calculateCryptoPriceHandler(e);
@@ -464,6 +477,10 @@ const SendForm = React.memo((props) => {
                   <TextField
                     InputProps={{ disableUnderline: true }}
                     label="To"
+                    value={receiver}
+                    onChange={(e) => {
+                      setReceiver(e.target.value);
+                    }}
                     className={styles.input}
                     id="reddit-input receiver"
                     variant="filled"
@@ -478,10 +495,10 @@ const SendForm = React.memo((props) => {
                     <div className={styles.blockInfoText}>
                       <span>You will Send {assetData.label} Coin</span>
                       <h3>
-                        {amount} {assetData.label}
+                        {Number(amount) ? amount : 0} {assetData.label}
                       </h3>
                       <span>
-                        {blockPrice}{" "}
+                        {blockPrice || 0}{" "}
                         {localStorage.getItem("currency").split(" ")[1]}
                       </span>
                     </div>
@@ -507,19 +524,16 @@ const SendForm = React.memo((props) => {
                             setError(`your balance is not enough `);
                             setRepeat(true);
                           } else {
-                            let rcvr = document.getElementById(
-                              "reddit-input receiver"
-                            ).value;
                             let password =
                               document.getElementById(
                                 "reddit-input pass"
                               ).value;
-                            if (rcvr !== "" && password !== "" && amount) {
+                            if (receiver !== "" && password !== "" && amount) {
                               if (parseFloat(feeAsset?.qty) < FEE) {
                                 setError("Not enough FEE");
                               } else {
                                 performTransfer({
-                                  ...{ to: rcvr },
+                                  ...{ to: receiver },
                                   ...{
                                     password,
                                     amount,

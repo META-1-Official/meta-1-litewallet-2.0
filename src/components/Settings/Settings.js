@@ -12,6 +12,7 @@ const Settings = (props) => {
     account,
     cryptoData,
     userIcon,
+    getAvatarFromBack,
   } = props;
 
   const [currency, setCurrency] = useState(localStorage.getItem("currency"));
@@ -37,6 +38,16 @@ const Settings = (props) => {
         "Content-Type": "multipart/form-data",
       },
     });
+  }
+
+  function waitNewPic() {
+    for (let i = 0; i < 5; i++) {
+      setTimeout(async () => {
+        try {
+          await getAvatarFromBack(localStorage.getItem("login"));
+        } catch (e) {}
+      }, 2000);
+    }
   }
 
   async function uploadFile(e) {
@@ -97,13 +108,22 @@ const Settings = (props) => {
                 <div className={styles.extraInfoBlock}>
                   <div style={{ fontFamily: "Poppins, sans-serif" }}>
                     <h4 style={{ margin: "0" }}>Upload a Photo</h4>
-                    <div>
-                      <input
-                        type="file"
-                        id="file_upload"
-                        onChange={(e) => uploadFile(e)}
-                        className={styles.ButtonFile}
-                      />
+                    <div className={styles.buttonAdapt}>
+                      <div
+                        className={styles.blockForUpload}
+                        style={{ position: "relative" }}
+                      >
+                        <p className={styles.pUpload}>Choose a File</p>
+                        <input
+                          type="file"
+                          id="file_upload"
+                          onChange={(e) => {
+                            uploadFile(e);
+                            waitNewPic();
+                          }}
+                          className={styles.uploadButton}
+                        />
+                      </div>
                       <button
                         className={styles.Button}
                         style={{ marginLeft: "1rem" }}

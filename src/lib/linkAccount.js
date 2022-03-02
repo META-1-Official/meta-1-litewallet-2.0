@@ -13,7 +13,8 @@ export default async function linkAccount(email, accountName, url) {
         walletId: accountName,
       }),
     });
+    return null;
   } catch (e) {
-    console.log("Error Linking Account", e);
+    return "Invalid login";
   }
 }

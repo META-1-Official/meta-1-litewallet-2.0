@@ -66,9 +66,14 @@ export default function PaperWalletLogin({ portfolioReceiver, accountName }) {
   let memoKey = memo_private.toPublicKey().toPublicKeyString();
   const handleCreatePaperWallet = async () => {
     try {
-      await Meta1.login(account, password);
-      console.log("login");
-      createPaperWalletAsPDF(account, ownerKey, activeKey, memoKey, privateKey);
+      await Meta1.login(localStorage.getItem("login"), password);
+      createPaperWalletAsPDF(
+        localStorage.getItem("login"),
+        ownerKey,
+        activeKey,
+        memoKey,
+        privateKey
+      );
     } catch {
       console.log("login failed!");
       setCheck(true);
@@ -89,7 +94,7 @@ export default function PaperWalletLogin({ portfolioReceiver, accountName }) {
             Account Name
           </label>
           <input
-            value={localStorage.getItem("login")}
+            value={localStorage.getItem("login") || accountName}
             disabled
             placeholder={"Account Name"}
           />

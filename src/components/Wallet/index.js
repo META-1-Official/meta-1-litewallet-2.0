@@ -1,8 +1,7 @@
 import MetaLoader from "../../UI/loader/Loader";
 // import ReactTooltip from 'react-tooltip'
-import uReact, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import getAllByOne from "../requests/compareCrypto";
-import { daysChange } from "../../lib/cryptoInfo";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -24,11 +23,9 @@ import {
   Icon,
 } from "semantic-ui-react";
 import "./Wallet.css";
-import PaperWalletLogin from "../PaperWalletLogin/PaperWalletLogin";
 import Meta1 from "meta1dex";
-import { helpTextPortfolio } from "../../config/help";
-import { compareCrypto } from "../requests/compareCrypto";
-import React from "react";
+import { useQuery } from "react-query";
+import { getAsset, getFullName } from "./cryptoChooser";
 
 // Трансферы между мета1 аккаунтами
 // вместо BitShares ставь Meta1
@@ -42,28 +39,89 @@ import React from "react";
 // сначала надо залогиниться в сдк
 
 export const OrdersTable = (props) => {
-  const { data, column, direction, assets, account } = props;
+  const { column, direction, assets, account } = props;
 
-  const [orders, setOrders] = useState([]);
+  const { data, isLoading, error } = useQuery("history", getHistory);
 
-  // useEffect(async () => {
-  //   console.log(
-  //     await Meta1.history.get_account_history(
-  //       "kj-test2",
-  //       "1.11.0",
-  //       10,
-  //       "1.11.0"
-  //     )
-  //   );
-  // }, []);
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
-  async function getAsset(symbolId) {
-    let res = await Meta1.assets[symbolId];
-    assets.map((el) => {
-      if (el.symbol === symbolId) {
-        return el;
+  async function getHistory() {
+    let rawData = await Meta1.history.get_account_history(
+      localStorage.getItem("login"),
+      "1.11.0",
+      30,
+      "1.11.0"
+    );
+    let newRawData = [];
+    let i = 0;
+    while (newRawData.length < 10) {
+      if (rawData[i].virtual_op === 0 && newRawData.length !== 10) {
+        // Exchange proccesing
+        if (rawData[i].op[1]?.seller) {
+          let exchangeAsset = await Meta1.db.get_objects([
+            rawData[i]?.op[1]?.min_to_receive?.asset_id,
+          ]);
+          let block = await Meta1.db.get_block(rawData[i].block_num);
+          let date = new Date(block.timestamp).getTime() / 1000 + 19800;
+          let newDate = new Date(date).toUTCString();
+          console.log(newDate);
+          // let splitedBlock = block.timestamp.split("T");
+          // let time = splitedBlock[1].split(":");
+          // let convertDate = splitedBlock[0].split("-");
+          newRawData.push({
+            asset: {
+              name: "",
+              abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
+            },
+            type: "Exchange",
+            volume:
+              "0.00" + rawData[i].op[1]?.min_to_receive?.amount.toString(),
+            status: "Done",
+            // time: `${convertDate[2]} ${months[Number(convertDate[1]) - 1]}, ${
+            //   convertDate[0]
+            // }, ${Number(time[0]) + 5}:${Number(time[1]) + 30}:${time[2]}
+            // `,
+          });
+        }
+        // Send proccesing
+        else if (rawData[i].op[1]?.from) {
+          let exchangeAsset = await Meta1.db.get_objects([
+            rawData[i]?.op[1]?.amount.asset_id,
+          ]);
+          let block = await Meta1.db.get_block(rawData[i].block_num);
+          let splitedBlock = block.timestamp.split("T");
+          let convertDate = splitedBlock[0].split("-");
+          newRawData.push({
+            asset: {
+              name: "",
+              abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
+            },
+            type: "Send",
+            volume: "0.00" + rawData[i].op[1]?.amount?.amount.toString(),
+            status: "Done",
+            time: `${convertDate[2]} ${months[Number(convertDate[1])]}, ${
+              convertDate[0]
+            }, ${splitedBlock[1]}
+            `,
+          });
+        }
       }
-    });
+      i++;
+    }
+    return newRawData;
   }
 
   useEffect(() => {
@@ -74,11 +132,15 @@ export const OrdersTable = (props) => {
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.common.black,
+      fontWeight: 600,
+      fontSize: 15,
     },
     [`&.${tableCellClasses.body}`]: {
       fontSize: 14,
+      padding: 8,
+      color: "#240000",
     },
   }));
 
@@ -92,6 +154,8 @@ export const OrdersTable = (props) => {
     },
   }));
 
+  if (isLoading) return <MetaLoader size={"small"} />;
+
   return (
     <>
       <TableContainer style={{ overflow: "auto" }} component={Paper}>
@@ -103,28 +167,61 @@ export const OrdersTable = (props) => {
                 onClick={() => {}}
                 align="left"
               >
-                ASSETS
+                Assets
               </StyledTableCell>
               <StyledTableCell align="left">Type</StyledTableCell>
-              <StyledTableCell align="left">Volume</StyledTableCell>
+              <StyledTableCell align="right">Volume</StyledTableCell>
               <StyledTableCell align="left">Status</StyledTableCell>
               <StyledTableCell align="left">Time</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders?.map(({ el }) => (
-              <StyledTableRow key={el.block_num}>
-                <StyledTableCell component="th" scope="row">
-                  <div>
-                    <img />
-                    <div>
-                      <h4>el.id</h4>
+            {data?.map((el) => (
+              <StyledTableRow>
+                <StyledTableCell
+                  component="th"
+                  style={{ width: "20%" }}
+                  scope="row"
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                    }}
+                  >
+                    {getAsset(el.asset.abbr)}
+                    <div style={{ marginLeft: ".5rem" }}>
+                      <p style={{ margin: 0, fontSize: "1rem" }}>
+                        {el.asset.abbr}
+                      </p>
+                      <p style={{ margin: 0, fontSize: ".7rem" }}>
+                        {getFullName(el.asset.abbr)}
+                      </p>
                     </div>
                   </div>
                 </StyledTableCell>
-                <StyledTableCell align="right">{}</StyledTableCell>
-                <StyledTableCell align="right">{}</StyledTableCell>
-                <StyledTableCell align="right">{}</StyledTableCell>
+                <StyledTableCell align="left">
+                  <h6 style={{ margin: "0" }}>{el.type}</h6>
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  <h6 style={{ margin: "0" }}>
+                    <strong>{Number(el.volume)}</strong>
+                  </h6>
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  <h6
+                    style={
+                      el.status === "Done"
+                        ? { margin: "0", color: "#00aa08" }
+                        : { margin: "0", color: "rgb(248, 0, 0)" }
+                    }
+                  >
+                    {el.status}
+                  </h6>
+                </StyledTableCell>
+                <StyledTableCell align="left">
+                  <h6 style={{ margin: "0" }}>{el.time}</h6>
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
@@ -219,6 +316,8 @@ const PortfolioTable = (props) => {
         return xlm;
       case "USDT":
         return { latest: 1, percent_change: 0 };
+      default:
+        return;
     }
   };
 
@@ -386,7 +485,6 @@ function Wallet(props) {
     accountName,
     portfolioReceiver,
   } = props;
-  const [activeItem, setActiveItem] = useState("portfolio");
   const [currentCurrency, setCurrentCurrency] = useState(0);
   const [orders, setOrders] = useState(null);
   const [hideZero, setHideZero] = useState(true);
@@ -530,12 +628,12 @@ function Wallet(props) {
           let values = document.getElementsByClassName("currencyValues");
           let prices = document.getElementsByClassName("currencyPrices");
           for (let i = 0; i < values.length; i++) {
-            values[i].innerText = Number(values[i].innerText * data[crypto])
-              .toFixed(7)
-              .toString();
-            prices[i].innerText = Number(prices[i].innerText * data[crypto])
-              .toFixed(7)
-              .toString();
+            values[i].innerText = Number(
+              values[i].innerText * data[crypto]
+            ).toFixed(7);
+            prices[i].innerText = Number(
+              prices[i].innerText * data[crypto]
+            ).toFixed(7);
           }
           document.getElementById("valueTitle").innerText = `VALUE (${crypto})`;
           document.getElementById("priceTitle").innerText = `PRICE (${crypto})`;

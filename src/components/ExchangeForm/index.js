@@ -47,7 +47,7 @@ export default function ExchangeForm(props) {
   const [tradeError, setTradeError] = useState(null);
   const [tradeInProgress, setTradeInProgress] = useState(false);
   const [priceForAsset, setPriceForAsset] = useState(0);
-  const [blockPrice, setBlockPrice] = useState("0");
+  const [blockPrice, setBlockPrice] = useState();
 
   useEffect(async () => {
     if (asset !== "META1" && asset !== "USDT") {
@@ -105,59 +105,6 @@ export default function ExchangeForm(props) {
   }, [props.assets, props.portfolio]);
 
   useEffect(() => {
-    setSelectedFromAmount("");
-    setSelectedToAmount("");
-    setInvalidEx(false);
-  }, [selectedTo, selectedFrom]);
-
-  useEffect(() => {
-    if (document.getElementById("eosBlock")) {
-      setTimeout(() => {
-        document.getElementById("eosBlock").addEventListener("click", () => {
-          setSelectedFrom({
-            image: "/static/media/EOS.fb40b8e0.svg",
-            value: "EOS",
-            label: "EOS",
-            pre: 4,
-            balance: 0,
-          });
-          portfolio.map((el) => {
-            if (el.name === "EOS") {
-              setSelectedFrom({
-                image: "/static/media/EOS.fb40b8e0.svg",
-                value: "EOS",
-                label: "EOS",
-                pre: 4,
-                balance: el.qty,
-              });
-            }
-          });
-        });
-        document.getElementById("usdtBlock").addEventListener("click", () => {
-          setSelectedFrom({
-            image: "/static/media/USDT.004b5e55.svg",
-            value: "USDT",
-            label: "USDT",
-            pre: 2,
-            balance: 0,
-          });
-          portfolio.map((el) => {
-            if (el.name === "USDT") {
-              setSelectedFrom({
-                image: "/static/media/USDT.004b5e55.svg",
-                value: "USDT",
-                label: "USDT",
-                pre: 2,
-                balance: el.qty,
-              });
-            }
-          });
-        });
-      }, 1000);
-    }
-  }, [portfolio]);
-
-  useEffect(() => {
     setTimeout(() => {
       let allInputs = document.getElementsByClassName(
         "css-1x51dt5-MuiInputBase-input-MuiInput-input"
@@ -189,17 +136,16 @@ export default function ExchangeForm(props) {
   };
 
   const calculateCryptoPriceHandler = (e) => {
-    if (e.target.value.split("$")[0] !== "") {
-      let priceForOne = (
-        Number(e.target.value.split("$")[0]) /
-        priceForAsset /
-        Number(localStorage.getItem("currency").split(" ")[2])
-      ).toFixed(selectedFrom.pre);
-      setSelectedFromAmount(priceForOne);
-      setBlockPrice(e.target.value);
-    } else {
+    setBlockPrice(e.target.value);
+    let priceForOne = (
+      Number(e.target.value) /
+      priceForAsset /
+      Number(localStorage.getItem("currency").split(" ")[2])
+    ).toFixed(selectedFrom.pre);
+    setSelectedFromAmount(priceForOne);
+    if (e.target.value.length === 0) {
+      setBlockPrice("");
       setSelectedFromAmount("");
-      setSelectedToAmount("");
     }
   };
 
@@ -209,7 +155,7 @@ export default function ExchangeForm(props) {
       setInvalidEx(true);
       setSelectedToAmount("");
       setSelectedFromAmount("");
-      setBlockPrice(0);
+      setBlockPrice("");
       return;
     }
     setInvalidEx(false);
@@ -226,7 +172,7 @@ export default function ExchangeForm(props) {
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
       setInvalidEx(true);
       setSelectedFromAmount(0);
-      setBlockPrice(0);
+      setBlockPrice("");
       return;
     }
     setInvalidEx(false);
@@ -325,7 +271,7 @@ export default function ExchangeForm(props) {
 
       const buyResult = await trader.perform({
         from: selectedFrom.value,
-        to: selectedTo.value,
+        to: selectedTo.value.trim(),
         amount: selectedToAmount,
         password: password,
       });
@@ -491,7 +437,7 @@ export default function ExchangeForm(props) {
                             console.log(val);
                             setSelectedFrom(val);
                             changeAssetHandler(val.value);
-                            setBlockPrice(0);
+                            setBlockPrice("");
                             setInvalidEx(false);
                           }}
                           options={getAssets(selectedTo.value)}
@@ -518,9 +464,13 @@ export default function ExchangeForm(props) {
                                   value={selectedFromAmount}
                                   type={"number"}
                                   onChange={(e) => {
-                                    setSelectedFromAmount(e.target.value || "");
-                                    handleCalculateSelectedTo();
-                                    calculateUsdPriceHandler(e);
+                                    if (e.target.value.length < 11) {
+                                      setSelectedFromAmount(
+                                        e.target.value || ""
+                                      );
+                                      handleCalculateSelectedTo();
+                                      calculateUsdPriceHandler(e);
+                                    }
                                   }}
                                   endAdornment={
                                     <InputAdornment position="end">
@@ -544,7 +494,9 @@ export default function ExchangeForm(props) {
                                   <input
                                     className={styles.inputDollars}
                                     onChange={(e) => {
-                                      calculateCryptoPriceHandler(e);
+                                      if (e.target.value.length < 11) {
+                                        calculateCryptoPriceHandler(e);
+                                      }
                                     }}
                                     type={"number"}
                                     placeholder={`Amount ${
@@ -552,11 +504,7 @@ export default function ExchangeForm(props) {
                                         .getItem("currency")
                                         .split(" ")[1]
                                     }`}
-                                    value={
-                                      !invalidEx && selectedFromAmount
-                                        ? blockPrice
-                                        : ""
-                                    }
+                                    value={!invalidEx ? blockPrice : ""}
                                   />
                                   <span>
                                     {
@@ -607,7 +555,7 @@ export default function ExchangeForm(props) {
                         changeAssetHandlerSwap(selectedTo);
                         setSelectedToAmount(0);
                         setSelectedFromAmount(0);
-                        setBlockPrice(0);
+                        setBlockPrice("");
                         swapAssets(e);
                       }}
                     >
@@ -692,7 +640,7 @@ export default function ExchangeForm(props) {
                                   }}
                                 >
                                   <span>
-                                    {!invalidEx && !!selectedFromAmount
+                                    {!invalidEx && selectedFromAmount
                                       ? blockPrice
                                       : 0}
                                   </span>
@@ -724,13 +672,16 @@ export default function ExchangeForm(props) {
             <div className={styles.absoluteBottomBlock}>
               <div className={styles.centeredBlock}>
                 <div className={styles.leftBlockCrypt}>
-                  <div className={styles.textBlockLeft}>
+                  <div
+                    className={styles.textBlockLeft}
+                    style={{ marginRight: "1rem" }}
+                  >
                     <span>You are exchanging</span>
                     <h4>
                       {selectedFromAmount || 0} {selectedFrom.label}
                     </h4>
                     <span>
-                      {!invalidEx && selectedFromAmount
+                      {!invalidEx && blockPrice
                         ? `${blockPrice}${
                             localStorage.getItem("currency").split(" ")[0]
                           }`
@@ -778,7 +729,7 @@ export default function ExchangeForm(props) {
                       {selectedTo.label}
                     </h4>
                     <span>
-                      {!invalidEx && !!selectedFromAmount
+                      {!invalidEx && blockPrice
                         ? `${blockPrice}${
                             localStorage.getItem("currency").split(" ")[0]
                           }`
@@ -834,8 +785,46 @@ export default function ExchangeForm(props) {
           </div>
           <div className={"flexNeed"} style={{ width: "28%" }}>
             <RightSideHelpMenuSecondType
-              onClickExchangeEOSHandler={onClickExchangeEOSHandler}
-              onClickExchangeUSDTHandler={onClickExchangeUSDTHandler}
+              onClickExchangeEOSHandler={() => {
+                setSelectedFrom({
+                  image: "/static/media/EOS.fb40b8e0.svg",
+                  value: "EOS",
+                  label: "EOS",
+                  pre: 4,
+                  balance: 0,
+                });
+                portfolio.map((el) => {
+                  if (el.name === "EOS") {
+                    setSelectedFrom({
+                      image: "/static/media/EOS.fb40b8e0.svg",
+                      value: "EOS",
+                      label: "EOS",
+                      pre: 4,
+                      balance: el.qty,
+                    });
+                  }
+                });
+              }}
+              onClickExchangeUSDTHandler={() => {
+                setSelectedFrom({
+                  image: "/static/media/USDT.004b5e55.svg",
+                  value: "USDT",
+                  label: "USDT",
+                  pre: 2,
+                  balance: 0,
+                });
+                portfolio.map((el) => {
+                  if (el.name === "USDT") {
+                    setSelectedFrom({
+                      image: "/static/media/USDT.004b5e55.svg",
+                      value: "USDT",
+                      label: "USDT",
+                      pre: 2,
+                      balance: el.qty,
+                    });
+                  }
+                });
+              }}
             />
           </div>
         </div>

@@ -205,7 +205,28 @@ const UserInformationForm = (props) => {
                 placeholder="Account Name"
                 onChange={({ target }) => {
                   setAccountName(target.value.toLocaleLowerCase());
-                  if (target.value.length < 4 || target.value > 63) {
+                  if (
+                    !target.value.includes("-") &&
+                    !target.value.includes(".") &&
+                    !target.value.includes("%") &&
+                    !target.value.includes("&") &&
+                    !target.value.includes("/") &&
+                    !target.value.includes("#")
+                  ) {
+                    setAccountError(
+                      "Account Should Contains Chars like (., -, /, &, #)"
+                    );
+                  } else if (
+                    target.value.split("")[target.value.length - 1] === "." ||
+                    target.value.split("")[target.value.length - 1] === "-" ||
+                    target.value.split("")[target.value.length - 1] === "/" ||
+                    target.value.split("")[target.value.length - 1] === "&" ||
+                    target.value.split("")[target.value.length - 1] === "#"
+                  ) {
+                    setAccountError(
+                      "Account name should have only letters, digits, or dashes."
+                    );
+                  } else if (target.value.length < 4 || target.value > 63) {
                     setAccountError(
                       "Your Account Name must be more than 4 characters and less than 63"
                     );
@@ -254,19 +275,21 @@ const UserInformationForm = (props) => {
                   lastName === "" ||
                   email === "" ||
                   phone === "" ||
-                  accountNameErrors !== null ||
+                  accountNameErrors ||
                   password !== generatedPassword ||
                   searchAccount[0][0] === accountName ||
-                  emailError !== null ||
-                  phoneError !== null
+                  emailError ||
+                  !phoneError
                 }
                 className={
                   firstName === "" ||
                   lastName === "" ||
                   email === "" ||
-                  accountNameErrors !== null ||
+                  accountNameErrors ||
                   searchAccount[0][0] === accountName ||
-                  password !== generatedPassword
+                  password !== generatedPassword ||
+                  emailError ||
+                  !phoneError
                     ? "btnSendDisabled ui button yellow"
                     : "btnSend ui button yellow"
                 }
