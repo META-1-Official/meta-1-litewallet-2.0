@@ -4,17 +4,22 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { QueryClient, QueryClientProvider } from "react-query";
 
-const WidgetDivs = document.querySelectorAll('.meta_one_widget')
+const WidgetDivs = document.querySelectorAll(".meta_one_widget");
 
-WidgetDivs.forEach(Div => {
+const client = new QueryClient();
+
+WidgetDivs.forEach((Div) => {
   ReactDOM.render(
     <React.StrictMode>
-      <App domElement={Div} />
+      <QueryClientProvider client={client}>
+        <App domElement={Div} />
+      </QueryClientProvider>
     </React.StrictMode>,
     Div
   );
-})
+});
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

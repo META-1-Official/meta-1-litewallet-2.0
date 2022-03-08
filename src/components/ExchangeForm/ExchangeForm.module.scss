@@ -1,11 +1,14 @@
 .mainBlock {
   margin: 1rem;
   padding: 2rem;
-  width: 72%;
+  width: 100%;
   background: #fff;
   border-radius: 4px;
   box-shadow: var(--boxShadowIndex);
   @media (max-width: 600px) {
+    width: 100%;
+  }
+  @media (max-width: 1366px) {
     width: 100%;
   }
 }
@@ -21,9 +24,9 @@ h2 {
   color: var(--textGold);
 }
 .button {
-  border-radius: 25px!important;
-  padding: 15px!important;
-  background: #fff!important;
+  border-radius: 25px !important;
+  padding: 15px !important;
+  background: #fff !important;
   border: 1px solid rgba(80, 83, 97, 0.44) !important;
 }
 .absoluteBottomBlock {
@@ -32,7 +35,7 @@ h2 {
   border-radius: 8px;
   background: #fff;
   box-shadow: var(--boxShadowIndex);
-  border: 1px solid rgba(34,36,38,.15);
+  border: 1px solid rgba(34, 36, 38, 0.15);
   margin: 3rem 0;
 }
 .centeredBlock {
@@ -51,7 +54,7 @@ h2 {
   justify-content: end;
   width: 40%;
   @media (max-width: 600px) {
-    flex-direction: column!important;
+    flex-direction: column !important;
     margin: 0 auto;
   }
 }
@@ -60,15 +63,15 @@ h2 {
   flex-direction: row;
   width: 40%;
   @media (max-width: 600px) {
-    flex-direction: column!important;
+    flex-direction: column !important;
     margin: 0 auto;
   }
 }
 .textBlockLeft {
   text-align: right;
-  margin: 1rem 0 ;
+  margin: 1rem 0;
   @media (max-width: 600px) {
-    text-align: center!important;
+    text-align: center !important;
   }
   h4 {
     margin: 0;
@@ -77,7 +80,7 @@ h2 {
 }
 .textBlockRight {
   text-align: left;
-  margin: 1rem 0 ;
+  margin: 1rem;
   h4 {
     margin: 0;
     color: var(--textGold);
@@ -92,7 +95,7 @@ h2 {
   height: 40px;
   border-radius: 20px;
   background: var(--gold);
-  padding: .75rem .9rem;
+  padding: 0.75rem 0.9rem;
 }
 .centeredBlockCrypt {
   width: 3.3rem;
@@ -121,19 +124,17 @@ h2 {
   width: 100%;
   padding: 1rem;
   box-shadow: var(--boxShadowIndex);
-  border-radius: 8px!important;
-  border: 1px solid rgba(34,36,38,.15);
+  border-radius: 8px !important;
+  border: 1px solid rgba(34, 36, 38, 0.15);
 }
 .inputDollars {
   background: rgba(255, 255, 255, 0);
   border: none;
-  box-shadow: none!important;
+  box-shadow: none !important;
   &:focus {
-    border: none!important;
+    border: none !important;
   }
   &:active {
-    border: none!important;
+    border: none !important;
   }
 }
-
-
