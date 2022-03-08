@@ -19,6 +19,17 @@
   margin: 1.5rem;
   border-radius: 4px;
 }
+.paperWalletStylesTH {
+  background: #fff;
+  box-shadow: 0 0 10px 6px rgba(0, 0, 0, 0.11);
+  width: 96%;
+  margin: 1.5rem;
+  border-radius: 4px;
+}
+
+.css-1pahdxg-control {
+  width: 100% !important;
+}
 .fullBlockWithAdapt {
   display: flex;
   flex-direction: column;
@@ -115,6 +126,21 @@ span.css-llftvd {
   }
   .paperWalletStyles {
     width: 88% !important;
+  }
+}
+
+@media (max-width: 1136px) {
+  .bottomAdaptBlock {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .paperWalletStyles {
+    width: 95%;
+  }
+
+  .blockInfoYourCrypto {
+    width: 100%;
   }
 }
 

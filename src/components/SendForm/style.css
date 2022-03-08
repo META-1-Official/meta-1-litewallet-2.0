@@ -67,3 +67,28 @@ input::-webkit-inner-spin-button {
     padding: 1rem 2rem 1rem 0.1rem !important;
   }
 }
+
+.justFlexAndDirect {
+  display: flex;
+  flex-direction: row;
+}
+
+.widthh100 {
+  width: 73%;
+}
+
+.bottomBlockAdapt {
+  width: 27%;
+}
+
+@media (max-width: 1366px) {
+  .widthh100 {
+    width: 100%;
+  }
+  .justFlexAndDirect {
+    flex-direction: column;
+  }
+  .bottomBlockAdapt {
+    width: 100%;
+  }
+}

@@ -56,7 +56,10 @@ const Settings = (props) => {
       let type = e.target?.files[0]?.name.split(".")[1];
       console.log(e.target?.files[0]);
       if (type === "png" || type === "jpeg" || type === "jpg") {
-        if (e.target?.files[0]?.size < 73400320) {
+        if (
+          e.target?.files[0]?.size > 70000 &&
+          e.target?.files[0]?.size < 1000000
+        ) {
           const formData = new FormData();
           formData.append("login", account);
           formData.append(
@@ -68,9 +71,11 @@ const Settings = (props) => {
               "Content-Type": "multipart/form-data",
             },
           });
+        } else {
+          alert("Invalid file size");
         }
       } else {
-        alert("Invalid file");
+        alert("Invalid file format");
       }
     } else {
       alert("Please select a file");

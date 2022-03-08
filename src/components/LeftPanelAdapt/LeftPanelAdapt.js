@@ -45,6 +45,8 @@ const LeftPanelAdapt = (props) => {
         style={{ marginTop: "1rem" }}
         onClick={portfolio ? onClickHomeHandler : null}
         className={styles.Li + " nav-item"}
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
       >
         <div className={styles.containerLi}>
           <div className={styles.circle}>
@@ -113,6 +115,8 @@ const LeftPanelAdapt = (props) => {
             className={"event dropdown-item"}
             onClick={portfolio ? onClickPortfolioHandler : null}
             style={{ cursor: "pointer", textAlign: "center", color: "#fff" }}
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
           >
             Show All Balance
           </li>
@@ -121,6 +125,8 @@ const LeftPanelAdapt = (props) => {
             className={"event dropdown-item"}
             onClick={portfolio ? onClickOrderTableHandler : null}
             style={{ cursor: "pointer", textAlign: "center", color: "#fff" }}
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
           >
             Open Orders
           </li>
@@ -129,6 +135,8 @@ const LeftPanelAdapt = (props) => {
             className={"event dropdown-item"}
             onClick={portfolio ? onClickPaperWalletHandler : null}
             style={{ cursor: "pointer", textAlign: "center", color: "#fff" }}
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
           >
             Paper Wallet
           </li>
@@ -137,6 +145,8 @@ const LeftPanelAdapt = (props) => {
       <li
         className={styles.Li + " nav-item"}
         onClick={portfolio ? onClickExchangeHandler : null}
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
       >
         <div className={styles.containerLi}>
           <div className={styles.circle}>
@@ -150,6 +160,8 @@ const LeftPanelAdapt = (props) => {
       <li
         className={styles.Li + " nav-item"}
         onClick={portfolio ? onClickHistoryHandler : null}
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
       >
         <div className={styles.containerLi}>
           <div className={styles.circle}>
@@ -163,6 +175,8 @@ const LeftPanelAdapt = (props) => {
       <li
         className={styles.Li + " nav-item"}
         onClick={portfolio ? onClickSettingsHandler : null}
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
       >
         <div className={styles.containerLi}>
           <div className={styles.circle}>

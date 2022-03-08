@@ -43,21 +43,6 @@ export const OrdersTable = (props) => {
 
   const { data, isLoading, error } = useQuery("history", getHistory);
 
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
   async function getHistory() {
     let rawData = await Meta1.history.get_account_history(
       localStorage.getItem("login"),
@@ -74,13 +59,10 @@ export const OrdersTable = (props) => {
           let exchangeAsset = await Meta1.db.get_objects([
             rawData[i]?.op[1]?.min_to_receive?.asset_id,
           ]);
+          console.log(exchangeAsset);
           let block = await Meta1.db.get_block(rawData[i].block_num);
-          let date = new Date(block.timestamp).getTime() / 1000 + 19800;
-          let newDate = new Date(date).toUTCString();
-          console.log(newDate);
-          // let splitedBlock = block.timestamp.split("T");
-          // let time = splitedBlock[1].split(":");
-          // let convertDate = splitedBlock[0].split("-");
+          let date = new Date(block.timestamp);
+          let splitedBlock = new Date(date).toUTCString().split(" ");
           newRawData.push({
             asset: {
               name: "",
@@ -88,12 +70,11 @@ export const OrdersTable = (props) => {
             },
             type: "Exchange",
             volume:
-              "0.00" + rawData[i].op[1]?.min_to_receive?.amount.toString(),
+              rawData[i].op[1]?.min_to_receive?.amount /
+              10 ** exchangeAsset[0].precision,
             status: "Done",
-            // time: `${convertDate[2]} ${months[Number(convertDate[1]) - 1]}, ${
-            //   convertDate[0]
-            // }, ${Number(time[0]) + 5}:${Number(time[1]) + 30}:${time[2]}
-            // `,
+            time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
+            `,
           });
         }
         // Send proccesing
@@ -102,19 +83,19 @@ export const OrdersTable = (props) => {
             rawData[i]?.op[1]?.amount.asset_id,
           ]);
           let block = await Meta1.db.get_block(rawData[i].block_num);
-          let splitedBlock = block.timestamp.split("T");
-          let convertDate = splitedBlock[0].split("-");
+          let date = new Date(block.timestamp);
+          let splitedBlock = new Date(date).toUTCString().split(" ");
           newRawData.push({
             asset: {
               name: "",
               abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
             },
             type: "Send",
-            volume: "0.00" + rawData[i].op[1]?.amount?.amount.toString(),
+            volume:
+              rawData[i].op[1]?.amount?.amount /
+              10 ** exchangeAsset[0].precision,
             status: "Done",
-            time: `${convertDate[2]} ${months[Number(convertDate[1])]}, ${
-              convertDate[0]
-            }, ${splitedBlock[1]}
+            time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
             `,
           });
         }
@@ -176,8 +157,8 @@ export const OrdersTable = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((el) => (
-              <StyledTableRow>
+            {data?.map((el, index) => (
+              <StyledTableRow key={index}>
                 <StyledTableCell
                   component="th"
                   style={{ width: "20%" }}
@@ -441,7 +422,10 @@ const PortfolioTable = (props) => {
               </StyledTableCell>
               <StyledTableCell align="left">
                 <button
-                  onClick={() => onAssetSelect(data?.name)}
+                  onClick={() => {
+                    onAssetSelect(data?.name);
+                    localStorage.setItem("location", "exchange");
+                  }}
                   className={"tradeButton"}
                 >
                   Trade
@@ -449,7 +433,10 @@ const PortfolioTable = (props) => {
               </StyledTableCell>
               <StyledTableCell align="left">
                 <button
-                  onClick={() => onSendClick(data?.name)}
+                  onClick={() => {
+                    onSendClick(data?.name);
+                    localStorage.setItem("location", "sendFunds");
+                  }}
                   className={data.qty > 0 ? "sendButton" : "sendButtonDisabled"}
                   disabled={data.qty <= 0}
                 >
@@ -459,7 +446,10 @@ const PortfolioTable = (props) => {
               <StyledTableCell align="left">
                 {data.name !== "EOS" && data.name !== "META1" && (
                   <button
-                    onClick={() => onDepositClick(data.name)}
+                    onClick={() => {
+                      onDepositClick(data.name);
+                      localStorage.setItem("location", "deposit");
+                    }}
                     className={"depositButton"}
                   >
                     Deposit

@@ -38,7 +38,8 @@ const RightSideHelpMenuSecondType = (props) => {
             },
             type: "Exchange",
             volume:
-              "0.00" + rawData[i].op[1]?.min_to_receive?.amount.toString(),
+              rawData[i].op[1]?.min_to_receive?.amount /
+              10 ** exchangeAsset[0].precision,
           });
         }
         // Send proccesing
@@ -51,7 +52,9 @@ const RightSideHelpMenuSecondType = (props) => {
               abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
             },
             type: "Send",
-            volume: "0.00" + rawData[i].op[1]?.amount?.amount.toString(),
+            volume:
+              rawData[i].op[1]?.amount?.amount /
+              10 ** exchangeAsset[0].precision,
           });
         }
       }
@@ -60,7 +63,7 @@ const RightSideHelpMenuSecondType = (props) => {
   }
 
   return (
-    <>
+    <div className={styles.adaptNeed}>
       <div className={styles.newCrypto}>
         <h5 style={{ fontWeight: "bold", fontSize: "1rem" }}>
           New Crypto on META1
@@ -173,9 +176,9 @@ const RightSideHelpMenuSecondType = (props) => {
                 <h6>{el.type}</h6>
               </div>
               <div
-                style={{ margin: "auto 0", width: "6rem", textAlign: "end" }}
+                style={{ margin: ".25rem 0", width: "6rem", textAlign: "end" }}
               >
-                <h6>{Number(el.volume)}</h6>
+                <p>{Number(el.volume)}</p>
               </div>
             </div>
           ))
@@ -187,7 +190,7 @@ const RightSideHelpMenuSecondType = (props) => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -195,31 +195,38 @@ function Application(props) {
         onClickHomeHandler={(e) => {
           e.preventDefault();
           setActiveScreen("login");
+          localStorage.setItem("location", "login");
         }}
         onClickPortfolioHandler={(e) => {
           e.preventDefault();
           setActiveScreen("wallet");
+          localStorage.setItem("location", "wallet");
         }}
         onClickExchangeHandler={(e) => {
           e.preventDefault();
           setTradeAsset("BTC");
           setActiveScreen("exchange");
+          localStorage.setItem("location", "exchange");
         }}
         onClickPaperWalletHandler={(e) => {
           e.preventDefault();
           setActiveScreen("paperWallet");
+          localStorage.setItem("location", "paperWallet");
         }}
         onClickOrderTableHandler={(e) => {
           e.preventDefault();
           setActiveScreen("orderTable");
+          localStorage.setItem("location", "orderTable");
         }}
         onClickSettingsHandler={(e) => {
           e.preventDefault();
           setActiveScreen("settings");
+          localStorage.setItem("location", "settings");
         }}
         onClickHistoryHandler={(e) => {
           e.preventDefault();
           setActiveScreen("orderTable");
+          localStorage.setItem("location", "orderTable");
         }}
         portfolio={portfolio}
         name={accountName}
@@ -232,31 +239,38 @@ function Application(props) {
           onClickHomeHandler={(e) => {
             e.preventDefault();
             setActiveScreen("login");
+            localStorage.setItem("location", "login");
           }}
           onClickPortfolioHandler={(e) => {
             e.preventDefault();
             setActiveScreen("wallet");
+            localStorage.setItem("location", "wallet");
           }}
           onClickExchangeHandler={(e) => {
             e.preventDefault();
             setTradeAsset("BTC");
             setActiveScreen("exchange");
+            localStorage.setItem("location", "exchange");
           }}
           onClickPaperWalletHandler={(e) => {
             e.preventDefault();
             setActiveScreen("paperWallet");
+            localStorage.setItem("location", "paperWallet");
           }}
           onClickOrderTableHandler={(e) => {
             e.preventDefault();
             setActiveScreen("orderTable");
+            localStorage.setItem("location", "orderTable");
           }}
           onClickSettingsHandler={(e) => {
             e.preventDefault();
             setActiveScreen("settings");
+            localStorage.setItem("location", "settings");
           }}
           onClickHistoryHandler={(e) => {
             e.preventDefault();
             setActiveScreen("orderTable");
+            localStorage.setItem("location", "orderTable");
           }}
           portfolio={portfolio}
           name={accountName}
@@ -278,11 +292,13 @@ function Application(props) {
                     e.preventDefault();
                     setTradeAsset("USDT");
                     setActiveScreen("exchange");
+                    localStorage.setItem("location", "exchange");
                   }}
                   onClickExchangeEOSHandler={(e) => {
                     e.preventDefault();
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
+                    localStorage.setItem("location", "exchange");
                   }}
                   portfolio={portfolio}
                 />
@@ -608,14 +624,8 @@ function Application(props) {
                         <strong>Transfer History</strong>
                       </h5>
                     </div>
-                    <div
-                      className={"justFlexAndDirect"}
-                      style={{ display: "flex", flexDirection: "row" }}
-                    >
-                      <div
-                        className={"paperWalletStyles"}
-                        style={{ width: "73%", padding: "0" }}
-                      >
+                    <div className={"justFlexAndDirect"}>
+                      <div className={"paperWalletStylesTH"}>
                         <OrdersTable
                           data={orders}
                           column={null}
@@ -623,10 +633,7 @@ function Application(props) {
                           assets={assets}
                         />
                       </div>
-                      <div
-                        className={"bottomAdaptBlock"}
-                        style={{ width: "27%" }}
-                      >
+                      <div className={"bottomAdaptBlock"}>
                         <RightSideHelpMenuSecondType
                           onClickExchangeUSDTHandler={(e) => {
                             e.preventDefault();

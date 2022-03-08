@@ -21,6 +21,9 @@ ul {
     cursor: pointer;
     transition: background 0.5s;
     &:hover {
+      .textSpan {
+        color: var(--textBrown) !important;
+      }
       color: var(--textBrown) !important;
       background: var(--gold);
     }

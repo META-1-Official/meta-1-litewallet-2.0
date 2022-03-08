@@ -1,11 +1,14 @@
 .mainBlock {
   margin: 1rem;
   padding: 2rem;
-  width: 72%;
+  width: 100%;
   background: #fff;
   border-radius: 4px;
   box-shadow: var(--boxShadowIndex);
   @media (max-width: 600px) {
+    width: 100%;
+  }
+  @media (max-width: 1366px) {
     width: 100%;
   }
 }

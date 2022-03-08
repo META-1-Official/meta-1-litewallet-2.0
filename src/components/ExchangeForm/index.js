@@ -150,6 +150,7 @@ export default function ExchangeForm(props) {
   };
 
   const handleCalculateSelectedTo = () => {
+    console.log(pair);
     if (pair == null) return;
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
       setInvalidEx(true);
@@ -280,14 +281,12 @@ export default function ExchangeForm(props) {
         setTradeError(buyResult.error);
       } else {
         setModalOpened(true);
-        props.onSuccessTrade();
       }
 
       setTradeInProgress(false);
     } catch (e) {
       console.log(e);
       setTradeInProgress(false);
-      setModalOpened(true);
     }
   };
 
@@ -420,10 +419,7 @@ export default function ExchangeForm(props) {
             </Button>
           </Modal.Actions>
         </Modal>
-        <div
-          className={"adaptForMain"}
-          style={{ display: "flex", flexDirection: "row" }}
-        >
+        <div className={"adaptForMainExchange"}>
           <div className={styles.mainBlock}>
             <div className={styles.mainBlockExchange}>
               <div className={styles.leftBlockExchange}>
@@ -464,7 +460,12 @@ export default function ExchangeForm(props) {
                                   value={selectedFromAmount}
                                   type={"number"}
                                   onChange={(e) => {
-                                    if (e.target.value.length < 11) {
+                                    if (
+                                      e.target.value.length < 11 &&
+                                      /[-+]?[0-9]*\.?[0-9]*/.test(
+                                        e.target.value
+                                      )
+                                    ) {
                                       setSelectedFromAmount(
                                         e.target.value || ""
                                       );
@@ -480,6 +481,9 @@ export default function ExchangeForm(props) {
                                   inputProps={ariaLabel}
                                   id={"inputAmount"}
                                   disabled={invalidEx}
+                                  min="0"
+                                  inputmode="numeric"
+                                  pattern="\d*"
                                 />
                                 <div
                                   style={{
@@ -494,10 +498,18 @@ export default function ExchangeForm(props) {
                                   <input
                                     className={styles.inputDollars}
                                     onChange={(e) => {
-                                      if (e.target.value.length < 11) {
+                                      if (
+                                        e.target.value.length < 11 &&
+                                        /[-+]?[0-9]*\.?[0-9]*/.test(
+                                          e.target.value
+                                        )
+                                      ) {
                                         calculateCryptoPriceHandler(e);
                                       }
                                     }}
+                                    min="0"
+                                    inputmode="numeric"
+                                    pattern="\d*"
                                     type={"number"}
                                     placeholder={`Amount ${
                                       localStorage
@@ -772,7 +784,10 @@ export default function ExchangeForm(props) {
                     selectedToAmount == null ||
                     selectedToAmount == 0 ||
                     selectedToAmount === 0.0 ||
-                    selectedFrom.balance === 0
+                    selectedFrom.balance === 0 ||
+                    selectedFrom.balance < selectedFromAmount ||
+                    !selectedFromAmount ||
+                    !selectedToAmount
                   }
                   onClick={prepareTrade}
                   color="yellow"
@@ -783,7 +798,7 @@ export default function ExchangeForm(props) {
               )}
             </div>
           </div>
-          <div className={"flexNeed"} style={{ width: "28%" }}>
+          <div className={"flexNeed"}>
             <RightSideHelpMenuSecondType
               onClickExchangeEOSHandler={() => {
                 setSelectedFrom({

@@ -10,6 +10,7 @@ import Input from "@mui/material/Input";
 import { helpSendTo, helpAmount, helpMax1, helpSwap } from "../../config/help";
 import "./style.css";
 import InputAdornment from "@mui/material/InputAdornment";
+import Meta1 from "meta1dex";
 
 const FEE = 0.0035;
 
@@ -60,6 +61,10 @@ const SendForm = React.memo((props) => {
           `https://api.binance.com/api/v3/ticker/24hr?symbol=${asset}USDT`
         );
         await setPriceForAsset((await response.json()).lastPrice);
+      } else if (asset === "META1") {
+        Meta1.ticker("USDT", "META1").then((res) =>
+          setPriceForAsset(Number(res.latest).toFixed(2))
+        );
       } else {
         setPriceForAsset(1);
       }
@@ -81,6 +86,7 @@ const SendForm = React.memo((props) => {
 
   useEffect(() => {
     console.log(portfolio);
+    console.log(feeAsset);
     if (parseFloat(feeAsset?.qty) < FEE && feeAsset) {
       setError("Not enough FEE");
     }
@@ -147,6 +153,7 @@ const SendForm = React.memo((props) => {
   };
   const calculateUsdPriceHandler = (e) => {
     let priceForOne = Number(e.target.value) * priceForAsset;
+    console.log(priceForAsset);
     setBlockPrice(
       Number(priceForOne).toFixed(precisionAssets[asset]) *
         Number(localStorage.getItem("currency").split(" ")[2])
@@ -213,7 +220,13 @@ const SendForm = React.memo((props) => {
       asset,
     });
     if (result.error) {
-      setError("Invalid Receiver");
+      if (result.error === "Invalid credentials") {
+        setError(result.error);
+      } else if (asset === "META1" && feeAsset.qty === amount) {
+        setError("You don't have enough cryptocurrency to pay FEE");
+      } else {
+        setError("Invalid Receiver");
+      }
       setRepeat(true);
     } else {
       setModalOpened(true);
@@ -333,11 +346,8 @@ const SendForm = React.memo((props) => {
             </Button>
           </Modal.Actions>
         </Modal>
-        <div
-          className={"justFlexAndDirect"}
-          style={{ display: "flex", flexDirection: "row" }}
-        >
-          <div className={"widthh100"} style={{ width: "73%" }}>
+        <div className={"justFlexAndDirect"}>
+          <div className={"widthh100"}>
             <div className={styles.containerMain}>
               <div className={styles.mainBlock}>
                 <div className={styles.leftBlockSend}>
@@ -367,7 +377,7 @@ const SendForm = React.memo((props) => {
                     <Input
                       id={"inputForAmount"}
                       type="number"
-                      value={Number(amount) ? amount : ""}
+                      value={amount ? amount : ""}
                       endAdornment={
                         <InputAdornment position="end">
                           {assetData.label}
@@ -375,12 +385,10 @@ const SendForm = React.memo((props) => {
                       }
                       onChange={(e) => {
                         const amountOut = e.target.value;
-                        if (amountOut.includes(".")) {
-                          const number = amountOut.split(".");
-                          if (number[1].toString().length < Number(pre) + 1) {
-                            setAmount(amountOut);
-                          }
-                        } else {
+                        if (
+                          e.target.value.length < 11 &&
+                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                        ) {
                           setAmount(amountOut);
                         }
                         calculateUsdPriceHandler(e);
@@ -400,6 +408,9 @@ const SendForm = React.memo((props) => {
                       <input
                         type="number"
                         className={styles.inputDollars}
+                        min="0"
+                        inputmode="numeric"
+                        pattern="\d*"
                         onChange={(e) => {
                           calculateCryptoPriceHandler(e);
                         }}
@@ -417,14 +428,22 @@ const SendForm = React.memo((props) => {
                         display: "flex",
                         flexDirection: "row",
                         justifyContent: "space-between",
+                        position: "relative",
                       }}
                     >
                       <span style={{ color: "#505361", paddingTop: "2rem" }}>
                         FEE: 0.00035 META1
                       </span>
-                      <div className="max-button-new">
+                      <div
+                        className="max-button-new"
+                        style={{
+                          position: "absolute",
+                          right: "0",
+                          bottom: "-3px",
+                        }}
+                      >
                         <Popup
-                          content={`Click this button to sell all your ${chosenCrypt}`}
+                          content={`Click this button to sell all your ${assetData.label}`}
                           position="bottom center"
                           trigger={
                             <Button
@@ -450,6 +469,9 @@ const SendForm = React.memo((props) => {
                       id="reddit-input pass"
                       variant="filled"
                       style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                      min="0"
+                      inputmode="numeric"
+                      pattern="[0-9]*"
                     />
                   </Grid.Column>
                 </div>
@@ -566,7 +588,7 @@ const SendForm = React.memo((props) => {
               )}
             </div>
           </div>
-          <div className={"bottomBlockAdapt"} style={{ width: "27%" }}>
+          <div className={"bottomBlockAdapt"}>
             <RightSideHelpMenuSecondType
               onClickExchangeEOSHandler={onClickExchangeEOSHandler}
               onClickExchangeUSDTHandler={onClickExchangeUSDTHandler}

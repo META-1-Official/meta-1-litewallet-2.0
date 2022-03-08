@@ -279,7 +279,10 @@ const UserInformationForm = (props) => {
                   password !== generatedPassword ||
                   searchAccount[0][0] === accountName ||
                   emailError ||
-                  !phoneError
+                  phoneError ||
+                  firstNameError ||
+                  lastNameError ||
+                  accountError
                 }
                 className={
                   firstName === "" ||
@@ -289,7 +292,10 @@ const UserInformationForm = (props) => {
                   searchAccount[0][0] === accountName ||
                   password !== generatedPassword ||
                   emailError ||
-                  !phoneError
+                  phoneError ||
+                  firstNameError ||
+                  lastNameError ||
+                  accountError
                     ? "btnSendDisabled ui button yellow"
                     : "btnSend ui button yellow"
                 }
