@@ -12,6 +12,20 @@
     width: 100%;
   }
 }
+.leftBlockExchange,
+.rightBlockExchange {
+  width: 40% !important;
+  @media (max-width: 1136px) {
+    width: 100% !important;
+    &:focus {
+      width: 100% !important;
+    }
+    &:active {
+      width: 100% !important;
+    }
+  }
+}
+
 .mainBlockExchange {
   display: flex;
   flex-direction: row;

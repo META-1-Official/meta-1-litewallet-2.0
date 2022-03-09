@@ -35,7 +35,7 @@ const UserInformationForm = (props) => {
   const [phone, setPhone] = useState(props.phone || "");
   const [password, setPassword] = useState("");
   const [searchAccount, setSearchAccount] = useState([["PM", ""]]);
-  const [accountError, setAccountError] = useState(null);
+  const [touchedAccountName, setTouchedAccountName] = useState(false);
   const [phoneError, setPhoneError] = useState(null);
   const [emailError, setEmailError] = useState(null);
   const [firstNameError, setFirstNameError] = useState(null);
@@ -205,37 +205,12 @@ const UserInformationForm = (props) => {
                 placeholder="Account Name"
                 onChange={({ target }) => {
                   setAccountName(target.value.toLocaleLowerCase());
-                  if (
-                    !target.value.includes("-") &&
-                    !target.value.includes(".") &&
-                    !target.value.includes("%") &&
-                    !target.value.includes("&") &&
-                    !target.value.includes("/") &&
-                    !target.value.includes("#")
-                  ) {
-                    setAccountError(
-                      "Account Should Contains Chars like (., -, /, &, #)"
-                    );
-                  } else if (
-                    target.value.split("")[target.value.length - 1] === "." ||
-                    target.value.split("")[target.value.length - 1] === "-" ||
-                    target.value.split("")[target.value.length - 1] === "/" ||
-                    target.value.split("")[target.value.length - 1] === "&" ||
-                    target.value.split("")[target.value.length - 1] === "#"
-                  ) {
-                    setAccountError(
-                      "Account name should have only letters, digits, or dashes."
-                    );
-                  } else if (target.value.length < 4 || target.value > 63) {
-                    setAccountError(
-                      "Your Account Name must be more than 4 characters and less than 63"
-                    );
-                  } else {
-                    setAccountError(null);
-                  }
+                  setTouchedAccountName(true);
                 }}
               />
-              {accountError && <p style={{ color: "red" }}> {accountError}</p>}
+              {accountNameErrors?.content && touchedAccountName ? (
+                <p style={{ color: "red" }}> {accountNameErrors?.content}</p>
+              ) : null}
             </Form.Field>
 
             <Form.Field>
@@ -281,8 +256,7 @@ const UserInformationForm = (props) => {
                   emailError ||
                   phoneError ||
                   firstNameError ||
-                  lastNameError ||
-                  accountError
+                  lastNameError
                 }
                 className={
                   firstName === "" ||
@@ -294,8 +268,7 @@ const UserInformationForm = (props) => {
                   emailError ||
                   phoneError ||
                   firstNameError ||
-                  lastNameError ||
-                  accountError
+                  lastNameError
                     ? "btnSendDisabled ui button yellow"
                     : "btnSend ui button yellow"
                 }

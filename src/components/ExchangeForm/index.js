@@ -49,19 +49,22 @@ export default function ExchangeForm(props) {
   const [priceForAsset, setPriceForAsset] = useState(0);
   const [blockPrice, setBlockPrice] = useState();
 
-  useEffect(async () => {
-    if (asset !== "META1" && asset !== "USDT") {
-      const response = await fetch(
-        `https://api.binance.com/api/v3/ticker/24hr?symbol=${asset}USDT`
-      );
-      await setPriceForAsset((await response.json()).lastPrice);
-    } else if (asset === "USDT") {
-      setPriceForAsset(1);
-    } else {
-      Meta1.ticker("USDT", "META1").then((res) =>
-        setPriceForAsset(Number(res.latest).toFixed(2))
-      );
+  useEffect(() => {
+    async function getPriceForAsset() {
+      if (asset !== "META1" && asset !== "USDT") {
+        const response = await fetch(
+          `https://api.binance.com/api/v3/ticker/24hr?symbol=${asset}USDT`
+        );
+        setPriceForAsset((await response.json()).lastPrice);
+      } else if (asset === "USDT") {
+        setPriceForAsset(1);
+      } else {
+        Meta1.ticker("USDT", "META1").then((res) =>
+          setPriceForAsset(Number(res.latest).toFixed(2))
+        );
+      }
     }
+    getPriceForAsset();
   }, [asset, portfolio]);
 
   useEffect(() => {
@@ -128,12 +131,29 @@ export default function ExchangeForm(props) {
     }
   }, []);
 
+  useEffect(() => {
+    if (pair == null) return;
+    if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
+      setInvalidEx(true);
+      setSelectedFromAmount(0);
+      setBlockPrice("");
+      return;
+    }
+    setInvalidEx(false);
+  }, [pair]);
+
   const calculateUsdPriceHandler = (e) => {
     let priceForOne = (Number(e.target.value) * priceForAsset).toFixed(2);
     setBlockPrice(
       priceForOne * Number(localStorage.getItem("currency").split(" ")[2])
     );
   };
+
+  useEffect(() => {
+    setInterval(() => {
+      console.log(pair);
+    }, 5000);
+  }, []);
 
   const calculateCryptoPriceHandler = (e) => {
     setBlockPrice(e.target.value);
@@ -150,7 +170,6 @@ export default function ExchangeForm(props) {
   };
 
   const handleCalculateSelectedTo = () => {
-    console.log(pair);
     if (pair == null) return;
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
       setInvalidEx(true);
@@ -433,6 +452,8 @@ export default function ExchangeForm(props) {
                             console.log(val);
                             setSelectedFrom(val);
                             changeAssetHandler(val.value);
+                            setSelectedFromAmount("");
+                            setSelectedToAmount("");
                             setBlockPrice("");
                             setInvalidEx(false);
                           }}
@@ -516,6 +537,10 @@ export default function ExchangeForm(props) {
                                         .getItem("currency")
                                         .split(" ")[1]
                                     }`}
+                                    disabled={invalidEx}
+                                    style={
+                                      invalidEx ? { opacity: "0.5" } : null
+                                    }
                                     value={!invalidEx ? blockPrice : ""}
                                   />
                                   <span>
@@ -565,8 +590,8 @@ export default function ExchangeForm(props) {
                       style={{ width: "3rem", height: "3rem" }}
                       onClick={(e) => {
                         changeAssetHandlerSwap(selectedTo);
-                        setSelectedToAmount(0);
-                        setSelectedFromAmount(0);
+                        setSelectedToAmount("");
+                        setSelectedFromAmount("");
                         setBlockPrice("");
                         swapAssets(e);
                       }}
@@ -596,6 +621,10 @@ export default function ExchangeForm(props) {
                         <ExchangeSelect
                           onChange={(val) => {
                             setSelectedTo(val);
+                            setSelectedFromAmount("");
+                            setSelectedToAmount("");
+                            setBlockPrice("");
+                            setInvalidEx(false);
                           }}
                           options={getAssets(selectedFrom.value)}
                           selectedValue={selectedTo}
@@ -787,7 +816,8 @@ export default function ExchangeForm(props) {
                     selectedFrom.balance === 0 ||
                     selectedFrom.balance < selectedFromAmount ||
                     !selectedFromAmount ||
-                    !selectedToAmount
+                    !selectedToAmount ||
+                    blockPrice == 0
                   }
                   onClick={prepareTrade}
                   color="yellow"

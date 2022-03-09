@@ -105,12 +105,6 @@ export const OrdersTable = (props) => {
     return newRawData;
   }
 
-  useEffect(() => {
-    setTimeout(() => {
-      document.getElementById("mainBlock").style.height = "92vh";
-    }, 50);
-  }, []);
-
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.white,

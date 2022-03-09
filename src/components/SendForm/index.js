@@ -51,8 +51,8 @@ const SendForm = React.memo((props) => {
   const [options, setOptions] = useState([]);
   const [priceForAsset, setPriceForAsset] = useState(0);
   const [blockPrice, setBlockPrice] = useState(0);
-  const [modalErrorOpened, setModalErrorOpened] = useState(false);
   const [precisionAssets, setPrecisionAssets] = useState();
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     async function getData() {
@@ -469,9 +469,8 @@ const SendForm = React.memo((props) => {
                       id="reddit-input pass"
                       variant="filled"
                       style={{ marginBottom: "1rem", borderRadius: "8px" }}
-                      min="0"
-                      inputmode="numeric"
-                      pattern="[0-9]*"
+                      value={password}
+                      onChange={({ target }) => setPassword(target.value)}
                     />
                   </Grid.Column>
                 </div>
@@ -539,6 +538,9 @@ const SendForm = React.memo((props) => {
                           marginTop: "1rem",
                           boxShadow: "0 2px 10px 0 rgba(0, 0, 0, .11)",
                         }}
+                        disabled={
+                          !accountChecked || amount === "" || password === ""
+                        }
                         onClick={(e) => {
                           e.preventDefault();
                           if (Number(amount) > Number(amountHold)) {

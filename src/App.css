@@ -26,10 +26,6 @@
   margin: 1.5rem;
   border-radius: 4px;
 }
-
-.css-1pahdxg-control {
-  width: 100% !important;
-}
 .fullBlockWithAdapt {
   display: flex;
   flex-direction: column;
@@ -80,6 +76,21 @@ span.css-llftvd {
   padding: 1rem;
   border-radius: 4px;
   width: 73%;
+}
+
+.css-yk16xz-control,
+.css-1pahdxg-control {
+  width: 100% !important;
+}
+
+.css-1pahdxg-control:active,
+.css-yk16xz-control:active {
+  width: 100% !important;
+}
+
+.css-1pahdxg-control:focus,
+.css-yk16xz-control:focus {
+  width: 100% !important;
 }
 
 .meta_one_widget .App-header {
@@ -141,6 +152,16 @@ span.css-llftvd {
 
   .blockInfoYourCrypto {
     width: 100%;
+  }
+
+  .css-1pahdxg-control {
+    width: 100% !important;
+  }
+  .css-1pahdxg-control:focus {
+    width: 100% !important;
+  }
+  .css-1pahdxg-control:active {
+    width: 100% !important;
   }
 }
 
