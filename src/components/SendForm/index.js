@@ -53,6 +53,7 @@ const SendForm = React.memo((props) => {
   const [blockPrice, setBlockPrice] = useState(0);
   const [precisionAssets, setPrecisionAssets] = useState();
   const [password, setPassword] = useState("");
+  const [clickedInputs, setClickedInputs] = useState(false);
 
   useEffect(() => {
     async function getData() {
@@ -111,6 +112,14 @@ const SendForm = React.memo((props) => {
       }
     }, 50);
   }, []);
+
+  useEffect(() => {
+    if (Number(amount) <= 0 && clickedInputs) {
+      setError("The amount must be greater than 0");
+    } else {
+      setError("");
+    }
+  }, [amount]);
 
   const RedditTextField = React.memo(
     styled((props) => (
@@ -378,6 +387,7 @@ const SendForm = React.memo((props) => {
                       id={"inputForAmount"}
                       type="number"
                       value={amount ? amount : ""}
+                      min="0"
                       endAdornment={
                         <InputAdornment position="end">
                           {assetData.label}
@@ -387,11 +397,13 @@ const SendForm = React.memo((props) => {
                         const amountOut = e.target.value;
                         if (
                           e.target.value.length < 11 &&
-                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value) &&
+                          Number(e.target.value) >= 0
                         ) {
+                          setClickedInputs(true);
                           setAmount(amountOut);
+                          calculateUsdPriceHandler(e);
                         }
-                        calculateUsdPriceHandler(e);
                       }}
                       placeholder={balance}
                     />
@@ -412,7 +424,10 @@ const SendForm = React.memo((props) => {
                         inputmode="numeric"
                         pattern="\d*"
                         onChange={(e) => {
-                          calculateCryptoPriceHandler(e);
+                          if (Number(e.target.value) >= 0) {
+                            setClickedInputs(true);
+                            calculateCryptoPriceHandler(e);
+                          }
                         }}
                         placeholder={`Amount ${
                           localStorage.getItem("currency").split(" ")[1]
@@ -444,7 +459,7 @@ const SendForm = React.memo((props) => {
                       >
                         <Popup
                           content={`Click this button to sell all your ${assetData.label}`}
-                          position="bottom center"
+                          position={isMobile ? "bottom left" : "bottom center"}
                           trigger={
                             <Button
                               className={"btn"}

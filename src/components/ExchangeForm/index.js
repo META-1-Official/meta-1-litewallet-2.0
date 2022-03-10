@@ -48,6 +48,8 @@ export default function ExchangeForm(props) {
   const [tradeInProgress, setTradeInProgress] = useState(false);
   const [priceForAsset, setPriceForAsset] = useState(0);
   const [blockPrice, setBlockPrice] = useState();
+  const [clickedInputs, setClickedInputs] = useState(false);
+  const [error, setError] = useState();
 
   useEffect(() => {
     async function getPriceForAsset() {
@@ -66,6 +68,22 @@ export default function ExchangeForm(props) {
     }
     getPriceForAsset();
   }, [asset, portfolio]);
+
+  useEffect(() => {
+    if (Number(selectedFromAmount) <= 0 && clickedInputs) {
+      setError("The amount must be greater than 0.003 USD");
+    } else {
+      setError("");
+    }
+    if (
+      Number(blockPrice) <
+      0.003 * Number(localStorage.getItem("currency").split(" ")[2])
+    ) {
+      setError("The amount must be greater than 0.003 USD");
+    } else {
+      setError("");
+    }
+  }, [selectedFromAmount]);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
@@ -485,13 +503,15 @@ export default function ExchangeForm(props) {
                                       e.target.value.length < 11 &&
                                       /[-+]?[0-9]*\.?[0-9]*/.test(
                                         e.target.value
-                                      )
+                                      ) &&
+                                      Number(e.target.value) >= 0
                                     ) {
                                       setSelectedFromAmount(
                                         e.target.value || ""
                                       );
                                       handleCalculateSelectedTo();
                                       calculateUsdPriceHandler(e);
+                                      setClickedInputs(true);
                                     }
                                   }}
                                   endAdornment={
@@ -523,9 +543,11 @@ export default function ExchangeForm(props) {
                                         e.target.value.length < 11 &&
                                         /[-+]?[0-9]*\.?[0-9]*/.test(
                                           e.target.value
-                                        )
+                                        ) &&
+                                        Number(e.target.value) >= 0
                                       ) {
                                         calculateCryptoPriceHandler(e);
+                                        setClickedInputs(true);
                                       }
                                     }}
                                     min="0"
@@ -780,6 +802,11 @@ export default function ExchangeForm(props) {
                 </div>
               </div>
             </div>
+            {error && (
+              <Grid.Row centered style={{ marginBottom: "1rem" }}>
+                <div style={{ color: "red", textAlign: "center" }}>{error}</div>
+              </Grid.Row>
+            )}
             <div className="hidden-pass ui input">
               {passwordShouldBeProvided && (
                 <>
@@ -817,7 +844,8 @@ export default function ExchangeForm(props) {
                     selectedFrom.balance < selectedFromAmount ||
                     !selectedFromAmount ||
                     !selectedToAmount ||
-                    blockPrice == 0
+                    blockPrice == 0 ||
+                    error
                   }
                   onClick={prepareTrade}
                   color="yellow"

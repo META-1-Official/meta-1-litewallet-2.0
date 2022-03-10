@@ -62,6 +62,8 @@ const RightSideHelpMenuSecondType = (props) => {
     return newRawData;
   }
 
+  if (error) return { error };
+
   return (
     <div className={styles.adaptNeed}>
       <div className={styles.newCrypto}>

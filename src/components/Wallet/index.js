@@ -258,13 +258,17 @@ const PortfolioTable = (props) => {
   }));
 
   function getDatas() {
-    Meta1.ticker("USDT", "BTC").then((res) => setBtc(res));
-    Meta1.ticker("USDT", "BNB").then((res) => setBnb(res));
-    Meta1.ticker("USDT", "LTC").then((res) => setLtc(res));
-    Meta1.ticker("USDT", "XLM").then((res) => setXlm(res));
-    Meta1.ticker("USDT", "ETH").then((res) => setEth(res));
-    Meta1.ticker("USDT", "EOS").then((res) => setEos(res));
-    Meta1.ticker("USDT", "META1").then((res) => setMeta1(res));
+    try {
+      Meta1.ticker("USDT", "BTC").then((res) => setBtc(res));
+      Meta1.ticker("USDT", "BNB").then((res) => setBnb(res));
+      Meta1.ticker("USDT", "LTC").then((res) => setLtc(res));
+      Meta1.ticker("USDT", "XLM").then((res) => setXlm(res));
+      Meta1.ticker("USDT", "ETH").then((res) => setEth(res));
+      Meta1.ticker("USDT", "EOS").then((res) => setEos(res));
+      Meta1.ticker("USDT", "META1").then((res) => setMeta1(res));
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   useEffect(() => {
