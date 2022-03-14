@@ -56,9 +56,7 @@ export default function SignUpForm(props) {
       localStorage.setItem("login", accountName);
       window.location.reload();
       onRegistration(accountName, password, email);
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   };
 
   const stepForm =

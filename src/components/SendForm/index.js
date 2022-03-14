@@ -79,15 +79,12 @@ const SendForm = React.memo((props) => {
       for (let i = 0; i < assets.length; i++) {
         preObj[assets[i].symbol] = assets[i].precision;
       }
-      console.log(preObj);
       setPrecisionAssets(preObj);
     }
     filterPrec();
   }, [assets]);
 
   useEffect(() => {
-    console.log(portfolio);
-    console.log(feeAsset);
     if (parseFloat(feeAsset?.qty) < FEE && feeAsset) {
       setError("Not enough FEE");
     }
@@ -116,6 +113,8 @@ const SendForm = React.memo((props) => {
   useEffect(() => {
     if (Number(amount) <= 0 && clickedInputs) {
       setError("The amount must be greater than 0");
+    } else if (Number(amount) > Number(balance)) {
+      setError("You don't have enough crypto");
     } else {
       setError("");
     }
@@ -162,7 +161,6 @@ const SendForm = React.memo((props) => {
   };
   const calculateUsdPriceHandler = (e) => {
     let priceForOne = Number(e.target.value) * priceForAsset;
-    console.log(priceForAsset);
     setBlockPrice(
       Number(priceForOne).toFixed(precisionAssets[asset]) *
         Number(localStorage.getItem("currency").split(" ")[2])
@@ -199,9 +197,9 @@ const SendForm = React.memo((props) => {
           setError("Can't transfer to self");
         }
       } catch (e) {
-        console.log(e, "e");
         setAccountChecked(false);
         setAccountIsLoading(false);
+        setError("Invalid receiver");
       }
     }
 
@@ -599,9 +597,11 @@ const SendForm = React.memo((props) => {
               {inProgress && <MetaLoader size={"small"} />}
 
               {error && (
-                <Grid.Row>
-                  <div style={{ color: "red" }}>{error}</div>
-                </Grid.Row>
+                <Grid>
+                  <Grid.Row centered>
+                    <h5 style={{ color: "red" }}>{error}</h5>
+                  </Grid.Row>
+                </Grid>
               )}
             </div>
           </div>

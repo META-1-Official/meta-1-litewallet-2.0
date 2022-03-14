@@ -11,7 +11,6 @@ const MetaLoader = (props) => {
     largeMobile: {
       width: "200px",
       height: "250px",
-      margin: "50% auto",
       display: "block",
     },
     small: {
@@ -29,7 +28,25 @@ const MetaLoader = (props) => {
   };
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div
+      style={
+        size === "small"
+          ? {
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }
+          : {
+              width: "100%",
+              height: "100vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }
+      }
+    >
       <img
         style={
           size === "large" && isMobile

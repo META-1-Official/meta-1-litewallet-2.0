@@ -8,7 +8,9 @@ import { getAsset } from "../Wallet/cryptoChooser";
 const RightSideHelpMenuSecondType = (props) => {
   const { onClickExchangeEOSHandler, onClickExchangeUSDTHandler } = props;
 
-  const { data, isLoading, error } = useQuery("historySideBar", getHistory);
+  const { data, isLoading, error } = useQuery("historySideBar", getHistory, {
+    refetchInterval: 3000,
+  });
 
   const DateOfStartEOS = 1645998629;
   const DateOfStartUSDT = 1646085029;
@@ -61,8 +63,6 @@ const RightSideHelpMenuSecondType = (props) => {
     }
     return newRawData;
   }
-
-  if (error) return { error };
 
   return (
     <div className={styles.adaptNeed}>

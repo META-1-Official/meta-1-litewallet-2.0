@@ -3,7 +3,6 @@ import TradeWithPassword from "./lib/TradeWithPassword";
 import SendWithPassword from "./lib/SendWithPassword";
 import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
-import linkAccount from "./lib/linkAccount";
 import { getCryptosChange } from "./API/API";
 import React, { useState, useEffect } from "react";
 import { Menu } from "semantic-ui-react";
@@ -32,17 +31,12 @@ import env from "react-dotenv";
 
 window.Meta1 = Meta1;
 function Application(props) {
-  const { metaUrl, linkAccountUrl } = props;
+  const { metaUrl } = props;
   const domAccount =
     props.account !== null &&
     props.account !== undefined &&
     props.account.length > 0
       ? props.account
-      : null;
-
-  const domEmail =
-    props.email !== null && props.email !== undefined && props.email.length > 0
-      ? props.email
       : null;
 
   if (domAccount) window.localStorage.setItem("account", domAccount);
@@ -75,18 +69,16 @@ function Application(props) {
 
   useEffect(() => {
     if (login !== null) {
-      console.log(login);
       onLogin(login);
     }
   }, []);
 
   const onLogin = async (login, clicked = false) => {
     setLoginError(null);
-    let res = await linkAccount(domEmail, login, linkAccountUrl);
     setAccountName(login);
     await getAvatarFromBack(login);
     localStorage.setItem("login", login);
-    if (res && clicked) {
+    if (clicked) {
       setLoginError(true);
     }
   };
@@ -143,7 +135,6 @@ function Application(props) {
           setActiveScreen("login");
         } else {
           setActiveScreen("wallet");
-          domEmail && linkAccount(domEmail, accountName, linkAccountUrl);
           setPortfolioReceiver(
             new Portfolio({
               metaApi: Meta1,
@@ -181,7 +172,6 @@ function Application(props) {
     localStorage.setItem("login", acc);
     onLogin(acc);
     setCredentials(acc, pass);
-    linkAccount(domEmail || regEmail, acc);
     setActiveScreen("wallet");
   };
 

@@ -23,7 +23,6 @@ export default function PaperWalletLogin({ portfolioReceiver, accountName }) {
           await portfolioReceiver.fetch(debouncedAccount);
           setAccountChecked(true);
         } catch (e) {
-          console.log(e, "e");
           setAccountChecked(false);
         }
       }
@@ -75,7 +74,6 @@ export default function PaperWalletLogin({ portfolioReceiver, accountName }) {
         privateKey
       );
     } catch {
-      console.log("login failed!");
       setCheck(true);
     }
   };

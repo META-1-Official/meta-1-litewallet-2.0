@@ -54,7 +54,6 @@ const Settings = (props) => {
     e.preventDefault();
     if (e.target?.files[0]?.name) {
       let type = e.target?.files[0]?.name.split(".")[1];
-      console.log(e.target?.files[0]);
       if (type === "png" || type === "jpeg" || type === "jpg") {
         if (
           e.target?.files[0]?.size > 70000 &&

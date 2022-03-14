@@ -76,6 +76,14 @@
   height: 100%;
 }
 
+.rightSideBlock {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: 70%;
+}
+
 /* TABS  */
 @media (max-width: 767px) {
   .portfolio-table .ui.tabular.menu {
@@ -116,7 +124,7 @@
   background: #fff;
   box-shadow: var(--boxShadowIndex);
   margin: 0 0 1rem 0 !important;
-  padding: 1.2rem 1rem 0 2rem;
+  padding: 1.2rem 1rem 1.2rem 2rem;
 }
 .Mui-checked {
   color: #ffbf00 !important;
@@ -198,9 +206,13 @@
 .css-132a6sb-MuiTableCell-root {
   padding: 13px !important;
 }
+
+.blockSumAndPercentage {
+  margin-top: 1rem;
+}
 @media (max-width: 600px) {
   .blockInfoYourCrypto {
-    width: 100% !important;
+    width: 94.5% !important;
   }
   .blockSumAndPercentage {
     flex-direction: column !important;
@@ -219,6 +231,28 @@
   .switch {
     margin: 0 0 0 2rem !important;
   }
+
+  .adaptAmountMain {
+    font-size: 1.6rem;
+  }
+
+  .blockSumAndPercentage {
+    margin-top: -1rem;
+  }
+
+  .plusFirst,
+  .minusFirst {
+    height: 1.3rem !important;
+    font-size: 0.6rem;
+  }
+
+  .blockSumAndPercentage {
+    justify-content: center;
+  }
+
+  .rightSideBlock {
+    flex-direction: column;
+  }
 }
 
 #modal {
@@ -236,7 +270,6 @@
   font-family: "Poppins", sans-serif !important;
 }
 .blockChoose {
-  width: 25%;
   margin-top: 1.2rem;
   cursor: pointer;
 }
@@ -273,9 +306,6 @@
 }
 
 @media (max-width: 600px) {
-  .chooseContainer {
-    width: 6rem;
-  }
   .choosenContainerItem {
     display: flex;
     flex-direction: column;
