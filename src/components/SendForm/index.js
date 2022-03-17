@@ -51,8 +51,9 @@ const SendForm = React.memo((props) => {
   const [options, setOptions] = useState([]);
   const [priceForAsset, setPriceForAsset] = useState(0);
   const [blockPrice, setBlockPrice] = useState(0);
-  const [modalErrorOpened, setModalErrorOpened] = useState(false);
   const [precisionAssets, setPrecisionAssets] = useState();
+  const [password, setPassword] = useState("");
+  const [clickedInputs, setClickedInputs] = useState(false);
 
   useEffect(() => {
     async function getData() {
@@ -78,15 +79,12 @@ const SendForm = React.memo((props) => {
       for (let i = 0; i < assets.length; i++) {
         preObj[assets[i].symbol] = assets[i].precision;
       }
-      console.log(preObj);
       setPrecisionAssets(preObj);
     }
     filterPrec();
   }, [assets]);
 
   useEffect(() => {
-    console.log(portfolio);
-    console.log(feeAsset);
     if (parseFloat(feeAsset?.qty) < FEE && feeAsset) {
       setError("Not enough FEE");
     }
@@ -111,6 +109,16 @@ const SendForm = React.memo((props) => {
       }
     }, 50);
   }, []);
+
+  useEffect(() => {
+    if (Number(amount) <= 0 && clickedInputs) {
+      setError("The amount must be greater than 0");
+    } else if (Number(amount) > Number(balance)) {
+      setError("You don't have enough crypto");
+    } else {
+      setError("");
+    }
+  }, [amount]);
 
   const RedditTextField = React.memo(
     styled((props) => (
@@ -153,7 +161,6 @@ const SendForm = React.memo((props) => {
   };
   const calculateUsdPriceHandler = (e) => {
     let priceForOne = Number(e.target.value) * priceForAsset;
-    console.log(priceForAsset);
     setBlockPrice(
       Number(priceForOne).toFixed(precisionAssets[asset]) *
         Number(localStorage.getItem("currency").split(" ")[2])
@@ -190,9 +197,9 @@ const SendForm = React.memo((props) => {
           setError("Can't transfer to self");
         }
       } catch (e) {
-        console.log(e, "e");
         setAccountChecked(false);
         setAccountIsLoading(false);
+        setError("Invalid receiver");
       }
     }
 
@@ -378,6 +385,7 @@ const SendForm = React.memo((props) => {
                       id={"inputForAmount"}
                       type="number"
                       value={amount ? amount : ""}
+                      min="0"
                       endAdornment={
                         <InputAdornment position="end">
                           {assetData.label}
@@ -387,11 +395,13 @@ const SendForm = React.memo((props) => {
                         const amountOut = e.target.value;
                         if (
                           e.target.value.length < 11 &&
-                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value) &&
+                          Number(e.target.value) >= 0
                         ) {
+                          setClickedInputs(true);
                           setAmount(amountOut);
+                          calculateUsdPriceHandler(e);
                         }
-                        calculateUsdPriceHandler(e);
                       }}
                       placeholder={balance}
                     />
@@ -412,7 +422,10 @@ const SendForm = React.memo((props) => {
                         inputmode="numeric"
                         pattern="\d*"
                         onChange={(e) => {
-                          calculateCryptoPriceHandler(e);
+                          if (Number(e.target.value) >= 0) {
+                            setClickedInputs(true);
+                            calculateCryptoPriceHandler(e);
+                          }
                         }}
                         placeholder={`Amount ${
                           localStorage.getItem("currency").split(" ")[1]
@@ -443,8 +456,8 @@ const SendForm = React.memo((props) => {
                         }}
                       >
                         <Popup
-                          content={`Click this button to sell all your ${chosenCrypt}`}
-                          position="bottom center"
+                          content={`Click this button to sell all your ${assetData.label}`}
+                          position={isMobile ? "bottom left" : "bottom center"}
                           trigger={
                             <Button
                               className={"btn"}
@@ -469,9 +482,8 @@ const SendForm = React.memo((props) => {
                       id="reddit-input pass"
                       variant="filled"
                       style={{ marginBottom: "1rem", borderRadius: "8px" }}
-                      min="0"
-                      inputmode="numeric"
-                      pattern="[0-9]*"
+                      value={password}
+                      onChange={({ target }) => setPassword(target.value)}
                     />
                   </Grid.Column>
                 </div>
@@ -539,6 +551,9 @@ const SendForm = React.memo((props) => {
                           marginTop: "1rem",
                           boxShadow: "0 2px 10px 0 rgba(0, 0, 0, .11)",
                         }}
+                        disabled={
+                          !accountChecked || amount === "" || password === ""
+                        }
                         onClick={(e) => {
                           e.preventDefault();
                           if (Number(amount) > Number(amountHold)) {
@@ -582,9 +597,11 @@ const SendForm = React.memo((props) => {
               {inProgress && <MetaLoader size={"small"} />}
 
               {error && (
-                <Grid.Row>
-                  <div style={{ color: "red" }}>{error}</div>
-                </Grid.Row>
+                <Grid>
+                  <Grid.Row centered>
+                    <h5 style={{ color: "red" }}>{error}</h5>
+                  </Grid.Row>
+                </Grid>
               )}
             </div>
           </div>

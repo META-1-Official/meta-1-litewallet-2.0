@@ -59,7 +59,6 @@ export const OrdersTable = (props) => {
           let exchangeAsset = await Meta1.db.get_objects([
             rawData[i]?.op[1]?.min_to_receive?.asset_id,
           ]);
-          console.log(exchangeAsset);
           let block = await Meta1.db.get_block(rawData[i].block_num);
           let date = new Date(block.timestamp);
           let splitedBlock = new Date(date).toUTCString().split(" ");
@@ -71,7 +70,7 @@ export const OrdersTable = (props) => {
             type: "Exchange",
             volume:
               rawData[i].op[1]?.min_to_receive?.amount /
-              (10 ** exchangeAsset[0].precision),
+              10 ** exchangeAsset[0].precision,
             status: "Done",
             time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
             `,
@@ -104,12 +103,6 @@ export const OrdersTable = (props) => {
     }
     return newRawData;
   }
-
-  useEffect(() => {
-    setTimeout(() => {
-      document.getElementById("mainBlock").style.height = "92vh";
-    }, 50);
-  }, []);
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -264,13 +257,15 @@ const PortfolioTable = (props) => {
   }));
 
   function getDatas() {
-    Meta1.ticker("USDT", "BTC").then((res) => setBtc(res));
-    Meta1.ticker("USDT", "BNB").then((res) => setBnb(res));
-    Meta1.ticker("USDT", "LTC").then((res) => setLtc(res));
-    Meta1.ticker("USDT", "XLM").then((res) => setXlm(res));
-    Meta1.ticker("USDT", "ETH").then((res) => setEth(res));
-    Meta1.ticker("USDT", "EOS").then((res) => setEos(res));
-    Meta1.ticker("USDT", "META1").then((res) => setMeta1(res));
+    try {
+      Meta1.ticker("USDT", "BTC").then((res) => setBtc(res));
+      Meta1.ticker("USDT", "BNB").then((res) => setBnb(res));
+      Meta1.ticker("USDT", "LTC").then((res) => setLtc(res));
+      Meta1.ticker("USDT", "XLM").then((res) => setXlm(res));
+      Meta1.ticker("USDT", "ETH").then((res) => setEth(res));
+      Meta1.ticker("USDT", "EOS").then((res) => setEos(res));
+      Meta1.ticker("USDT", "META1").then((res) => setMeta1(res));
+    } catch (e) {}
   }
 
   useEffect(() => {
@@ -610,8 +605,6 @@ function Wallet(props) {
     if (crypto !== "META1") {
       if (document.getElementById("forCheck").innerText === "META1") {
         chosen = localStorage.getItem("currency").split(" ")[1];
-        console.log(chosen);
-        console.log(crypto);
         let data = await getAllByOne(chosen, crypto);
         setCurrentCurrency(currentCurrency + 1);
         setTimeout(() => {
@@ -651,7 +644,6 @@ function Wallet(props) {
         let crypto = "META1";
         let values = document.getElementsByClassName("currencyValues");
         let prices = document.getElementsByClassName("currencyPrices");
-        console.log(meta1.latest);
         for (let i = 0; i < values.length; i++) {
           values[i].innerText = Number(
             Number(values[i].innerText) / Number(meta1.latest)
@@ -712,8 +704,8 @@ function Wallet(props) {
             className={"blockSumAndPercentage"}
             style={{ display: "flex", flexDirection: "row" }}
           >
-            <h2 style={{ color: "#FFC000", fontSize: "2rem" }}>
-              <strong>
+            <h2 style={{ color: "#FFC000", fontSize: "2rem", margin: "0" }}>
+              <strong className={"adaptAmountMain"}>
                 {loader ? (
                   <Loader size="mini" active inline="centered" />
                 ) : (
@@ -729,7 +721,7 @@ function Wallet(props) {
               style={{
                 margin: ".3rem 0 .5rem 1rem",
                 fontSize: ".8rem",
-                height: "40%",
+                height: "55%",
                 padding: ".3rem",
                 borderRadius: "3px",
                 boxShadow: "0 4px 9px 5px rgba(0,0,0,.11)",
@@ -750,65 +742,74 @@ function Wallet(props) {
               {loader ? null : totalChange.replace("-", "")} %
             </h5>
           </div>
-          <div className={"blockChoose"}>
-            <noscript id={"forCheck"}>
-              {localStorage.getItem("currency").split(" ")[1]}
-            </noscript>
-            <div className={"blockChoosen"} onClick={openDrop}>
-              <span style={{ textAlign: "center" }}>
-                Select currency to display...
-              </span>
-              <i
-                className="fas fa-chevron-down"
-                style={{ marginTop: ".2rem" }}
-              />
-            </div>
-            <div
-              id={"switchContainer"}
-              style={{ position: "relative", display: "none" }}
-            >
-              <ul className={"chooseContainer"}>
-                <li
-                  className={"choosenContainerItem"}
-                  onClick={changeCurrencyToFiat}
-                >
-                  <img
-                    src={fiatIcon}
-                    alt="cryptoImage"
-                    className="imgContainer"
-                  />
-                  <span className="spanDrop">
-                    Fiat ({localStorage.getItem("currency").split(" ")[0]})
-                  </span>
-                </li>
-                {assets.map((el) => (
+          <div className="rightSideBlock">
+            <div className={"blockChoose"}>
+              <noscript id={"forCheck"}>
+                {localStorage.getItem("currency").split(" ")[1]}
+              </noscript>
+              <div className={"blockChoosen"} onClick={openDrop}>
+                <span style={{ textAlign: "center" }}>
+                  Select currency to display...
+                </span>
+                <i
+                  className="fas fa-chevron-down"
+                  style={{ marginTop: ".2rem" }}
+                />
+              </div>
+              <div
+                id={"switchContainer"}
+                style={{ position: "relative", display: "none" }}
+              >
+                <ul className={"chooseContainer"}>
                   <li
-                    onClick={changeCryptoCurrency}
                     className={"choosenContainerItem"}
+                    onClick={changeCurrencyToFiat}
                   >
                     <img
-                      src={el.image}
-                      style={{ width: "35px" }}
+                      src={fiatIcon}
                       alt="cryptoImage"
                       className="imgContainer"
                     />
-                    <span className="spanDrop">{el.symbol}</span>
+                    <span className="spanDrop">
+                      Fiat ({localStorage.getItem("currency").split(" ")[0]})
+                    </span>
                   </li>
-                ))}
-              </ul>
+                  {assets.map((el) => (
+                    <li
+                      onClick={changeCryptoCurrency}
+                      className={"choosenContainerItem"}
+                    >
+                      <img
+                        src={el.image}
+                        style={{ width: "35px" }}
+                        alt="cryptoImage"
+                        className="imgContainer"
+                      />
+                      <span className="spanDrop">{el.symbol}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-          <div className={"switcher"} style={{ paddingTop: ".7rem" }}>
-            <span>Hide Zero Balances</span>
-            <Switch
-              className={"switch"}
-              checked={hideZero}
-              onChange={() => {
-                setHideZero(!hideZero);
-              }}
-              inputProps={{ "aria-label": "controlled" }}
-              color={"warning"}
+            <hr
+              style={
+                isMobile
+                  ? { display: "block", width: "100%" }
+                  : { display: "none", width: "100%" }
+              }
             />
+            <div className={"switcher"} style={{ paddingTop: "1.4rem" }}>
+              <span>Hide Zero Balances</span>
+              <Switch
+                className={"switch"}
+                checked={hideZero}
+                onChange={() => {
+                  setHideZero(!hideZero);
+                }}
+                inputProps={{ "aria-label": "controlled" }}
+                color={"warning"}
+              />
+            </div>
           </div>
         </div>
       </div>

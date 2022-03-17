@@ -5,6 +5,13 @@ const RightSideHelpMenuFirstType = (props) => {
   const { onClickExchangeUSDTHandler, onClickExchangeEOSHandler, portfolio } =
     props;
 
+  const DateOfStartEOS = 1645998629;
+  const DateOfStartUSDT = 1646085029;
+
+  const calculateDate = (date) => {
+    return Math.floor((new Date() / 1000 - date) / 86400);
+  };
+
   return (
     <>
       <div className={styles.intro}>
@@ -42,11 +49,16 @@ const RightSideHelpMenuFirstType = (props) => {
             onClick={portfolio ? onClickExchangeUSDTHandler : null}
           >
             <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
+              className={styles.crypto}
+              style={
+                !portfolio
+                  ? {
+                      cursor: "not-allowed",
+                    }
+                  : {
+                      cursor: "pointer",
+                    }
+              }
             >
               <img
                 style={{ width: "35px", height: "35px", marginTop: ".3rem" }}
@@ -58,7 +70,7 @@ const RightSideHelpMenuFirstType = (props) => {
                 style={{ marginLeft: ".5rem" }}
               >
                 <h6>USDT</h6>
-                <span>Added 1 days ago</span>
+                <span>Added {calculateDate(DateOfStartUSDT)} days ago</span>
               </div>
             </div>
             <div style={{ marginTop: "1rem", marginRight: "1rem" }}>
@@ -71,6 +83,15 @@ const RightSideHelpMenuFirstType = (props) => {
           <hr />
           <div
             className={styles.crypto}
+            style={
+              !portfolio
+                ? {
+                    cursor: "not-allowed",
+                  }
+                : {
+                    cursor: "pointer",
+                  }
+            }
             onClick={portfolio ? onClickExchangeEOSHandler : null}
           >
             <div style={{ display: "flex", flexDirection: "row" }}>
@@ -84,7 +105,7 @@ const RightSideHelpMenuFirstType = (props) => {
                 style={{ marginLeft: ".5rem" }}
               >
                 <h6>EOS</h6>
-                <span>Added 2 days ago</span>
+                <span>Added {calculateDate(DateOfStartEOS)} days ago</span>
               </div>
             </div>
             <div style={{ marginTop: "1rem", marginRight: "1rem" }}>

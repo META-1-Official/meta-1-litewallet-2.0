@@ -22,7 +22,7 @@
 .paperWalletStylesTH {
   background: #fff;
   box-shadow: 0 0 10px 6px rgba(0, 0, 0, 0.11);
-  width: 100%;
+  width: 96%;
   margin: 1.5rem;
   border-radius: 4px;
 }
@@ -73,9 +73,24 @@ span.css-llftvd {
 }
 .blockInfoYourCrypto {
   margin: 0.1rem;
-  padding: 1rem;
+  padding: 1rem 0 1rem 1rem;
   border-radius: 4px;
   width: 73%;
+}
+
+.css-yk16xz-control,
+.css-1pahdxg-control {
+  width: 100% !important;
+}
+
+.css-1pahdxg-control:active,
+.css-yk16xz-control:active {
+  width: 100% !important;
+}
+
+.css-1pahdxg-control:focus,
+.css-yk16xz-control:focus {
+  width: 100% !important;
 }
 
 .meta_one_widget .App-header {
@@ -136,7 +151,17 @@ span.css-llftvd {
   }
 
   .blockInfoYourCrypto {
-    width: 93%;
+    width: 100%;
+  }
+
+  .css-1pahdxg-control {
+    width: 100% !important;
+  }
+  .css-1pahdxg-control:focus {
+    width: 100% !important;
+  }
+  .css-1pahdxg-control:active {
+    width: 100% !important;
   }
 }
 

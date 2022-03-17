@@ -28,8 +28,6 @@ export default function ExchangeForm(props) {
     onBackClick,
     metaUrl,
     portfolioReceiver,
-    onClickExchangeEOSHandler,
-    onClickExchangeUSDTHandler,
   } = props;
   const [portfolio, setPortfolio] = useState(props.portfolio);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
@@ -48,21 +46,52 @@ export default function ExchangeForm(props) {
   const [tradeInProgress, setTradeInProgress] = useState(false);
   const [priceForAsset, setPriceForAsset] = useState(0);
   const [blockPrice, setBlockPrice] = useState();
+  const [clickedInputs, setClickedInputs] = useState(false);
+  const [error, setError] = useState();
 
-  useEffect(async () => {
-    if (asset !== "META1" && asset !== "USDT") {
-      const response = await fetch(
-        `https://api.binance.com/api/v3/ticker/24hr?symbol=${asset}USDT`
-      );
-      await setPriceForAsset((await response.json()).lastPrice);
-    } else if (asset === "USDT") {
-      setPriceForAsset(1);
-    } else {
-      Meta1.ticker("USDT", "META1").then((res) =>
-        setPriceForAsset(Number(res.latest).toFixed(2))
-      );
+  useEffect(() => {
+    async function getPriceForAsset() {
+      if (asset !== "META1" && asset !== "USDT") {
+        const response = await fetch(
+          `https://api.binance.com/api/v3/ticker/24hr?symbol=${asset}USDT`
+        );
+        setPriceForAsset((await response.json()).lastPrice);
+      } else if (asset === "USDT") {
+        setPriceForAsset(1);
+      } else {
+        Meta1.ticker("USDT", "META1").then((res) =>
+          setPriceForAsset(Number(res.latest).toFixed(2))
+        );
+      }
     }
+    getPriceForAsset();
   }, [asset, portfolio]);
+
+  useEffect(() => {
+    if (Number(selectedFromAmount) <= 0 && clickedInputs) {
+      setError(
+        `The amount must be greater than ${(
+          0.003 * Number(localStorage.getItem("currency").split(" ")[2])
+        ).toFixed(4)} ${localStorage.getItem("currency").split(" ")[1]}`
+      );
+    } else {
+      setError("");
+    }
+    if (
+      Number(blockPrice) <
+      0.003 * Number(localStorage.getItem("currency").split(" ")[2])
+    ) {
+      setError(
+        `The amount must be greater than ${Number(
+          (
+            0.003 * Number(localStorage.getItem("currency").split(" ")[2])
+          ).toFixed(4)
+        )} ${localStorage.getItem("currency").split(" ")[1]}`
+      );
+    } else {
+      setError("");
+    }
+  }, [selectedFromAmount, blockPrice]);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
@@ -105,22 +134,6 @@ export default function ExchangeForm(props) {
   }, [props.assets, props.portfolio]);
 
   useEffect(() => {
-    setTimeout(() => {
-      let allInputs = document.getElementsByClassName(
-        "css-1x51dt5-MuiInputBase-input-MuiInput-input"
-      );
-      for (let i = 0; i < allInputs.length; i++) {
-        allInputs[i].onfocus = function () {
-          allInputs[i].style.color = "#fdc000";
-        };
-        allInputs[i].onblur = function () {
-          allInputs[i].style.color = "#000";
-        };
-      }
-    }, 100);
-  }, []);
-
-  useEffect(() => {
     if (!isMobile) {
       setTimeout(() => {
         document.getElementById("mainBlock").style.height = "92vh";
@@ -128,11 +141,26 @@ export default function ExchangeForm(props) {
     }
   }, []);
 
+  useEffect(() => {
+    if (pair == null) return;
+    if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
+      setInvalidEx(true);
+      setSelectedFromAmount(0);
+      setBlockPrice("");
+      return;
+    }
+    setInvalidEx(false);
+  }, [pair]);
+
   const calculateUsdPriceHandler = (e) => {
-    let priceForOne = (Number(e.target.value) * priceForAsset).toFixed(2);
-    setBlockPrice(
-      priceForOne * Number(localStorage.getItem("currency").split(" ")[2])
-    );
+    if (e.target.value.length != 0) {
+      let priceForOne = (Number(e.target.value) * priceForAsset).toFixed(2);
+      setBlockPrice(
+        priceForOne * Number(localStorage.getItem("currency").split(" ")[2])
+      );
+    } else {
+      setBlockPrice(NaN);
+    }
   };
 
   const calculateCryptoPriceHandler = (e) => {
@@ -143,19 +171,15 @@ export default function ExchangeForm(props) {
       Number(localStorage.getItem("currency").split(" ")[2])
     ).toFixed(selectedFrom.pre);
     setSelectedFromAmount(priceForOne);
-    if (e.target.value.length === 0) {
-      setBlockPrice("");
-      setSelectedFromAmount("");
-    }
   };
 
   const handleCalculateSelectedTo = () => {
     if (pair == null) return;
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
       setInvalidEx(true);
-      setSelectedToAmount("");
-      setSelectedFromAmount("");
-      setBlockPrice("");
+      setSelectedToAmount(NaN);
+      setSelectedFromAmount(NaN);
+      setBlockPrice(NaN);
       return;
     }
     setInvalidEx(false);
@@ -256,11 +280,6 @@ export default function ExchangeForm(props) {
     localStorage.setItem("selectFrom", selectedFromAmount);
     localStorage.setItem("selectTo", selectedToAmount);
     setPasswordShouldBeProvided(true);
-    console.log(
-      localStorage.getItem("selectFrom") +
-        "    " +
-        localStorage.getItem("selectTo")
-    );
   };
 
   const performTrade = async () => {
@@ -284,7 +303,6 @@ export default function ExchangeForm(props) {
 
       setTradeInProgress(false);
     } catch (e) {
-      console.log(e);
       setTradeInProgress(false);
     }
   };
@@ -304,8 +322,22 @@ export default function ExchangeForm(props) {
   };
   const ariaLabel = { "aria-label": "description" };
 
-  const getAssets = (except) => options.filter((el) => el.value !== except);
+  // const getAssets = (except) => options.filter((el) => el.value !== except);
   if (selectedFrom == null && selectedTo == null) return null;
+
+  const getAssets = (except) => {
+    if (except === "META1" || except === "USDT") {
+      return options.filter((el) => el.value !== except);
+    } else {
+      let newFilter = [];
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value === "META1" || options[i].value === "USDT") {
+          newFilter.push(options[i]);
+        }
+      }
+      return newFilter;
+    }
+  };
 
   return (
     <>
@@ -429,9 +461,10 @@ export default function ExchangeForm(props) {
                       <Grid.Column>
                         <ExchangeSelect
                           onChange={(val) => {
-                            console.log(val);
                             setSelectedFrom(val);
                             changeAssetHandler(val.value);
+                            setSelectedFromAmount("");
+                            setSelectedToAmount("");
                             setBlockPrice("");
                             setInvalidEx(false);
                           }}
@@ -463,13 +496,13 @@ export default function ExchangeForm(props) {
                                       e.target.value.length < 11 &&
                                       /[-+]?[0-9]*\.?[0-9]*/.test(
                                         e.target.value
-                                      )
+                                      ) &&
+                                      Number(e.target.value) >= 0
                                     ) {
-                                      setSelectedFromAmount(
-                                        e.target.value || ""
-                                      );
+                                      setSelectedFromAmount(e.target.value);
                                       handleCalculateSelectedTo();
                                       calculateUsdPriceHandler(e);
+                                      setClickedInputs(true);
                                     }
                                   }}
                                   endAdornment={
@@ -501,9 +534,11 @@ export default function ExchangeForm(props) {
                                         e.target.value.length < 11 &&
                                         /[-+]?[0-9]*\.?[0-9]*/.test(
                                           e.target.value
-                                        )
+                                        ) &&
+                                        Number(e.target.value) >= 0
                                       ) {
                                         calculateCryptoPriceHandler(e);
+                                        setClickedInputs(true);
                                       }
                                     }}
                                     min="0"
@@ -515,7 +550,11 @@ export default function ExchangeForm(props) {
                                         .getItem("currency")
                                         .split(" ")[1]
                                     }`}
-                                    value={!invalidEx ? blockPrice : ""}
+                                    disabled={invalidEx}
+                                    style={
+                                      invalidEx ? { opacity: "0.5" } : null
+                                    }
+                                    value={blockPrice}
                                   />
                                   <span>
                                     {
@@ -564,9 +603,9 @@ export default function ExchangeForm(props) {
                       style={{ width: "3rem", height: "3rem" }}
                       onClick={(e) => {
                         changeAssetHandlerSwap(selectedTo);
-                        setSelectedToAmount(0);
-                        setSelectedFromAmount(0);
-                        setBlockPrice("");
+                        setSelectedToAmount(NaN);
+                        setSelectedFromAmount(NaN);
+                        setBlockPrice(NaN);
                         swapAssets(e);
                       }}
                     >
@@ -595,6 +634,10 @@ export default function ExchangeForm(props) {
                         <ExchangeSelect
                           onChange={(val) => {
                             setSelectedTo(val);
+                            setSelectedFromAmount("");
+                            setSelectedToAmount("");
+                            setBlockPrice("");
+                            setInvalidEx(false);
                           }}
                           options={getAssets(selectedFrom.value)}
                           selectedValue={selectedTo}
@@ -750,6 +793,18 @@ export default function ExchangeForm(props) {
                 </div>
               </div>
             </div>
+            {error && !invalidEx && selectedFromAmount ? (
+              <Grid.Row centered style={{ marginBottom: "1rem" }}>
+                <h5 style={{ color: "red", textAlign: "center" }}>{error}</h5>
+              </Grid.Row>
+            ) : null}
+            {selectedFrom.balance < selectedFromAmount && !invalidEx ? (
+              <Grid.Row centered style={{ marginBottom: "1rem" }}>
+                <h5 style={{ color: "red", textAlign: "center" }}>
+                  You don't have enough crypto
+                </h5>
+              </Grid.Row>
+            ) : null}
             <div className="hidden-pass ui input">
               {passwordShouldBeProvided && (
                 <>
@@ -786,7 +841,9 @@ export default function ExchangeForm(props) {
                     selectedFrom.balance === 0 ||
                     selectedFrom.balance < selectedFromAmount ||
                     !selectedFromAmount ||
-                    !selectedToAmount
+                    !selectedToAmount ||
+                    blockPrice == 0 ||
+                    error
                   }
                   onClick={prepareTrade}
                   color="yellow"
