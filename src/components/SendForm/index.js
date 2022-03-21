@@ -229,7 +229,7 @@ const SendForm = React.memo((props) => {
     if (result.error) {
       if (result.error === "Invalid credentials") {
         setError(result.error);
-      } else if (asset === "META1" && feeAsset.qty === amount) {
+      } else if ((asset === "META1" && feeAsset.qty === amount) || !feeAsset) {
         setError("You don't have enough cryptocurrency to pay FEE");
       } else {
         setError("Invalid Receiver");

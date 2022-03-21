@@ -1,5 +1,5 @@
 {
-  "name": "meta-x",
+  "name": "lite-wallet",
   "version": "0.1.0",
   "private": true,
   "homepage": ".",
@@ -73,7 +73,14 @@
   "react-dotenv": {
     "whitelist": [
       "KEY",
-      "BACK_URL"
+      "BACK_URL",
+      "FAUCET_DEV",
+      "FAUCET_PROD",
+      "GATEWAY_PROD",
+      "GATEWAY_DEV",
+      "GATEWAY_TEST",
+      "MAIA_PROD",
+      "MAIA_DEV"
     ]
   }
 }

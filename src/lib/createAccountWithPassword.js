@@ -4,6 +4,8 @@ import {
   PrivateKey,
   TransactionBuilder,
 } from "meta1js";
+import env from "react-dotenv";
+
 export function generateKeyFromPassword(accountName, role, password) {
   let seed = accountName + role + password;
   let privKey = PrivateKey.fromSeed(seed);
@@ -112,9 +114,7 @@ export default function createAccountWithPassword(
     } else {
       // using faucet
 
-      let faucetAddress = "https://faucet.meta1.io/faucet";
-
-      let create_account_promise = fetch(faucetAddress + "/api/v1/accounts", {
+      let create_account_promise = fetch(env.FAUCET_DEV + "/api/v1/accounts", {
         method: "post",
         mode: "cors",
         headers: {
