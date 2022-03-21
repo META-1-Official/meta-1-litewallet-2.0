@@ -28,6 +28,7 @@ export default function ExchangeForm(props) {
     onBackClick,
     metaUrl,
     portfolioReceiver,
+    onSuccessTrade,
   } = props;
   const [portfolio, setPortfolio] = useState(props.portfolio);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
@@ -79,12 +80,25 @@ export default function ExchangeForm(props) {
     }
     if (
       Number(blockPrice) <
-      0.003 * Number(localStorage.getItem("currency").split(" ")[2])
+        0.003 * Number(localStorage.getItem("currency").split(" ")[2]) &&
+      selectedFrom.label !== "USDT"
     ) {
       setError(
         `The amount must be greater than ${Number(
           (
             0.003 * Number(localStorage.getItem("currency").split(" ")[2])
+          ).toFixed(4)
+        )} ${localStorage.getItem("currency").split(" ")[1]}`
+      );
+    } else if (
+      Number(blockPrice) <
+        0.003 * Number(localStorage.getItem("currency").split(" ")[2]) &&
+      selectedFrom.label === "USDT"
+    ) {
+      setError(
+        `For USDT, the amount must be greater than ${Number(
+          (
+            0.01 * Number(localStorage.getItem("currency").split(" ")[2])
           ).toFixed(4)
         )} ${localStorage.getItem("currency").split(" ")[1]}`
       );
@@ -402,6 +416,7 @@ export default function ExchangeForm(props) {
           onClose={() => {
             setModalOpened(false);
             onSuccessModal();
+            onSuccessTrade();
           }}
           id={"modalExch"}
         >
@@ -463,9 +478,9 @@ export default function ExchangeForm(props) {
                           onChange={(val) => {
                             setSelectedFrom(val);
                             changeAssetHandler(val.value);
-                            setSelectedFromAmount("");
-                            setSelectedToAmount("");
-                            setBlockPrice("");
+                            setSelectedFromAmount(NaN);
+                            setSelectedToAmount(NaN);
+                            setBlockPrice(NaN);
                             setInvalidEx(false);
                           }}
                           options={getAssets(selectedTo.value)}

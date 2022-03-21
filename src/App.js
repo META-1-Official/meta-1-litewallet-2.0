@@ -5,7 +5,6 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { getCryptosChange } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { Menu } from "semantic-ui-react";
 import { getAvatar } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
@@ -16,17 +15,15 @@ import Wallet from "./components/Wallet";
 import Settings from "./components/Settings/Settings";
 import logoNavbar from "./images/default-pic2.png";
 import logoDefalt from "./images/default-pic1.png";
-import axios from "axios";
 import "./App.css";
 import Meta1 from "meta1dex";
 import MetaLoader from "./UI/loader/Loader";
-import { useLocation, Link } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import LeftPanel from "./components/LeftPanel/LeftPanel";
 import Footer from "./components/Footer/Footer";
 import RightSideHelpMenuSecondType from "./components/RightSideHelpMenuSecondType/RightSideHelpMenuSecondType";
 import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
-import { OrdersTable } from "./components/Wallet";
+import { OrdersTable } from "./components/Wallet/OrdersTable";
 import env from "react-dotenv";
 
 window.Meta1 = Meta1;
@@ -109,9 +106,11 @@ function Application(props) {
 
   useEffect(() => {
     async function fetchPortfolio() {
+      console.log("yes");
       if (portfolioReceiver === null) return;
       if (portfolio !== null) return;
       if (accountName === null || accountName.length === 0) return;
+      console.log("No");
       try {
         const fetched = await portfolioReceiver.fetch();
         setAssets(fetched.assets);
@@ -128,7 +127,7 @@ function Application(props) {
 
   useEffect(() => {
     setIsLoading(true);
-    Meta1.connect(metaUrl || "wss://maia.meta1.io/ws").then(
+    Meta1.connect(metaUrl || env.MAIA_DEV).then(
       () => {
         setIsLoading(false);
         if (accountName == null || accountName.length === 0) {
@@ -166,6 +165,14 @@ function Application(props) {
       }
     );
   }, [accountName]);
+
+  function refetchPortfolio() {
+    setTimeout(async () => {
+      const fetched = await portfolioReceiver.fetch();
+      setPortfolio(fetched.portfolio);
+      setFullPortfolio(fetched.full);
+    }, 2000);
+  }
 
   const onRegistration = (acc, pass, regEmail) => {
     localStorage.setItem("account", acc);
@@ -356,7 +363,10 @@ function Application(props) {
                   }}
                   onSuccessModal={() => setActiveScreen("wallet")}
                   portfolioReceiver={portfolioReceiver}
-                  onSuccessTrade={() => setPortfolio(null)}
+                  onSuccessTrade={() => {
+                    setPortfolio(null);
+                    refetchPortfolio();
+                  }}
                   trader={trader}
                   portfolio={portfolio}
                   asset={tradeAsset}
@@ -435,6 +445,7 @@ function Application(props) {
                   onSuccessTransfer={() => {
                     setActiveScreen("wallet");
                     setPortfolio(null);
+                    refetchPortfolio();
                   }}
                   asset={tradeAsset}
                   sendApi={senderApi}
@@ -542,6 +553,7 @@ function Application(props) {
                             setTradeAsset("EOS");
                             setActiveScreen("exchange");
                           }}
+                          setFullPortfolio={setFullPortfolio}
                         />
                       </div>
                       <div className={"bottomAdaptBlock"}>
