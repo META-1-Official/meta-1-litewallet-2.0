@@ -50,6 +50,7 @@ export default function ExchangeForm(props) {
   const [blockPrice, setBlockPrice] = useState();
   const [clickedInputs, setClickedInputs] = useState(false);
   const [error, setError] = useState();
+  const [feeAlert, setFeeAlert] = useState(false);
 
   useEffect(() => {
     async function getPriceForAsset() {
@@ -86,12 +87,18 @@ export default function ExchangeForm(props) {
           (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
         )} ${userCurrency.split(" ")[1]}`
       );
-    } else if (feeAsset?.qty == 0) {
+      console.log(feeAsset);
+    } else if (feeAsset == undefined) {
       setError("Not enough FEE");
     } else {
       setError("");
     }
   }, [selectedFromAmount, blockPrice]);
+
+  useEffect(() => {
+    console.log(selectedFrom);
+    console.log(selectedFromAmount);
+  }, [selectedFromAmount]);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
@@ -218,6 +225,10 @@ export default function ExchangeForm(props) {
   }, [selectedFromAmount, selectedToAmount]);
 
   useEffect(() => {
+    setPasswordShouldBeProvided(false);
+  }, [selectedFrom, selectedTo, selectedFromAmount, selectedToAmount]);
+
+  useEffect(() => {
     async function fetchPair(selectedTo, selectedFrom) {
       if (
         selectedTo != null &&
@@ -275,9 +286,17 @@ export default function ExchangeForm(props) {
   const isMobile = width <= 600;
 
   const prepareTrade = () => {
+    const feeAsset = portfolio?.find((asset) => asset.name === "META1");
     localStorage.setItem("selectFrom", selectedFromAmount);
     localStorage.setItem("selectTo", selectedToAmount);
-    setPasswordShouldBeProvided(true);
+    if (
+      selectedFrom.label === "META1" &&
+      Number(selectedFromAmount) === Number(feeAsset.qty)
+    ) {
+      setFeeAlert(true);
+    } else {
+      setPasswordShouldBeProvided(true);
+    }
   };
 
   const performTrade = async () => {
@@ -389,6 +408,45 @@ export default function ExchangeForm(props) {
           <Modal.Actions>
             <Button positive onClick={() => setTradeError(null)}>
               OK
+            </Button>
+          </Modal.Actions>
+        </Modal>
+        <Modal
+          size="mini"
+          open={feeAlert}
+          onClose={() => setFeeAlert(false)}
+          id={"modalExch"}
+        >
+          <Modal.Header>All FEE transfer</Modal.Header>
+          <Modal.Content style={{ height: "55%" }}>
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h4 style={{ textAlign: "center" }}>
+                You are trying to send all FEE currency, after that you will not
+                be able to send any more transactions. Do you agree?
+              </h4>
+            </div>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button negative onClick={() => setFeeAlert(false)}>
+              Cancel
+            </Button>
+            <Button
+              positive
+              style={{ backgroundColor: "#fc0", color: "white" }}
+              onClick={() => {
+                setFeeAlert(false);
+                setPasswordShouldBeProvided(true);
+              }}
+            >
+              I agree!
             </Button>
           </Modal.Actions>
         </Modal>
@@ -778,7 +836,7 @@ export default function ExchangeForm(props) {
                 <h5 style={{ color: "red", textAlign: "center" }}>{error}</h5>
               </Grid.Row>
             ) : null}
-            {selectedFrom.balance < selectedFromAmount && !invalidEx ? (
+            {Number(selectedFrom.balance) < Number(selectedFromAmount) ? (
               <Grid.Row centered style={{ marginBottom: "1rem" }}>
                 <h5 style={{ color: "red", textAlign: "center" }}>
                   You don't have enough crypto
@@ -819,7 +877,7 @@ export default function ExchangeForm(props) {
                     selectedToAmount == 0 ||
                     selectedToAmount === 0.0 ||
                     selectedFrom.balance === 0 ||
-                    selectedFrom.balance < selectedFromAmount ||
+                    Number(selectedFrom.balance) < Number(selectedFromAmount) ||
                     !selectedFromAmount ||
                     !selectedToAmount ||
                     blockPrice == 0 ||

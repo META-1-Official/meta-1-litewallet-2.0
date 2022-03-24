@@ -55,6 +55,7 @@ const SendForm = React.memo((props) => {
   const [precisionAssets, setPrecisionAssets] = useState();
   const [password, setPassword] = useState("");
   const [clickedInputs, setClickedInputs] = useState(false);
+  const [feeAlert, setFeeAlert] = useState(false);
 
   useEffect(() => {
     async function getData() {
@@ -119,7 +120,7 @@ const SendForm = React.memo((props) => {
     } else {
       setError("");
     }
-  }, [amount]);
+  }, [amount, receiver]);
 
   const RedditTextField = React.memo(
     styled((props) => (
@@ -210,7 +211,15 @@ const SendForm = React.memo((props) => {
       setAccountChecked(false);
       setAccountIsLoading(false);
     }
-  }, [debouncedAccount]);
+
+    if (Number(amount) <= 0 && clickedInputs) {
+      setError("Amount can't be 0, Please update it");
+    } else if (Number(amount) > Number(balance)) {
+      setError("You don't have enough crypto");
+    } else {
+      setError("");
+    }
+  }, [debouncedAccount, amount]);
 
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
@@ -294,6 +303,45 @@ const SendForm = React.memo((props) => {
   return (
     <>
       <div>
+        <Modal
+          size="mini"
+          open={feeAlert}
+          onClose={() => setFeeAlert(false)}
+          id={"modalExch"}
+        >
+          <Modal.Header>All FEE transfer</Modal.Header>
+          <Modal.Content style={{ height: "55%" }}>
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h4 style={{ textAlign: "center" }}>
+                You are trying to send all FEE currency, after that you will not
+                be able to send any more transactions. Do you agree?
+              </h4>
+            </div>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button negative onClick={() => setFeeAlert(false)}>
+              Cancel
+            </Button>
+            <Button
+              positive
+              style={{ backgroundColor: "#fc0", color: "white" }}
+              onClick={() => {
+                setFeeAlert(false);
+                // setPasswordShouldBeProvided(true);
+              }}
+            >
+              I agree!
+            </Button>
+          </Modal.Actions>
+        </Modal>
         <div
           className={"headerTitle"}
           style={{
@@ -568,6 +616,15 @@ const SendForm = React.memo((props) => {
                               if (parseFloat(feeAsset?.qty) < FEE) {
                                 setError("Not enough FEE");
                               } else {
+                                // if (
+                                //   assetCh === "META1" &&
+                                //   Number(selectedFromAmount) ===
+                                //     Number(feeAsset.qty)
+                                // ) {
+                                //   setFeeAlert(true);
+                                // } else {
+                                //   setPasswordShouldBeProvided(true);
+                                // }
                                 performTransfer({
                                   ...{ to: receiver },
                                   ...{
