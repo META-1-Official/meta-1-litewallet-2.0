@@ -54,8 +54,8 @@ export default function SignUpForm(props) {
         firstName
       );
       localStorage.setItem("login", accountName);
-      window.location.reload();
-      onRegistration(accountName, password, email);
+      // window.location.reload();
+      // onRegistration(accountName, password, email);
     } catch (e) {}
   };
 

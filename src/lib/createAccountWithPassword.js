@@ -108,6 +108,22 @@ export default function createAccountWithPassword(
         .catch(reject);
     };
 
+    console.log(registrar);
+    console.log({
+      name: account_name,
+      email: email,
+      last_name: lastName,
+      refcode: "",
+      first_name: firstName,
+      phone_number: phoneNumber,
+      owner_key:
+        "META1" + owner_private.toPublicKey().toPublicKeyString().substring(5),
+      active_key:
+        "META1" + active_private.toPublicKey().toPublicKeyString().substring(5),
+      memo_key:
+        "META1" + memo_private.toPublicKey().toPublicKeyString().substring(5),
+    });
+
     if (registrar) {
       // using another user's account as registrar
       return create_account();

@@ -138,7 +138,7 @@ function Application(props) {
 
   useEffect(() => {
     setIsLoading(true);
-    Meta1.connect(metaUrl || env.MAIA_PROD).then(
+    Meta1.connect(metaUrl || env.MAIA_DEV).then(
       () => {
         setIsLoading(false);
         if (accountName == null || accountName.length === 0) {
