@@ -334,8 +334,18 @@ const SendForm = React.memo((props) => {
               positive
               style={{ backgroundColor: "#fc0", color: "white" }}
               onClick={() => {
+                let password =
+                  document.getElementById("reddit-input pass").value;
                 setFeeAlert(false);
-                // setPasswordShouldBeProvided(true);
+                performTransfer({
+                  ...{ to: receiver },
+                  ...{
+                    password,
+                    amount,
+                    assetCh,
+                    message,
+                  },
+                });
               }}
             >
               I agree!
@@ -616,24 +626,22 @@ const SendForm = React.memo((props) => {
                               if (parseFloat(feeAsset?.qty) < FEE) {
                                 setError("Not enough FEE");
                               } else {
-                                // if (
-                                //   assetCh === "META1" &&
-                                //   Number(selectedFromAmount) ===
-                                //     Number(feeAsset.qty)
-                                // ) {
-                                //   setFeeAlert(true);
-                                // } else {
-                                //   setPasswordShouldBeProvided(true);
-                                // }
-                                performTransfer({
-                                  ...{ to: receiver },
-                                  ...{
-                                    password,
-                                    amount,
-                                    assetCh,
-                                    message,
-                                  },
-                                });
+                                if (
+                                  assetCh === "META1" &&
+                                  Number(amount) === Number(feeAsset.qty)
+                                ) {
+                                  setFeeAlert(true);
+                                } else {
+                                  performTransfer({
+                                    ...{ to: receiver },
+                                    ...{
+                                      password,
+                                      amount,
+                                      assetCh,
+                                      message,
+                                    },
+                                  });
+                                }
                               }
                             } else {
                               setError(
