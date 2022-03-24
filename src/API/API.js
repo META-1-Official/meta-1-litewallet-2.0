@@ -36,3 +36,28 @@ export async function deleteAvatar(login) {
   );
   return data;
 }
+
+export async function changeLastLocation(login, location) {
+  const { data } = await axios.post(
+    `https://${env.BACK_URL_DEV}/saveLocation`,
+    {
+      login: login,
+      location: location,
+    }
+  );
+  return data;
+}
+
+export async function getLastLocation(login) {
+  try {
+    const { data } = await axios.post(
+      `https://${env.BACK_URL_DEV}/getLastLocation`,
+      {
+        login: login,
+      }
+    );
+    return data;
+  } catch (e) {
+    return { message: null };
+  }
+}

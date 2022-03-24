@@ -105,10 +105,9 @@ export default function LoginScreen(props) {
                 </p>
                 <button
                   className={styles.Button}
-                  style={{ fontSize: "100%" }}
+                  style={{ fontSize: "100%", marginTop: "0" }}
                   onClick={handleSubmit}
                   type={"submit"}
-                  style={{ marginTop: "0" }}
                 >
                   Link META Wallet
                 </button>

@@ -5,6 +5,8 @@ import RightSideHelpMenuThirdType from "../RightSideHelpMenuThirdType/RightSideH
 import env from "react-dotenv";
 import { Modal, Button } from "semantic-ui-react";
 import { saveUserCurrency, deleteAvatar } from "../../API/API";
+import logoNavbar from "../../images/default-pic2.png";
+import logoDefalt from "../../images/default-pic1.png";
 
 const Settings = (props) => {
   const {
@@ -16,6 +18,8 @@ const Settings = (props) => {
     getAvatarFromBack,
     userCurrency,
     setUserCurrency,
+    setUserImageDefault,
+    setUserImageNavbar,
   } = props;
 
   const [currency, setCurrency] = useState(userCurrency);
@@ -39,16 +43,8 @@ const Settings = (props) => {
 
   async function removePhoto() {
     await deleteAvatar(localStorage.getItem("login"));
-  }
-
-  function waitNewPic() {
-    for (let i = 0; i < 5; i++) {
-      setTimeout(async () => {
-        try {
-          await getAvatarFromBack(localStorage.getItem("login"));
-        } catch (e) {}
-      }, 2000);
-    }
+    setUserImageDefault(logoDefalt);
+    setUserImageNavbar(logoNavbar);
   }
 
   async function uploadFile(e) {
@@ -66,11 +62,21 @@ const Settings = (props) => {
             "file",
             document.getElementById("file_upload")?.files[0]
           );
-          await axios.post(`https://${env.BACK_URL}/saveAvatar`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
+          const { data } = await axios.post(
+            `http://${env.BACK_URL_DEV}/saveAvatar`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          setUserImageDefault(
+            `http://${env.BACK_URL_DEV}/public/${data.message}`
+          );
+          setUserImageNavbar(
+            `http://${env.BACK_URL_DEV}/public/${data.message}`
+          );
         } else {
           alert("Invalid file size");
         }
@@ -161,7 +167,6 @@ const Settings = (props) => {
                             id="file_upload"
                             onChange={(e) => {
                               uploadFile(e);
-                              waitNewPic();
                             }}
                             className={styles.uploadButton}
                           />

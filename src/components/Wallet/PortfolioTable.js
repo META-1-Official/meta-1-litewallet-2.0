@@ -190,7 +190,6 @@ const PortfolioTable = React.memo((props) => {
                 <button
                   onClick={() => {
                     onAssetSelect(datas?.name);
-                    localStorage.setItem("location", "exchange");
                   }}
                   className={"tradeButton"}
                 >
@@ -215,7 +214,6 @@ const PortfolioTable = React.memo((props) => {
                   <button
                     onClick={() => {
                       onDepositClick(datas.name);
-                      localStorage.setItem("location", "deposit");
                     }}
                     className={"depositButton"}
                   >

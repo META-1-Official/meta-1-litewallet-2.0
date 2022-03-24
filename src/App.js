@@ -5,7 +5,7 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { getCryptosChange } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { getUserData } from "./API/API";
+import { getUserData, changeLastLocation, getLastLocation } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import ExchangeForm from "./components/ExchangeForm";
@@ -71,7 +71,7 @@ function Application(props) {
   const [login, setLogin] = useState(localStorage.getItem("login"));
   const [loginError, setLoginError] = useState(null);
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
-
+  const [lastLocation, setLastLocation] = useState();
   useEffect(() => {
     if (login !== null) {
       onLogin(login);
@@ -79,34 +79,36 @@ function Application(props) {
   }, []);
 
   const onLogin = async (login, clicked = false) => {
+    await getAvatarFromBack(login);
     setLoginError(null);
     setAccountName(login);
-    await getAvatarFromBack(login);
     localStorage.setItem("login", login);
     if (clicked) {
       setLoginError(true);
     }
   };
 
+  const loc = React.useMemo(() => {
+    if (activeScreen !== "sendFunds") {
+      chngLastLocation(activeScreen);
+    }
+    return true;
+  }, [activeScreen]);
+
   async function getAvatarFromBack(login) {
     try {
       const data = await getUserData(login);
       const response = await getCryptosChange();
-      console.log(data);
       setCryptoData(response);
-      if (
-        data?.message.image.split("/")[2] !== "null" &&
-        data?.message.image.split("/")[2] !== "undefined"
-      ) {
-        let avatarImage = `https://${env.BACK_URL}${
-          data.message.image.split(".")[2] +
-          "." +
-          data.message.image.split(".")[3]
-        }`;
+      if (data?.message?.lastLocation !== "wallet") {
+        setLastLocation(data?.message?.lastLocation);
+      }
+      if (data?.message.userAvatar != null) {
+        let avatarImage = `http://${env.BACK_URL_DEV}/public/${data.message.userAvatar}`;
         setUserImageDefault(avatarImage);
         setUserImageNavbar(avatarImage);
       }
-      if (data?.message?.currency === "USD" || !data?.message?.currency) {
+      if (data?.message?.currency === "USD") {
       } else if (data?.message?.currency) {
         setUserCurrency(
           `${crypt[data?.message?.currency][1]} ${data?.message?.currency} ${
@@ -119,6 +121,7 @@ function Application(props) {
 
   useEffect(() => {
     async function fetchPortfolio() {
+      let lst = await getLastLocation(localStorage.getItem("login"));
       if (portfolioReceiver === null) return;
       if (portfolio !== null) return;
       if (accountName === null || accountName.length === 0) return;
@@ -128,7 +131,7 @@ function Application(props) {
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
         localStorage.setItem("account", accountName);
-        setActiveScreen(localStorage.getItem("location") || "wallet");
+        setActiveScreen(lst.message !== null ? lst.message : "wallet");
       } catch (e) {
         setActiveScreen("login");
       }
@@ -137,44 +140,48 @@ function Application(props) {
   }, [portfolioReceiver, portfolio, accountName]);
 
   useEffect(() => {
-    setIsLoading(true);
-    Meta1.connect(metaUrl || env.MAIA_DEV).then(
-      () => {
-        setIsLoading(false);
-        if (accountName == null || accountName.length === 0) {
+    async function connect() {
+      setIsLoading(true);
+      let lst = await getLastLocation(localStorage.getItem("login"));
+      Meta1.connect(metaUrl || env.MAIA_DEV).then(
+        () => {
+          setIsLoading(false);
+          if (accountName == null || accountName.length === 0) {
+            setActiveScreen("login");
+          } else {
+            setActiveScreen(lst.message !== null ? lst.message : "wallet");
+            setPortfolioReceiver(
+              new Portfolio({
+                metaApi: Meta1,
+                accountName: accountName,
+              })
+            );
+            setTrader(
+              new TradeWithPassword({
+                metaApi: Meta1,
+                login: accountName,
+              })
+            );
+
+            setFetchDepositFn((asset) => (asset) => {
+              return fetchDepositAddress({ accountName, asset });
+            });
+
+            setSenderApi(
+              new SendWithPassword({
+                metaApi: Meta1,
+                login: accountName,
+              })
+            );
+          }
+        },
+        () => {
           setActiveScreen("login");
-        } else {
-          setActiveScreen(localStorage.getItem("location") || "wallet");
-          setPortfolioReceiver(
-            new Portfolio({
-              metaApi: Meta1,
-              accountName: accountName,
-            })
-          );
-          setTrader(
-            new TradeWithPassword({
-              metaApi: Meta1,
-              login: accountName,
-            })
-          );
-
-          setFetchDepositFn((asset) => (asset) => {
-            return fetchDepositAddress({ accountName, asset });
-          });
-
-          setSenderApi(
-            new SendWithPassword({
-              metaApi: Meta1,
-              login: accountName,
-            })
-          );
+          setLoginError("Error occured");
         }
-      },
-      () => {
-        setActiveScreen("login");
-        setLoginError("Error occured");
-      }
-    );
+      );
+    }
+    connect();
   }, [accountName]);
 
   function refetchPortfolio() {
@@ -193,6 +200,12 @@ function Application(props) {
     setActiveScreen("wallet");
   };
 
+  async function chngLastLocation(location) {
+    if (location && location !== "login") {
+      await changeLastLocation(localStorage.getItem("login"), location);
+    }
+  }
+
   if (isLoading || activeScreen == null) {
     return <MetaLoader size={"large"} />;
   }
@@ -203,38 +216,31 @@ function Application(props) {
         onClickHomeHandler={(e) => {
           e.preventDefault();
           setActiveScreen("login");
-          localStorage.setItem("location", "login");
         }}
         onClickPortfolioHandler={(e) => {
           e.preventDefault();
           setActiveScreen("wallet");
-          localStorage.setItem("location", "wallet");
         }}
         onClickExchangeHandler={(e) => {
           e.preventDefault();
           setTradeAsset("BTC");
           setActiveScreen("exchange");
-          localStorage.setItem("location", "exchange");
         }}
         onClickPaperWalletHandler={(e) => {
           e.preventDefault();
           setActiveScreen("paperWallet");
-          localStorage.setItem("location", "paperWallet");
         }}
         onClickOrderTableHandler={(e) => {
           e.preventDefault();
           setActiveScreen("orderTable");
-          localStorage.setItem("location", "orderTable");
         }}
         onClickSettingsHandler={(e) => {
           e.preventDefault();
           setActiveScreen("settings");
-          localStorage.setItem("location", "settings");
         }}
         onClickHistoryHandler={(e) => {
           e.preventDefault();
           setActiveScreen("orderTable");
-          localStorage.setItem("location", "orderTable");
         }}
         portfolio={portfolio}
         name={accountName}
@@ -247,38 +253,31 @@ function Application(props) {
           onClickHomeHandler={(e) => {
             e.preventDefault();
             setActiveScreen("login");
-            localStorage.setItem("location", "login");
           }}
           onClickPortfolioHandler={(e) => {
             e.preventDefault();
             setActiveScreen("wallet");
-            localStorage.setItem("location", "wallet");
           }}
           onClickExchangeHandler={(e) => {
             e.preventDefault();
             setTradeAsset("BTC");
             setActiveScreen("exchange");
-            localStorage.setItem("location", "exchange");
           }}
           onClickPaperWalletHandler={(e) => {
             e.preventDefault();
             setActiveScreen("paperWallet");
-            localStorage.setItem("location", "paperWallet");
           }}
           onClickOrderTableHandler={(e) => {
             e.preventDefault();
             setActiveScreen("orderTable");
-            localStorage.setItem("location", "orderTable");
           }}
           onClickSettingsHandler={(e) => {
             e.preventDefault();
             setActiveScreen("settings");
-            localStorage.setItem("location", "settings");
           }}
           onClickHistoryHandler={(e) => {
             e.preventDefault();
             setActiveScreen("orderTable");
-            localStorage.setItem("location", "orderTable");
           }}
           portfolio={portfolio}
           name={accountName}
@@ -300,13 +299,11 @@ function Application(props) {
                     e.preventDefault();
                     setTradeAsset("USDT");
                     setActiveScreen("exchange");
-                    localStorage.setItem("location", "exchange");
                   }}
                   onClickExchangeEOSHandler={(e) => {
                     e.preventDefault();
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
-                    localStorage.setItem("location", "exchange");
                   }}
                   portfolio={portfolio}
                 />
@@ -351,6 +348,8 @@ function Application(props) {
                   getAvatarFromBack={getAvatarFromBack}
                   userCurrency={userCurrency}
                   setUserCurrency={setUserCurrency}
+                  setUserImageDefault={setUserImageDefault}
+                  setUserImageNavbar={setUserImageNavbar}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
