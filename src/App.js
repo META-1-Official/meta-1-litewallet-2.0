@@ -5,7 +5,7 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { getCryptosChange } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { getAvatar } from "./API/API";
+import { getUserData } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import ExchangeForm from "./components/ExchangeForm";
@@ -38,6 +38,13 @@ function Application(props) {
 
   if (domAccount) window.localStorage.setItem("account", domAccount);
 
+  const crypt = {
+    EUR: [0, "€"],
+    GBP: [1, "£"],
+    RUB: [2, "₽"],
+    CAD: [3, "CA$"],
+  };
+
   const [tradeAsset, setTradeAsset] = useState("USDT");
   const [fetchDepositFn, setFetchDepositFn] = useState(null);
   const [activeScreen, setActiveScreen] = useState(null);
@@ -63,6 +70,7 @@ function Application(props) {
   };
   const [login, setLogin] = useState(localStorage.getItem("login"));
   const [loginError, setLoginError] = useState(null);
+  const [userCurrency, setUserCurrency] = useState("$ USD 1");
 
   useEffect(() => {
     if (login !== null) {
@@ -82,42 +90,45 @@ function Application(props) {
 
   async function getAvatarFromBack(login) {
     try {
-      let avatar = await getAvatar(login);
-      if (avatar?.message !== "There is no such login") {
+      const data = await getUserData(login);
+      const response = await getCryptosChange();
+      console.log(data);
+      setCryptoData(response);
+      if (
+        data?.message.image.split("/")[2] !== "null" &&
+        data?.message.image.split("/")[2] !== "undefined"
+      ) {
         let avatarImage = `https://${env.BACK_URL}${
-          avatar.message.split(".")[2] + "." + avatar.message.split(".")[3]
+          data.message.image.split(".")[2] +
+          "." +
+          data.message.image.split(".")[3]
         }`;
         setUserImageDefault(avatarImage);
         setUserImageNavbar(avatarImage);
       }
+      if (data?.message?.currency === "USD" || !data?.message?.currency) {
+      } else if (data?.message?.currency) {
+        setUserCurrency(
+          `${crypt[data?.message?.currency][1]} ${data?.message?.currency} ${
+            response.ExchangeRate[crypt[data?.message?.currency][0]].rate
+          }`
+        );
+      }
     } catch (e) {}
   }
 
-  useEffect(async () => {
-    const response = await getCryptosChange();
-    setCryptoData(response);
-  }, []);
-
-  useEffect(() => {
-    if (!localStorage.getItem("currency")) {
-      localStorage.setItem("currency", "$ USD 1");
-    }
-  }, []);
-
   useEffect(() => {
     async function fetchPortfolio() {
-      console.log("yes");
       if (portfolioReceiver === null) return;
       if (portfolio !== null) return;
       if (accountName === null || accountName.length === 0) return;
-      console.log("No");
       try {
         const fetched = await portfolioReceiver.fetch();
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
         localStorage.setItem("account", accountName);
-        setActiveScreen("wallet");
+        setActiveScreen(localStorage.getItem("location") || "wallet");
       } catch (e) {
         setActiveScreen("login");
       }
@@ -127,13 +138,13 @@ function Application(props) {
 
   useEffect(() => {
     setIsLoading(true);
-    Meta1.connect(metaUrl || env.MAIA_DEV).then(
+    Meta1.connect(metaUrl || env.MAIA_PROD).then(
       () => {
         setIsLoading(false);
         if (accountName == null || accountName.length === 0) {
           setActiveScreen("login");
         } else {
-          setActiveScreen("wallet");
+          setActiveScreen(localStorage.getItem("location") || "wallet");
           setPortfolioReceiver(
             new Portfolio({
               metaApi: Meta1,
@@ -338,6 +349,8 @@ function Application(props) {
                   }}
                   userIcon={userImageDefault}
                   getAvatarFromBack={getAvatarFromBack}
+                  userCurrency={userCurrency}
+                  setUserCurrency={setUserCurrency}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -382,6 +395,7 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
+                  userCurrency={userCurrency}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -461,6 +475,7 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
+                  userCurrency={userCurrency}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -554,6 +569,7 @@ function Application(props) {
                             setActiveScreen("exchange");
                           }}
                           setFullPortfolio={setFullPortfolio}
+                          userCurrency={userCurrency}
                         />
                       </div>
                       <div className={"bottomAdaptBlock"}>

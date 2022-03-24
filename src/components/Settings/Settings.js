@@ -4,6 +4,7 @@ import axios from "axios";
 import RightSideHelpMenuThirdType from "../RightSideHelpMenuThirdType/RightSideHelpMenuThirdType";
 import env from "react-dotenv";
 import { Modal, Button } from "semantic-ui-react";
+import { saveUserCurrency, deleteAvatar } from "../../API/API";
 
 const Settings = (props) => {
   const {
@@ -13,9 +14,11 @@ const Settings = (props) => {
     cryptoData,
     userIcon,
     getAvatarFromBack,
+    userCurrency,
+    setUserCurrency,
   } = props;
 
-  const [currency, setCurrency] = useState(localStorage.getItem("currency"));
+  const [currency, setCurrency] = useState(userCurrency);
   const [modalOpened, setModalOpened] = useState(false);
 
   useEffect(() => {
@@ -24,19 +27,18 @@ const Settings = (props) => {
     }, 50);
   }, []);
 
-  const changeCurrencyHandler = (e) => {
+  const changeCurrencyHandler = async (e) => {
     e.preventDefault();
-    localStorage.setItem("currency", currency);
+    await saveUserCurrency(
+      localStorage.getItem("login"),
+      currency.split(" ")[1]
+    );
+    setUserCurrency(currency);
     setModalOpened(true);
   };
 
   async function removePhoto() {
-    await axios.post(`https://${env.BACK_URL}/deleteAvatar`, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      login: localStorage.getItem("login"),
-    });
+    await deleteAvatar(localStorage.getItem("login"));
   }
 
   function waitNewPic() {
@@ -90,7 +92,7 @@ const Settings = (props) => {
         }}
         id={"modalExch"}
       >
-        <Modal.Header>Trade Completed</Modal.Header>
+        <Modal.Header>Currency change</Modal.Header>
         <Modal.Content style={{ height: "55%" }}>
           <div
             style={{
@@ -102,7 +104,8 @@ const Settings = (props) => {
             }}
           >
             <h3 style={{ textAlign: "center" }}>
-              You have successfully changed the currency to {currency[0]}
+              You have successfully changed the currency to{" "}
+              {currency.split(" ")[0]}
             </h3>
           </div>
         </Modal.Content>

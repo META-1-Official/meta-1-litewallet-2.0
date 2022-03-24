@@ -8,7 +8,6 @@ async function getHistory(event) {
     30,
     "1.11.0"
   );
-  console.log(rawData);
   let newRawData = [];
   let i = 0;
   while (newRawData.length < amount) {

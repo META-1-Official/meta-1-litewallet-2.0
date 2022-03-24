@@ -32,6 +32,7 @@ function Wallet(props) {
     accountName,
     portfolioReceiver,
     setFullPorfolio,
+    userCurrency,
   } = props;
   const [currentCurrency, setCurrentCurrency] = useState(0);
   const [orders, setOrders] = useState(null);
@@ -98,7 +99,7 @@ function Wallet(props) {
   }
 
   useEffect(() => {
-    if (data) {
+    if (data && portfolio) {
       let summTik = 0,
         percentage = 0,
         totSum = 0,
@@ -111,18 +112,20 @@ function Wallet(props) {
           totSum += summTik;
         }
       }
-      let ch = 100 - (lastChange * 100) / totSum;
+      let ch = Number(100 - (lastChange * 100) / totSum);
       setTotalSum(totSum.toFixed(2));
-      setTotalChange(ch.toFixed(2).toString());
+      if (totalSum == 0) {
+        setTotalChange("0.00");
+      } else {
+        setTotalChange(ch.toFixed(2).toString());
+      }
     }
   }, [portfolio, data]);
 
   const changeCurrencyToFiat = async () => {
     document.getElementById("switchContainer").style.display = "none";
     setCurrentCurrency(currentCurrency + 1);
-    document.getElementById("forCheck").innerText = localStorage
-      .getItem("currency")
-      .split(" ")[1];
+    document.getElementById("forCheck").innerText = userCurrency.split(" ")[1];
   };
 
   const changeCryptoCurrency = async (e) => {
@@ -144,7 +147,7 @@ function Wallet(props) {
     }
     if (crypto !== "META1") {
       if (document.getElementById("forCheck").innerText === "META1") {
-        chosen = localStorage.getItem("currency").split(" ")[1];
+        chosen = userCurrency.split(" ")[1];
         let data = await getAllByOne(chosen, crypto);
         setCurrentCurrency(currentCurrency + 1);
         setTimeout(() => {
@@ -222,6 +225,7 @@ function Wallet(props) {
         hideZero={hideZero}
         data={data}
         isLoading={isLoading}
+        userCurrency={props.userCurrency}
       />
     );
   }
@@ -249,11 +253,9 @@ function Wallet(props) {
                 {loader && isLoading ? (
                   <Loader size="mini" active inline="centered" />
                 ) : (
-                  localStorage.getItem("currency").split(" ")[0] +
+                  userCurrency.split(" ")[0] +
                   " " +
-                  (
-                    totalSum * localStorage.getItem("currency").split(" ")[2]
-                  ).toFixed(2)
+                  (totalSum * userCurrency.split(" ")[2]).toFixed(2)
                 )}
               </strong>
             </h2>
@@ -284,9 +286,7 @@ function Wallet(props) {
           </div>
           <div className="rightSideBlock">
             <div className={"blockChoose"}>
-              <noscript id={"forCheck"}>
-                {localStorage.getItem("currency").split(" ")[1]}
-              </noscript>
+              <noscript id={"forCheck"}>{userCurrency.split(" ")[1]}</noscript>
               <div className={"blockChoosen"} onClick={openDrop}>
                 <span style={{ textAlign: "center" }}>
                   Select currency to display...
@@ -311,7 +311,7 @@ function Wallet(props) {
                       className="imgContainer"
                     />
                     <span className="spanDrop">
-                      Fiat ({localStorage.getItem("currency").split(" ")[0]})
+                      Fiat ({userCurrency.split(" ")[0]})
                     </span>
                   </li>
                   {assets.map((el) => (
@@ -355,7 +355,10 @@ function Wallet(props) {
       </div>
       <div className="portfolio-table">
         <div className="portfolio-table">
-          <Portfolio onAssetSelect={onAssetSelect} />
+          <Portfolio
+            onAssetSelect={onAssetSelect}
+            userCurrency={userCurrency}
+          />
         </div>
       </div>
     </>

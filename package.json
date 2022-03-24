@@ -80,7 +80,8 @@
       "GATEWAY_DEV",
       "GATEWAY_TEST",
       "MAIA_PROD",
-      "MAIA_DEV"
+      "MAIA_DEV",
+      "BACK_URL_DEV"
     ]
   }
 }

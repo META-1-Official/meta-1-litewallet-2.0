@@ -26,6 +26,7 @@ const SendForm = React.memo((props) => {
     assets,
     onClickExchangeEOSHandler,
     onClickExchangeUSDTHandler,
+    userCurrency,
   } = props;
   const feeAsset = portfolio.find((asset) => asset.name === "META1");
   const amountHold =
@@ -112,7 +113,7 @@ const SendForm = React.memo((props) => {
 
   useEffect(() => {
     if (Number(amount) <= 0 && clickedInputs) {
-      setError("The amount must be greater than 0");
+      setError("Amount can't be 0, Please update it");
     } else if (Number(amount) > Number(balance)) {
       setError("You don't have enough crypto");
     } else {
@@ -163,7 +164,7 @@ const SendForm = React.memo((props) => {
     let priceForOne = Number(e.target.value) * priceForAsset;
     setBlockPrice(
       Number(priceForOne).toFixed(precisionAssets[asset]) *
-        Number(localStorage.getItem("currency").split(" ")[2])
+        Number(userCurrency.split(" ")[2])
     );
   };
 
@@ -180,7 +181,7 @@ const SendForm = React.memo((props) => {
     let priceForOne = (
       Number(e.target.value.split("$")[0]) /
       priceForAsset /
-      Number(localStorage.getItem("currency").split(" ")[2])
+      Number(userCurrency.split(" ")[2])
     ).toFixed(precisionAssets[asset]);
     setAmount(priceForOne);
     setBlockPrice(e.target.value);
@@ -246,7 +247,7 @@ const SendForm = React.memo((props) => {
     setBlockPrice(
       Number(assetData.balance * priceForAsset).toFixed(
         precisionAssets[asset]
-      ) * Number(localStorage.getItem("currency").split(" ")[2])
+      ) * Number(userCurrency.split(" ")[2])
     );
   };
 
@@ -427,14 +428,10 @@ const SendForm = React.memo((props) => {
                             calculateCryptoPriceHandler(e);
                           }
                         }}
-                        placeholder={`Amount ${
-                          localStorage.getItem("currency").split(" ")[1]
-                        }`}
+                        placeholder={`Amount ${userCurrency.split(" ")[1]}`}
                         value={amount ? blockPrice : ""}
                       />
-                      <span>
-                        {localStorage.getItem("currency").split(" ")[0]}
-                      </span>
+                      <span>{userCurrency.split(" ")[0]}</span>
                     </div>
                     <div
                       style={{
@@ -532,8 +529,7 @@ const SendForm = React.memo((props) => {
                         {Number(amount) ? amount : 0} {assetData.label}
                       </h3>
                       <span>
-                        {blockPrice || 0}{" "}
-                        {localStorage.getItem("currency").split(" ")[1]}
+                        {blockPrice || 0} {userCurrency.split(" ")[1]}
                       </span>
                     </div>
                   </div>
@@ -552,7 +548,10 @@ const SendForm = React.memo((props) => {
                           boxShadow: "0 2px 10px 0 rgba(0, 0, 0, .11)",
                         }}
                         disabled={
-                          !accountChecked || amount === "" || password === ""
+                          !accountChecked ||
+                          amount === "" ||
+                          password === "" ||
+                          error
                         }
                         onClick={(e) => {
                           e.preventDefault();

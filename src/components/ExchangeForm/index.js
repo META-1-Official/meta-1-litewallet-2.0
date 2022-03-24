@@ -29,6 +29,7 @@ export default function ExchangeForm(props) {
     metaUrl,
     portfolioReceiver,
     onSuccessTrade,
+    userCurrency,
   } = props;
   const [portfolio, setPortfolio] = useState(props.portfolio);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
@@ -69,39 +70,24 @@ export default function ExchangeForm(props) {
   }, [asset, portfolio]);
 
   useEffect(() => {
+    const feeAsset = portfolio?.find((asset) => asset.name === "META1");
     if (Number(selectedFromAmount) <= 0 && clickedInputs) {
       setError(
         `The amount must be greater than ${(
-          0.003 * Number(localStorage.getItem("currency").split(" ")[2])
-        ).toFixed(4)} ${localStorage.getItem("currency").split(" ")[1]}`
+          0.003 * Number(userCurrency.split(" ")[2])
+        ).toFixed(4)} ${userCurrency.split(" ")[1]}`
       );
     } else {
       setError("");
     }
-    if (
-      Number(blockPrice) <
-        0.003 * Number(localStorage.getItem("currency").split(" ")[2]) &&
-      selectedFrom.label !== "USDT"
-    ) {
+    if (Number(blockPrice) < 0.003 * Number(userCurrency.split(" ")[2])) {
       setError(
         `The amount must be greater than ${Number(
-          (
-            0.003 * Number(localStorage.getItem("currency").split(" ")[2])
-          ).toFixed(4)
-        )} ${localStorage.getItem("currency").split(" ")[1]}`
+          (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
+        )} ${userCurrency.split(" ")[1]}`
       );
-    } else if (
-      Number(blockPrice) <
-        0.003 * Number(localStorage.getItem("currency").split(" ")[2]) &&
-      selectedFrom.label === "USDT"
-    ) {
-      setError(
-        `For USDT, the amount must be greater than ${Number(
-          (
-            0.01 * Number(localStorage.getItem("currency").split(" ")[2])
-          ).toFixed(4)
-        )} ${localStorage.getItem("currency").split(" ")[1]}`
-      );
+    } else if (feeAsset?.qty == 0) {
+      setError("Not enough FEE");
     } else {
       setError("");
     }
@@ -169,9 +155,7 @@ export default function ExchangeForm(props) {
   const calculateUsdPriceHandler = (e) => {
     if (e.target.value.length != 0) {
       let priceForOne = (Number(e.target.value) * priceForAsset).toFixed(2);
-      setBlockPrice(
-        priceForOne * Number(localStorage.getItem("currency").split(" ")[2])
-      );
+      setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
     } else {
       setBlockPrice(NaN);
     }
@@ -182,8 +166,8 @@ export default function ExchangeForm(props) {
     let priceForOne = (
       Number(e.target.value) /
       priceForAsset /
-      Number(localStorage.getItem("currency").split(" ")[2])
-    ).toFixed(selectedFrom.pre);
+      Number(userCurrency.split(" ")[2])
+    ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
     setSelectedFromAmount(priceForOne);
   };
 
@@ -329,9 +313,7 @@ export default function ExchangeForm(props) {
       let priceForOne = (
         Number(document.getElementById("inputAmount").value) * priceForAsset
       ).toFixed(3);
-      setBlockPrice(
-        priceForOne * Number(localStorage.getItem("currency").split(" ")[2])
-      );
+      setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
     }, 25);
   };
   const ariaLabel = { "aria-label": "description" };
@@ -507,6 +489,7 @@ export default function ExchangeForm(props) {
                                   value={selectedFromAmount}
                                   type={"number"}
                                   onChange={(e) => {
+                                    console.log(e);
                                     if (
                                       e.target.value.length < 11 &&
                                       /[-+]?[0-9]*\.?[0-9]*/.test(
@@ -561,9 +544,7 @@ export default function ExchangeForm(props) {
                                     pattern="\d*"
                                     type={"number"}
                                     placeholder={`Amount ${
-                                      localStorage
-                                        .getItem("currency")
-                                        .split(" ")[1]
+                                      userCurrency.split(" ")[1]
                                     }`}
                                     disabled={invalidEx}
                                     style={
@@ -571,13 +552,7 @@ export default function ExchangeForm(props) {
                                     }
                                     value={blockPrice}
                                   />
-                                  <span>
-                                    {
-                                      localStorage
-                                        .getItem("currency")
-                                        .split(" ")[0]
-                                    }
-                                  </span>
+                                  <span>{userCurrency.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
@@ -649,9 +624,9 @@ export default function ExchangeForm(props) {
                         <ExchangeSelect
                           onChange={(val) => {
                             setSelectedTo(val);
-                            setSelectedFromAmount("");
-                            setSelectedToAmount("");
-                            setBlockPrice("");
+                            setSelectedFromAmount(NaN);
+                            setSelectedToAmount(NaN);
+                            setBlockPrice(NaN);
                             setInvalidEx(false);
                           }}
                           options={getAssets(selectedFrom.value)}
@@ -713,13 +688,7 @@ export default function ExchangeForm(props) {
                                       ? blockPrice
                                       : 0}
                                   </span>
-                                  <span>
-                                    {
-                                      localStorage
-                                        .getItem("currency")
-                                        .split(" ")[0]
-                                    }
-                                  </span>
+                                  <span>{userCurrency.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
@@ -751,9 +720,7 @@ export default function ExchangeForm(props) {
                     </h4>
                     <span>
                       {!invalidEx && blockPrice
-                        ? `${blockPrice}${
-                            localStorage.getItem("currency").split(" ")[0]
-                          }`
+                        ? `${blockPrice}${userCurrency.split(" ")[0]}`
                         : 0}
                     </span>
                   </div>
@@ -799,9 +766,7 @@ export default function ExchangeForm(props) {
                     </h4>
                     <span>
                       {!invalidEx && blockPrice
-                        ? `${blockPrice}${
-                            localStorage.getItem("currency").split(" ")[0]
-                          }`
+                        ? `${blockPrice}${userCurrency.split(" ")[0]}`
                         : 0}
                     </span>
                   </div>
