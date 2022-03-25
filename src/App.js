@@ -71,7 +71,7 @@ function Application(props) {
   const [login, setLogin] = useState(localStorage.getItem("login"));
   const [loginError, setLoginError] = useState(null);
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
-  const [lastLocation, setLastLocation] = useState();
+
   useEffect(() => {
     if (login !== null) {
       onLogin(login);
@@ -89,8 +89,12 @@ function Application(props) {
   };
 
   const loc = React.useMemo(() => {
-    if (activeScreen !== "sendFunds") {
-      chngLastLocation(activeScreen);
+    if (
+      activeScreen !== "sendFunds" &&
+      activeScreen !== "login" &&
+      activeScreen != null
+    ) {
+      sessionStorage.setItem("location", activeScreen);
     }
     return true;
   }, [activeScreen]);
@@ -100,11 +104,8 @@ function Application(props) {
       const data = await getUserData(login);
       const response = await getCryptosChange();
       setCryptoData(response);
-      if (data?.message?.lastLocation !== "wallet") {
-        setLastLocation(data?.message?.lastLocation);
-      }
       if (data?.message.userAvatar != null) {
-        let avatarImage = `http://${env.BACK_URL_DEV}/public/${data.message.userAvatar}`;
+        let avatarImage = `https://${env.BACK_URL_DEV}/public/${data.message.userAvatar}`;
         setUserImageDefault(avatarImage);
         setUserImageNavbar(avatarImage);
       }
@@ -121,7 +122,6 @@ function Application(props) {
 
   useEffect(() => {
     async function fetchPortfolio() {
-      let lst = await getLastLocation(localStorage.getItem("login"));
       if (portfolioReceiver === null) return;
       if (portfolio !== null) return;
       if (accountName === null || accountName.length === 0) return;
@@ -131,7 +131,11 @@ function Application(props) {
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
         localStorage.setItem("account", accountName);
-        setActiveScreen(lst.message !== null ? lst.message : "wallet");
+        setActiveScreen(
+          sessionStorage.getItem("location") != null
+            ? sessionStorage.getItem("location")
+            : "wallet"
+        );
       } catch (e) {
         setActiveScreen("login");
       }
@@ -142,14 +146,17 @@ function Application(props) {
   useEffect(() => {
     async function connect() {
       setIsLoading(true);
-      let lst = await getLastLocation(localStorage.getItem("login"));
       Meta1.connect(metaUrl || env.MAIA_DEV).then(
         () => {
           setIsLoading(false);
           if (accountName == null || accountName.length === 0) {
             setActiveScreen("login");
           } else {
-            setActiveScreen(lst.message !== null ? lst.message : "wallet");
+            setActiveScreen(
+              sessionStorage.getItem("location") != null
+                ? sessionStorage.getItem("location")
+                : "wallet"
+            );
             setPortfolioReceiver(
               new Portfolio({
                 metaApi: Meta1,

@@ -191,6 +191,7 @@ const LeftPanelAdapt = (props) => {
         className={styles.Li + " nav-item"}
         onClick={() => {
           localStorage.setItem("login", null);
+          sessionStorage.setItem("location", "wallet");
           window.location.reload();
         }}
       >

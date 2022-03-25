@@ -63,7 +63,7 @@ const Settings = (props) => {
             document.getElementById("file_upload")?.files[0]
           );
           const { data } = await axios.post(
-            `http://${env.BACK_URL_DEV}/saveAvatar`,
+            `https://${env.BACK_URL_DEV}/saveAvatar`,
             formData,
             {
               headers: {
@@ -72,10 +72,10 @@ const Settings = (props) => {
             }
           );
           setUserImageDefault(
-            `http://${env.BACK_URL_DEV}/public/${data.message}`
+            `https://${env.BACK_URL_DEV}/public/${data.message}`
           );
           setUserImageNavbar(
-            `http://${env.BACK_URL_DEV}/public/${data.message}`
+            `https://${env.BACK_URL_DEV}/public/${data.message}`
           );
         } else {
           alert("Invalid file size");
