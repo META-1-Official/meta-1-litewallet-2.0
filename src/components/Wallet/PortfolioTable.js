@@ -69,8 +69,6 @@ const PortfolioTable = React.memo((props) => {
     },
   }));
 
-  if (isLoading && loading) return <MetaLoader size={"small"} />;
-
   const currencyValue = (datas) => {
     let assetValue = data[datas.name].latest;
     if (datas.name === "META1") {
@@ -85,6 +83,8 @@ const PortfolioTable = React.memo((props) => {
   const currencyPrice = (datass) => {
     return Number(data[datass.name].latest).toFixed(2);
   };
+
+  if (isLoading && loading) return <MetaLoader size={"small"} />;
 
   return (
     <TableContainer

@@ -122,7 +122,8 @@ export default function LoginScreen(props) {
               <button
                 className={styles.Button}
                 onClick={() => {
-                  localStorage.setItem("login", null);
+                  localStorage.removeItem("login");
+                  sessionStorage.setItem("location", "wallet");
                   window.location.reload();
                 }}
                 type={"button"}

@@ -309,7 +309,7 @@ const SendForm = React.memo((props) => {
           onClose={() => setFeeAlert(false)}
           id={"modalExch"}
         >
-          <Modal.Header>All FEE transfer</Modal.Header>
+          <Modal.Header>All META1 transfer</Modal.Header>
           <Modal.Content style={{ height: "55%" }}>
             <div
               style={{
@@ -321,34 +321,16 @@ const SendForm = React.memo((props) => {
               }}
             >
               <h4 style={{ textAlign: "center" }}>
-                You are trying to send all FEE currency, after that you will not
-                be able to send any more transactions. Do you agree?
+                Insufficient Balance: prevented the send of Max amount of META1.
+                <br />
+                META1 coin is required to pay network fees, otherwise your
+                account can become unusable
               </h4>
             </div>
           </Modal.Content>
           <Modal.Actions>
             <Button negative onClick={() => setFeeAlert(false)}>
-              Cancel
-            </Button>
-            <Button
-              positive
-              style={{ backgroundColor: "#fc0", color: "white" }}
-              onClick={() => {
-                let password =
-                  document.getElementById("reddit-input pass").value;
-                setFeeAlert(false);
-                performTransfer({
-                  ...{ to: receiver },
-                  ...{
-                    password,
-                    amount,
-                    assetCh,
-                    message,
-                  },
-                });
-              }}
-            >
-              I agree!
+              OK
             </Button>
           </Modal.Actions>
         </Modal>

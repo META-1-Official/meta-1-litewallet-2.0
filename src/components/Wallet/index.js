@@ -314,10 +314,11 @@ function Wallet(props) {
                       Fiat ({userCurrency.split(" ")[0]})
                     </span>
                   </li>
-                  {assets.map((el) => (
+                  {assets.map((el, index) => (
                     <li
                       onClick={changeCryptoCurrency}
                       className={"choosenContainerItem"}
+                      key={index}
                     >
                       <img
                         src={el.image}

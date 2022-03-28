@@ -53,6 +53,10 @@ export default function ExchangeForm(props) {
   const [feeAlert, setFeeAlert] = useState(false);
 
   useEffect(() => {
+    console.log(pair);
+  }, [pair]);
+
+  useEffect(() => {
     async function getPriceForAsset() {
       if (asset !== "META1" && asset !== "USDT") {
         const response = await fetch(
@@ -94,11 +98,6 @@ export default function ExchangeForm(props) {
       setError("");
     }
   }, [selectedFromAmount, blockPrice]);
-
-  useEffect(() => {
-    console.log(selectedFrom);
-    console.log(selectedFromAmount);
-  }, [selectedFromAmount]);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
@@ -417,7 +416,7 @@ export default function ExchangeForm(props) {
           onClose={() => setFeeAlert(false)}
           id={"modalExch"}
         >
-          <Modal.Header>All FEE transfer</Modal.Header>
+          <Modal.Header>All META1 transfer</Modal.Header>
           <Modal.Content style={{ height: "55%" }}>
             <div
               style={{
@@ -429,24 +428,16 @@ export default function ExchangeForm(props) {
               }}
             >
               <h4 style={{ textAlign: "center" }}>
-                You are trying to send all FEE currency, after that you will not
-                be able to send any more transactions. Do you agree?
+                Insufficient Balance: prevented the swap of Max amount of META1.
+                <br />
+                META1 coin is required to pay network fees, otherwise your
+                account can become unusable
               </h4>
             </div>
           </Modal.Content>
           <Modal.Actions>
             <Button negative onClick={() => setFeeAlert(false)}>
-              Cancel
-            </Button>
-            <Button
-              positive
-              style={{ backgroundColor: "#fc0", color: "white" }}
-              onClick={() => {
-                setFeeAlert(false);
-                setPasswordShouldBeProvided(true);
-              }}
-            >
-              I agree!
+              OK
             </Button>
           </Modal.Actions>
         </Modal>

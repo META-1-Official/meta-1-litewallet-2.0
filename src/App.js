@@ -149,7 +149,11 @@ function Application(props) {
       Meta1.connect(metaUrl || env.MAIA_DEV).then(
         () => {
           setIsLoading(false);
-          if (accountName == null || accountName.length === 0) {
+          if (
+            accountName == null ||
+            accountName.length === 0 ||
+            !localStorage.getItem("login")
+          ) {
             setActiveScreen("login");
           } else {
             setActiveScreen(
