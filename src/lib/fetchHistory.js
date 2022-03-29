@@ -5,13 +5,12 @@ async function getHistory(event) {
   let rawData = await Meta1.history.get_account_history(
     localStorage.getItem("login"),
     "1.11.0",
-    30,
+    40,
     "1.11.0"
   );
   let newRawData = [];
-  let i = 0;
-  while (newRawData.length < amount) {
-    if (rawData[i].virtual_op === 0 && newRawData.length !== 10) {
+  for (let i = 0; i < rawData.length; i++) {
+    if (rawData[i].virtual_op === 0 && newRawData.length !== amount) {
       // Exchange proccesing
       if (rawData[i].op[1]?.seller) {
         let exchangeAsset = await Meta1.db.get_objects([
@@ -29,6 +28,7 @@ async function getHistory(event) {
             abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
           },
           type: "Exchange",
+          usersData: `${localStorage.getItem("login")}`,
           volume:
             rawData[i].op[1]?.min_to_receive?.amount /
             10 ** preAsset[0].precision,
@@ -42,6 +42,8 @@ async function getHistory(event) {
         let exchangeAsset = await Meta1.db.get_objects([
           rawData[i]?.op[1]?.amount.asset_id,
         ]);
+        let from = (await Meta1.accounts[rawData[i]?.op[1]?.from]).name;
+        let to = (await Meta1.accounts[rawData[i]?.op[1]?.to]).name;
         let block = await Meta1.db.get_block(rawData[i].block_num);
         let date = new Date(block.timestamp);
         let splitedBlock = new Date(date).toUTCString().split(" ");
@@ -51,6 +53,7 @@ async function getHistory(event) {
             abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
           },
           type: "Send",
+          usersData: `${from} / ${to}`,
           volume:
             rawData[i].op[1]?.amount?.amount / 10 ** exchangeAsset[0].precision,
           status: "Done",
@@ -59,8 +62,8 @@ async function getHistory(event) {
         });
       }
     }
-    i++;
   }
+  console.log(newRawData);
   return newRawData;
 }
 

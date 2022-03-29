@@ -86,6 +86,7 @@ const Settings = (props) => {
     } else {
       alert("Please select a file");
     }
+    document.getElementById("file_upload").value = "";
   }
 
   return (
