@@ -339,19 +339,7 @@ export default function ExchangeForm(props) {
   // const getAssets = (except) => options.filter((el) => el.value !== except);
   if (selectedFrom == null && selectedTo == null) return null;
 
-  const getAssets = (except) => {
-    if (except === "META1" || except === "USDT") {
-      return options.filter((el) => el.value !== except);
-    } else {
-      let newFilter = [];
-      for (let i = 0; i < options.length; i++) {
-        if (options[i].value === "META1" || options[i].value === "USDT") {
-          newFilter.push(options[i]);
-        }
-      }
-      return newFilter;
-    }
-  };
+  const getAssets = (except) => options.filter((el) => el.value !== except);
 
   return (
     <>
