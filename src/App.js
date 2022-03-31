@@ -5,7 +5,7 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { getCryptosChange } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { getAvatar } from "./API/API";
+import { getUserData, changeLastLocation, getLastLocation } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import ExchangeForm from "./components/ExchangeForm";
@@ -38,6 +38,13 @@ function Application(props) {
 
   if (domAccount) window.localStorage.setItem("account", domAccount);
 
+  const crypt = {
+    EUR: [0, "€"],
+    GBP: [1, "£"],
+    RUB: [2, "₽"],
+    CAD: [3, "CA$"],
+  };
+
   const [tradeAsset, setTradeAsset] = useState("USDT");
   const [fetchDepositFn, setFetchDepositFn] = useState(null);
   const [activeScreen, setActiveScreen] = useState(null);
@@ -63,6 +70,7 @@ function Application(props) {
   };
   const [login, setLogin] = useState(localStorage.getItem("login"));
   const [loginError, setLoginError] = useState(null);
+  const [userCurrency, setUserCurrency] = useState("$ USD 1");
 
   useEffect(() => {
     if (login !== null) {
@@ -71,53 +79,63 @@ function Application(props) {
   }, []);
 
   const onLogin = async (login, clicked = false) => {
+    await getAvatarFromBack(login);
     setLoginError(null);
     setAccountName(login);
-    await getAvatarFromBack(login);
     localStorage.setItem("login", login);
     if (clicked) {
       setLoginError(true);
     }
   };
 
+  const loc = React.useMemo(() => {
+    if (
+      activeScreen !== "sendFunds" &&
+      activeScreen !== "login" &&
+      activeScreen != null
+    ) {
+      sessionStorage.setItem("location", activeScreen);
+    }
+    return true;
+  }, [activeScreen]);
+
   async function getAvatarFromBack(login) {
     try {
-      let avatar = await getAvatar(login);
-      if (avatar?.message !== "There is no such login") {
-        let avatarImage = `https://${env.BACK_URL}${
-          avatar.message.split(".")[2] + "." + avatar.message.split(".")[3]
-        }`;
+      const data = await getUserData(login);
+      const response = await getCryptosChange();
+      setCryptoData(response);
+      if (data?.message.userAvatar != null) {
+        let avatarImage = `https://${env.BACK_URL}/public/${data.message.userAvatar}`;
         setUserImageDefault(avatarImage);
         setUserImageNavbar(avatarImage);
+      }
+      if (data?.message?.currency === "USD") {
+      } else if (data?.message?.currency) {
+        setUserCurrency(
+          `${crypt[data?.message?.currency][1]} ${data?.message?.currency} ${
+            response.ExchangeRate[crypt[data?.message?.currency][0]].rate
+          }`
+        );
       }
     } catch (e) {}
   }
 
-  useEffect(async () => {
-    const response = await getCryptosChange();
-    setCryptoData(response);
-  }, []);
-
-  useEffect(() => {
-    if (!localStorage.getItem("currency")) {
-      localStorage.setItem("currency", "$ USD 1");
-    }
-  }, []);
-
   useEffect(() => {
     async function fetchPortfolio() {
-      console.log("yes");
       if (portfolioReceiver === null) return;
       if (portfolio !== null) return;
       if (accountName === null || accountName.length === 0) return;
-      console.log("No");
       try {
         const fetched = await portfolioReceiver.fetch();
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
         localStorage.setItem("account", accountName);
-        setActiveScreen("wallet");
+        setActiveScreen(
+          sessionStorage.getItem("location") != null
+            ? sessionStorage.getItem("location")
+            : "wallet"
+        );
       } catch (e) {
         setActiveScreen("login");
       }
@@ -126,44 +144,55 @@ function Application(props) {
   }, [portfolioReceiver, portfolio, accountName]);
 
   useEffect(() => {
-    setIsLoading(true);
-    Meta1.connect(metaUrl || env.MAIA_DEV).then(
-      () => {
-        setIsLoading(false);
-        if (accountName == null || accountName.length === 0) {
+    async function connect() {
+      setIsLoading(true);
+      Meta1.connect(metaUrl || env.MAIA_PROD).then(
+        () => {
+          setIsLoading(false);
+          if (
+            accountName == null ||
+            accountName.length === 0 ||
+            !localStorage.getItem("login")
+          ) {
+            setActiveScreen("login");
+          } else {
+            setActiveScreen(
+              sessionStorage.getItem("location") != null
+                ? sessionStorage.getItem("location")
+                : "wallet"
+            );
+            setPortfolioReceiver(
+              new Portfolio({
+                metaApi: Meta1,
+                accountName: accountName,
+              })
+            );
+            setTrader(
+              new TradeWithPassword({
+                metaApi: Meta1,
+                login: accountName,
+              })
+            );
+
+            setFetchDepositFn((asset) => (asset) => {
+              return fetchDepositAddress({ accountName, asset });
+            });
+
+            setSenderApi(
+              new SendWithPassword({
+                metaApi: Meta1,
+                login: accountName,
+              })
+            );
+          }
+        },
+        () => {
           setActiveScreen("login");
-        } else {
-          setActiveScreen("wallet");
-          setPortfolioReceiver(
-            new Portfolio({
-              metaApi: Meta1,
-              accountName: accountName,
-            })
-          );
-          setTrader(
-            new TradeWithPassword({
-              metaApi: Meta1,
-              login: accountName,
-            })
-          );
-
-          setFetchDepositFn((asset) => (asset) => {
-            return fetchDepositAddress({ accountName, asset });
-          });
-
-          setSenderApi(
-            new SendWithPassword({
-              metaApi: Meta1,
-              login: accountName,
-            })
-          );
+          setLoginError("Error occured");
         }
-      },
-      () => {
-        setActiveScreen("login");
-        setLoginError("Error occured");
-      }
-    );
+      );
+    }
+    connect();
   }, [accountName]);
 
   function refetchPortfolio() {
@@ -182,6 +211,12 @@ function Application(props) {
     setActiveScreen("wallet");
   };
 
+  async function chngLastLocation(location) {
+    if (location && location !== "login") {
+      await changeLastLocation(localStorage.getItem("login"), location);
+    }
+  }
+
   if (isLoading || activeScreen == null) {
     return <MetaLoader size={"large"} />;
   }
@@ -192,38 +227,31 @@ function Application(props) {
         onClickHomeHandler={(e) => {
           e.preventDefault();
           setActiveScreen("login");
-          localStorage.setItem("location", "login");
         }}
         onClickPortfolioHandler={(e) => {
           e.preventDefault();
           setActiveScreen("wallet");
-          localStorage.setItem("location", "wallet");
         }}
         onClickExchangeHandler={(e) => {
           e.preventDefault();
           setTradeAsset("BTC");
           setActiveScreen("exchange");
-          localStorage.setItem("location", "exchange");
         }}
         onClickPaperWalletHandler={(e) => {
           e.preventDefault();
           setActiveScreen("paperWallet");
-          localStorage.setItem("location", "paperWallet");
         }}
         onClickOrderTableHandler={(e) => {
           e.preventDefault();
           setActiveScreen("orderTable");
-          localStorage.setItem("location", "orderTable");
         }}
         onClickSettingsHandler={(e) => {
           e.preventDefault();
           setActiveScreen("settings");
-          localStorage.setItem("location", "settings");
         }}
         onClickHistoryHandler={(e) => {
           e.preventDefault();
           setActiveScreen("orderTable");
-          localStorage.setItem("location", "orderTable");
         }}
         portfolio={portfolio}
         name={accountName}
@@ -236,38 +264,31 @@ function Application(props) {
           onClickHomeHandler={(e) => {
             e.preventDefault();
             setActiveScreen("login");
-            localStorage.setItem("location", "login");
           }}
           onClickPortfolioHandler={(e) => {
             e.preventDefault();
             setActiveScreen("wallet");
-            localStorage.setItem("location", "wallet");
           }}
           onClickExchangeHandler={(e) => {
             e.preventDefault();
             setTradeAsset("BTC");
             setActiveScreen("exchange");
-            localStorage.setItem("location", "exchange");
           }}
           onClickPaperWalletHandler={(e) => {
             e.preventDefault();
             setActiveScreen("paperWallet");
-            localStorage.setItem("location", "paperWallet");
           }}
           onClickOrderTableHandler={(e) => {
             e.preventDefault();
             setActiveScreen("orderTable");
-            localStorage.setItem("location", "orderTable");
           }}
           onClickSettingsHandler={(e) => {
             e.preventDefault();
             setActiveScreen("settings");
-            localStorage.setItem("location", "settings");
           }}
           onClickHistoryHandler={(e) => {
             e.preventDefault();
             setActiveScreen("orderTable");
-            localStorage.setItem("location", "orderTable");
           }}
           portfolio={portfolio}
           name={accountName}
@@ -289,13 +310,11 @@ function Application(props) {
                     e.preventDefault();
                     setTradeAsset("USDT");
                     setActiveScreen("exchange");
-                    localStorage.setItem("location", "exchange");
                   }}
                   onClickExchangeEOSHandler={(e) => {
                     e.preventDefault();
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
-                    localStorage.setItem("location", "exchange");
                   }}
                   portfolio={portfolio}
                 />
@@ -338,6 +357,10 @@ function Application(props) {
                   }}
                   userIcon={userImageDefault}
                   getAvatarFromBack={getAvatarFromBack}
+                  userCurrency={userCurrency}
+                  setUserCurrency={setUserCurrency}
+                  setUserImageDefault={setUserImageDefault}
+                  setUserImageNavbar={setUserImageNavbar}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -382,6 +405,7 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
+                  userCurrency={userCurrency}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -461,6 +485,7 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
+                  userCurrency={userCurrency}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -554,6 +579,7 @@ function Application(props) {
                             setActiveScreen("exchange");
                           }}
                           setFullPortfolio={setFullPortfolio}
+                          userCurrency={userCurrency}
                         />
                       </div>
                       <div className={"bottomAdaptBlock"}>

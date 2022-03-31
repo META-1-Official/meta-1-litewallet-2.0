@@ -26,6 +26,7 @@ const SendForm = React.memo((props) => {
     assets,
     onClickExchangeEOSHandler,
     onClickExchangeUSDTHandler,
+    userCurrency,
   } = props;
   const feeAsset = portfolio.find((asset) => asset.name === "META1");
   const amountHold =
@@ -54,6 +55,7 @@ const SendForm = React.memo((props) => {
   const [precisionAssets, setPrecisionAssets] = useState();
   const [password, setPassword] = useState("");
   const [clickedInputs, setClickedInputs] = useState(false);
+  const [feeAlert, setFeeAlert] = useState(false);
 
   useEffect(() => {
     async function getData() {
@@ -112,13 +114,13 @@ const SendForm = React.memo((props) => {
 
   useEffect(() => {
     if (Number(amount) <= 0 && clickedInputs) {
-      setError("The amount must be greater than 0");
+      setError("Amount can't be 0, Please update it");
     } else if (Number(amount) > Number(balance)) {
       setError("You don't have enough crypto");
     } else {
       setError("");
     }
-  }, [amount]);
+  }, [amount, receiver]);
 
   const RedditTextField = React.memo(
     styled((props) => (
@@ -163,7 +165,7 @@ const SendForm = React.memo((props) => {
     let priceForOne = Number(e.target.value) * priceForAsset;
     setBlockPrice(
       Number(priceForOne).toFixed(precisionAssets[asset]) *
-        Number(localStorage.getItem("currency").split(" ")[2])
+        Number(userCurrency.split(" ")[2])
     );
   };
 
@@ -180,7 +182,7 @@ const SendForm = React.memo((props) => {
     let priceForOne = (
       Number(e.target.value.split("$")[0]) /
       priceForAsset /
-      Number(localStorage.getItem("currency").split(" ")[2])
+      Number(userCurrency.split(" ")[2])
     ).toFixed(precisionAssets[asset]);
     setAmount(priceForOne);
     setBlockPrice(e.target.value);
@@ -209,7 +211,15 @@ const SendForm = React.memo((props) => {
       setAccountChecked(false);
       setAccountIsLoading(false);
     }
-  }, [debouncedAccount]);
+
+    if (Number(amount) <= 0 && clickedInputs) {
+      setError("Amount can't be 0, Please update it");
+    } else if (Number(amount) > Number(balance)) {
+      setError("You don't have enough crypto");
+    } else {
+      setError("");
+    }
+  }, [debouncedAccount, amount]);
 
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
@@ -246,7 +256,7 @@ const SendForm = React.memo((props) => {
     setBlockPrice(
       Number(assetData.balance * priceForAsset).toFixed(
         precisionAssets[asset]
-      ) * Number(localStorage.getItem("currency").split(" ")[2])
+      ) * Number(userCurrency.split(" ")[2])
     );
   };
 
@@ -293,6 +303,37 @@ const SendForm = React.memo((props) => {
   return (
     <>
       <div>
+        <Modal
+          size="mini"
+          open={feeAlert}
+          onClose={() => setFeeAlert(false)}
+          id={"modalExch"}
+        >
+          <Modal.Header>All META1 transfer</Modal.Header>
+          <Modal.Content style={{ height: "55%" }}>
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h4 style={{ textAlign: "center" }}>
+                Insufficient Balance: prevented the send of Max amount of META1.
+                <br />
+                META1 coin is required to pay network fees, otherwise your
+                account can become unusable
+              </h4>
+            </div>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button negative onClick={() => setFeeAlert(false)}>
+              OK
+            </Button>
+          </Modal.Actions>
+        </Modal>
         <div
           className={"headerTitle"}
           style={{
@@ -427,14 +468,10 @@ const SendForm = React.memo((props) => {
                             calculateCryptoPriceHandler(e);
                           }
                         }}
-                        placeholder={`Amount ${
-                          localStorage.getItem("currency").split(" ")[1]
-                        }`}
+                        placeholder={`Amount ${userCurrency.split(" ")[1]}`}
                         value={amount ? blockPrice : ""}
                       />
-                      <span>
-                        {localStorage.getItem("currency").split(" ")[0]}
-                      </span>
+                      <span>{userCurrency.split(" ")[0]}</span>
                     </div>
                     <div
                       style={{
@@ -532,8 +569,7 @@ const SendForm = React.memo((props) => {
                         {Number(amount) ? amount : 0} {assetData.label}
                       </h3>
                       <span>
-                        {blockPrice || 0}{" "}
-                        {localStorage.getItem("currency").split(" ")[1]}
+                        {blockPrice || 0} {userCurrency.split(" ")[1]}
                       </span>
                     </div>
                   </div>
@@ -552,7 +588,10 @@ const SendForm = React.memo((props) => {
                           boxShadow: "0 2px 10px 0 rgba(0, 0, 0, .11)",
                         }}
                         disabled={
-                          !accountChecked || amount === "" || password === ""
+                          !accountChecked ||
+                          amount === "" ||
+                          password === "" ||
+                          error
                         }
                         onClick={(e) => {
                           e.preventDefault();
@@ -569,15 +608,22 @@ const SendForm = React.memo((props) => {
                               if (parseFloat(feeAsset?.qty) < FEE) {
                                 setError("Not enough FEE");
                               } else {
-                                performTransfer({
-                                  ...{ to: receiver },
-                                  ...{
-                                    password,
-                                    amount,
-                                    assetCh,
-                                    message,
-                                  },
-                                });
+                                if (
+                                  assetCh === "META1" &&
+                                  Number(amount) === Number(feeAsset.qty)
+                                ) {
+                                  setFeeAlert(true);
+                                } else {
+                                  performTransfer({
+                                    ...{ to: receiver },
+                                    ...{
+                                      password,
+                                      amount,
+                                      assetCh,
+                                      message,
+                                    },
+                                  });
+                                }
                               }
                             } else {
                               setError(

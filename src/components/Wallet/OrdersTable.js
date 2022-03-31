@@ -59,6 +59,9 @@ export const OrdersTable = (props) => {
                 Assets
               </StyledTableCell>
               <StyledTableCell align="left">Type</StyledTableCell>
+              <StyledTableCell align="center">
+                Sender / Receiver
+              </StyledTableCell>
               <StyledTableCell align="right">Volume</StyledTableCell>
               <StyledTableCell align="left">Status</StyledTableCell>
               <StyledTableCell align="left">Time</StyledTableCell>
@@ -91,6 +94,9 @@ export const OrdersTable = (props) => {
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <h6 style={{ margin: "0" }}>{el.type}</h6>
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <h6 style={{ margin: "0" }}>{el.usersData}</h6>
                 </StyledTableCell>
                 <StyledTableCell align="right">
                   <h6 style={{ margin: "0" }}>

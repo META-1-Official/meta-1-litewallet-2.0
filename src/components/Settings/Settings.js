@@ -4,6 +4,9 @@ import axios from "axios";
 import RightSideHelpMenuThirdType from "../RightSideHelpMenuThirdType/RightSideHelpMenuThirdType";
 import env from "react-dotenv";
 import { Modal, Button } from "semantic-ui-react";
+import { saveUserCurrency, deleteAvatar } from "../../API/API";
+import logoNavbar from "../../images/default-pic2.png";
+import logoDefalt from "../../images/default-pic1.png";
 
 const Settings = (props) => {
   const {
@@ -13,9 +16,13 @@ const Settings = (props) => {
     cryptoData,
     userIcon,
     getAvatarFromBack,
+    userCurrency,
+    setUserCurrency,
+    setUserImageDefault,
+    setUserImageNavbar,
   } = props;
 
-  const [currency, setCurrency] = useState(localStorage.getItem("currency"));
+  const [currency, setCurrency] = useState(userCurrency);
   const [modalOpened, setModalOpened] = useState(false);
 
   useEffect(() => {
@@ -24,29 +31,20 @@ const Settings = (props) => {
     }, 50);
   }, []);
 
-  const changeCurrencyHandler = (e) => {
+  const changeCurrencyHandler = async (e) => {
     e.preventDefault();
-    localStorage.setItem("currency", currency);
+    await saveUserCurrency(
+      localStorage.getItem("login"),
+      currency.split(" ")[1]
+    );
+    setUserCurrency(currency);
     setModalOpened(true);
   };
 
   async function removePhoto() {
-    await axios.post(`https://${env.BACK_URL}/deleteAvatar`, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      login: localStorage.getItem("login"),
-    });
-  }
-
-  function waitNewPic() {
-    for (let i = 0; i < 5; i++) {
-      setTimeout(async () => {
-        try {
-          await getAvatarFromBack(localStorage.getItem("login"));
-        } catch (e) {}
-      }, 2000);
-    }
+    await deleteAvatar(localStorage.getItem("login"));
+    setUserImageDefault(logoDefalt);
+    setUserImageNavbar(logoNavbar);
   }
 
   async function uploadFile(e) {
@@ -64,11 +62,17 @@ const Settings = (props) => {
             "file",
             document.getElementById("file_upload")?.files[0]
           );
-          await axios.post(`https://${env.BACK_URL}/saveAvatar`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
+          const { data } = await axios.post(
+            `https://${env.BACK_URL}/saveAvatar`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          setUserImageDefault(`https://${env.BACK_URL}/public/${data.message}`);
+          setUserImageNavbar(`https://${env.BACK_URL}/public/${data.message}`);
         } else {
           alert("Invalid file size");
         }
@@ -78,6 +82,7 @@ const Settings = (props) => {
     } else {
       alert("Please select a file");
     }
+    document.getElementById("file_upload").value = "";
   }
 
   return (
@@ -90,7 +95,7 @@ const Settings = (props) => {
         }}
         id={"modalExch"}
       >
-        <Modal.Header>Trade Completed</Modal.Header>
+        <Modal.Header>Currency change</Modal.Header>
         <Modal.Content style={{ height: "55%" }}>
           <div
             style={{
@@ -102,7 +107,8 @@ const Settings = (props) => {
             }}
           >
             <h3 style={{ textAlign: "center" }}>
-              You have successfully changed the currency to {currency[0]}
+              You have successfully changed the currency to{" "}
+              {currency.split(" ")[0]}
             </h3>
           </div>
         </Modal.Content>
@@ -158,7 +164,6 @@ const Settings = (props) => {
                             id="file_upload"
                             onChange={(e) => {
                               uploadFile(e);
-                              waitNewPic();
                             }}
                             className={styles.uploadButton}
                           />

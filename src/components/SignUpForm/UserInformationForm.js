@@ -55,6 +55,12 @@ const UserInformationForm = (props) => {
         content: error,
         pointing: "below",
       });
+    } else if (!accountName.includes("-") && !/^.*\d.*$/.test(accountName)) {
+      setAccountNameErrors({
+        content:
+          "This is a premium name which is more expensive than a name containing a dash (-) or a number.",
+        pointing: "below",
+      });
     } else {
       setAccountNameErrors(null);
     }
@@ -257,20 +263,6 @@ const UserInformationForm = (props) => {
                   phoneError ||
                   firstNameError ||
                   lastNameError
-                }
-                className={
-                  firstName === "" ||
-                  lastName === "" ||
-                  email === "" ||
-                  accountNameErrors ||
-                  searchAccount[0][0] === accountName ||
-                  password !== generatedPassword ||
-                  emailError ||
-                  phoneError ||
-                  firstNameError ||
-                  lastNameError
-                    ? "btnSendDisabled ui button yellow"
-                    : "btnSend ui button yellow"
                 }
               >
                 Submit

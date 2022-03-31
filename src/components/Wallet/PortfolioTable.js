@@ -9,8 +9,11 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import MetaLoader from "../../UI/loader/Loader";
 import { Image } from "semantic-ui-react";
+import Meta1 from "meta1dex";
 
-const PortfolioTable = (props) => {
+import { useQuery } from "react-query";
+
+const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
   const {
@@ -19,9 +22,24 @@ const PortfolioTable = (props) => {
     onSendClick,
     onDepositClick,
     assets,
-    data,
-    isLoading,
+    userCurrency,
   } = props;
+
+  const { data, isLoading, error } = useQuery("cryptosTable", getDatas);
+
+  async function getDatas() {
+    const cryptoArray = ["META1", "ETH", "BTC", "BNB", "EOS", "XLM", "LTC"];
+    let fetchedCryptos = {};
+    for (let i = 0; i < cryptoArray.length; i++) {
+      fetchedCryptos[cryptoArray[i]] = await Meta1.ticker(
+        "USDT",
+        cryptoArray[i]
+      );
+    }
+    fetchedCryptos["USDT"] = { latest: 1, percent_change: 0 };
+    setLoading(false);
+    return fetchedCryptos;
+  }
 
   useEffect(() => {
     filteredPortfolio.forEach((d, i) => {
@@ -51,14 +69,6 @@ const PortfolioTable = (props) => {
     },
   }));
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-  }, []);
-
-  if (isLoading && loading) return <MetaLoader size={"small"} />;
-
   const currencyValue = (datas) => {
     let assetValue = data[datas.name].latest;
     if (datas.name === "META1") {
@@ -66,7 +76,6 @@ const PortfolioTable = (props) => {
     } else if (assetValue * data?.qty === 0) {
       return "0.00";
     } else {
-      console.log(datas);
       return (assetValue * datas?.qty).toFixed(datas.pre);
     }
   };
@@ -74,6 +83,8 @@ const PortfolioTable = (props) => {
   const currencyPrice = (datass) => {
     return Number(data[datass.name].latest).toFixed(2);
   };
+
+  if (isLoading && loading) return <MetaLoader size={"small"} />;
 
   return (
     <TableContainer
@@ -97,7 +108,7 @@ const PortfolioTable = (props) => {
             <StyledTableCell>
               <div className="text-left" style={{ width: "6rem" }}>
                 <div className="table_title" id={"valueTitle"}>
-                  {`VALUE (${localStorage.getItem("currency").split(" ")[1]})`}
+                  {`VALUE (${userCurrency.split(" ")[1]})`}
                 </div>
               </div>
             </StyledTableCell>
@@ -109,7 +120,7 @@ const PortfolioTable = (props) => {
             <StyledTableCell>
               <div className="text-left" style={{ width: "6rem" }}>
                 <div className="table_title" id={"priceTitle"}>
-                  {`PRICE (${localStorage.getItem("currency").split(" ")[1]})`}
+                  {`PRICE (${userCurrency.split(" ")[1]})`}
                 </div>
               </div>
             </StyledTableCell>
@@ -147,8 +158,7 @@ const PortfolioTable = (props) => {
               <StyledTableCell align="center" className={"currencyValues"}>
                 {Number(
                   (
-                    currencyValue(datas, data["META1"]) *
-                    Number(localStorage.getItem("currency").split(" ")[2])
+                    currencyValue(datas) * Number(userCurrency.split(" ")[2])
                   ).toFixed(datas.pre)
                 )}
               </StyledTableCell>
@@ -172,7 +182,7 @@ const PortfolioTable = (props) => {
                 {Number(
                   (
                     currencyPrice(datas, data[datas.name]) *
-                    Number(localStorage.getItem("currency").split(" ")[2])
+                    Number(userCurrency.split(" ")[2])
                   ).toFixed(datas.pre)
                 )}
               </StyledTableCell>
@@ -180,7 +190,6 @@ const PortfolioTable = (props) => {
                 <button
                   onClick={() => {
                     onAssetSelect(datas?.name);
-                    localStorage.setItem("location", "exchange");
                   }}
                   className={"tradeButton"}
                 >
@@ -191,7 +200,6 @@ const PortfolioTable = (props) => {
                 <button
                   onClick={() => {
                     onSendClick(datas?.name);
-                    localStorage.setItem("location", "sendFunds");
                   }}
                   className={
                     datas.qty > 0 ? "sendButton" : "sendButtonDisabled"
@@ -206,7 +214,6 @@ const PortfolioTable = (props) => {
                   <button
                     onClick={() => {
                       onDepositClick(datas.name);
-                      localStorage.setItem("location", "deposit");
                     }}
                     className={"depositButton"}
                   >
@@ -220,6 +227,6 @@ const PortfolioTable = (props) => {
       </Table>
     </TableContainer>
   );
-};
+});
 
 export default PortfolioTable;

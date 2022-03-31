@@ -95,7 +95,7 @@ const RightSideHelpMenuSecondType = (props) => {
         <hr />
         {isLoading ? (
           <MetaLoader size={"small"} />
-        ) : data ? (
+        ) : data.length > 0 ? (
           data?.map((el, index) => (
             <div
               key={index}

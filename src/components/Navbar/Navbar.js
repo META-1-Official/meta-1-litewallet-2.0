@@ -3,6 +3,7 @@ import styles from "./Navbar.module.scss";
 import "./styles.css";
 import logo from "../../images/Logo.png";
 import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
+import WidgetOnRamper from "./WidgetOnRamper";
 
 const Navbar = (props) => {
   const {
@@ -41,17 +42,7 @@ const Navbar = (props) => {
                 data-bs-dismiss="modal"
                 aria-label="Close"
               />
-              <iframe
-                src="https://widget.onramper.com/?color=ffc000&amp;defaultAmount=1000&amp;defaultFiat=USD&amp;defaultCrypto=BTC&amp;apiKey=pk_prod_k6LKERIMdGDE8geCxOApKSCy6mnfF5CuhI4TLZj55Wc0"
-                title="myFrame"
-                style={{ border: "0" }}
-                allowFullScreen=""
-                aria-hidden="false"
-                tabIndex="0"
-                width="100%"
-                height="600"
-                frameBorder="0"
-              />
+              <WidgetOnRamper />
             </div>
           </div>
         </div>
@@ -158,7 +149,8 @@ const Navbar = (props) => {
                             className="dropdown-item"
                             style={{ textAlign: "center" }}
                             onClick={() => {
-                              localStorage.setItem("login", null);
+                              localStorage.removeItem("login");
+                              sessionStorage.setItem("location", "wallet");
                               window.location.reload();
                             }}
                           >

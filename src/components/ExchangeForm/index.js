@@ -29,6 +29,7 @@ export default function ExchangeForm(props) {
     metaUrl,
     portfolioReceiver,
     onSuccessTrade,
+    userCurrency,
   } = props;
   const [portfolio, setPortfolio] = useState(props.portfolio);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
@@ -49,6 +50,11 @@ export default function ExchangeForm(props) {
   const [blockPrice, setBlockPrice] = useState();
   const [clickedInputs, setClickedInputs] = useState(false);
   const [error, setError] = useState();
+  const [feeAlert, setFeeAlert] = useState(false);
+
+  useEffect(() => {
+    console.log(pair);
+  }, [pair]);
 
   useEffect(() => {
     async function getPriceForAsset() {
@@ -69,39 +75,25 @@ export default function ExchangeForm(props) {
   }, [asset, portfolio]);
 
   useEffect(() => {
+    const feeAsset = portfolio?.find((asset) => asset.name === "META1");
     if (Number(selectedFromAmount) <= 0 && clickedInputs) {
       setError(
         `The amount must be greater than ${(
-          0.003 * Number(localStorage.getItem("currency").split(" ")[2])
-        ).toFixed(4)} ${localStorage.getItem("currency").split(" ")[1]}`
+          0.003 * Number(userCurrency.split(" ")[2])
+        ).toFixed(4)} ${userCurrency.split(" ")[1]}`
       );
     } else {
       setError("");
     }
-    if (
-      Number(blockPrice) <
-        0.003 * Number(localStorage.getItem("currency").split(" ")[2]) &&
-      selectedFrom.label !== "USDT"
-    ) {
+    if (Number(blockPrice) < 0.003 * Number(userCurrency.split(" ")[2])) {
       setError(
         `The amount must be greater than ${Number(
-          (
-            0.003 * Number(localStorage.getItem("currency").split(" ")[2])
-          ).toFixed(4)
-        )} ${localStorage.getItem("currency").split(" ")[1]}`
+          (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
+        )} ${userCurrency.split(" ")[1]}`
       );
-    } else if (
-      Number(blockPrice) <
-        0.003 * Number(localStorage.getItem("currency").split(" ")[2]) &&
-      selectedFrom.label === "USDT"
-    ) {
-      setError(
-        `For USDT, the amount must be greater than ${Number(
-          (
-            0.01 * Number(localStorage.getItem("currency").split(" ")[2])
-          ).toFixed(4)
-        )} ${localStorage.getItem("currency").split(" ")[1]}`
-      );
+      console.log(feeAsset);
+    } else if (feeAsset == undefined) {
+      setError("Not enough FEE");
     } else {
       setError("");
     }
@@ -169,9 +161,7 @@ export default function ExchangeForm(props) {
   const calculateUsdPriceHandler = (e) => {
     if (e.target.value.length != 0) {
       let priceForOne = (Number(e.target.value) * priceForAsset).toFixed(2);
-      setBlockPrice(
-        priceForOne * Number(localStorage.getItem("currency").split(" ")[2])
-      );
+      setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
     } else {
       setBlockPrice(NaN);
     }
@@ -182,8 +172,8 @@ export default function ExchangeForm(props) {
     let priceForOne = (
       Number(e.target.value) /
       priceForAsset /
-      Number(localStorage.getItem("currency").split(" ")[2])
-    ).toFixed(selectedFrom.pre);
+      Number(userCurrency.split(" ")[2])
+    ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
     setSelectedFromAmount(priceForOne);
   };
 
@@ -232,6 +222,10 @@ export default function ExchangeForm(props) {
       setSelectedFromAmount("");
     }
   }, [selectedFromAmount, selectedToAmount]);
+
+  useEffect(() => {
+    setPasswordShouldBeProvided(false);
+  }, [selectedFrom, selectedTo, selectedFromAmount, selectedToAmount]);
 
   useEffect(() => {
     async function fetchPair(selectedTo, selectedFrom) {
@@ -291,9 +285,17 @@ export default function ExchangeForm(props) {
   const isMobile = width <= 600;
 
   const prepareTrade = () => {
+    const feeAsset = portfolio?.find((asset) => asset.name === "META1");
     localStorage.setItem("selectFrom", selectedFromAmount);
     localStorage.setItem("selectTo", selectedToAmount);
-    setPasswordShouldBeProvided(true);
+    if (
+      selectedFrom.label === "META1" &&
+      Number(selectedFromAmount) === Number(feeAsset.qty)
+    ) {
+      setFeeAlert(true);
+    } else {
+      setPasswordShouldBeProvided(true);
+    }
   };
 
   const performTrade = async () => {
@@ -329,9 +331,7 @@ export default function ExchangeForm(props) {
       let priceForOne = (
         Number(document.getElementById("inputAmount").value) * priceForAsset
       ).toFixed(3);
-      setBlockPrice(
-        priceForOne * Number(localStorage.getItem("currency").split(" ")[2])
-      );
+      setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
     }, 25);
   };
   const ariaLabel = { "aria-label": "description" };
@@ -339,19 +339,7 @@ export default function ExchangeForm(props) {
   // const getAssets = (except) => options.filter((el) => el.value !== except);
   if (selectedFrom == null && selectedTo == null) return null;
 
-  const getAssets = (except) => {
-    if (except === "META1" || except === "USDT") {
-      return options.filter((el) => el.value !== except);
-    } else {
-      let newFilter = [];
-      for (let i = 0; i < options.length; i++) {
-        if (options[i].value === "META1" || options[i].value === "USDT") {
-          newFilter.push(options[i]);
-        }
-      }
-      return newFilter;
-    }
-  };
+  const getAssets = (except) => options.filter((el) => el.value !== except);
 
   return (
     <>
@@ -406,6 +394,37 @@ export default function ExchangeForm(props) {
           </Modal.Content>
           <Modal.Actions>
             <Button positive onClick={() => setTradeError(null)}>
+              OK
+            </Button>
+          </Modal.Actions>
+        </Modal>
+        <Modal
+          size="mini"
+          open={feeAlert}
+          onClose={() => setFeeAlert(false)}
+          id={"modalExch"}
+        >
+          <Modal.Header>All META1 transfer</Modal.Header>
+          <Modal.Content style={{ height: "55%" }}>
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h4 style={{ textAlign: "center" }}>
+                Insufficient Balance: prevented the swap of Max amount of META1.
+                <br />
+                META1 coin is required to pay network fees, otherwise your
+                account can become unusable
+              </h4>
+            </div>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button negative onClick={() => setFeeAlert(false)}>
               OK
             </Button>
           </Modal.Actions>
@@ -507,6 +526,7 @@ export default function ExchangeForm(props) {
                                   value={selectedFromAmount}
                                   type={"number"}
                                   onChange={(e) => {
+                                    console.log(e);
                                     if (
                                       e.target.value.length < 11 &&
                                       /[-+]?[0-9]*\.?[0-9]*/.test(
@@ -561,9 +581,7 @@ export default function ExchangeForm(props) {
                                     pattern="\d*"
                                     type={"number"}
                                     placeholder={`Amount ${
-                                      localStorage
-                                        .getItem("currency")
-                                        .split(" ")[1]
+                                      userCurrency.split(" ")[1]
                                     }`}
                                     disabled={invalidEx}
                                     style={
@@ -571,13 +589,7 @@ export default function ExchangeForm(props) {
                                     }
                                     value={blockPrice}
                                   />
-                                  <span>
-                                    {
-                                      localStorage
-                                        .getItem("currency")
-                                        .split(" ")[0]
-                                    }
-                                  </span>
+                                  <span>{userCurrency.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
@@ -649,9 +661,9 @@ export default function ExchangeForm(props) {
                         <ExchangeSelect
                           onChange={(val) => {
                             setSelectedTo(val);
-                            setSelectedFromAmount("");
-                            setSelectedToAmount("");
-                            setBlockPrice("");
+                            setSelectedFromAmount(NaN);
+                            setSelectedToAmount(NaN);
+                            setBlockPrice(NaN);
                             setInvalidEx(false);
                           }}
                           options={getAssets(selectedFrom.value)}
@@ -713,13 +725,7 @@ export default function ExchangeForm(props) {
                                       ? blockPrice
                                       : 0}
                                   </span>
-                                  <span>
-                                    {
-                                      localStorage
-                                        .getItem("currency")
-                                        .split(" ")[0]
-                                    }
-                                  </span>
+                                  <span>{userCurrency.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
@@ -751,9 +757,7 @@ export default function ExchangeForm(props) {
                     </h4>
                     <span>
                       {!invalidEx && blockPrice
-                        ? `${blockPrice}${
-                            localStorage.getItem("currency").split(" ")[0]
-                          }`
+                        ? `${blockPrice}${userCurrency.split(" ")[0]}`
                         : 0}
                     </span>
                   </div>
@@ -799,9 +803,7 @@ export default function ExchangeForm(props) {
                     </h4>
                     <span>
                       {!invalidEx && blockPrice
-                        ? `${blockPrice}${
-                            localStorage.getItem("currency").split(" ")[0]
-                          }`
+                        ? `${blockPrice}${userCurrency.split(" ")[0]}`
                         : 0}
                     </span>
                   </div>
@@ -813,7 +815,7 @@ export default function ExchangeForm(props) {
                 <h5 style={{ color: "red", textAlign: "center" }}>{error}</h5>
               </Grid.Row>
             ) : null}
-            {selectedFrom.balance < selectedFromAmount && !invalidEx ? (
+            {Number(selectedFrom.balance) < Number(selectedFromAmount) ? (
               <Grid.Row centered style={{ marginBottom: "1rem" }}>
                 <h5 style={{ color: "red", textAlign: "center" }}>
                   You don't have enough crypto
@@ -854,7 +856,7 @@ export default function ExchangeForm(props) {
                     selectedToAmount == 0 ||
                     selectedToAmount === 0.0 ||
                     selectedFrom.balance === 0 ||
-                    selectedFrom.balance < selectedFromAmount ||
+                    Number(selectedFrom.balance) < Number(selectedFromAmount) ||
                     !selectedFromAmount ||
                     !selectedToAmount ||
                     blockPrice == 0 ||
