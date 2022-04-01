@@ -91,7 +91,7 @@ const Navbar = (props) => {
                   />
                   <span
                     onClick={() => {
-                      window.open("https://support.meta1.io");
+                      window.open("https://support.meta1.vision");
                     }}
                   >
                     Get help
