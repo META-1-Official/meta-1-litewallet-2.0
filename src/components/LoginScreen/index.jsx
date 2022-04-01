@@ -156,10 +156,10 @@ const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
       <h3>META Wallet Creation</h3>
       <p>
         The META 1 Coin Digital Wallet can be created and accessed from your
-        meta1.io Dashboard account OR on meta-exchange.io.
+        meta1.vision Dashboard account OR on meta-exchange.io.
       </p>
       <br />
-      <h3>GET STARTED: Create a META Lite Wallet on meta1.io Dashboard</h3>
+      <h3>GET STARTED: Create a META Lite Wallet on meta1.vision Dashboard</h3>
       <p>
         1. Click the White ‘Create META Wallet’ button to start the process.
         <br />
@@ -251,7 +251,7 @@ const VideoModal = ({ openVideoModal, setOpenVideoModal }) => {
     >
       <iframe
         title="vimeo-player"
-        src="https://player.vimeo.com/video/693848928?h=31b02d1eee"
+        src="https://player.vimeo.com/video/541858758"
         width="640"
         height="360"
         frameborder="0"

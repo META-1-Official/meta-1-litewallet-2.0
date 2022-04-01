@@ -42,7 +42,17 @@ const Navbar = (props) => {
                 data-bs-dismiss="modal"
                 aria-label="Close"
               />
-              <WidgetOnRamper />
+              <iframe
+                src="https://widget.onramper.com/?color=ffc000&amp;defaultAmount=1000&amp;defaultFiat=USD&amp;defaultCrypto=BTC&amp;apiKey=pk_prod_k6LKERIMdGDE8geCxOApKSCy6mnfF5CuhI4TLZj55Wc0"
+                title="myFrame"
+                style={{ border: "0" }}
+                allowFullScreen=""
+                aria-hidden="false"
+                tabIndex="0"
+                width="100%"
+                height="600"
+                frameBorder="0"
+              />
             </div>
           </div>
         </div>
@@ -56,7 +66,7 @@ const Navbar = (props) => {
           <img
             className={styles.img}
             onClick={() => {
-              window.open("https://meta1.io");
+              window.open("https://meta1.vision");
             }}
             style={{ cursor: "pointer" }}
             src={logo}

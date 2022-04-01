@@ -24,7 +24,7 @@ const Footer = (props) => {
                 </h3>
                 <span>
                   The META1 Coin Digital Wallet can be created and accessed from
-                  your meta1.io Dashboard account OR on meta-exchange.io.
+                  your meta1.vision Dashboard account OR on meta-exchange.io.
                 </span>
               </div>
               <button
@@ -37,7 +37,7 @@ const Footer = (props) => {
             </div>
             <div className={styles.modalBody + " modal-body"}>
               <h4 style={{ marginLeft: "1.2rem", marginBottom: "1rem" }}>
-                GET STARTED: Create a META Lite Wallet on meta1.io Dashboard
+                GET STARTED: Create a META Lite Wallet on meta1.vision Dashboard
               </h4>
               <ol>
                 <li>
@@ -117,8 +117,8 @@ const Footer = (props) => {
                 versions access the same account data on the META Blockchain.
                 Nothing is compromised including speed and transactional
                 integrity. Many Coin holders will find it easier to work from
-                the meta1.io Dashboard. But keep in mind that META Exchange is a
-                powerful leading edge tool with many features and advanced
+                the meta1.vision Dashboard. But keep in mind that META Exchange
+                is a powerful leading edge tool with many features and advanced
                 functionality.
               </div>
               <div style={{ margin: "1rem 1.2rem" }}>
@@ -188,7 +188,7 @@ const Footer = (props) => {
             <div className={"modal-body"} style={{ margin: "0 auto" }}>
               <iframe
                 title="vimeo-player"
-                src="https://player.vimeo.com/video/693848928?h=31b02d1eee"
+                src="https://player.vimeo.com/video/541858758?h=68f297ab7f"
                 width="750"
                 height="450"
                 frameBorder="0"
@@ -219,11 +219,13 @@ const Footer = (props) => {
                 aria-label="Close"
               />
               <h2 style={{ margin: "0", fontSize: "2.5rem", color: "#000" }}>
-                WELCOME TO <span style={{ color: "#FFC000" }}>META1.IO</span>
+                WELCOME TO{" "}
+                <span style={{ color: "#FFC000" }}>META1.VISION</span>
               </h2>
               <h3 style={{ fontSize: "1.7rem", fontWeight: "500" }}>
-                By Using The <span style={{ color: "#FFC000" }}>META1.Io</span>{" "}
-                Website You Are Agreeing To The{" "}
+                By Using The{" "}
+                <span style={{ color: "#FFC000" }}>META1.Vision</span> Website
+                You Are Agreeing To The{" "}
                 <strong style={{ fontWeight: "700" }}>Privacy Policy</strong>{" "}
                 And Website Use <strong>Terms Below.</strong>
               </h3>
@@ -234,11 +236,11 @@ const Footer = (props) => {
                 Privacy Statements
               </h4>
               <p style={{ fontSize: "1rem" }}>
-                This website (META1.io, META1Coin.Com) and all META 1 COIN TRUST
-                business are private, protected by the privacy act of 1974.
-                Title 5 U.S.C. 552(a), the fourth and fifth Amendments of the
-                Constitution for the united States of America, the common law
-                privacy rights available in the united States of America and
+                This website (META1.vision, META1Coin.Com) and all META 1 COIN
+                TRUST business are private, protected by the privacy act of
+                1974. Title 5 U.S.C. 552(a), the fourth and fifth Amendments of
+                the Constitution for the united States of America, the common
+                law privacy rights available in the united States of America and
                 every other applicable jurisdiction.
               </p>
               <p style={{ fontSize: "1rem" }}>
