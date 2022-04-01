@@ -49,24 +49,9 @@ export default function LoginScreen(props) {
               </strong>
             </h5>
             <span>
-              If you have not yet created a META wallet, please FIRST review the{" "}
-              <a
-                data-bs-toggle="modal"
-                data-bs-target="#terms"
-                style={{ cursor: "pointer", textDecoration: "underline" }}
-              >
-                META Wallet Creation Instructions
-              </a>{" "}
-              and META{" "}
-              <a
-                data-bs-toggle="modal"
-                data-bs-target="#video"
-                style={{ cursor: "pointer", textDecoration: "underline" }}
-              >
-                Wallet tutorial video.
-              </a>
-              <br /> Then click the 'Create META Wallet' button below to create
-              your wallet.
+              If you have not yet created a META wallet, please click the Get
+              Started button to on the right hand side of the screen. Then click
+              the 'Create META Wallet' button below to create your wallet
             </span>
             <br />
             <button
@@ -82,7 +67,7 @@ export default function LoginScreen(props) {
             <div className={styles.linkMeta}>
               <span>
                 For those already having a META Wallet, to enable functionality,
-                you must 'link' your wallet by typing in your wallet 'Account
+                you must 'link' your wallet by typing in your wallet 'Wallet
                 Name' in the box below and clicking the 'Link META Wallet'
                 button.
               </span>
@@ -93,7 +78,7 @@ export default function LoginScreen(props) {
                     e.preventDefault();
                     setLogin(e.target.value);
                   }}
-                  placeholder={"Account Name"}
+                  placeholder={"Wallet Name"}
                   value={login}
                   type="text"
                 />
@@ -116,7 +101,7 @@ export default function LoginScreen(props) {
           ) : (
             <div className={styles.linkMeta}>
               <h5>
-                <strong>To unlink your account, click here</strong>
+                <strong>To unlink your wallet, click here</strong>
               </h5>
               <br />
               <button
@@ -156,10 +141,10 @@ const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
       <h3>META Wallet Creation</h3>
       <p>
         The META 1 Coin Digital Wallet can be created and accessed from your
-        meta1.io Dashboard account OR on meta-exchange.io.
+        meta1.vision Dashboard account OR on meta-exchange.io.
       </p>
       <br />
-      <h3>GET STARTED: Create a META Lite Wallet on meta1.io Dashboard</h3>
+      <h3>GET STARTED: Create a META Lite Wallet on meta1.vision Dashboard</h3>
       <p>
         1. Click the White ‘Create META Wallet’ button to start the process.
         <br />
@@ -214,7 +199,7 @@ const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
         Wallet (accessible on meta-exchange.io). The two versions access the
         same account data on the META Blockchain. Nothing is compromised
         including speed and transactional integrity. Many Coin holders will find
-        it easier to work from the meta1.io Dashboard. But keep in mind that
+        it easier to work from the meta1.vision Dashboard. But keep in mind that
         META Exchange is a powerful leading edge tool with many features and
         advanced functionality.
       </p>
@@ -225,7 +210,7 @@ const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
         CREATE MULTIPLE WALLETS - You can create more than one META Wallet.{" "}
         <br />
         First ‘unlink’ your active META Wallet before creating a new one. <br />
-        - Click the word ‘here’ in the phrase, “To unlink your account, click
+        - Click the word ‘here’ in the phrase, “To unlink your wallet, click
         here”, to unlink your wallet. <br />
         Click the ‘Create META Wallet’ button to create an additional wallet.{" "}
         <br />

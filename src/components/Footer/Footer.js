@@ -12,13 +12,13 @@ const Footer = (props) => {
                         <div className="modal-header">
                             <div style={{display: 'flex', flexDirection: 'column'}}>
                             <h3 style={{marginBottom: '.4rem'}} className="modal-title" id="exampleModalLabel">META Wallet <span style={{color: '#fdc000'}}>Creation</span></h3>
-                            <span>The META1 Coin Digital Wallet can be created and accessed from your meta1.io Dashboard account OR on meta-exchange.io.</span>
+                            <span>The META1 Coin Digital Wallet can be created and accessed from your meta1.vision Dashboard account OR on meta-exchange.io.</span>
                             </div>
                             <button style={{marginBottom: '3rem'}} type="button" className="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close" />
                         </div>
                         <div className={styles.modalBody + " modal-body"}>
-                            <h4 style={{marginLeft: '1.2rem', marginBottom: '1rem'}}>GET STARTED: Create a META Lite Wallet on meta1.io Dashboard</h4>
+                            <h4 style={{marginLeft: '1.2rem', marginBottom: '1rem'}}>GET STARTED: Create a META Lite Wallet on meta1.vision Dashboard</h4>
                             <ol>
                                 <li><strong>Click</strong> the <strong>White ‘Create META Wallet’</strong> button to start the process.</li>
                                 <li><strong>Fill in your information.</strong> Some fields may already be auto-filled. Make sure the fields are filled in properly. You may need to clear the fields and re-enter correctly.</li>
@@ -41,7 +41,7 @@ const Footer = (props) => {
                                 When you are ready to receive your coins, click on the <strong>Receive and Accept</strong> button and confirm you want to accept them into your wallet. Look on the META Lite wallet tab to see the newly loaded coins.
                             </div>
                             <div style={{margin: '1rem 1.2rem'}}>
-                                The META Lite Wallet has the basic essential functionality of the META Wallet (accessible on meta-exchange.io). The two versions access the same account data on the META Blockchain. Nothing is compromised including speed and transactional integrity. Many Coin holders will find it easier to work from the meta1.io Dashboard. But keep in mind that META Exchange is a powerful leading edge tool with many features and advanced functionality.
+                                The META Lite Wallet has the basic essential functionality of the META Wallet (accessible on meta-exchange.io). The two versions access the same account data on the META Blockchain. Nothing is compromised including speed and transactional integrity. Many Coin holders will find it easier to work from the meta1.vision Dashboard. But keep in mind that META Exchange is a powerful leading edge tool with many features and advanced functionality.
                             </div>
                             <div style={{margin: '1rem 1.2rem'}}>
                                 Your META Wallet can be used for several crypto currencies (select “Show All balances” in the META Lite Wallet section for a complete list).
@@ -51,7 +51,7 @@ const Footer = (props) => {
                             </div>
                             <div style={{margin: '1rem 1.2rem'}}>
                                 First ‘unlink’ your active META Wallet before creating a new one.
-                                - Click the word ‘here’ in the phrase, “To unlink your account, click here”, to unlink your wallet.
+                                - Click the word ‘here’ in the phrase, “To unlink your wallet, click here”, to unlink your wallet.
                                 Click the <strong>‘Create META Wallet’</strong> button to create an additional wallet.
                             </div>
                             <div style={{margin: '1rem 1.2rem'}}>
@@ -90,13 +90,13 @@ const Footer = (props) => {
                         <div className="modal-header" style={{display: 'block', textAlign: 'center'}}>
                             <button type="button" style={{margin: '0 0 0 97%'}} className="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close" />
-                            <h2 style={{margin: '0', fontSize: '2.5rem', color: '#000'}}>WELCOME TO <span style={{color: '#FFC000'}}>META1.IO</span></h2>
-                            <h3 style={{fontSize: '1.7rem', fontWeight: '500'}}>By Using The <span style={{color: '#FFC000'}}>META1.Io</span> Website You Are Agreeing To The <strong style={{fontWeight: '700'}}>Privacy
+                            <h2 style={{margin: '0', fontSize: '2.5rem', color: '#000'}}>WELCOME TO <span style={{color: '#FFC000'}}>META1.VISION</span></h2>
+                            <h3 style={{fontSize: '1.7rem', fontWeight: '500'}}>By Using The <span style={{color: '#FFC000'}}>META1.Vision</span> Website You Are Agreeing To The <strong style={{fontWeight: '700'}}>Privacy
                                 Policy</strong> And Website Use <strong>Terms Below.</strong></h3>
                         </div>
                         <div className={"modal-body"} style={{textAlign: 'center'}}>
                             <h4 style={{fontSize: '1.5rem'}}><span style={{color: '#FFC000'}}>Meta 1 Coin</span> Trust Privacy Statements</h4>
-                            <p style={{fontSize: '1rem'}}>This website (META1.io, META1Coin.Com) and all META 1 COIN TRUST business are
+                            <p style={{fontSize: '1rem'}}>This website (META1.vision, META1Coin.Com) and all META 1 COIN TRUST business are
                                 private, protected by the privacy act of 1974. Title 5 U.S.C. 552(a), the fourth
                                 and fifth Amendments of the Constitution for the united States of America, the
                                 common law privacy rights available in the united States of America and every
@@ -114,7 +114,7 @@ const Footer = (props) => {
                             <p style={{fontSize: '1rem'}}>By accepting to the following terms, you agree to a Non-Disclosure Agreement with
                                 META 1 Coin TRUST to operate this commercial transaction in the Private.</p>
                             <p style={{fontSize: '1rem'}}>* If you need clarification regarding Private transactions and status, please
-                                contact private@meta1.io</p>
+                                contact private@meta1.vision</p>
                             <h3 style={{background: '#FFC000', padding: '1rem 0', color: '#fff', fontSize: '1.5rem'}} className="notice-heading">Notice</h3>
                             <p style={{fontSize: '1rem'}}>BE WARNED, NOTICED, AND ADVISED that in addition to the constitutional limits on
                                 governmental authority included in the “Constitution for the united States of

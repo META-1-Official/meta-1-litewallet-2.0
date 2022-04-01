@@ -18,23 +18,15 @@ const RightSideHelpMenuFirstType = (props) => {
         <h5>Intro</h5>
         <hr />
         <div className={styles.helpBlock}>
-          <span style={{ marginBottom: ".5rem" }}>
-            <a
-              data-bs-toggle="modal"
-              data-bs-target="#video"
-              style={{ cursor: "pointer" }}
-            >
-              META Wallet Video
-            </a>
-          </span>
           <span>
-            <a
-              data-bs-toggle="modal"
-              data-bs-target="#terms"
-              style={{ cursor: "pointer" }}
+            <button
+              className={styles.Button}
+              style={{ fontSize: "100%", marginTop: "0" }}
+              onClick={() => { window.open('https://support.meta1.vision/how-to-create-a-meta-lite-wallet') }}
+              type={"submit"}
             >
-              META Wallet Creation Tips
-            </a>
+              Get Started
+            </button>
           </span>
         </div>
       </div>
@@ -53,11 +45,11 @@ const RightSideHelpMenuFirstType = (props) => {
               style={
                 !portfolio
                   ? {
-                      cursor: "not-allowed",
-                    }
+                    cursor: "not-allowed",
+                  }
                   : {
-                      cursor: "pointer",
-                    }
+                    cursor: "pointer",
+                  }
               }
             >
               <img
@@ -86,11 +78,11 @@ const RightSideHelpMenuFirstType = (props) => {
             style={
               !portfolio
                 ? {
-                    cursor: "not-allowed",
-                  }
+                  cursor: "not-allowed",
+                }
                 : {
-                    cursor: "pointer",
-                  }
+                  cursor: "pointer",
+                }
             }
             onClick={portfolio ? onClickExchangeEOSHandler : null}
           >
