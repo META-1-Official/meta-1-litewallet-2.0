@@ -56,7 +56,7 @@ const Navbar = (props) => {
           <img
             className={styles.img}
             onClick={() => {
-              window.open("https://meta1.io");
+              window.open("https://meta1.vision");
             }}
             style={{ cursor: "pointer" }}
             src={logo}
@@ -91,7 +91,7 @@ const Navbar = (props) => {
                   />
                   <span
                     onClick={() => {
-                      window.open("https://support.meta1.io");
+                      window.open("https://support.meta1.vision");
                     }}
                   >
                     Get help
