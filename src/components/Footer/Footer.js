@@ -188,7 +188,7 @@ const Footer = (props) => {
             <div className={"modal-body"} style={{ margin: "0 auto" }}>
               <iframe
                 title="vimeo-player"
-                src="https://player.vimeo.com/video/541858758?h=68f297ab7f"
+                src="https://player.vimeo.com/video/693848928?h=31b02d1eee"
                 width="750"
                 height="450"
                 frameBorder="0"
