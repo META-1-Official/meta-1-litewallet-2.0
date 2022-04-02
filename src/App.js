@@ -8,6 +8,7 @@ import React, { useState, useEffect } from "react";
 import { getUserData, changeLastLocation, getLastLocation } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
+import WithdrawForm from "./components/WithdrawForm";
 import ExchangeForm from "./components/ExchangeForm";
 import SendForm from "./components/SendForm";
 import LoginScreen from "./components/LoginScreen";
@@ -31,8 +32,8 @@ function Application(props) {
   const { metaUrl } = props;
   const domAccount =
     props.account !== null &&
-    props.account !== undefined &&
-    props.account.length > 0
+      props.account !== undefined &&
+      props.account.length > 0
       ? props.account
       : null;
 
@@ -112,12 +113,11 @@ function Application(props) {
       if (data?.message?.currency === "USD") {
       } else if (data?.message?.currency) {
         setUserCurrency(
-          `${crypt[data?.message?.currency][1]} ${data?.message?.currency} ${
-            response.ExchangeRate[crypt[data?.message?.currency][0]].rate
+          `${crypt[data?.message?.currency][1]} ${data?.message?.currency} ${response.ExchangeRate[crypt[data?.message?.currency][0]].rate
           }`
         );
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   useEffect(() => {
@@ -524,6 +524,34 @@ function Application(props) {
               </div>
             )}
 
+            {activeScreen === "withdraw" && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  height: "100%",
+                }}
+              >
+                <WithdrawForm
+                  account={account}
+                  fetcher={fetchDepositFn}
+                  asset={tradeAsset}
+                  address={""}
+                  onBackClick={(e) => {
+                    e.preventDefault();
+                    setActiveScreen("wallet");
+                  }}
+                />
+                <Footer
+                  onClickHomeHandler={(e) => {
+                    e.preventDefault();
+                    setActiveScreen("login");
+                  }}
+                />
+              </div>
+            )}
+
             {activeScreen === "wallet" && (
               <>
                 <div
@@ -561,6 +589,10 @@ function Application(props) {
                           onDepositClick={(assetName) => {
                             setTradeAsset(assetName);
                             setActiveScreen("deposit");
+                          }}
+                          onWithdrawClick={(assetName) => {
+                            setTradeAsset(assetName);
+                            setActiveScreen("withdraw");
                           }}
                           onAssetSelect={(name) => {
                             setTradeAsset(name);

@@ -26,6 +26,7 @@ function Wallet(props) {
   const {
     portfolio,
     onDepositClick,
+    onWithdrawClick,
     onAssetSelect,
     onSendClick,
     assets,
@@ -220,6 +221,7 @@ function Wallet(props) {
         filteredPortfolio={filteredPortfolio}
         onSendClick={onSendClick}
         onDepositClick={onDepositClick}
+        onWithdrawClick={onWithdrawClick}
         onAssetSelect={props.onAssetSelect}
         onSetHideZero={setHideZero}
         hideZero={hideZero}

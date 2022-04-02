@@ -181,6 +181,16 @@
   border: none;
   box-shadow: var(--boxShadowIndex) !important;
 }
+.withdrawButton {
+  background: var(--blue) !important;
+  color: #fff !important;
+  width: 4.8rem !important;
+  height: 2rem;
+  font-weight: 600 !important;
+  border-radius: 3px;
+  border: none;
+  box-shadow: var(--boxShadowIndex) !important;
+}
 .sendButton {
   background: var(--gold) !important;
   color: #fff !important;

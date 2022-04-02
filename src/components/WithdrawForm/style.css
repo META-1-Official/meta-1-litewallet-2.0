@@ -1,0 +1,71 @@
+.qr-section {
+	text-align: center;
+}
+.headerTitle {
+	background: #fff;
+	box-shadow: var(--boxShadowIndex);
+	padding: 1rem 0 .2rem 2rem;
+	color: var(--textGold)
+}
+.headTl {
+	font-size: 1.2rem;
+	color: var(--textBrown);
+	font-weight: 600;
+}
+.qr-section {
+	background: #fff;
+	border-radius: 3px;
+	box-shadow: var(--boxShadowIndex);
+	margin: 1rem;
+	padding: 1rem;
+	width: 50%;
+}
+.input, .qr-section .message {
+	width: 100%;
+	max-width: 100%;
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+@media (min-width: 768px) {
+	.qr-section .input, .qr-section .message {
+		width: 500px;
+		max-width: 500px;
+	}
+}
+@media (min-width: 768px) {
+	.send-grid {
+		margin-left: auto !important;
+		margin-right: auto !important;
+		width: 500px;
+		max-width: 500px;
+	}
+}
+.qr-section .message {
+	text-align: left;
+}
+.needAdaptToQR {
+	background: #fff;
+	padding: 1rem;
+	margin: 1rem 21%;
+	box-shadow: var(--boxShadowIndex);
+}
+
+
+#from .ui.pointing.label, #to .ui.pointing.label {
+    position: absolute;
+    z-index: 99;
+}
+@media (max-width: 600px) {
+	.qr-section {
+		width: 94% !important;
+	}
+}
+@media (max-width: 600px) {
+	.text-center-s {
+		text-align: center;
+	}
+	.needAdaptToQR {
+		margin: 1rem 0;
+	}
+
+}

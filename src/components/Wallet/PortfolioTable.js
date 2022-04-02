@@ -21,6 +21,7 @@ const PortfolioTable = React.memo((props) => {
     onAssetSelect,
     onSendClick,
     onDepositClick,
+    onWithdrawClick,
     assets,
     userCurrency,
   } = props;
@@ -139,6 +140,11 @@ const PortfolioTable = React.memo((props) => {
                 <div className="table_title">DEPOSIT</div>
               </div>
             </StyledTableCell>
+            <StyledTableCell>
+              <div className={"text-left"}>
+                <div className="table_title">WITHDRAW</div>
+              </div>
+            </StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -220,6 +226,16 @@ const PortfolioTable = React.memo((props) => {
                     Deposit
                   </button>
                 )}
+              </StyledTableCell>
+              <StyledTableCell align="left">
+                <button
+                  onClick={() => {
+                    onWithdrawClick(datas.name);
+                  }}
+                  className={"withdrawButton"}
+                >
+                  Withdraw
+                </button>
               </StyledTableCell>
             </StyledTableRow>
           ))}
