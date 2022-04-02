@@ -210,7 +210,7 @@ const PortfolioTable = React.memo((props) => {
                 </button>
               </StyledTableCell>
               <StyledTableCell align="left">
-                {datas.name !== "EOS" && datas.name !== "META1" && (
+                {datas.name !== "XLM" && datas.name !== "BNB" && datas.name !== "EOS" && datas.name !== "META1" && (
                   <button
                     onClick={() => {
                       onDepositClick(datas.name);
