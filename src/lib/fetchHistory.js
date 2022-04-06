@@ -63,7 +63,7 @@ async function getHistory(event) {
       }
     }
   }
-  console.log(newRawData);
+  // console.log(newRawData);
   return newRawData;
 }
 
