@@ -59,6 +59,9 @@ label {
 .c-danger, .c-red {
 	color: red;
 }
+button.withdraw {
+	margin-top: 20px;
+}
 
 
 #from .ui.pointing.label, #to .ui.pointing.label {
