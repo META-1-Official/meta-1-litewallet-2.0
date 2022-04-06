@@ -106,7 +106,7 @@ function Application(props) {
       const response = await getCryptosChange();
       setCryptoData(response);
       if (data?.message.userAvatar != null) {
-        let avatarImage = `https://${env.BACK_URL_DEV}/public/${data.message.userAvatar}`;
+        let avatarImage = `https://${env.BACK_URL}/public/${data.message.userAvatar}`;
         setUserImageDefault(avatarImage);
         setUserImageNavbar(avatarImage);
       }
@@ -146,7 +146,7 @@ function Application(props) {
   useEffect(() => {
     async function connect() {
       setIsLoading(true);
-      Meta1.connect(metaUrl || env.MAIA_DEV).then(
+      Meta1.connect(metaUrl || env.MAIA).then(
         () => {
           setIsLoading(false);
           if (
