@@ -54,11 +54,11 @@ export async function getLastLocation(login) {
   }
 }
 
-export async function sendEmail(type, data) {
+export async function sendEmail(emailType, emailData) {
   try {
     const { data } = await axios.post(
       `https://${env.BACK_URL}/sendEmail`,
-      {type, data}
+      {emailType, emailData}
     );
     return data;
   } catch (e) {

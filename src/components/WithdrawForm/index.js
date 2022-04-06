@@ -361,11 +361,11 @@ const WithdrawForm = (props) => {
             {selectedFromAmount && amountError &&
               <span className="c-danger">{amountError}</span>
             }
-          </label><br />
+          </label><br /><br />
           <Button
             primary
             type="submit"
-            className="btn-primary"
+            className="btn-primary withdraw"
             onClick={(e) => onClickWithdraw(e)}
             floated="left"
             disabled = {canWithdraw ? '' : 'disabled'}
