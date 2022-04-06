@@ -228,14 +228,16 @@ const PortfolioTable = React.memo((props) => {
                 )}
               </StyledTableCell>
               <StyledTableCell align="left">
-                <button
-                  onClick={() => {
-                    onWithdrawClick(datas.name);
-                  }}
-                  className={"withdrawButton"}
-                >
-                  Withdraw
-                </button>
+                {(datas.name == "ETH" || datas.name === "USDT") && (
+                  <button
+                    onClick={() => {
+                      onWithdrawClick(datas.name);
+                    }}
+                    className={"withdrawButton"}
+                  >
+                    Withdraw
+                  </button>
+                )}
               </StyledTableCell>
             </StyledTableRow>
           ))}
