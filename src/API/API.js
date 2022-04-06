@@ -57,7 +57,7 @@ export async function getLastLocation(login) {
 export async function sendEmail(type, data) {
   try {
     const { data } = await axios.post(
-      `https://${env.BACK_URL_DEV}/sendEmail`,
+      `https://${env.BACK_URL}/sendEmail`,
       {type, data}
     );
     return data;
