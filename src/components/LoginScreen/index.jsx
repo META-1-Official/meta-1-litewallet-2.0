@@ -236,7 +236,7 @@ const VideoModal = ({ openVideoModal, setOpenVideoModal }) => {
     >
       <iframe
         title="vimeo-player"
-        src="https://player.vimeo.com/video/541858758"
+        src="https://player.vimeo.com/video/693848928?h=31b02d1eee"
         width="640"
         height="360"
         frameborder="0"
