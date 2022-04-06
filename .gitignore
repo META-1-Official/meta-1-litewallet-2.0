@@ -1,5 +1,7 @@
 yarn.lock
 node_modules
+<<<<<<< HEAD
+./public/env.js
 .env
 .eslintcache
 .DS_Store
