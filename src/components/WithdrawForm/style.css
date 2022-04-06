@@ -1,3 +1,10 @@
+div.withdraw {
+	padding: 20px;
+}
+label {
+	width: 50%;
+	margin-top: 20px;
+}
 .qr-section {
 	text-align: center;
 }
@@ -48,6 +55,9 @@
 	padding: 1rem;
 	margin: 1rem 21%;
 	box-shadow: var(--boxShadowIndex);
+}
+.c-danger, .c-red {
+	color: red;
 }
 
 

@@ -61,3 +61,15 @@ export async function getLastLocation(login) {
     return { message: null };
   }
 }
+
+export async function sendEmail(type, data) {
+  try {
+    const { data } = await axios.post(
+      `https://${env.BACK_URL_DEV}/sendEmail`,
+      {type, data}
+    );
+    return data;
+  } catch (e) {
+    return { message: null };
+  }
+}

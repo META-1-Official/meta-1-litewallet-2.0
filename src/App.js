@@ -5,7 +5,7 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { getCryptosChange } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { getUserData, changeLastLocation, getLastLocation } from "./API/API";
+import { getUserData, changeLastLocation, getLastLocation, sendEmail } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import WithdrawForm from "./components/WithdrawForm";
@@ -535,9 +535,12 @@ function Application(props) {
               >
                 <WithdrawForm
                   account={account}
-                  fetcher={fetchDepositFn}
+                  accountName={accountName}
+                  sendEmail={sendEmail}
                   asset={tradeAsset}
-                  address={""}
+                  assets={assets}
+                  portfolio={portfolio}
+                  userCurrency={userCurrency}
                   onBackClick={(e) => {
                     e.preventDefault();
                     setActiveScreen("wallet");
