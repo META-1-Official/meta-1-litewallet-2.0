@@ -1,5 +1,4 @@
 import axios from 'axios'
-import env from "react-dotenv";
 
 export const compareCrypto = async (coin) => {
     const { data } = await axios.get(

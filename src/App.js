@@ -25,7 +25,6 @@ import Footer from "./components/Footer/Footer";
 import RightSideHelpMenuSecondType from "./components/RightSideHelpMenuSecondType/RightSideHelpMenuSecondType";
 import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
-import env from "react-dotenv";
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -106,7 +105,7 @@ function Application(props) {
       const response = await getCryptosChange();
       setCryptoData(response);
       if (data?.message.userAvatar != null) {
-        let avatarImage = `https://${env.BACK_URL}/public/${data.message.userAvatar}`;
+        let avatarImage = `https://${process.env.REACT_APP_BACK_URL}/public/${data.message.userAvatar}`;
         setUserImageDefault(avatarImage);
         setUserImageNavbar(avatarImage);
       }
@@ -146,7 +145,7 @@ function Application(props) {
   useEffect(() => {
     async function connect() {
       setIsLoading(true);
-      Meta1.connect(metaUrl || env.MAIA).then(
+      Meta1.connect(metaUrl || process.env.REACT_APP_MAIA).then(
         () => {
           setIsLoading(false);
           if (
@@ -730,9 +729,9 @@ function Application(props) {
 
 export function App({ domElement }) {
   const metaUrl =
-    process.env.META_URL || domElement.getAttribute("data-meta-url");
+    process.env.REACT_APP_META_URL || domElement.getAttribute("data-meta-url");
   const linkAccountUrl =
-    process.env.LINK_ACCOUNT_URL || domElement.getAttribute("data-link-url");
+    process.env.REACT_APP_LINK_ACCOUNT_URL || domElement.getAttribute("data-link-url");
   const email = domElement.getAttribute("data-email");
   const firstName = domElement.getAttribute("data-fname");
   const lastName = domElement.getAttribute("data-lname");
