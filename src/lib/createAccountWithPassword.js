@@ -114,7 +114,7 @@ export default function createAccountWithPassword(
     } else {
       // using faucet
 
-      let create_account_promise = fetch(env.FAUCET_PROD + "/api/v1/accounts", {
+      let create_account_promise = fetch(env.FAUCET + "/api/v1/accounts", {
         method: "post",
         mode: "cors",
         headers: {
@@ -130,13 +130,13 @@ export default function createAccountWithPassword(
             first_name: firstName,
             phone_number: phoneNumber,
             owner_key:
-              "META1" +
+              `${env.KEY_PREFIX}` +
               owner_private.toPublicKey().toPublicKeyString().substring(5),
             active_key:
-              "META1" +
+              `${env.KEY_PREFIX}` +
               active_private.toPublicKey().toPublicKeyString().substring(5),
             memo_key:
-              "META1" +
+              `${env.KEY_PREFIX}` +
               memo_private.toPublicKey().toPublicKeyString().substring(5),
           },
         }),

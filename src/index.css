@@ -109,6 +109,7 @@ input:focus {
 :root {
   --headerBgColor: #330000;
   --gold: #fdc000;
+  --blue: blue;
   --green: #00aa08;
   --red: rgb(248, 0, 0);
   --trade: #6d494a;

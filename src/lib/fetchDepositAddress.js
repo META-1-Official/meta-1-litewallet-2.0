@@ -2,7 +2,7 @@ import env from "react-dotenv";
 
 export default async function fetchDepositAddress(params) {
   const { accountName, asset } = params;
-  return await fetch(`${env.GATEWAY_PROD}${asset}`, {
+  return await fetch(`${env.GATEWAY}${asset}`, {
     credentials: "omit",
     headers: {
       "User-Agent":
