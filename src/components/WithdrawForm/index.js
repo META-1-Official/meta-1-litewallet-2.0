@@ -15,6 +15,7 @@ import "./style.css";
 import ExchangeSelect from "../ExchangeForm/ExchangeSelect.js";
 import styles from "../ExchangeForm/ExchangeForm.module.scss";
 import { helpWithdrawInput, helpMax1 } from "../../config/help";
+import MetaLoader from "../../UI/loader/Loader";
 
 const WITHDRAW_ASSETS = ['ETH', 'USDT']
 
@@ -161,6 +162,7 @@ const WithdrawForm = (props) => {
   const onClickWithdraw = (e) => {
     e.preventDefault();
 
+    setIsLoading(true);
     const emailType = "withdraw";
     const emailData = {
       accountName: props.accountName,
@@ -171,10 +173,12 @@ const WithdrawForm = (props) => {
     };
     sendEmail(emailType, emailData)
       .then((res) => {
-        if (res.data.success === 'success')
+        if (res.success === 'success')
           alert("Email sent, awesome!"); 
         else
           alert("Oops, something went wrong. Try again");
+
+        setIsLoading(false);
       })
   }
 
@@ -217,99 +221,65 @@ const WithdrawForm = (props) => {
           </div>
         </div>
 
-        <form>
-          <label>
-            <span>First Name:</span><br />
-            <TextField
-              InputProps={{ disableUnderline: true }}
-              label="firstName"
-              value={firstName}
-              onChange={(e) => {setFirstName(e.target.value)}}
-              className={styles.input}
-              id="reddit-input"
-              variant="filled"
-              style={{ marginBottom: "1rem", borderRadius: "8px" }}
-            />
-          </label><br />
-          <label>
-            <span>Email Address:</span><br />
-            <TextField
-              InputProps={{ disableUnderline: true }}
-              label="emailAddress"
-              value={emailAddress}
-              onChange={(e) => {setEmailAddress(e.target.value)}}
-              className={styles.input}
-              id="reddit-input"
-              variant="filled"
-              style={{ marginBottom: "1rem", borderRadius: "8px" }}
-            />
-            {emailAddress && !isValidEmailAddress &&
-              <span className="c-danger">Invalid email address</span>
-            }
-          </label><br />
-          <label>
-            <span>From Asset:</span>
-            <ExchangeSelect
-              onChange={(val) => {
-                setSelectedFrom(val);
-                changeAssetHandler(val.value);
-                setSelectedFromAmount(NaN);
-                setBlockPrice(NaN);
-                setInvalidEx(false);
-              }}
-              options={getAssets(selectedFrom.value)}
-              selectedValue={selectedFrom}
-            />
-          </label><br />
-          <label>
-            <span>From Amount:</span>
-            <div className="wallet-input">
-              <Popup
-                content={helpWithdrawInput(selectedFrom?.value)}
-                position="bottom center"
-                trigger={
-                  <div className={styles.inputForAmount}>
-                    <Input
-                      placeholder="Amount crypto"
-                      value={selectedFromAmount}
-                      type={"number"}
-                      onChange={(e) => {
-                        if (
-                          e.target.value.length < 11 &&
-                          /[-+]?[0-9]*\.?[0-9]*/.test(
-                            e.target.value
-                          ) &&
-                          Number(e.target.value) >= 0
-                        ) {
-                          setSelectedFromAmount(e.target.value);
-                          calculateUsdPriceHandler(e);
-                          setClickedInputs(true);
-                        }
-                      }}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          {selectedFrom.label}
-                        </InputAdornment>
-                      }
-                      inputProps={ariaLabel}
-                      id={"inputAmount"}
-                      disabled={invalidEx}
-                      min="0"
-                      inputMode="numeric"
-                      pattern="\d*"
-                    />
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        marginTop: ".1rem",
-                        fontSize: "1rem",
-                        color: "#505361",
-                      }}
-                    >
-                      <input
-                        className={styles.inputDollars}
+        {isLoading ? 
+          <MetaLoader size={"small"} />
+          :
+          <form>
+            <label>
+              <span>First Name:</span><br />
+              <TextField
+                InputProps={{ disableUnderline: true }}
+                label="firstName"
+                value={firstName}
+                onChange={(e) => {setFirstName(e.target.value)}}
+                className={styles.input}
+                id="reddit-input"
+                variant="filled"
+                style={{ marginBottom: "1rem", borderRadius: "8px" }}
+              />
+            </label><br />
+            <label>
+              <span>Email Address:</span><br />
+              <TextField
+                InputProps={{ disableUnderline: true }}
+                label="emailAddress"
+                value={emailAddress}
+                onChange={(e) => {setEmailAddress(e.target.value)}}
+                className={styles.input}
+                id="reddit-input"
+                variant="filled"
+                style={{ marginBottom: "1rem", borderRadius: "8px" }}
+              />
+              {emailAddress && !isValidEmailAddress &&
+                <span className="c-danger">Invalid email address</span>
+              }
+            </label><br />
+            <label>
+              <span>From Asset:</span>
+              <ExchangeSelect
+                onChange={(val) => {
+                  setSelectedFrom(val);
+                  changeAssetHandler(val.value);
+                  setSelectedFromAmount(NaN);
+                  setBlockPrice(NaN);
+                  setInvalidEx(false);
+                }}
+                options={getAssets(selectedFrom.value)}
+                selectedValue={selectedFrom}
+              />
+            </label><br />
+            <label>
+              <span>From Amount:</span>
+              <div className="wallet-input">
+                <Popup
+                  content={helpWithdrawInput(selectedFrom?.value)}
+                  position="bottom center"
+                  trigger={
+                    <div className={styles.inputForAmount}>
+                      <Input
+                        placeholder="Amount crypto"
+                        value={selectedFromAmount}
+                        type={"number"}
                         onChange={(e) => {
                           if (
                             e.target.value.length < 11 &&
@@ -318,61 +288,99 @@ const WithdrawForm = (props) => {
                             ) &&
                             Number(e.target.value) >= 0
                           ) {
-                            calculateCryptoPriceHandler(e);
+                            setSelectedFromAmount(e.target.value);
+                            calculateUsdPriceHandler(e);
                             setClickedInputs(true);
                           }
                         }}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            {selectedFrom.label}
+                          </InputAdornment>
+                        }
+                        inputProps={ariaLabel}
+                        id={"inputAmount"}
+                        disabled={invalidEx}
                         min="0"
                         inputMode="numeric"
                         pattern="\d*"
-                        type={"number"}
-                        placeholder={`Amount ${
-                          userCurrency.split(" ")[1]
-                        }`}
-                        disabled={invalidEx}
-                        style={
-                          invalidEx ? { opacity: "0.5" } : null
-                        }
-                        value={blockPrice}
                       />
-                      <span>{userCurrency.split(" ")[0]}</span>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          marginTop: ".1rem",
+                          fontSize: "1rem",
+                          color: "#505361",
+                        }}
+                      >
+                        <input
+                          className={styles.inputDollars}
+                          onChange={(e) => {
+                            if (
+                              e.target.value.length < 11 &&
+                              /[-+]?[0-9]*\.?[0-9]*/.test(
+                                e.target.value
+                              ) &&
+                              Number(e.target.value) >= 0
+                            ) {
+                              calculateCryptoPriceHandler(e);
+                              setClickedInputs(true);
+                            }
+                          }}
+                          min="0"
+                          inputMode="numeric"
+                          pattern="\d*"
+                          type={"number"}
+                          placeholder={`Amount ${
+                            userCurrency.split(" ")[1]
+                          }`}
+                          disabled={invalidEx}
+                          style={
+                            invalidEx ? { opacity: "0.5" } : null
+                          }
+                          value={blockPrice}
+                        />
+                        <span>{userCurrency.split(" ")[0]}</span>
+                      </div>
                     </div>
-                  </div>
-                }
-              />
-              <div className="max-button">
-                <Popup
-                  content={helpMax1(selectedFrom?.value)}
-                  position="bottom center"
-                  trigger={
-                    <Button
-                      secondary
-                      className={"btn"}
-                      onClick={setAssetMax}
-                      floated="right"
-                      size="mini"
-                    >
-                      MAX
-                    </Button>
                   }
                 />
+                <div className="max-button">
+                  <Popup
+                    content={helpMax1(selectedFrom?.value)}
+                    position="bottom center"
+                    trigger={
+                      <Button
+                        secondary
+                        className={"btn"}
+                        onClick={setAssetMax}
+                        floated="right"
+                        size="mini"
+                      >
+                        MAX
+                      </Button>
+                    }
+                  />
+                </div>
               </div>
-            </div>
-            {selectedFromAmount && amountError &&
-              <span className="c-danger">{amountError}</span>
-            }
-          </label><br /><br />
-          <Button
-            primary
-            type="submit"
-            className="btn-primary withdraw"
-            onClick={(e) => onClickWithdraw(e)}
-            floated="left"
-            disabled = {canWithdraw ? '' : 'disabled'}
-          >
-            Withdraw
-          </Button>
-        </form>
+              {selectedFromAmount && amountError &&
+                <span className="c-danger">{amountError}</span>
+              }
+            </label><br /><br />
+            <Button
+              primary
+              type="submit"
+              className="btn-primary withdraw"
+              onClick={(e) => onClickWithdraw(e)}
+              floated="left"
+              disabled = {canWithdraw ? '' : 'disabled'}
+            >
+              Withdraw
+            </Button>
+          </form>
+        }
       </div>
     </>
   );
