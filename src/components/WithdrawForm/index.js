@@ -117,9 +117,13 @@ const WithdrawForm = (props) => {
   }, [emailAddress]);
 
   useEffect(() => {
-    setIsValidAddress(
-      CAValidator.validate(toAddress, asset.symbol, "testnet")
-    );
+    if (process.env.REACT_APP_ENV === 'prod') {
+      setIsValidAddress(CAValidator.validate(toAddress, asset.symbol));
+    } else {
+      setIsValidAddress(
+        CAValidator.validate(toAddress, asset.symbol, "testnet")
+      );
+    }
   }, [toAddress]);
 
   const changeAssetHandler = async (val) => {
