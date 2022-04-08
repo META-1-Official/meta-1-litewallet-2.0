@@ -44,6 +44,8 @@ const WithdrawForm = (props) => {
   const [options, setOptions] = useState([]);
   const [invalidEx, setInvalidEx] = useState(false);
   const [clickedInputs, setClickedInputs] = useState(false);
+  const [toAddress, setToAddress] = useState("");
+  const [isValidAddress, setIsValidAddress] = useState(false);
 
   const ariaLabel = { "aria-label": "description" };
 
@@ -114,6 +116,12 @@ const WithdrawForm = (props) => {
     }
   }, [emailAddress]);
 
+  useEffect(() => {
+    setIsValidAddress(
+      CAValidator.validate(toAddress, asset.symbol, "testnet")
+    );
+  }, [toAddress]);
+
   const changeAssetHandler = async (val) => {
     if (val !== "META1" && val !== "USDT") {
       const response = await fetch(
@@ -169,7 +177,8 @@ const WithdrawForm = (props) => {
       firstName,
       emailAddress,
       asset: selectedFrom.value,
-      amount: selectedFromAmount
+      amount: selectedFromAmount,
+      toAddress: toAddress
     };
     sendEmail(emailType, emailData)
       .then((res) => {
@@ -188,7 +197,8 @@ const WithdrawForm = (props) => {
     .filter((asset) => WITHDRAW_ASSETS.indexOf(asset.value) > -1)
     .filter((el) => el.value !== except);
 
-  const canWithdraw = firstName && isValidEmailAddress && !amountError && selectedFromAmount;
+  const canWithdraw = firstName && isValidEmailAddress &&
+    isValidAddress && !amountError && selectedFromAmount;
 
   return (
     <>
@@ -255,7 +265,7 @@ const WithdrawForm = (props) => {
               }
             </label><br />
             <label>
-              <span>From Asset:</span>
+              <span>META Wallet Name:</span>
               <ExchangeSelect
                 onChange={(val) => {
                   setSelectedFrom(val);
@@ -367,6 +377,21 @@ const WithdrawForm = (props) => {
               </div>
               {selectedFromAmount && amountError &&
                 <span className="c-danger">{amountError}</span>
+              }
+            </label><br />
+            <label>
+              <span>Destination Address:</span>
+              <TextField
+                InputProps={{ disableUnderline: true }}
+                value={toAddress}
+                onChange={(e) => {setToAddress(e.target.value)}}
+                className={styles.input}
+                id="reddit-input receiver"
+                variant="filled"
+                style={{ marginBottom: "1rem", borderRadius: "8px" }}
+              />
+              {toAddress && !isValidAddress &&
+                <span className="c-danger">Invalid address</span>
               }
             </label><br /><br />
             <Button
