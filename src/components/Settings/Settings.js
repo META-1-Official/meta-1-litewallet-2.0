@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styles from "./Settings.module.scss";
 import axios from "axios";
 import RightSideHelpMenuThirdType from "../RightSideHelpMenuThirdType/RightSideHelpMenuThirdType";
-import env from "react-dotenv";
 import { Modal, Button } from "semantic-ui-react";
 import { saveUserCurrency, deleteAvatar } from "../../API/API";
 import logoNavbar from "../../images/default-pic2.png";
@@ -63,7 +62,7 @@ const Settings = (props) => {
             document.getElementById("file_upload")?.files[0]
           );
           const { data } = await axios.post(
-            `https://${env.BACK_URL}/saveAvatar`,
+            `https://${process.env.REACT_APP_BACK_URL}/saveAvatar`,
             formData,
             {
               headers: {
@@ -71,8 +70,8 @@ const Settings = (props) => {
               },
             }
           );
-          setUserImageDefault(`https://${env.BACK_URL}/public/${data.message}`);
-          setUserImageNavbar(`https://${env.BACK_URL}/public/${data.message}`);
+          setUserImageDefault(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
+          setUserImageNavbar(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
         } else {
           alert("Invalid file size");
         }
