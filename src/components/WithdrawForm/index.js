@@ -16,6 +16,7 @@ import ExchangeSelect from "../ExchangeForm/ExchangeSelect.js";
 import styles from "../ExchangeForm/ExchangeForm.module.scss";
 import { helpWithdrawInput, helpMax1 } from "../../config/help";
 import MetaLoader from "../../UI/loader/Loader";
+import { trim } from "../../helpers/string";
 
 const WITHDRAW_ASSETS = ['ETH', 'USDT']
 
@@ -36,6 +37,7 @@ const WithdrawForm = (props) => {
   const [selectedFromAmount, setSelectedFromAmount] = useState("");
   const [amountError, setAmountError] = useState("");
   const [firstName, setFirstName] = useState("");
+  const [isValidFirstName, setIsValidFirstName] = useState(false);
   const [emailAddress, setEmailAddress] = useState("");
   const [isValidEmailAddress, setIsValidEmailAddress] = useState(false);
   const [blockPrice, setBlockPrice] = useState();
@@ -46,6 +48,8 @@ const WithdrawForm = (props) => {
   const [clickedInputs, setClickedInputs] = useState(false);
   const [toAddress, setToAddress] = useState("");
   const [isValidAddress, setIsValidAddress] = useState(false);
+  const [toAddressCurrency, setToAddressCurrency] = useState("BTC");
+  const [isValidCurrency, setIsValidCurrency] = useState(false);
 
   const ariaLabel = { "aria-label": "description" };
 
@@ -89,20 +93,26 @@ const WithdrawForm = (props) => {
   }, [selectedFrom]);
 
   useEffect(() => {
-    if (!selectedFromAmount) {
-      setAmountError('');
-    }
-
     if (selectedFrom && selectedFromAmount) {
       if (parseFloat(selectedFrom.balance) < parseFloat(selectedFromAmount)) {
         setAmountError('Amount exceeded the balance.');
       } else if (parseFloat(MIN_WITHDRAW_AMOUNT[selectedFrom.value]) > parseFloat(selectedFromAmount)) {
         setAmountError('Amount is too small.');
-      } else {
-        setAmountError('');
       }
+    } else {
+      setAmountError('');
     }
   }, [selectedFromAmount]);
+
+  useEffect(() => {
+    if (!firstName) {
+      setIsValidFirstName(true);
+    } else if (trim(firstName) === '') {
+      setIsValidFirstName(false);
+    } else {
+      setIsValidFirstName(true);
+    }
+  }, [firstName]);
 
   useEffect(() => {
     if (emailAddress) {
@@ -117,11 +127,25 @@ const WithdrawForm = (props) => {
   }, [emailAddress]);
 
   useEffect(() => {
+    if (!toAddressCurrency) {
+      setIsValidCurrency(true);
+    } else {
+      setIsValidCurrency(CAValidator.findCurrency(toAddressCurrency));
+
+      if (CAValidator.findCurrency(toAddressCurrency) && toAddress) {
+        setIsValidAddress(
+          CAValidator.validate(toAddress, toAddressCurrency, "testnet")
+        );  
+      }
+    }
+  }, [toAddressCurrency]);
+
+  useEffect(() => {
     if (process.env.REACT_APP_ENV === 'prod') {
       setIsValidAddress(CAValidator.validate(toAddress, asset.symbol));
     } else {
       setIsValidAddress(
-        CAValidator.validate(toAddress, asset.symbol, "testnet")
+        CAValidator.validate(toAddress, toAddressCurrency, "testnet")
       );
     }
   }, [toAddress]);
@@ -178,18 +202,27 @@ const WithdrawForm = (props) => {
     const emailType = "withdraw";
     const emailData = {
       accountName: props.accountName,
-      firstName,
-      emailAddress,
+      firstName: trim(firstName),
+      emailAddress: trim(emailAddress),
       asset: selectedFrom.value,
       amount: selectedFromAmount,
-      toAddress: toAddress
+      toAddress: trim(toAddress)
     };
     sendEmail(emailType, emailData)
       .then((res) => {
-        if (res.success === 'success')
-          alert("Email sent, awesome!"); 
-        else
+        if (res.success === 'success'){
+          alert("Email sent, awesome!");
+
+          // Reset form inputs
+          setFirstName('');
+          setEmailAddress('');
+          setSelectedFromAmount(NaN);
+          setBlockPrice(NaN);
+          setToAddress('');
+          setToAddressCurrency('');
+        } else {
           alert("Oops, something went wrong. Try again");
+        }
 
         setIsLoading(false);
       })
@@ -201,8 +234,12 @@ const WithdrawForm = (props) => {
     .filter((asset) => WITHDRAW_ASSETS.indexOf(asset.value) > -1)
     .filter((el) => el.value !== except);
 
-  const canWithdraw = firstName && isValidEmailAddress &&
-    isValidAddress && !amountError && selectedFromAmount;
+  const canWithdraw = firstName && isValidFirstName &&
+    toAddressCurrency && isValidCurrency &&
+    isValidEmailAddress &&
+    isValidAddress &&
+    !amountError &&
+    selectedFromAmount;
 
   return (
     <>
@@ -243,24 +280,25 @@ const WithdrawForm = (props) => {
               <span>First Name:</span><br />
               <TextField
                 InputProps={{ disableUnderline: true }}
-                label="firstName"
                 value={firstName}
                 onChange={(e) => {setFirstName(e.target.value)}}
                 className={styles.input}
-                id="reddit-input"
+                id="firstname-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
               />
+              {firstName && !isValidFirstName &&
+                <span className="c-danger">Invalid first name</span>
+              }
             </label><br />
             <label>
               <span>Email Address:</span><br />
               <TextField
                 InputProps={{ disableUnderline: true }}
-                label="emailAddress"
                 value={emailAddress}
                 onChange={(e) => {setEmailAddress(e.target.value)}}
                 className={styles.input}
-                id="reddit-input"
+                id="emailaddress-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
               />
@@ -379,8 +417,23 @@ const WithdrawForm = (props) => {
                   />
                 </div>
               </div>
-              {selectedFromAmount && amountError &&
-                <span className="c-danger">{amountError}</span>
+              {(selectedFromAmount && amountError) ?
+                <span className="c-danger">{amountError}</span> : null
+              }
+            </label><br />
+            <label>
+              <span>Destination Currency:</span>
+              <TextField
+                InputProps={{ disableUnderline: true }}
+                value={toAddressCurrency}
+                onChange={(e) => {setToAddressCurrency(e.target.value)}}
+                className={styles.input}
+                id="destination-currency-input"
+                variant="filled"
+                style={{ marginBottom: "1rem", borderRadius: "8px" }}
+              />
+              {toAddressCurrency && !isValidCurrency &&
+                <span className="c-danger">Invalid currency</span>
               }
             </label><br />
             <label>
@@ -390,7 +443,7 @@ const WithdrawForm = (props) => {
                 value={toAddress}
                 onChange={(e) => {setToAddress(e.target.value)}}
                 className={styles.input}
-                id="reddit-input receiver"
+                id="destination-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
               />
