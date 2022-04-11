@@ -133,16 +133,20 @@ const WithdrawForm = (props) => {
       setIsValidCurrency(CAValidator.findCurrency(toAddressCurrency));
 
       if (CAValidator.findCurrency(toAddressCurrency) && toAddress) {
-        setIsValidAddress(
-          CAValidator.validate(toAddress, toAddressCurrency, "testnet")
-        );  
+        if (process.env.REACT_APP_ENV === 'prod') {
+          setIsValidAddress(CAValidator.validate(toAddress, toAddressCurrency));
+        } else {
+          setIsValidAddress(
+            CAValidator.validate(toAddress, toAddressCurrency, "testnet")
+          );
+        }
       }
     }
   }, [toAddressCurrency]);
 
   useEffect(() => {
     if (process.env.REACT_APP_ENV === 'prod') {
-      setIsValidAddress(CAValidator.validate(toAddress, asset.symbol));
+      setIsValidAddress(CAValidator.validate(toAddress, toAddressCurrency));
     } else {
       setIsValidAddress(
         CAValidator.validate(toAddress, toAddressCurrency, "testnet")
