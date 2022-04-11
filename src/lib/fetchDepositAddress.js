@@ -1,8 +1,6 @@
-import env from "react-dotenv";
-
 export default async function fetchDepositAddress(params) {
   const { accountName, asset } = params;
-  return await fetch(`${env.GATEWAY}${asset}`, {
+  return await fetch(`${process.env.REACT_APP_GATEWAY}${asset}`, {
     credentials: "omit",
     headers: {
       "User-Agent":
