@@ -36,8 +36,8 @@ const WithdrawForm = (props) => {
   const [selectedFrom, setSelectedFrom] = useState(props.selectedFrom);
   const [selectedFromAmount, setSelectedFromAmount] = useState("");
   const [amountError, setAmountError] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [isValidFirstName, setIsValidFirstName] = useState(false);
+  const [name, setName] = useState("");
+  const [isValidName, setIsValidName] = useState(false);
   const [emailAddress, setEmailAddress] = useState("");
   const [isValidEmailAddress, setIsValidEmailAddress] = useState(false);
   const [blockPrice, setBlockPrice] = useState();
@@ -106,14 +106,14 @@ const WithdrawForm = (props) => {
   }, [selectedFromAmount]);
 
   useEffect(() => {
-    if (!firstName) {
-      setIsValidFirstName(true);
-    } else if (trim(firstName) === '') {
-      setIsValidFirstName(false);
+    if (!name) {
+      setIsValidName(true);
+    } else if (trim(name) === '') {
+      setIsValidName(false);
     } else {
-      setIsValidFirstName(true);
+      setIsValidName(true);
     }
-  }, [firstName]);
+  }, [name]);
 
   useEffect(() => {
     if (emailAddress) {
@@ -191,7 +191,7 @@ const WithdrawForm = (props) => {
     const emailType = "withdraw";
     const emailData = {
       accountName: props.accountName,
-      firstName: trim(firstName),
+      name: trim(name),
       emailAddress: trim(emailAddress),
       asset: selectedFrom.value,
       amount: selectedFromAmount,
@@ -203,7 +203,7 @@ const WithdrawForm = (props) => {
           alert("Email sent, awesome!");
 
           // Reset form inputs
-          setFirstName('');
+          setName('');
           setEmailAddress('');
           setSelectedFromAmount(NaN);
           setBlockPrice(NaN);
@@ -222,7 +222,7 @@ const WithdrawForm = (props) => {
     .filter((asset) => WITHDRAW_ASSETS.indexOf(asset.value) > -1)
     .filter((el) => el.value !== except);
 
-  const canWithdraw = firstName && isValidFirstName &&
+  const canWithdraw = name && isValidName &&
     isValidEmailAddress &&
     isValidAddress &&
     !amountError &&
@@ -264,17 +264,17 @@ const WithdrawForm = (props) => {
           :
           <form>
             <label>
-              <span>First Name:</span><br />
+              <span>Name:</span><br />
               <TextField
                 InputProps={{ disableUnderline: true }}
-                value={firstName}
-                onChange={(e) => {setFirstName(e.target.value)}}
+                value={name}
+                onChange={(e) => {setName(e.target.value)}}
                 className={styles.input}
-                id="firstname-input"
+                id="name-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
               />
-              {firstName && !isValidFirstName &&
+              {name && !isValidName &&
                 <span className="c-danger">Invalid first name</span>
               }
             </label><br />
@@ -294,7 +294,7 @@ const WithdrawForm = (props) => {
               }
             </label><br />
             <label>
-              <span>META Wallet Name:</span>
+              <span>META1 Wallet Name:</span>
               <TextField
                 InputProps={{ disableUnderline: true }}
                 value={props.accountName}
