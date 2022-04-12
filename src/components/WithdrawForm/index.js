@@ -93,6 +93,7 @@ const WithdrawForm = (props) => {
 
   useEffect(() => {
     if (selectedFrom && selectedFromAmount) {
+      console.log("@1 - ", selectedFromAmount === 0)
       if (parseFloat(selectedFrom.balance) < parseFloat(selectedFromAmount)) {
         setAmountError('Amount exceeded the balance.');
       } else if (parseFloat(MIN_WITHDRAW_AMOUNT[selectedFrom.value]) > parseFloat(selectedFromAmount)) {
@@ -176,12 +177,17 @@ const WithdrawForm = (props) => {
 
   const calculateCryptoPriceHandler = (e) => {
     setBlockPrice(e.target.value);
-    let priceForOne = (
-      Number(e.target.value) /
-      priceForAsset /
-      Number(userCurrency.split(" ")[2])
-    ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
-    setSelectedFromAmount(priceForOne);
+
+    if (e.target.value) {
+      let priceForOne = (
+        Number(e.target.value) /
+        priceForAsset /
+        Number(userCurrency.split(" ")[2])
+      ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
+      setSelectedFromAmount(priceForOne);
+    } else {
+      setSelectedFromAmount(e.target.value);
+    }
   };
 
   const onClickWithdraw = (e) => {
