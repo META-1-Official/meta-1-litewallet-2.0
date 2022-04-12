@@ -1,7 +1,7 @@
 div.withdraw {
 	padding: 20px;
 }
-label {
+div.withdraw label {
 	width: 50%;
 	margin-top: 20px;
 }
@@ -19,12 +19,9 @@ label {
 .input {
 	padding-top: 5px;
 }
-@media (min-width: 768px) {
-	.send-grid {
-		margin-left: auto !important;
-		margin-right: auto !important;
-		width: 500px;
-		max-width: 500px;
+@media only screen and (max-width: 768px) {
+	div.withdraw label {
+		width: 100%;
 	}
 }
 .c-danger, .c-red {
@@ -33,7 +30,6 @@ label {
 button.withdraw {
 	margin-top: 20px;
 }
-
 
 #from .ui.pointing.label, #to .ui.pointing.label {
     position: absolute;
