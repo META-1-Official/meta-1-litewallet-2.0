@@ -48,7 +48,6 @@ const WithdrawForm = (props) => {
   const [clickedInputs, setClickedInputs] = useState(false);
   const [toAddress, setToAddress] = useState("");
   const [isValidAddress, setIsValidAddress] = useState(false);
-  const [toAddressCurrency, setToAddressCurrency] = useState("BTC");
   const [isValidCurrency, setIsValidCurrency] = useState(false);
 
   const ariaLabel = { "aria-label": "description" };
@@ -98,6 +97,8 @@ const WithdrawForm = (props) => {
         setAmountError('Amount exceeded the balance.');
       } else if (parseFloat(MIN_WITHDRAW_AMOUNT[selectedFrom.value]) > parseFloat(selectedFromAmount)) {
         setAmountError('Amount is too small.');
+      } else {
+        setAmountError('');
       }
     } else {
       setAmountError('');
@@ -127,32 +128,16 @@ const WithdrawForm = (props) => {
   }, [emailAddress]);
 
   useEffect(() => {
-    if (!toAddressCurrency) {
-      setIsValidCurrency(true);
-    } else {
-      setIsValidCurrency(CAValidator.findCurrency(toAddressCurrency));
-
-      if (CAValidator.findCurrency(toAddressCurrency) && toAddress) {
-        if (process.env.REACT_APP_ENV === 'prod') {
-          setIsValidAddress(CAValidator.validate(toAddress, toAddressCurrency));
-        } else {
-          setIsValidAddress(
-            CAValidator.validate(toAddress, toAddressCurrency, "testnet")
-          );
-        }
+    if (selectedFrom && toAddress) {
+      if (process.env.REACT_APP_ENV === 'prod') {
+        setIsValidAddress(CAValidator.validate(toAddress, selectedFrom.value));
+      } else {
+        setIsValidAddress(
+          CAValidator.validate(toAddress, selectedFrom.value, "testnet")
+        );
       }
     }
-  }, [toAddressCurrency]);
-
-  useEffect(() => {
-    if (process.env.REACT_APP_ENV === 'prod') {
-      setIsValidAddress(CAValidator.validate(toAddress, toAddressCurrency));
-    } else {
-      setIsValidAddress(
-        CAValidator.validate(toAddress, toAddressCurrency, "testnet")
-      );
-    }
-  }, [toAddress]);
+  }, [toAddress, selectedFrom]);
 
   const changeAssetHandler = async (val) => {
     if (val !== "META1" && val !== "USDT") {
@@ -223,7 +208,6 @@ const WithdrawForm = (props) => {
           setSelectedFromAmount(NaN);
           setBlockPrice(NaN);
           setToAddress('');
-          setToAddressCurrency('');
         } else {
           alert("Oops, something went wrong. Try again");
         }
@@ -239,7 +223,6 @@ const WithdrawForm = (props) => {
     .filter((el) => el.value !== except);
 
   const canWithdraw = firstName && isValidFirstName &&
-    toAddressCurrency && isValidCurrency &&
     isValidEmailAddress &&
     isValidAddress &&
     !amountError &&
@@ -312,6 +295,18 @@ const WithdrawForm = (props) => {
             </label><br />
             <label>
               <span>META Wallet Name:</span>
+              <TextField
+                InputProps={{ disableUnderline: true }}
+                value={props.accountName}
+                disabled={true}
+                className={styles.input}
+                id="wallet-name-input"
+                variant="filled"
+                style={{ marginBottom: "1rem", borderRadius: "8px" }}
+              />
+            </label><br />
+            <label>
+              <span>From Currency:</span>
               <ExchangeSelect
                 onChange={(val) => {
                   setSelectedFrom(val);
@@ -426,21 +421,6 @@ const WithdrawForm = (props) => {
               }
             </label><br />
             <label>
-              <span>Destination Currency:</span>
-              <TextField
-                InputProps={{ disableUnderline: true }}
-                value={toAddressCurrency}
-                onChange={(e) => {setToAddressCurrency(e.target.value)}}
-                className={styles.input}
-                id="destination-currency-input"
-                variant="filled"
-                style={{ marginBottom: "1rem", borderRadius: "8px" }}
-              />
-              {toAddressCurrency && !isValidCurrency &&
-                <span className="c-danger">Invalid currency</span>
-              }
-            </label><br />
-            <label>
               <span>Destination Address:</span>
               <TextField
                 InputProps={{ disableUnderline: true }}
@@ -452,7 +432,7 @@ const WithdrawForm = (props) => {
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
               />
               {toAddress && !isValidAddress &&
-                <span className="c-danger">Invalid address</span>
+                <span className="c-danger">Invalid {selectedFrom?.value} address</span>
               }
             </label><br /><br />
             <Button
