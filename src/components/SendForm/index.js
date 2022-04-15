@@ -153,11 +153,11 @@ const SendForm = React.memo((props) => {
     portfolio.map((el) =>
       el.name === value.value
         ? setAssetData({
-            balance: el.qty,
-            image: el.image,
-            label: el.name,
-            value: el.name,
-          })
+          balance: el.qty,
+          image: el.image,
+          label: el.name,
+          value: el.name,
+        })
         : null
     );
   };
@@ -165,7 +165,7 @@ const SendForm = React.memo((props) => {
     let priceForOne = Number(e.target.value) * priceForAsset;
     setBlockPrice(
       Number(priceForOne).toFixed(precisionAssets[asset]) *
-        Number(userCurrency.split(" ")[2])
+      Number(userCurrency.split(" ")[2])
     );
   };
 
@@ -273,11 +273,11 @@ const SendForm = React.memo((props) => {
     portfolio.map((el) =>
       el.name === assetCh
         ? setAssetData({
-            balance: el.qty,
-            image: el.image,
-            label: el.name,
-            value: el.name,
-          })
+          balance: el.qty,
+          image: el.image,
+          label: el.name,
+          value: el.name,
+        })
         : null
     );
   }, [assetCh, assets]);
@@ -428,8 +428,8 @@ const SendForm = React.memo((props) => {
                       value={amount ? amount : ""}
                       min="0"
                       endAdornment={
-                        <InputAdornment position="end">
-                          {assetData.label}
+                        <InputAdornment position="end" className="currency-color-change" >
+                          <span style={{ fontSize: '16px' }}>{assetData.label}</span>
                         </InputAdornment>
                       }
                       onChange={(e) => {
@@ -471,7 +471,7 @@ const SendForm = React.memo((props) => {
                         placeholder={`Amount ${userCurrency.split(" ")[1]}`}
                         value={amount ? blockPrice : ""}
                       />
-                      <span>{userCurrency.split(" ")[0]}</span>
+                      <span style={{ fontSize: '16px' }}>{userCurrency.split(" ")[0]}</span>
                     </div>
                     <div
                       style={{

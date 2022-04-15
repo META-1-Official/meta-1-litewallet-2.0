@@ -99,7 +99,7 @@ const PortfolioTable = React.memo((props) => {
         <TableHead>
           <TableRow>
             <StyledTableCell>
-              <div className="table_title">ASSET</div>
+              <div className="table_title" style={{ width: "6rem", textAlign: 'center' }}>ASSET</div>
             </StyledTableCell>
             <StyledTableCell>
               <div className="table_flex">

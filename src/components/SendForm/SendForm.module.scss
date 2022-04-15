@@ -2,10 +2,12 @@
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+
   @media (max-width: 600px) {
     flex-direction: column;
   }
 }
+
 .containerMain {
   margin: 1rem;
   padding: 1rem;
@@ -13,6 +15,7 @@
   border-radius: 4px;
   background: #fff;
 }
+
 .inputForAmount {
   display: flex;
   flex-direction: column;
@@ -22,13 +25,16 @@
   border-radius: 8px !important;
   border: 1px solid rgba(34, 36, 38, 0.15);
 }
+
 .rightBlockSend,
 .leftBlockSend {
   width: 40%;
+
   @media (max-width: 600px) {
     width: 100% !important;
   }
 }
+
 .blockInfoCrypto {
   padding: 1.5rem;
   border-radius: 8px;
@@ -37,35 +43,47 @@
   flex-direction: row;
   border: 1px solid rgba(34, 36, 38, 0.15);
 }
+
 .blockInfoText {
   margin-left: 1rem;
+
   h3 {
     margin: 0;
     padding: 0;
   }
+
   span {
     color: var(--textGrey);
     font-size: 0.8rem;
     font-weight: 500;
   }
 }
+
 .input {
   margin-bottom: 1rem;
   box-shadow: var(--boxShadowIndex);
   color: var(--textBrown) !important;
   border-radius: 8px !important;
 }
+
 .MuiInputBase-formControl {
   border-radius: 10px !important;
 }
+
 .inputDollars {
   background: rgba(255, 255, 255, 0);
   border: none;
   box-shadow: none !important;
+
   &:focus {
     border: none !important;
   }
+
   &:active {
     border: none !important;
   }
+}
+
+.currency-color-change .css-1pnmrwp-MuiTypography-root {
+  color: #fdc000 !important;
 }

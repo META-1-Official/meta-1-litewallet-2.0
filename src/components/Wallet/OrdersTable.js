@@ -11,6 +11,7 @@ import MetaLoader from "../../UI/loader/Loader";
 import Paper from "@mui/material/Paper";
 import { getAsset, getFullName } from "./cryptoChooser";
 import getHistory from "../../lib/fetchHistory";
+import { removeExponent } from "../../utils/commonFunction";
 
 export const OrdersTable = (props) => {
   const { column, direction, assets, account } = props;
@@ -53,7 +54,7 @@ export const OrdersTable = (props) => {
             <TableRow style={{ display: "table-row" }}>
               <StyledTableCell
                 sorted={column === "id" ? direction : null}
-                onClick={() => {}}
+                onClick={() => { }}
                 align="left"
               >
                 Assets
@@ -100,7 +101,7 @@ export const OrdersTable = (props) => {
                 </StyledTableCell>
                 <StyledTableCell align="right">
                   <h6 style={{ margin: "0" }}>
-                    <strong>{Number(el.volume)}</strong>
+                    <strong>{removeExponent(Number(el.volume))}</strong>
                   </h6>
                 </StyledTableCell>
                 <StyledTableCell align="left">
