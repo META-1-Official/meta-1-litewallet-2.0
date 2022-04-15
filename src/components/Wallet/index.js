@@ -122,8 +122,6 @@ function Wallet(props) {
       }
     }
   }, [portfolio, data]);
-  console.log("portfolio", portfolio)
-  console.log("portfolio data", data)
   const changeCurrencyToFiat = async () => {
     document.getElementById("switchContainer").style.display = "none";
     setCurrentCurrency(currentCurrency + 1);

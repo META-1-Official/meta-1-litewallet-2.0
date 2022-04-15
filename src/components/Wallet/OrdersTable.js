@@ -54,7 +54,7 @@ export const OrdersTable = (props) => {
             <TableRow style={{ display: "table-row" }}>
               <StyledTableCell
                 sorted={column === "id" ? direction : null}
-                onClick={() => { }}
+                onClick={() => {}}
                 align="left"
               >
                 Assets
