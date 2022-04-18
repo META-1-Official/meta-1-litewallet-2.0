@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 import MetaLoader from "../../UI/loader/Loader";
 import { getAsset } from "../Wallet/cryptoChooser";
 import getHistory from "../../lib/fetchHistory";
-
+import { removeExponent } from '../../utils/commonFunction'
 const RightSideHelpMenuSecondType = (props) => {
   const { onClickExchangeEOSHandler, onClickExchangeUSDTHandler } = props;
 
@@ -135,7 +135,7 @@ const RightSideHelpMenuSecondType = (props) => {
               <div
                 style={{ margin: ".25rem 0", width: "6rem", textAlign: "end" }}
               >
-                <p>{Number(el.volume)}</p>
+                <p>{removeExponent(Number(el.volume))}</p>
               </div>
             </div>
           ))

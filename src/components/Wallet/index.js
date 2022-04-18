@@ -122,7 +122,6 @@ function Wallet(props) {
       }
     }
   }, [portfolio, data]);
-
   const changeCurrencyToFiat = async () => {
     document.getElementById("switchContainer").style.display = "none";
     setCurrentCurrency(currentCurrency + 1);

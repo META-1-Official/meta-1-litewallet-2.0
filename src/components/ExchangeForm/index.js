@@ -85,13 +85,13 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
-    if (Number(blockPrice) < 0.003 * Number(userCurrency.split(" ")[2])) {
+    if (Number(selectedFromAmount) < 0.003) {
       setError(
         `The amount must be greater than ${Number(
           (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
         )} ${userCurrency.split(" ")[1]}`
       );
-      console.log(feeAsset);
+
     } else if (feeAsset == undefined) {
       setError("Not enough FEE");
     } else {
@@ -301,7 +301,6 @@ export default function ExchangeForm(props) {
   const performTrade = async () => {
     try {
       setTradeInProgress(true);
-      setPassword("");
       setPasswordShouldBeProvided(false);
 
       const buyResult = await trader.perform({
@@ -310,13 +309,12 @@ export default function ExchangeForm(props) {
         amount: selectedToAmount,
         password: password,
       });
-
       if (buyResult.error) {
         setTradeError(buyResult.error);
       } else {
         setModalOpened(true);
       }
-
+      setPassword("");
       setTradeInProgress(false);
     } catch (e) {
       setTradeInProgress(false);
@@ -455,7 +453,7 @@ export default function ExchangeForm(props) {
                   </div>
                 </Grid.Column>
 
-                <Grid.Column width={3}>
+                <Grid.Column width={3} style={{ marginRight: '2.2rem', marginTop: '-2rem' }} >
                   <Icon disabled name="arrow right" size="huge" />
                 </Grid.Column>
 
@@ -478,6 +476,8 @@ export default function ExchangeForm(props) {
               onClick={() => {
                 onSuccessModal();
                 setModalOpened(false);
+                // setRefreshData(prev => !prev)
+                onSuccessTrade()
               }}
             >
               OK
@@ -580,9 +580,8 @@ export default function ExchangeForm(props) {
                                     inputmode="numeric"
                                     pattern="\d*"
                                     type={"number"}
-                                    placeholder={`Amount ${
-                                      userCurrency.split(" ")[1]
-                                    }`}
+                                    placeholder={`Amount ${userCurrency.split(" ")[1]
+                                      }`}
                                     disabled={invalidEx}
                                     style={
                                       invalidEx ? { opacity: "0.5" } : null
@@ -859,7 +858,7 @@ export default function ExchangeForm(props) {
                     Number(selectedFrom.balance) < Number(selectedFromAmount) ||
                     !selectedFromAmount ||
                     !selectedToAmount ||
-                    blockPrice == 0 ||
+                    // blockPrice == 0 ||
                     error
                   }
                   onClick={prepareTrade}
