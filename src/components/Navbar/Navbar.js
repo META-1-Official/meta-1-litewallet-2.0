@@ -66,7 +66,7 @@ const Navbar = (props) => {
           <img
             className={styles.img}
             onClick={() => {
-              window.open("https://meta1.vision");
+              window.open("https://meta1.vision/welcome");
             }}
             style={{ cursor: "pointer" }}
             src={logo}
