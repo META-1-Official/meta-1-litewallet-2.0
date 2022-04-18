@@ -106,7 +106,7 @@ export default function DepositForm(props) {
               fontSize: ".8rem",
             }}
           >
-            Minimum deposit: 0.001 {asset}
+            Minimum deposit: 0.001 {asset} {asset.toLowerCase()==='usdt'?'(ERC20)':''}
           </p>
           <div>
             {!isLoading && canDeposit && (
@@ -131,7 +131,7 @@ export default function DepositForm(props) {
             className={"messageRed"}
             icon="attention"
             header="Important information"
-            content={`Send only ${asset} to this address. Sending less than 0.001 ${asset} or any other currency to this address may result in the loss of your deposit`}
+            content={`Send only ${asset} ${asset.toLowerCase()==='usdt'?'ERC20':''} to this address. Sending less than 0.001 ${asset} or any other currency to this address may result in the loss of your deposit`}
           />
         </div>
       </div>
