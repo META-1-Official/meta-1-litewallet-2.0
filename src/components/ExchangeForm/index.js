@@ -597,6 +597,7 @@ export default function ExchangeForm(props) {
                                     marginTop: ".1rem",
                                     fontSize: "1rem",
                                     color: "#505361",
+                                    position:'relative'
                                   }}
                                 >
                                   <input
@@ -625,7 +626,7 @@ export default function ExchangeForm(props) {
                                     }
                                     value={blockPrice}
                                   />
-                                  <span>{userCurrency.split(" ")[0]}</span>
+                                  <span className={styles['abs-sp']} >{userCurrency.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
@@ -754,6 +755,7 @@ export default function ExchangeForm(props) {
                                     marginTop: ".1rem",
                                     fontSize: "1rem",
                                     color: "#505361",
+                                    position:'relative'
                                   }}
                                 >
                                   <span>
@@ -761,7 +763,7 @@ export default function ExchangeForm(props) {
                                       ? blockPrice
                                       : 0}
                                   </span>
-                                  <span>{userCurrency.split(" ")[0]}</span>
+                                  <span className={styles['abs-sp']}>{userCurrency.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }

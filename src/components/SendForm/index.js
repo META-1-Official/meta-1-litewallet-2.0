@@ -454,6 +454,7 @@ const SendForm = React.memo((props) => {
                         marginTop: ".1rem",
                         fontSize: "1rem",
                         color: "#505361",
+                        position:'relative'
                       }}
                     >
                       <input
@@ -471,7 +472,7 @@ const SendForm = React.memo((props) => {
                         placeholder={`Amount ${userCurrency.split(" ")[1]}`}
                         value={amount ? blockPrice : ""}
                       />
-                      <span style={{ fontSize: '16px' }}>{userCurrency.split(" ")[0]}</span>
+                      <span style={{ fontSize: '16px' }} className={styles['abs-sp']} >{userCurrency.split(" ")[0]}</span>
                     </div>
                     <div
                       style={{
