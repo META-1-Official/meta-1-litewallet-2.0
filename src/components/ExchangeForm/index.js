@@ -85,7 +85,7 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
-    if (Number(selectedFromAmount) < 0.003) {
+    if (false && Number(selectedFromAmount) < 0.003) {
       setError(
         `The amount must be greater than ${Number(
           (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
