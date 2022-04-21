@@ -1,4 +1,7 @@
 export const removeExponent = (value) => {
+    if(Number.isInteger(value)){
+        return value
+    }
     const newData = value.toFixed(10)
     let count = 0
     for (let data of newData) {
