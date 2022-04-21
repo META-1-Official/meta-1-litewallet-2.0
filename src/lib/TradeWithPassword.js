@@ -23,8 +23,10 @@ export default class TradeWithPassword {
     } catch (e) {
       if (e.message === "The pair of login and password do not match!") {
         return { error: "Invalid credentials" };
-      } else {
-        return { error: "Something went wrong" };
+      }else if(e.message==='Amount equal 0!'){
+        return { error: 'Amount almost 0!' };
+      }  else {
+          return { error: "Something went wrong" };
       }
     }
   }
