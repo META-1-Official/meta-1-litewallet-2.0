@@ -85,7 +85,7 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
-      if (Number(selectedFromAmount) < 0.003) {
+    if (Number(blockPrice) <= 0.003 * Number(userCurrency.split(" ")[2])){
         setError(
           `The amount must be greater than ${Number(
             (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
@@ -164,7 +164,7 @@ export default function ExchangeForm(props) {
       if(lastPrice!=''){
         priceAsset=lastPrice
       }
-      let priceForOne = (Number(e.target.value) * priceAsset).toFixed(2);
+      let priceForOne = (Number(e.target.value) * priceAsset).toFixed(10);
       setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
     } else {
       setBlockPrice(NaN);
