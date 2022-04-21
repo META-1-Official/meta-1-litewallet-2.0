@@ -85,14 +85,15 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
-    if (Number(selectedFromAmount) < 0.003) {
-      setError(
-        `The amount must be greater than ${Number(
-          (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
-        )} ${userCurrency.split(" ")[1]}`
-      );
+      // if (Number(selectedFromAmount) < 0.003) {
+      //   setError(
+      //     `The amount must be greater than ${Number(
+      //       (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
+      //     )} ${userCurrency.split(" ")[1]}`
+      //   );
 
-    } else if (feeAsset == undefined) {
+      // }
+     if (feeAsset == undefined) {
       setError("Not enough FEE");
     } else {
       setError("");
