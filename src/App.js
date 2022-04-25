@@ -160,6 +160,7 @@ function Application(props) {
                 ? sessionStorage.getItem("location")
                 : "wallet"
             );
+
             setPortfolioReceiver(
               new Portfolio({
                 metaApi: Meta1,

@@ -39,10 +39,12 @@
 }
 .blockInfoText {
   margin-left: 1rem;
+
   h3 {
     margin: 0;
     padding: 0;
   }
+
   span {
     color: var(--textGrey);
     font-size: 0.8rem;
@@ -62,10 +64,16 @@
   background: rgba(255, 255, 255, 0);
   border: none;
   box-shadow: none !important;
+
   &:focus {
     border: none !important;
   }
+
   &:active {
     border: none !important;
   }
 }
+.currency-color-change .css-1pnmrwp-MuiTypography-root {
+  color: #fdc000 !important;
+}
+span.abs-sp {position: absolute;right: 0;top: 0px;}

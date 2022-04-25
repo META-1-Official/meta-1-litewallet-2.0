@@ -85,14 +85,14 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
-    if (Number(blockPrice) < 0.003 * Number(userCurrency.split(" ")[2])) {
-      setError(
-        `The amount must be greater than ${Number(
-          (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
-        )} ${userCurrency.split(" ")[1]}`
-      );
-      console.log(feeAsset);
-    } else if (feeAsset == undefined) {
+    if (Number(blockPrice) <= 0.003 * Number(userCurrency.split(" ")[2])){
+        setError(
+          `The amount must be greater than ${Number(
+            (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
+          )} ${userCurrency.split(" ")[1]}`
+        );
+
+      } else if (feeAsset == undefined) {
       setError("Not enough FEE");
     } else {
       setError("");
@@ -158,9 +158,13 @@ export default function ExchangeForm(props) {
     setInvalidEx(false);
   }, [pair]);
 
-  const calculateUsdPriceHandler = (e) => {
+  const calculateUsdPriceHandler = (e,lastPrice='') => {
     if (e.target.value.length != 0) {
-      let priceForOne = (Number(e.target.value) * priceForAsset).toFixed(2);
+      let priceAsset = priceForAsset
+      if(lastPrice!=''){
+        priceAsset=lastPrice
+      }
+      let priceForOne = (Number(e.target.value) * priceAsset).toFixed(10);
       setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
     } else {
       setBlockPrice(NaN);
@@ -177,7 +181,7 @@ export default function ExchangeForm(props) {
     setSelectedFromAmount(priceForOne);
   };
 
-  const handleCalculateSelectedTo = () => {
+  const handleCalculateSelectedTo = (currentValue='') => {
     if (pair == null) return;
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
       setInvalidEx(true);
@@ -187,9 +191,10 @@ export default function ExchangeForm(props) {
       return;
     }
     setInvalidEx(false);
-    if (selectedFromAmount !== "" && selectedFromAmount) {
+    const selectedAmount=currentValue?currentValue:selectedFromAmount
+    if (selectedAmount !== "" && selectedAmount) {
       const amount =
-        (selectedFromAmount / pair.lowest_ask).toString().substr(0, 11) * 1;
+        (selectedAmount / pair.lowest_ask).toString().substr(0, 11) * 1;
       setSelectedToAmount(amount);
     } else {
       setSelectedToAmount(0);
@@ -249,12 +254,14 @@ export default function ExchangeForm(props) {
       const response = await fetch(
         `https://api.binance.com/api/v3/ticker/24hr?symbol=${val}USDT`
       );
-      await setPriceForAsset((await response.json()).lastPrice);
+      const data = await response.json()
+      await setPriceForAsset(data.lastPrice);
     } else if (val === "USDT") {
       setPriceForAsset(1);
     } else {
-      Meta1.ticker("USDT", "META1").then((res) =>
+      Meta1.ticker("USDT", "META1").then((res) =>{
         setPriceForAsset(Number(res.latest).toFixed(2))
+      }
       );
     }
   };
@@ -301,7 +308,6 @@ export default function ExchangeForm(props) {
   const performTrade = async () => {
     try {
       setTradeInProgress(true);
-      setPassword("");
       setPasswordShouldBeProvided(false);
 
       const buyResult = await trader.perform({
@@ -310,13 +316,12 @@ export default function ExchangeForm(props) {
         amount: selectedToAmount,
         password: password,
       });
-
       if (buyResult.error) {
         setTradeError(buyResult.error);
       } else {
         setModalOpened(true);
       }
-
+      setPassword("");
       setTradeInProgress(false);
     } catch (e) {
       setTradeInProgress(false);
@@ -340,6 +345,41 @@ export default function ExchangeForm(props) {
   if (selectedFrom == null && selectedTo == null) return null;
 
   const getAssets = (except) => options.filter((el) => el.value !== except);
+
+  const inputChangeValuesHandler =(e,currentInput,lastPrice)=>{
+    handleCalculateSelectedTo(e.target.value);
+    calculateUsdPriceHandler(e,lastPrice);
+    setClickedInputs(true);
+  }
+
+  const inputChangeHandler = async (val,e)=>{
+    const currentInput = e.target.value
+    setSelectedFromAmount(prev=>{
+      return currentInput
+    });
+    if (val !== "META1" && val !== "USDT") {
+      const response = await fetch(
+        `https://api.binance.com/api/v3/ticker/24hr?symbol=${val}USDT`
+      );
+      const data = await response.json()
+      setPriceForAsset(prev=>{
+        return prev=data.lastPrice
+      });
+      inputChangeValuesHandler(e,currentInput,data.lastPrice)
+    } else if (val === "USDT") {
+      setPriceForAsset(1);
+      inputChangeValuesHandler(e,currentInput,'')
+    } else {
+      Meta1.ticker("USDT", "META1").then((res) =>{
+        setPriceForAsset(prev=>{
+          return Number(res.latest).toFixed(2)
+        })
+        inputChangeValuesHandler(e,currentInput,Number(res.latest).toFixed(2))
+      }
+      );
+    }
+  }
+
 
   return (
     <>
@@ -454,8 +494,7 @@ export default function ExchangeForm(props) {
                     </p>
                   </div>
                 </Grid.Column>
-
-                <Grid.Column width={3}>
+                <Grid.Column width={3} style={{ marginRight: '2.2rem', marginTop: '-2rem' }} >
                   <Icon disabled name="arrow right" size="huge" />
                 </Grid.Column>
 
@@ -478,6 +517,8 @@ export default function ExchangeForm(props) {
               onClick={() => {
                 onSuccessModal();
                 setModalOpened(false);
+                // setRefreshData(prev => !prev)
+                onSuccessTrade()
               }}
             >
               OK
@@ -526,7 +567,6 @@ export default function ExchangeForm(props) {
                                   value={selectedFromAmount}
                                   type={"number"}
                                   onChange={(e) => {
-                                    console.log(e);
                                     if (
                                       e.target.value.length < 11 &&
                                       /[-+]?[0-9]*\.?[0-9]*/.test(
@@ -534,10 +574,7 @@ export default function ExchangeForm(props) {
                                       ) &&
                                       Number(e.target.value) >= 0
                                     ) {
-                                      setSelectedFromAmount(e.target.value);
-                                      handleCalculateSelectedTo();
-                                      calculateUsdPriceHandler(e);
-                                      setClickedInputs(true);
+                                      inputChangeHandler(selectedFrom.label,e)
                                     }
                                   }}
                                   endAdornment={
@@ -560,6 +597,7 @@ export default function ExchangeForm(props) {
                                     marginTop: ".1rem",
                                     fontSize: "1rem",
                                     color: "#505361",
+                                    position:'relative'
                                   }}
                                 >
                                   <input
@@ -580,16 +618,15 @@ export default function ExchangeForm(props) {
                                     inputmode="numeric"
                                     pattern="\d*"
                                     type={"number"}
-                                    placeholder={`Amount ${
-                                      userCurrency.split(" ")[1]
-                                    }`}
+                                    placeholder={`Amount ${userCurrency.split(" ")[1]
+                                      }`}
                                     disabled={invalidEx}
                                     style={
                                       invalidEx ? { opacity: "0.5" } : null
                                     }
                                     value={blockPrice}
                                   />
-                                  <span>{userCurrency.split(" ")[0]}</span>
+                                  <span className={styles['abs-sp']} >{userCurrency.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
@@ -718,6 +755,7 @@ export default function ExchangeForm(props) {
                                     marginTop: ".1rem",
                                     fontSize: "1rem",
                                     color: "#505361",
+                                    position:'relative'
                                   }}
                                 >
                                   <span>
@@ -725,7 +763,7 @@ export default function ExchangeForm(props) {
                                       ? blockPrice
                                       : 0}
                                   </span>
-                                  <span>{userCurrency.split(" ")[0]}</span>
+                                  <span className={styles['abs-sp']}>{userCurrency.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
@@ -859,7 +897,7 @@ export default function ExchangeForm(props) {
                     Number(selectedFrom.balance) < Number(selectedFromAmount) ||
                     !selectedFromAmount ||
                     !selectedToAmount ||
-                    blockPrice == 0 ||
+                    // blockPrice == 0 ||
                     error
                   }
                   onClick={prepareTrade}
