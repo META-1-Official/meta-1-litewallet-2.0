@@ -186,12 +186,13 @@ const PortfolioTable = React.memo((props) => {
                 }
               </StyledTableCell>
               <StyledTableCell align="left" className={"currencyPrices"}>
-                {Number(
+                {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1).toFixed(datas?.pre)) * currencyValue(datas) * Number(userCurrency.split(" ")[2])) : removeExponent(0)}
+                {/* {Number(
                   (
                     currencyPrice(datas, data[datas.name]) *
                     Number(userCurrency.split(" ")[2])
                   ).toFixed(datas.pre)
-                )}
+                )} */}
               </StyledTableCell>
               <StyledTableCell align="left">
                 <button
