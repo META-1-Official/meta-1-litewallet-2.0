@@ -12,6 +12,7 @@ import { Image } from "semantic-ui-react";
 import Meta1 from "meta1dex";
 
 import { useQuery } from "react-query";
+import { removeExponent } from "../../utils/commonFunction";
 
 const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
@@ -162,11 +163,11 @@ const PortfolioTable = React.memo((props) => {
                 {datas?.qty > 0 ? (datas?.qty * 1).toFixed(datas?.pre) : "0.00"}
               </StyledTableCell>
               <StyledTableCell align="center" className={"currencyValues"}>
-                {Number(
+                {removeExponent(Number(
                   (
                     currencyValue(datas) * Number(userCurrency.split(" ")[2])
                   ).toFixed(datas.pre)
-                )}
+                ))}
               </StyledTableCell>
               <StyledTableCell align="left">
                 {
