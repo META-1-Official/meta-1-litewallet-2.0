@@ -289,7 +289,7 @@ function Wallet(props) {
             <div className={"blockChoose"}>
               <noscript id={"forCheck"}>{userCurrency.split(" ")[1]}</noscript>
               <div className={"blockChoosen"} onClick={openDrop}>
-                <span style={{ textAlign: "center",paddingRight:'2px' }}>
+                <span style={{ textAlign: "center", paddingRight: '2px' }}>
                   Select currency to display
                 </span>
                 <i
