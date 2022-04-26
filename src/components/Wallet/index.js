@@ -289,8 +289,8 @@ function Wallet(props) {
             <div className={"blockChoose"}>
               <noscript id={"forCheck"}>{userCurrency.split(" ")[1]}</noscript>
               <div className={"blockChoosen"} onClick={openDrop}>
-                <span style={{ textAlign: "center" }}>
-                  Select currency to display...
+                <span style={{ textAlign: "center",paddingRight:'2px' }}>
+                  Select currency to display
                 </span>
                 <i
                   className="fas fa-chevron-down"
