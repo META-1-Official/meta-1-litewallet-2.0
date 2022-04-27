@@ -158,12 +158,12 @@ const LeftPanel = (props) => {
               className={styles.textSpan + " event"}
               style={
                 activeScreen === "portfolio" ||
-                  activeScreen === "sendFunds" ||
-                  activeScreen === "deposit" ||
-                  activeScreen === "wallet" ||
-                  activeScreen === "paperWallet"
-                  ? { color: "#FFC000" }
-                  : null
+                activeScreen === "sendFunds" ||
+                activeScreen === "deposit" ||
+                activeScreen === "wallet" ||
+                activeScreen === "paperWallet"
+                ? { color: "#FFC000" }
+                : null
               }
             >
               <span className={"event"}>Portfolio</span>
