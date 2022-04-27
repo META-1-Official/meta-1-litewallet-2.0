@@ -23,13 +23,19 @@ const LeftPanel = (props) => {
 
   const portfolioScrollPositionHoverEvent = (e) => {
     if (e.clientY <= 70) {
-      document.querySelector('.LeftPanel_modalBlock__33lE4').style.top = '2%'
+      if (document.querySelector('#modalBlock')) {
+        document.querySelector('#modalBlock').style.top = '2%'
+      }
     } else if (e.clientY < 100 && e.clientY > 70) {
-      document.querySelector('.LeftPanel_modalBlock__33lE4').style.top = '3%'
+      document.querySelector('#modalBlock').style.top = '3%'
     } else if (e.clientY < 200 && e.clientY >= 100) {
-      document.querySelector('.LeftPanel_modalBlock__33lE4').style.top = '7%'
+      if (document.querySelector('#modalBlock')) {
+        document.querySelector('#modalBlock').style.top = '7%'
+      }
     } else {
-      document.querySelector('.LeftPanel_modalBlock__33lE4').style.top = '20%'
+      if (document.querySelector('#modalBlock')) {
+        document.querySelector('#modalBlock').style.top = '20%'
+      }
     }
   }
 
