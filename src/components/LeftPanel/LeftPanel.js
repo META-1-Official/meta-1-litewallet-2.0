@@ -21,6 +21,24 @@ const LeftPanel = (props) => {
     userIcon,
   } = props;
 
+  const portfolioScrollPositionHoverEvent = (e) => {
+    if (e.clientY <= 70) {
+      document.querySelector('.LeftPanel_modalBlock__33lE4').style.top = '2%'
+    } else if (e.clientY < 100 && e.clientY > 70) {
+      document.querySelector('.LeftPanel_modalBlock__33lE4').style.top = '3%'
+    } else if (e.clientY < 200 && e.clientY >= 100) {
+      document.querySelector('.LeftPanel_modalBlock__33lE4').style.top = '7%'
+    } else {
+      document.querySelector('.LeftPanel_modalBlock__33lE4').style.top = '20%'
+    }
+  }
+
+  useEffect(() => {
+    document.querySelector('.portforlio-class').addEventListener('mouseenter', portfolioScrollPositionHoverEvent);
+    return () => {
+      document.querySelector('.portforlio-class').removeEventListener('mouseenter', portfolioScrollPositionHoverEvent);
+    }
+  }, [])
   useEffect(() => {
     if (name && portfolio) {
       setTimeout(() => {
@@ -113,8 +131,8 @@ const LeftPanel = (props) => {
       <li
         className={
           name && portfolio
-            ? styles.Li + " nav-item event"
-            : styles.LiDisabled + " nav-item event"
+            ? styles.Li + " nav-item event portforlio-class"
+            : styles.LiDisabled + " nav-item event portforlio-class"
         }
         onClick={portfolio ? onClickPortfolioHandler : null}
       >
@@ -144,8 +162,8 @@ const LeftPanel = (props) => {
                 activeScreen === "deposit" ||
                 activeScreen === "wallet" ||
                 activeScreen === "paperWallet"
-                  ? { color: "#FFC000" }
-                  : null
+                ? { color: "#FFC000" }
+                : null
               }
             >
               <span className={"event"}>Portfolio</span>
