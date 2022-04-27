@@ -83,7 +83,7 @@ const PortfolioTable = React.memo((props) => {
   };
 
   const currencyPrice = (datass) => {
-    return Number(data[datass.name].latest).toFixed(2);
+    return Number(data[datass.name].latest).toFixed(8);
   };
 
   if (isLoading && loading) return <MetaLoader size={"small"} />;
@@ -163,11 +163,17 @@ const PortfolioTable = React.memo((props) => {
                 {datas?.qty > 0 ? (datas?.qty * 1).toFixed(datas?.pre) : "0.00"}
               </StyledTableCell>
               <StyledTableCell align="center" className={"currencyValues"}>
-                {removeExponent(Number(
+                {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1).toFixed(datas?.pre))  * Number(
+                  (
+                    currencyPrice(datas, data[datas.name]) *
+                    Number(userCurrency.split(" ")[2])
+                  ).toFixed(datas.pre)
+                )) : removeExponent(0)}
+                {/* {removeExponent(Number(
                   (
                     currencyValue(datas) * Number(userCurrency.split(" ")[2])
                   ).toFixed(datas.pre)
-                ))}
+                ))} */}
               </StyledTableCell>
               <StyledTableCell align="left">
                 {
@@ -185,14 +191,14 @@ const PortfolioTable = React.memo((props) => {
                   </div>
                 }
               </StyledTableCell>
-              <StyledTableCell align="left" className={"currencyPrices"}>
-                {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1).toFixed(datas?.pre)) * currencyValue(datas) * Number(userCurrency.split(" ")[2])) : removeExponent(0)}
-                {/* {Number(
+              <StyledTableCell align="right" className={"currencyPrices"}>
+                {/* {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1).toFixed(datas?.pre)) * currencyValue(datas) * Number(userCurrency.split(" ")[2])) : removeExponent(0)} */}
+                {removeExponent(Number(
                   (
                     currencyPrice(datas, data[datas.name]) *
                     Number(userCurrency.split(" ")[2])
                   ).toFixed(datas.pre)
-                )} */}
+                ))}
               </StyledTableCell>
               <StyledTableCell align="left">
                 <button
