@@ -42,7 +42,7 @@ function Wallet(props) {
   const [totalSum, setTotalSum] = useState(0);
   const [loader, setLoader] = useState(true);
   const [check, setCheck] = useState(false);
-  const [isCurrencySelected,setIsCurrencySelected] = useState('')
+  const [isCurrencySelected, setIsCurrencySelected] = useState('')
   const { data, isLoading, error } = useQuery("cryptos", getDatas);
 
   async function getDatas() {
@@ -148,65 +148,16 @@ function Wallet(props) {
     if (crypto !== "META1") {
       if (document.getElementById("forCheck").innerText === "META1") {
         chosen = userCurrency.split(" ")[1];
-        // let data = await getAllByOne(chosen, crypto);
         let data = await getAllByOne('USDT', crypto);
-        sessionStorage.setItem('currencyResult',JSON.stringify(data))
+        sessionStorage.setItem('currencyResult', JSON.stringify(data))
         setCurrentCurrency(currentCurrency + 1);
-        // setTimeout(() => {
-          // let values = document.getElementsByClassName("currencyValues");
-          // let prices = document.getElementsByClassName("currencyPrices");
-          // for (let i = 0; i < values.length; i++) {
-          //   values[i].innerText = Number(
-          //     values[i].innerText * data[crypto]
-          //   ).toFixed(7);
-          //   prices[i].innerText = Number(
-          //     prices[i].innerText * data[crypto]
-          //   ).toFixed(7);
-            
-          // }
-          // document.getElementById("valueTitle").innerText = `VALUE (${crypto})`;
-          // document.getElementById("priceTitle").innerText = `PRICE (${crypto})`;
-          // document.getElementById("forCheck").innerText = crypto;
-        // }, 2000);
       } else {
         let data = await getAllByOne('USDT', crypto);
-        sessionStorage.setItem('currencyResult',JSON.stringify(data))
-        // let values = document.getElementsByClassName("currencyValues");
-        // let prices = document.getElementsByClassName("currencyPrices");
-        // for (let i = 0; i < values.length; i++) {
-        //   values[i].innerText = Number(values[i].innerText * data[crypto])
-        //     .toFixed(7)
-        //     .toString();
-        //   prices[i].innerText = prices[i].innerText * data[crypto])
-        //     .toFixed(7)
-        //     .toString();
-        // }
-        // document.getElementById("valueTitle").innerText = `VALUE (${crypto})`;
-        // document.getElementById("priceTitle").innerText = `PRICE (${crypto})`;
-        // document.getElementById("forCheck").innerText = crypto;
+        sessionStorage.setItem('currencyResult', JSON.stringify(data))
       }
     } else {
       setCurrentCurrency(currentCurrency + 1);
-      // setTimeout(() => {
-        let crypto = "META1";
-        // let values = document.getElementsByClassName("currencyValues");
-        // let prices = document.getElementsByClassName("currencyPrices");
-        // for (let i = 0; i < values.length; i++) {
-        //   values[i].innerText = Number(
-        //     Number(values[i].innerText) / Number(data["META1"].latest)
-        //   )
-        //     .toFixed(7)
-        //     .toString();
-        //   prices[i].innerText = Number(
-        //     Number(prices[i].innerText) / Number(data["META1"].latest)
-        //   )
-        //     .toFixed(7)
-        //     .toString();
-        // }
-        // document.getElementById("valueTitle").innerText = `VALUE (${crypto})`;
-        // document.getElementById("priceTitle").innerText = `PRICE (${crypto})`;
-        // document.getElementById("forCheck").innerText = crypto;
-      // }, 2000);
+      let crypto = "META1";
     }
     setIsCurrencySelected(crypto)
   };
