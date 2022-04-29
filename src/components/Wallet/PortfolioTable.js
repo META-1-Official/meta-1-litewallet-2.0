@@ -25,6 +25,7 @@ const PortfolioTable = React.memo((props) => {
     onWithdrawClick,
     assets,
     userCurrency,
+    isCurrencySelected
   } = props;
 
   const { data, isLoading, error } = useQuery("cryptosTable", getDatas);
@@ -86,6 +87,17 @@ const PortfolioTable = React.memo((props) => {
     return Number(data[datass.name].latest).toFixed(8);
   };
 
+  const calculateCurrencyPrice = (value) => {
+    if (isCurrencySelected) {
+      if (isCurrencySelected === 'META1') {
+        return value / Number(data["META1"].latest)
+      }
+      return JSON.parse(sessionStorage.getItem('currencyResult'))[isCurrencySelected] * value
+    } else {
+      return value
+    }
+  }
+
   if (isLoading && loading) return <MetaLoader size={"small"} />;
 
   return (
@@ -110,7 +122,7 @@ const PortfolioTable = React.memo((props) => {
             <StyledTableCell>
               <div className="text-left" style={{ width: "6rem" }}>
                 <div className="table_title" id={"valueTitle"}>
-                  {`VALUE (${userCurrency.split(" ")[1]})`}
+                  {`VALUE (${isCurrencySelected ? isCurrencySelected : userCurrency.split(" ")[1]})`}
                 </div>
               </div>
             </StyledTableCell>
@@ -122,7 +134,7 @@ const PortfolioTable = React.memo((props) => {
             <StyledTableCell>
               <div className="text-left" style={{ width: "6rem" }}>
                 <div className="table_title" id={"priceTitle"}>
-                  {`PRICE (${userCurrency.split(" ")[1]})`}
+                  {`PRICE (${isCurrencySelected ? isCurrencySelected : userCurrency.split(" ")[1]})`}
                 </div>
               </div>
             </StyledTableCell>
@@ -163,11 +175,11 @@ const PortfolioTable = React.memo((props) => {
                 {datas?.qty > 0 ? (datas?.qty * 1).toFixed(datas?.pre) : "0.00"}
               </StyledTableCell>
               <StyledTableCell align="center" className={"currencyValues"}>
-                {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1).toFixed(datas?.pre))  * Number(
+                {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1)) * Number(
                   (
-                    currencyPrice(datas, data[datas.name]) *
-                    Number(userCurrency.split(" ")[2])
-                  ).toFixed(datas.pre)
+                    calculateCurrencyPrice(currencyPrice(datas, data[datas.name]) *
+                      Number(userCurrency.split(" ")[2])
+                    ))
                 )) : removeExponent(0)}
                 {/* {removeExponent(Number(
                   (
@@ -195,9 +207,9 @@ const PortfolioTable = React.memo((props) => {
                 {/* {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1).toFixed(datas?.pre)) * currencyValue(datas) * Number(userCurrency.split(" ")[2])) : removeExponent(0)} */}
                 {removeExponent(Number(
                   (
-                    currencyPrice(datas, data[datas.name]) *
-                    Number(userCurrency.split(" ")[2])
-                  ).toFixed(datas.pre)
+                    calculateCurrencyPrice(currencyPrice(datas, data[datas.name]) *
+                      Number(userCurrency.split(" ")[2]))
+                  )
                 ))}
               </StyledTableCell>
               <StyledTableCell align="left">
