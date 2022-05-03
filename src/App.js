@@ -25,6 +25,7 @@ import Footer from "./components/Footer/Footer";
 import RightSideHelpMenuSecondType from "./components/RightSideHelpMenuSecondType/RightSideHelpMenuSecondType";
 import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
+import CheckPassword from "./lib/CheckPassword";
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -56,6 +57,7 @@ function Application(props) {
   const [senderApi, setSenderApi] = useState(null);
   const [portfolioReceiver, setPortfolioReceiver] = useState(null);
   const [accountName, setAccountName] = useState(domAccount);
+  const [checkPaswordObj, setCheckPaswordObj] = useState(null);
   const [password, setPassword] = useState(
     window.localStorage.getItem("password")
   );
@@ -169,6 +171,12 @@ function Application(props) {
             );
             setTrader(
               new TradeWithPassword({
+                metaApi: Meta1,
+                login: accountName,
+              })
+            );
+            setCheckPaswordObj(
+              new CheckPassword({
                 metaApi: Meta1,
                 login: accountName,
               })
@@ -361,6 +369,7 @@ function Application(props) {
                   setUserCurrency={setUserCurrency}
                   setUserImageDefault={setUserImageDefault}
                   setUserImageNavbar={setUserImageNavbar}
+                  checkPaswordObj={checkPaswordObj}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
