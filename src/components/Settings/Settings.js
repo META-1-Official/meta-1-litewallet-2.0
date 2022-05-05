@@ -36,7 +36,7 @@ const Settings = (props) => {
   const [passwordError, setPasswordError] = useState('');
   const [openPasswordSection, setOpenPasswordSection] = useState(false);
   const [isRemoveBtn, setIsRemoveBtn] = useState(false);
-
+  const [isPasswordTouch, setIsPasswordTouch] = useState(false);
   const imageRef = useRef();
 
   useEffect(() => {
@@ -60,7 +60,12 @@ const Settings = (props) => {
     setUserImageDefault(logoDefalt);
     setUserImageNavbar(logoNavbar);
   }
+
   const uploadImageValidation = async () => {
+    if (!password) {
+      setIsPasswordTouch(true)
+      return
+    }
     const result = await checkPaswordObj.checkPasword(password)
     if (result.error !== null) {
       setPasswordError(result.error)
@@ -71,6 +76,10 @@ const Settings = (props) => {
   }
 
   const removeImageValidation = async () => {
+    if (!password) {
+      setIsPasswordTouch(true)
+      return
+    }
     const result = await checkPaswordObj.checkPasword(password)
     if (result.error !== null) {
       setPasswordError(result.error)
@@ -129,6 +138,7 @@ const Settings = (props) => {
     setOpenPasswordSection(false)
     setPasswordError('')
     setIsRemoveBtn(false)
+    setIsPasswordTouch(false)
   }
   return (
     <>
@@ -233,10 +243,15 @@ const Settings = (props) => {
                       <input
                         type='password'
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                          setPassword(e.target.value)
+                          setIsPasswordTouch(true)
+                        }}
+                        onBlur={() => setIsPasswordTouch(true)}
                         placeholder='Enter Password'
                         className={styles.input_password}
                       />
+                      {!password && isPasswordTouch && <span style={{ color: 'red', display: 'block' }}>Password field can't be empty</span>}
                       <button onClick={!isRemoveBtn ? uploadImageValidation : removeImageValidation} className={styles.Button_Password} >Submit</button>
                       <button onClick={closePasswordSectionHandler} className={styles.Button_Password}>Cancel</button>
                     </div>}
