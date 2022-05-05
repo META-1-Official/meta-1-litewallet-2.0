@@ -237,8 +237,7 @@ const Settings = (props) => {
                         placeholder='Enter Password'
                         className={styles.input_password}
                       />
-                      {!isRemoveBtn && <button onClick={uploadImageValidation} className={styles.Button_Password} >Submit</button>}
-                      {isRemoveBtn && <button onClick={removeImageValidation} className={styles.Button_Password} >Submit</button>}
+                      <button onClick={!isRemoveBtn ? uploadImageValidation : removeImageValidation} className={styles.Button_Password} >Submit</button>
                       <button onClick={closePasswordSectionHandler} className={styles.Button_Password}>Cancel</button>
                     </div>}
                     <div className={styles.extraText}>
