@@ -63,8 +63,8 @@ const Settings = (props) => {
 
   const uploadImageValidation = async () => {
     if (!password) {
-      setIsPasswordTouch(true)
-      return
+      setIsPasswordTouch(true);
+      return;
     }
     const result = await checkPaswordObj.checkPasword(password)
     if (result.error !== null) {
@@ -77,8 +77,8 @@ const Settings = (props) => {
 
   const removeImageValidation = async () => {
     if (!password) {
-      setIsPasswordTouch(true)
-      return
+      setIsPasswordTouch(true);
+      return;
     }
     const result = await checkPaswordObj.checkPasword(password)
     if (result.error !== null) {
