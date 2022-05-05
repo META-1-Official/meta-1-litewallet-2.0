@@ -35,6 +35,7 @@ const Settings = (props) => {
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [openPasswordSection, setOpenPasswordSection] = useState(false);
+  const [isRemoveBtn, setIsRemoveBtn] = useState(false);
 
   const imageRef = useRef();
 
@@ -66,6 +67,16 @@ const Settings = (props) => {
       return
     }
     imageRef.current.click()
+    closePasswordSectionHandler(false)
+  }
+
+  const removeImageValidation = async () => {
+    const result = await checkPaswordObj.checkPasword(password)
+    if (result.error !== null) {
+      setPasswordError(result.error)
+      return
+    }
+    removePhoto()
     closePasswordSectionHandler(false)
   }
 
@@ -108,14 +119,16 @@ const Settings = (props) => {
     document.getElementById("file_upload").value = "";
   }
 
-  const openPasswordSectionHandler = () => {
+  const openPasswordSectionHandler = (isRemove = false) => {
     setPassword('')
     setOpenPasswordSection(true)
     setPasswordError('')
+    if (isRemove) setIsRemoveBtn(true)
   }
   const closePasswordSectionHandler = () => {
     setOpenPasswordSection(false)
     setPasswordError('')
+    setIsRemoveBtn(false)
   }
   return (
     <>
@@ -190,7 +203,7 @@ const Settings = (props) => {
                         <div
                           className={styles.blockForUpload}
                           style={{ position: "relative" }}
-                          onClick={openPasswordSectionHandler}
+                          onClick={() => openPasswordSectionHandler()}
                         >
                           <p className={styles.pUpload}>Choose a File</p>
 
@@ -209,7 +222,7 @@ const Settings = (props) => {
                         <button
                           className={styles.Button}
                           style={{ marginLeft: "1rem" }}
-                          onClick={removePhoto}
+                          onClick={() => openPasswordSectionHandler(true)}
                         >
                           Remove the Photo
                         </button>
@@ -224,7 +237,8 @@ const Settings = (props) => {
                         placeholder='Enter Password'
                         className={styles.input_password}
                       />
-                      <button onClick={uploadImageValidation} className={styles.Button_Password} >Submit</button>
+                      {!isRemoveBtn && <button onClick={uploadImageValidation} className={styles.Button_Password} >Submit</button>}
+                      {isRemoveBtn && <button onClick={removeImageValidation} className={styles.Button_Password} >Submit</button>}
                       <button onClick={closePasswordSectionHandler} className={styles.Button_Password}>Cancel</button>
                     </div>}
                     <div className={styles.extraText}>
