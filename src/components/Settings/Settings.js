@@ -68,11 +68,11 @@ const Settings = (props) => {
     }
     const result = await checkPaswordObj.checkPasword(password)
     if (result.error !== null) {
-      setPasswordError(result.error)
-      return
+      setPasswordError(result.error);
+      return;
     }
-    imageRef.current.click()
-    closePasswordSectionHandler(false)
+    imageRef.current.click();
+    closePasswordSectionHandler(false);
   }
 
   const removeImageValidation = async () => {
@@ -82,11 +82,11 @@ const Settings = (props) => {
     }
     const result = await checkPaswordObj.checkPasword(password)
     if (result.error !== null) {
-      setPasswordError(result.error)
-      return
+      setPasswordError(result.error);
+      return;
     }
-    removePhoto()
-    closePasswordSectionHandler(false)
+    removePhoto();
+    closePasswordSectionHandler(false);
   }
 
   async function uploadFile(e) {
@@ -129,16 +129,16 @@ const Settings = (props) => {
   }
 
   const openPasswordSectionHandler = (isRemove = false) => {
-    setPassword('')
-    setOpenPasswordSection(true)
-    setPasswordError('')
-    if (isRemove) setIsRemoveBtn(true)
+    setPassword('');
+    setOpenPasswordSection(true);
+    setPasswordError('');
+    if (isRemove) setIsRemoveBtn(true);
   }
   const closePasswordSectionHandler = () => {
-    setOpenPasswordSection(false)
-    setPasswordError('')
-    setIsRemoveBtn(false)
-    setIsPasswordTouch(false)
+    setOpenPasswordSection(false);
+    setPasswordError('');
+    setIsRemoveBtn(false);
+    setIsPasswordTouch(false);
   }
   return (
     <>
