@@ -83,7 +83,6 @@ const WithdrawForm = (props) => {
       setSelectedFrom(newOptions.find((o) => o.value === selectedFrom.value));
     }
   }, [props.assets, props.portfolio]);
-  
   useEffect(() => {
     if (selectedFrom) {
       changeAssetHandler(selectedFrom.value);
@@ -138,9 +137,8 @@ const WithdrawForm = (props) => {
       }
     }
   }, [toAddress, selectedFrom]);
-  
   const changeAssetHandler = async (val) => {
-    if (val !== "META1" && val !== "USDT") {
+     if (val !== "META1" && val !== "USDT") {
       const response = await fetch(
         `https://api.binance.com/api/v3/ticker/24hr?symbol=${val}USDT`
       );
