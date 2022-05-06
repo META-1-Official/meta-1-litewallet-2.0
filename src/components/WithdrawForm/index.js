@@ -138,7 +138,7 @@ const WithdrawForm = (props) => {
     }
   }, [toAddress, selectedFrom]);
   const changeAssetHandler = async (val) => {
-     if (val !== "META1" && val !== "USDT") {
+    if (val !== "META1" && val !== "USDT") {
       const response = await fetch(
         `https://api.binance.com/api/v3/ticker/24hr?symbol=${val}USDT`
       );
