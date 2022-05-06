@@ -51,7 +51,6 @@ const WithdrawForm = (props) => {
   const [isValidCurrency, setIsValidCurrency] = useState(false);
 
   const ariaLabel = { "aria-label": "description" };
-  
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
     setAssets(props.assets);
