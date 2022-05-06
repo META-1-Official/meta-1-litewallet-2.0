@@ -705,7 +705,7 @@ function Application(props) {
                           assets={assets}
                         />
                       </div>
-                      <div className={"bottomAdaptBlock"}>
+                      <div className={"bottomAdaptBlockTransaction"}>
                         <RightSideHelpMenuSecondType
                           onClickExchangeUSDTHandler={(e) => {
                             e.preventDefault();

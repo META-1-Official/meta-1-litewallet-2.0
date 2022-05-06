@@ -110,7 +110,15 @@ span.css-llftvd {
 .bottomAdaptBlock {
   display: flex;
   flex-direction: column;
-  width: 27%;
+  width: 71.5%;
+  margin-left: 1.2rem;
+  
+}
+.bottomAdaptBlockTransaction {
+  display: flex;
+  flex-direction: column;
+  width: 96%;
+  margin-left: 1.2rem;
 }
 /*.modal {*/
 /*  height: 20rem!important;*/
@@ -131,6 +139,7 @@ span.css-llftvd {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
+    margin-left: 2px;
   }
   .justFlexAndDirect {
     flex-direction: column !important;
