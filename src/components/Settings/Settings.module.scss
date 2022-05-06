@@ -103,8 +103,9 @@
   margin-left: 0.5rem;
 
   @media (max-width: 600px) {
-    margin: 0.5rem 0 !important;
-    padding: 0.6rem 0.6rem;
+    margin: 1rem 0 !important;
+    padding: 0.6rem 0;
+    display: block;
     width: 100%;
   }
 }

@@ -256,7 +256,7 @@ const Settings = (props) => {
                       <button onClick={closePasswordSectionHandler} className={styles.Button_Password}>Cancel</button>
                     </div>}
                     <div className={styles.extraText}>
-                      <span>Acceptable formates: jpg, png only</span>
+                      <span>Acceptable formats: jpg, png only</span>
                       <span>
                         Maximum file size is 1mb and minimum size 70kb
                       </span>
