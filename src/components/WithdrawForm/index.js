@@ -79,7 +79,7 @@ const WithdrawForm = (props) => {
         ? newOptions.find((el) => el.value === asset)
         : newOptions[0];
 
-        setSelectedFrom(from);
+      setSelectedFrom(from);
     } else {
       setSelectedFrom(newOptions.find((o) => o.value === selectedFrom.value));
     }
@@ -272,14 +272,13 @@ const WithdrawForm = (props) => {
             <label>
               <span>Name:</span><br />
               <TextField
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
                 value={name}
                 onChange={(e) => {setName(e.target.value)}}
                 className={styles.input}
                 id="name-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
-                inputProps={{className:'custom-input-bg'}}
               />
               {name && !isValidName &&
                 <span className="c-danger">Invalid first name</span>
@@ -288,14 +287,13 @@ const WithdrawForm = (props) => {
             <label>
               <span>Email Address:</span><br />
               <TextField
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
                 value={emailAddress}
                 onChange={(e) => {setEmailAddress(e.target.value)}}
                 className={styles.input}
                 id="emailaddress-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
-                inputProps={{className:'custom-input-bg'}}
               />
               {emailAddress && !isValidEmailAddress &&
                 <span className="c-danger">Invalid email address</span>
@@ -431,14 +429,13 @@ const WithdrawForm = (props) => {
             <label>
               <span>Destination Address:</span>
               <TextField
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
                 value={toAddress}
                 onChange={(e) => {setToAddress(e.target.value)}}
                 className={styles.input}
                 id="destination-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
-                inputProps={{className:'custom-input-bg'}}
               />
               {toAddress && !isValidAddress &&
                 <span className="c-danger">Invalid {selectedFrom?.value} address</span>
