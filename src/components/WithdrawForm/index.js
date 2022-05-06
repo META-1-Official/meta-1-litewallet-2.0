@@ -27,7 +27,7 @@ const MIN_WITHDRAW_AMOUNT = {
   "EOS": 0.1,
   "XLM": 0.01,
   "META1": 0.02,
-  "USDT": 0.1,
+  "USDT": 50,
 };
 
 const WithdrawForm = (props) => {
@@ -51,7 +51,7 @@ const WithdrawForm = (props) => {
   const [isValidCurrency, setIsValidCurrency] = useState(false);
 
   const ariaLabel = { "aria-label": "description" };
-
+  
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
     setAssets(props.assets);
@@ -79,12 +79,12 @@ const WithdrawForm = (props) => {
         ? newOptions.find((el) => el.value === asset)
         : newOptions[0];
 
-      setSelectedFrom(from);
+        setSelectedFrom(from);
     } else {
       setSelectedFrom(newOptions.find((o) => o.value === selectedFrom.value));
     }
   }, [props.assets, props.portfolio]);
-
+  
   useEffect(() => {
     if (selectedFrom) {
       changeAssetHandler(selectedFrom.value);
@@ -96,7 +96,7 @@ const WithdrawForm = (props) => {
       console.log("@1 - ", selectedFromAmount === 0)
       if (parseFloat(selectedFrom.balance) < parseFloat(selectedFromAmount)) {
         setAmountError('Amount exceeded the balance.');
-      } else if (parseFloat(MIN_WITHDRAW_AMOUNT[selectedFrom.value]) > parseFloat(selectedFromAmount)) {
+      } else if (parseFloat(MIN_WITHDRAW_AMOUNT['USDT']) > parseFloat(blockPrice)) {
         setAmountError('Amount is too small.');
       } else {
         setAmountError('');
@@ -139,7 +139,7 @@ const WithdrawForm = (props) => {
       }
     }
   }, [toAddress, selectedFrom]);
-
+  
   const changeAssetHandler = async (val) => {
     if (val !== "META1" && val !== "USDT") {
       const response = await fetch(
@@ -206,6 +206,7 @@ const WithdrawForm = (props) => {
     sendEmail(emailType, emailData)
       .then((res) => {
         if (res.success === 'success'){
+          setIsLoading(false);
           alert("Email sent, awesome!");
 
           // Reset form inputs
@@ -215,10 +216,9 @@ const WithdrawForm = (props) => {
           setBlockPrice(NaN);
           setToAddress('');
         } else {
+          setIsLoading(false);
           alert("Oops, something went wrong. Try again");
         }
-
-        setIsLoading(false);
       })
   }
 
@@ -279,6 +279,7 @@ const WithdrawForm = (props) => {
                 id="name-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                inputProps={{className:'custom-input-bg'}}
               />
               {name && !isValidName &&
                 <span className="c-danger">Invalid first name</span>
@@ -294,6 +295,7 @@ const WithdrawForm = (props) => {
                 id="emailaddress-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                inputProps={{className:'custom-input-bg'}}
               />
               {emailAddress && !isValidEmailAddress &&
                 <span className="c-danger">Invalid email address</span>
@@ -436,6 +438,7 @@ const WithdrawForm = (props) => {
                 id="destination-input"
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                inputProps={{className:'custom-input-bg'}}
               />
               {toAddress && !isValidAddress &&
                 <span className="c-danger">Invalid {selectedFrom?.value} address</span>
