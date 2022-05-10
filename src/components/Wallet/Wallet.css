@@ -241,11 +241,14 @@
   .switch {
     margin: 0 0 0 2rem !important;
   }
-
+  @media (max-width: 600px) {
+    .adaptAmountMain {
+      font-size: 16px !important;
+    }
+  }
   .adaptAmountMain {
     font-size: 1.6rem;
   }
-
   .blockSumAndPercentage {
     margin-top: -1rem;
   }

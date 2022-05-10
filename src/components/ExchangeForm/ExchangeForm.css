@@ -232,8 +232,12 @@
   }
   .adaptForMain,
   .adaptForMainExchange {
-    width: 100%;
+    width: 95%;
     flex-direction: column;
-    padding: 15px;
+  }
+}
+@media (max-width: 600px) {
+  .customFlexNeed{
+    margin-left: 1rem;
   }
 }
