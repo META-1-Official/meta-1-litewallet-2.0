@@ -580,9 +580,9 @@ function Application(props) {
                         <strong>Portfolio</strong>
                       </h5>
                     </div>
-                    <div className={"justFlexAndDirect"}>
+                    <div className={"justFlexAndDirect customJustFlexAndDirect"}>
                       <div
-                        className={"blockInfoYourCrypto"}
+                        className={"blockInfoYourCrypto blockInfoYourCryptoCustom"}
                         style={{
                           display: "flex",
                           flexDirection: "column",
@@ -705,7 +705,7 @@ function Application(props) {
                           assets={assets}
                         />
                       </div>
-                      <div className={"bottomAdaptBlockTransaction"}>
+                      <div className={"bottomAdaptBlock"}>
                         <RightSideHelpMenuSecondType
                           onClickExchangeUSDTHandler={(e) => {
                             e.preventDefault();
