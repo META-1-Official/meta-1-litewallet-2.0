@@ -127,9 +127,9 @@ function Application(props) {
     try {
       const data = await getUserData(login);
       if (data['tokenExpired']) {
-        setTokenModalOpen(true)
-        setTokenModalMsg(data.responseMsg)
-        return
+        setTokenModalOpen(true);
+        setTokenModalMsg(data.responseMsg);
+        return;
       }
       const response = await getCryptosChange();
       setCryptoData(response);
@@ -254,9 +254,9 @@ function Application(props) {
   const verifyToken = async () => {
     const data = await getUserData(login);
     if (data['tokenExpired']) {
-      setTokenModalOpen(true)
-      setTokenModalMsg(data.responseMsg)
-      return
+      setTokenModalOpen(true);
+      setTokenModalMsg(data.responseMsg);
+      return;
     }
   }
   if (isLoading || activeScreen == null) {

@@ -65,7 +65,7 @@ const Settings = (props) => {
   async function removePhoto() {
     const response = await deleteAvatar(localStorage.getItem("login"));
     if (response.tokenExpired) {
-      setTokenModalOpen(true);;
+      setTokenModalOpen(true);
       setTokenModalMsg(response.responseMsg);
       return;
     }

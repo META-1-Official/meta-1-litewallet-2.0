@@ -214,9 +214,9 @@ const WithdrawForm = (props) => {
           setToAddress('');
         } else {
           if (res.tokenExpired) {
-            props.setTokenModalMsg(res.responseMsg)
-            props.setTokenModalOpen(true)
-            return
+            props.setTokenModalMsg(res.responseMsg);
+            props.setTokenModalOpen(true);
+            return;
           }
           setIsLoading(false);
           alert("Oops, something went wrong. Try again");
