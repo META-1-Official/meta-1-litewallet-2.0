@@ -3,7 +3,7 @@ import TradeWithPassword from "./lib/TradeWithPassword";
 import SendWithPassword from "./lib/SendWithPassword";
 import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
-import { getCryptosChange } from "./API/API";
+import { getCryptosChange, loginRequest } from "./API/API";
 import React, { useState, useEffect } from "react";
 import { getUserData, changeLastLocation, getLastLocation, sendEmail } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
@@ -26,6 +26,7 @@ import RightSideHelpMenuSecondType from "./components/RightSideHelpMenuSecondTyp
 import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
+import { Button, Modal } from "semantic-ui-react";
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -72,6 +73,9 @@ function Application(props) {
   };
   const [login, setLogin] = useState(localStorage.getItem("login"));
   const [loginError, setLoginError] = useState(null);
+  const [loginDataError, setLoginDataError] = useState(null);
+  const [tokenModalOpen, setTokenModalOpen] = useState(false);
+  const [tokenModalMsg, setTokenModalMsg] = useState('');
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
 
   useEffect(() => {
@@ -80,13 +84,31 @@ function Application(props) {
     }
   }, []);
 
-  const onLogin = async (login, clicked = false) => {
-    await getAvatarFromBack(login);
-    setLoginError(null);
-    setAccountName(login);
-    localStorage.setItem("login", login);
+  const loginHandler = async (login, password) => {
+    setIsLoading(true)
+    const response = await loginRequest(login, password);
+    if (response.error) {
+      setIsLoading(false);
+      setLoginDataError(true);
+    } else {
+      setIsLoading(false);
+      localStorage.setItem("accessToken", response.token);
+    }
+  }
+
+  const onLogin = async (login, clicked = false, password = '') => {
+
     if (clicked) {
-      setLoginError(true);
+      await loginHandler(login, password);
+    }
+    if (localStorage.getItem('accessToken')) {
+      await getAvatarFromBack(login);
+      setLoginError(null);
+      setAccountName(login);
+      localStorage.setItem("login", login);
+      if (clicked) {
+        setLoginError(true);
+      }
     }
   };
 
@@ -104,6 +126,11 @@ function Application(props) {
   async function getAvatarFromBack(login) {
     try {
       const data = await getUserData(login);
+      if (data['tokenExpired']) {
+        setTokenModalOpen(true)
+        setTokenModalMsg(data.responseMsg)
+        return
+      }
       const response = await getCryptosChange();
       setCryptoData(response);
       if (data?.message.userAvatar != null) {
@@ -224,7 +251,14 @@ function Application(props) {
       await changeLastLocation(localStorage.getItem("login"), location);
     }
   }
-
+  const verifyToken = async () => {
+    const data = await getUserData(login);
+    if (data['tokenExpired']) {
+      setTokenModalOpen(true)
+      setTokenModalMsg(data.responseMsg)
+      return
+    }
+  }
   if (isLoading || activeScreen == null) {
     return <MetaLoader size={"large"} />;
   }
@@ -234,31 +268,38 @@ function Application(props) {
       <Navbar
         onClickHomeHandler={(e) => {
           e.preventDefault();
+          verifyToken();
           setActiveScreen("login");
         }}
         onClickPortfolioHandler={(e) => {
           e.preventDefault();
+          verifyToken();
           setActiveScreen("wallet");
         }}
         onClickExchangeHandler={(e) => {
           e.preventDefault();
+          verifyToken();
           setTradeAsset("BTC");
           setActiveScreen("exchange");
         }}
         onClickPaperWalletHandler={(e) => {
           e.preventDefault();
+          verifyToken();
           setActiveScreen("paperWallet");
         }}
         onClickOrderTableHandler={(e) => {
           e.preventDefault();
+          verifyToken();
           setActiveScreen("orderTable");
         }}
         onClickSettingsHandler={(e) => {
           e.preventDefault();
+          verifyToken();
           setActiveScreen("settings");
         }}
         onClickHistoryHandler={(e) => {
           e.preventDefault();
+          verifyToken();
           setActiveScreen("orderTable");
         }}
         portfolio={portfolio}
@@ -271,31 +312,38 @@ function Application(props) {
         <LeftPanel
           onClickHomeHandler={(e) => {
             e.preventDefault();
+            verifyToken();
             setActiveScreen("login");
           }}
           onClickPortfolioHandler={(e) => {
             e.preventDefault();
+            verifyToken();
             setActiveScreen("wallet");
           }}
           onClickExchangeHandler={(e) => {
             e.preventDefault();
+            verifyToken();
             setTradeAsset("BTC");
             setActiveScreen("exchange");
           }}
           onClickPaperWalletHandler={(e) => {
             e.preventDefault();
+            verifyToken();
             setActiveScreen("paperWallet");
           }}
           onClickOrderTableHandler={(e) => {
             e.preventDefault();
+            verifyToken();
             setActiveScreen("orderTable");
           }}
           onClickSettingsHandler={(e) => {
             e.preventDefault();
+            verifyToken();
             setActiveScreen("settings");
           }}
           onClickHistoryHandler={(e) => {
             e.preventDefault();
+            verifyToken();
             setActiveScreen("orderTable");
           }}
           portfolio={portfolio}
@@ -370,6 +418,8 @@ function Application(props) {
                   setUserImageDefault={setUserImageDefault}
                   setUserImageNavbar={setUserImageNavbar}
                   checkPaswordObj={checkPaswordObj}
+                  setTokenModalMsg={setTokenModalMsg}
+                  setTokenModalOpen={setTokenModalOpen}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -437,6 +487,7 @@ function Application(props) {
                 <LoginScreen
                   onSignUpClick={() => setActiveScreen("registration")}
                   error={loginError}
+                  loginDataError={loginDataError}
                   onSubmit={onLogin}
                   portfolio={portfolio}
                   onClickExchangeUSDTHandler={(e) => {
@@ -554,6 +605,8 @@ function Application(props) {
                     e.preventDefault();
                     setActiveScreen("wallet");
                   }}
+                  setTokenModalOpen={setTokenModalOpen}
+                  setTokenModalMsg={setTokenModalMsg}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -733,6 +786,43 @@ function Application(props) {
           </div>
         </div>
       </div>
+      {tokenModalOpen && <Modal
+        size="mini"
+        open={true}
+        onClose={() => {
+          // setModalOpened(false);
+        }}
+        id={"modalExch"}
+      >
+        <Modal.Header>Alert</Modal.Header>
+        <Modal.Content style={{ height: "55%" }}>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <h3 style={{ textAlign: "center" }}>
+              {tokenModalMsg}. Please Login
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button
+            style={{ backgroundColor: "#fc0", color: "white" }}
+            onClick={() => {
+              setTokenModalOpen(false);
+              setTokenModalMsg('')
+              window.location.reload();
+            }}
+          >
+            OK
+          </Button>
+        </Modal.Actions>
+      </Modal>}
     </>
   );
 }

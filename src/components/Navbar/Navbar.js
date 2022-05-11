@@ -160,6 +160,7 @@ const Navbar = (props) => {
                             style={{ textAlign: "center" }}
                             onClick={() => {
                               localStorage.removeItem("login");
+                              localStorage.removeItem("accessToken");
                               sessionStorage.setItem("location", "wallet");
                               window.location.reload();
                             }}

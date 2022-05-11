@@ -7,60 +7,157 @@ export async function getCryptosChange() {
 }
 
 export async function getUserData(login) {
-  const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/getUserData`, {
-    login: login,
-  });
-  return data;
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+    }
+  }
+  try {
+    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/getUserData`, {
+      login: login,
+    }, config);
+    return data;
+  } catch (err) {
+    if (err.response.data.error == 'Unauthorized') {
+      localStorage.removeItem("login");
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("location");
+      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+  }
 }
 
 export async function saveUserCurrency(login, currency) {
-  const { data } = await axios.post(
-    `https://${process.env.REACT_APP_BACK_URL}/saveUserCurrency`,
-    {
-      login: login,
-      currency: currency,
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
     }
-  );
-  return data;
+  }
+  try {
+    const { data } = await axios.post(
+      `https://${process.env.REACT_APP_BACK_URL}/saveUserCurrency`,
+      {
+        login: login,
+        currency: currency,
+      },
+      config
+    );
+    return data;
+  } catch (err) {
+    if (err.response.data.error == 'Unauthorized') {
+      localStorage.removeItem("login");
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("location");
+      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+  }
 }
 
 export async function deleteAvatar(login) {
-  const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/deleteAvatar`, {
-    login: login,
-  });
-  return data;
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+    }
+  }
+  try {
+    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/deleteAvatar`, {
+      login: login,
+    }, config);
+    return data;
+  } catch (err) {
+    if (err.response.data.error == 'Unauthorized') {
+      localStorage.removeItem("login");
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("location");
+      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+  }
 }
 
 export async function changeLastLocation(login, location) {
-  const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/saveLocation`, {
-    login: login,
-    location: location,
-  });
-  return data;
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+    }
+  }
+  try {
+    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/saveLocation`, {
+      login: login,
+      location: location,
+    }, config);
+    return data;
+  } catch (err) {
+    if (err.response.data.error == 'Unauthorized') {
+      localStorage.removeItem("login");
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("location");
+      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+  }
 }
 
 export async function getLastLocation(login) {
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+    }
+  }
   try {
     const { data } = await axios.post(
       `https://${process.env.REACT_APP_BACK_URL}/getLastLocation`,
       {
         login: login,
-      }
+      },
+      config
     );
     return data;
-  } catch (e) {
-    return { message: null };
+  } catch (err) {
+    if (err.response.data.error == 'Unauthorized') {
+      localStorage.removeItem("login");
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("location");
+      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
   }
 }
 
 export async function sendEmail(emailType, emailData) {
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+    }
+  }
   try {
     const { data } = await axios.post(
       `https://${process.env.REACT_APP_BACK_URL}/sendEmail`,
-      {emailType, emailData}
+      { emailType, emailData },
+      config
     );
     return data;
+  } catch (err) {
+    if (err.response.data.error == 'Unauthorized') {
+      localStorage.removeItem("login");
+      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("location");
+      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+  }
+}
+
+export async function loginRequest(accountName, password) {
+  try {
+    const { data } = await axios.post(
+      `https://${process.env.REACT_APP_BACK_URL}/login`,
+      { accountName, password }
+    );
+    return { ...data, error: false };
   } catch (e) {
-    return { message: null };
+    return { message: "Wallet name or password is wrong", error: true };
   }
 }

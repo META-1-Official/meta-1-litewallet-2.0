@@ -7,6 +7,7 @@ import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideH
 export default function LoginScreen(props) {
   const {
     error,
+    loginDataError,
     onSubmit,
     onSignUpClick,
     portfolio,
@@ -14,6 +15,7 @@ export default function LoginScreen(props) {
     onClickExchangeUSDTHandler,
   } = props;
   const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [openVideoModal, setOpenVideoModal] = useState(false);
   const handleSignUpClick = (e) => {
@@ -22,8 +24,8 @@ export default function LoginScreen(props) {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (login.length !== 0) {
-      onSubmit(login, true);
+    if (login.length !== 0 && password.length !== 0) {
+      onSubmit(login, true,password);
     }
   };
 
@@ -82,11 +84,27 @@ export default function LoginScreen(props) {
                   value={login}
                   type="text"
                 />
+                <input
+                  className={styles.input}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setPassword(e.target.value);
+                  }}
+                  placeholder={"Passsword"}
+                  value={password}
+                  type="password"
+                />
                 <p
                   className={styles.ErrorP}
                   style={error ? null : { display: "none" }}
                 >
                   Invalid Account Name
+                </p>
+                <p
+                  className={styles.ErrorP}
+                  style={loginDataError ? null : { display: "none" }}
+                >
+                  Wallet name or password is wrong
                 </p>
                 <button
                   className={styles.Button}
@@ -94,7 +112,7 @@ export default function LoginScreen(props) {
                   onClick={handleSubmit}
                   type={"submit"}
                 >
-                  Link META Wallet
+                  Login
                 </button>
               </form>
             </div>
@@ -108,6 +126,7 @@ export default function LoginScreen(props) {
                 className={styles.Button}
                 onClick={() => {
                   localStorage.removeItem("login");
+                  localStorage.removeItem("accessToken");
                   sessionStorage.setItem("location", "wallet");
                   window.location.reload();
                 }}
