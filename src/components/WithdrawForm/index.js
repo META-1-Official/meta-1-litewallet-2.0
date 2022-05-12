@@ -27,7 +27,7 @@ const MIN_WITHDRAW_AMOUNT = {
   "EOS": 0.1,
   "XLM": 0.01,
   "META1": 0.02,
-  "USDT": 0.1,
+  "USDT": 50,
 };
 
 const WithdrawForm = (props) => {
@@ -51,7 +51,6 @@ const WithdrawForm = (props) => {
   const [isValidCurrency, setIsValidCurrency] = useState(false);
 
   const ariaLabel = { "aria-label": "description" };
-
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
     setAssets(props.assets);
@@ -84,7 +83,6 @@ const WithdrawForm = (props) => {
       setSelectedFrom(newOptions.find((o) => o.value === selectedFrom.value));
     }
   }, [props.assets, props.portfolio]);
-
   useEffect(() => {
     if (selectedFrom) {
       changeAssetHandler(selectedFrom.value);
@@ -96,7 +94,7 @@ const WithdrawForm = (props) => {
       console.log("@1 - ", selectedFromAmount === 0)
       if (parseFloat(selectedFrom.balance) < parseFloat(selectedFromAmount)) {
         setAmountError('Amount exceeded the balance.');
-      } else if (parseFloat(MIN_WITHDRAW_AMOUNT[selectedFrom.value]) > parseFloat(selectedFromAmount)) {
+      } else if (parseFloat(MIN_WITHDRAW_AMOUNT['USDT']) > parseFloat(blockPrice)) {
         setAmountError('Amount is too small.');
       } else {
         setAmountError('');
@@ -139,7 +137,6 @@ const WithdrawForm = (props) => {
       }
     }
   }, [toAddress, selectedFrom]);
-
   const changeAssetHandler = async (val) => {
     if (val !== "META1" && val !== "USDT") {
       const response = await fetch(
@@ -206,6 +203,7 @@ const WithdrawForm = (props) => {
     sendEmail(emailType, emailData)
       .then((res) => {
         if (res.success === 'success'){
+          setIsLoading(false);
           alert("Email sent, awesome!");
 
           // Reset form inputs
@@ -215,10 +213,9 @@ const WithdrawForm = (props) => {
           setBlockPrice(NaN);
           setToAddress('');
         } else {
+          setIsLoading(false);
           alert("Oops, something went wrong. Try again");
         }
-
-        setIsLoading(false);
       })
   }
 
@@ -272,7 +269,7 @@ const WithdrawForm = (props) => {
             <label>
               <span>Name:</span><br />
               <TextField
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
                 value={name}
                 onChange={(e) => {setName(e.target.value)}}
                 className={styles.input}
@@ -287,7 +284,7 @@ const WithdrawForm = (props) => {
             <label>
               <span>Email Address:</span><br />
               <TextField
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
                 value={emailAddress}
                 onChange={(e) => {setEmailAddress(e.target.value)}}
                 className={styles.input}
@@ -429,7 +426,7 @@ const WithdrawForm = (props) => {
             <label>
               <span>Destination Address:</span>
               <TextField
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
                 value={toAddress}
                 onChange={(e) => {setToAddress(e.target.value)}}
                 className={styles.input}

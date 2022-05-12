@@ -368,6 +368,7 @@ const SendForm = React.memo((props) => {
           open={modalOpened}
           onClose={() => {
             setModalOpened(false);
+            onSuccessTransfer();
           }}
         >
           <Modal.Header>Transfer Completed</Modal.Header>

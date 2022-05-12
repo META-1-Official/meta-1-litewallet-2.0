@@ -12,6 +12,7 @@ import { Image } from "semantic-ui-react";
 import Meta1 from "meta1dex";
 
 import { useQuery } from "react-query";
+import { removeExponent } from "../../utils/commonFunction";
 
 const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
@@ -24,6 +25,7 @@ const PortfolioTable = React.memo((props) => {
     onWithdrawClick,
     assets,
     userCurrency,
+    isCurrencySelected
   } = props;
 
   const { data, isLoading, error } = useQuery("cryptosTable", getDatas);
@@ -82,8 +84,19 @@ const PortfolioTable = React.memo((props) => {
   };
 
   const currencyPrice = (datass) => {
-    return Number(data[datass.name].latest).toFixed(2);
+    return Number(data[datass.name].latest).toFixed(8);
   };
+
+  const calculateCurrencyPrice = (value) => {
+    if (isCurrencySelected) {
+      if (isCurrencySelected === 'META1') {
+        return value / Number(data["META1"].latest)
+      }
+      return JSON.parse(sessionStorage.getItem('currencyResult'))[isCurrencySelected] * value
+    } else {
+      return value
+    }
+  }
 
   if (isLoading && loading) return <MetaLoader size={"small"} />;
 
@@ -95,7 +108,7 @@ const PortfolioTable = React.memo((props) => {
         boxShadow: "0 2px 10px 0 rgba(0, 0, 0, .11)",
       }}
     >
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
+      <Table sx={{ minWidth: 700 }} aria-label="customized table" className="custom_table_head" >
         <TableHead>
           <TableRow>
             <StyledTableCell>
@@ -109,7 +122,7 @@ const PortfolioTable = React.memo((props) => {
             <StyledTableCell>
               <div className="text-left" style={{ width: "6rem" }}>
                 <div className="table_title" id={"valueTitle"}>
-                  {`VALUE (${userCurrency.split(" ")[1]})`}
+                  {`VALUE (${isCurrencySelected ? isCurrencySelected : userCurrency.split(" ")[1]})`}
                 </div>
               </div>
             </StyledTableCell>
@@ -121,7 +134,7 @@ const PortfolioTable = React.memo((props) => {
             <StyledTableCell>
               <div className="text-left" style={{ width: "6rem" }}>
                 <div className="table_title" id={"priceTitle"}>
-                  {`PRICE (${userCurrency.split(" ")[1]})`}
+                  {`PRICE (${isCurrencySelected ? isCurrencySelected : userCurrency.split(" ")[1]})`}
                 </div>
               </div>
             </StyledTableCell>
@@ -162,11 +175,17 @@ const PortfolioTable = React.memo((props) => {
                 {datas?.qty > 0 ? (datas?.qty * 1).toFixed(datas?.pre) : "0.00"}
               </StyledTableCell>
               <StyledTableCell align="center" className={"currencyValues"}>
-                {Number(
+                {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1)) * Number(
+                  (
+                    calculateCurrencyPrice(currencyPrice(datas, data[datas.name]) *
+                      Number(userCurrency.split(" ")[2])
+                    ))
+                )) : removeExponent(0)}
+                {/* {removeExponent(Number(
                   (
                     currencyValue(datas) * Number(userCurrency.split(" ")[2])
                   ).toFixed(datas.pre)
-                )}
+                ))} */}
               </StyledTableCell>
               <StyledTableCell align="left">
                 {
@@ -184,13 +203,14 @@ const PortfolioTable = React.memo((props) => {
                   </div>
                 }
               </StyledTableCell>
-              <StyledTableCell align="left" className={"currencyPrices"}>
-                {Number(
+              <StyledTableCell align="right" className={"currencyPrices"}>
+                {/* {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1).toFixed(datas?.pre)) * currencyValue(datas) * Number(userCurrency.split(" ")[2])) : removeExponent(0)} */}
+                {removeExponent(Number(
                   (
-                    currencyPrice(datas, data[datas.name]) *
-                    Number(userCurrency.split(" ")[2])
-                  ).toFixed(datas.pre)
-                )}
+                    calculateCurrencyPrice(currencyPrice(datas, data[datas.name]) *
+                      Number(userCurrency.split(" ")[2]))
+                  )
+                ))}
               </StyledTableCell>
               <StyledTableCell align="left">
                 <button

@@ -1,8 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Settings.module.scss";
 import axios from "axios";
 import RightSideHelpMenuThirdType from "../RightSideHelpMenuThirdType/RightSideHelpMenuThirdType";
-import { Modal, Button } from "semantic-ui-react";
+import {
+  Image,
+  Modal,
+  Button,
+  Grid,
+  Icon,
+  Label,
+  Popup,
+} from "semantic-ui-react";
 import { saveUserCurrency, deleteAvatar } from "../../API/API";
 import logoNavbar from "../../images/default-pic2.png";
 import logoDefalt from "../../images/default-pic1.png";
@@ -19,10 +27,17 @@ const Settings = (props) => {
     setUserCurrency,
     setUserImageDefault,
     setUserImageNavbar,
+    checkPaswordObj
   } = props;
 
   const [currency, setCurrency] = useState(userCurrency);
   const [modalOpened, setModalOpened] = useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [openPasswordSection, setOpenPasswordSection] = useState(false);
+  const [isRemoveBtn, setIsRemoveBtn] = useState(false);
+  const [isPasswordTouch, setIsPasswordTouch] = useState(false);
+  const imageRef = useRef();
 
   useEffect(() => {
     setTimeout(() => {
@@ -46,8 +61,37 @@ const Settings = (props) => {
     setUserImageNavbar(logoNavbar);
   }
 
+  const uploadImageValidation = async () => {
+    if (!password) {
+      setIsPasswordTouch(true);
+      return;
+    }
+    const result = await checkPaswordObj.checkPasword(password)
+    if (result.error !== null) {
+      setPasswordError(result.error);
+      return;
+    }
+    imageRef.current.click();
+    closePasswordSectionHandler(false);
+  }
+
+  const removeImageValidation = async () => {
+    if (!password) {
+      setIsPasswordTouch(true);
+      return;
+    }
+    const result = await checkPaswordObj.checkPasword(password)
+    if (result.error !== null) {
+      setPasswordError(result.error);
+      return;
+    }
+    removePhoto();
+    closePasswordSectionHandler(false);
+  }
+
   async function uploadFile(e) {
     e.preventDefault();
+
     if (e.target?.files[0]?.name) {
       let type = e.target?.files[0]?.name.split(".")[1];
       if (type === "png" || type === "jpeg" || type === "jpg") {
@@ -84,6 +128,18 @@ const Settings = (props) => {
     document.getElementById("file_upload").value = "";
   }
 
+  const openPasswordSectionHandler = (isRemove = false) => {
+    setPassword('');
+    setOpenPasswordSection(true);
+    setPasswordError('');
+    if (isRemove) setIsRemoveBtn(true);
+  }
+  const closePasswordSectionHandler = () => {
+    setOpenPasswordSection(false);
+    setPasswordError('');
+    setIsRemoveBtn(false);
+    setIsPasswordTouch(false);
+  }
   return (
     <>
       <Modal
@@ -150,34 +206,56 @@ const Settings = (props) => {
                     />
                   </div>
                   <div className={styles.extraInfoBlock}>
-                    <div style={{ fontFamily: "Poppins, sans-serif" }}>
+
+                    {<div style={openPasswordSection ? { display: 'none', fontFamily: "Poppins, sans-serif" } : { display: 'block', fontFamily: "Poppins, sans-serif" }}>
                       <h4 style={{ margin: "0" }}>Upload a Photo</h4>
                       <div className={styles.buttonAdapt}>
                         <div
                           className={styles.blockForUpload}
                           style={{ position: "relative" }}
+                          onClick={() => openPasswordSectionHandler()}
                         >
                           <p className={styles.pUpload}>Choose a File</p>
+
+                        </div>
+                        <div style={{ display: 'none' }} >
                           <input
                             type="file"
                             id="file_upload"
                             onChange={(e) => {
                               uploadFile(e);
                             }}
+                            ref={imageRef}
                             className={styles.uploadButton}
                           />
                         </div>
                         <button
                           className={styles.Button}
                           style={{ marginLeft: "1rem" }}
-                          onClick={removePhoto}
+                          onClick={() => openPasswordSectionHandler(true)}
                         >
                           Remove the Photo
                         </button>
                       </div>
-                    </div>
+                    </div>}
+                    {!!openPasswordSection && <div>
+                      <label>Enter Password</label>
+                      <input
+                        type='password'
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value)
+                          setIsPasswordTouch(true)
+                        }}
+                        onBlur={() => setIsPasswordTouch(true)}
+                        className={styles.input_password}
+                      />
+                      {!password && isPasswordTouch && <span style={{ color: 'red', display: 'block' }}>Password field can't be empty</span>}
+                      <button onClick={!isRemoveBtn ? uploadImageValidation : removeImageValidation} className={styles.Button_Password} >Submit</button>
+                      <button onClick={closePasswordSectionHandler} className={styles.Button_Password}>Cancel</button>
+                    </div>}
                     <div className={styles.extraText}>
-                      <span>Acceptable formates: jpg, png only</span>
+                      <span>Acceptable formats: jpg, png only</span>
                       <span>
                         Maximum file size is 1mb and minimum size 70kb
                       </span>
@@ -287,6 +365,33 @@ const Settings = (props) => {
           </div>
         </div>
       </div>
+
+      <Modal
+        size="mini"
+        open={passwordError !== ''}
+        onClose={() => setPasswordError('')}
+        id={"modalExch"}
+      >
+        <Modal.Header>Error occured</Modal.Header>
+        <Modal.Content>
+          <Grid verticalAlign="middle" centered>
+            <Grid.Row centered columns={2}>
+              <Grid.Column width={4}>
+                <Icon disabled name="warning sign" size="huge" />
+              </Grid.Column>
+
+              <Grid.Column width={10}>
+                <div className="trade-error">{passwordError}</div>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button positive onClick={() => setPasswordError('')}>
+            OK
+          </Button>
+        </Modal.Actions>
+      </Modal>
     </>
   );
 };

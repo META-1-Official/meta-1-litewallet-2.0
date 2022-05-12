@@ -909,7 +909,7 @@ export default function ExchangeForm(props) {
               )}
             </div>
           </div>
-          <div className={"flexNeed"}>
+          <div className={"flexNeed customFlexNeed"} >
             <RightSideHelpMenuSecondType
               onClickExchangeEOSHandler={() => {
                 setSelectedFrom({

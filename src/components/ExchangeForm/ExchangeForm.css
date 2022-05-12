@@ -198,7 +198,7 @@
     flex-direction: column;
     display: flex;
     width: 100% !important;
-    margin: 0 1rem;
+    margin: 0;
   }
   .adaptForMain,
   .adaptForMainExchange {
@@ -234,5 +234,10 @@
   .adaptForMainExchange {
     width: 95%;
     flex-direction: column;
+  }
+}
+@media (max-width: 600px) {
+  .customFlexNeed{
+    margin-left: 1rem;
   }
 }

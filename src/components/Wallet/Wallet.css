@@ -149,7 +149,7 @@
 .css-1wvnaxz-MuiTableCell-root {
   font-family: var(--font) !important;
 }
-.css-1wvnaxz-MuiTableCell-root.MuiTableCell-head {
+.custom_table_head .MuiTableCell-head {
   color: #000 !important;
   background-color: #fff !important;
   font-weight: 600 !important;
@@ -241,11 +241,14 @@
   .switch {
     margin: 0 0 0 2rem !important;
   }
-
+  @media (max-width: 600px) {
+    .adaptAmountMain {
+      font-size: 16px !important;
+    }
+  }
   .adaptAmountMain {
     font-size: 1.6rem;
   }
-
   .blockSumAndPercentage {
     margin-top: -1rem;
   }

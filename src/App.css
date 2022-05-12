@@ -77,7 +77,11 @@ span.css-llftvd {
   border-radius: 4px;
   width: 73%;
 }
-
+@media screen and (max-width: 600px) {
+  .blockInfoYourCryptoCustom {
+    padding: 1rem 0 1rem 0.5rem;
+  }
+}
 .css-yk16xz-control,
 .css-1pahdxg-control {
   width: 100% !important;
@@ -172,4 +176,12 @@ span.css-llftvd {
   to {
     transform: rotate(360deg);
   }
+}
+.customJustFlexAndDirect {flex-wrap: wrap !important;flex-direction: inherit !important;}
+.customJustFlexAndDirect .blockInfoYourCrypto {width: 70% !important;margin: 0 !important;}
+.customJustFlexAndDirect .bottomAdaptBlock {width: 30% !important;margin: 0 !important;}
+
+@media(max-width: 991px){
+.customJustFlexAndDirect .blockInfoYourCrypto {width: 100% !important;margin: 0 !important;}
+.customJustFlexAndDirect .bottomAdaptBlock {width: 100% !important;margin: 0 !important;}
 }
