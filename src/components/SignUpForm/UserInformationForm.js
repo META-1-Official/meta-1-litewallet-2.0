@@ -68,7 +68,6 @@ const UserInformationForm = (props) => {
         setAccountNameErrors({
           content:
             "This is a premium name which is not supported by this faucet. Please enter a regular name containing least one dash, a number or no vowels.",
-          // "This is a premium name which is more expensive than a name containing a dash (-) or a number.",
           pointing: "below",
         });
       } else {
