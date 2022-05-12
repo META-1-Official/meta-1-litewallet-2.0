@@ -47,18 +47,40 @@ const UserInformationForm = (props) => {
         .catch((err) => console.log(err));
     }
   }, [accountName]);
-
+  const hasNumber = (myString) => {
+    return /\d/.test(myString);
+  }
+  const isVowelsNotExistAndHasNumber = (str) => {
+    if (str.match(/[aeiou]/gi) === null) {
+      if (hasNumber(str) && str.includes("-")) {
+        return true;
+      }
+      return false;
+    } else {
+      return false;
+    }
+  }
   useEffect(() => {
     const error = ChainValidation.is_account_name_error(debouncedAccountName);
+    const error1 = isVowelsNotExistAndHasNumber(debouncedAccountName);
     if (error) {
-      setAccountNameErrors({
-        content: error,
-        pointing: "below",
-      });
-    } else if (!accountName.includes("-") && !/^.*\d.*$/.test(accountName)) {
+      if (!error1) {
+        setAccountNameErrors({
+          content:
+            "This is a premium name which is not supported by this faucet. Please enter a regular name containing least one dash, a number or no vowels.",
+          // "This is a premium name which is more expensive than a name containing a dash (-) or a number.",
+          pointing: "below",
+        });
+      } else {
+        setAccountNameErrors({
+          content: error,
+          pointing: "below",
+        });
+      }
+    } else if (!error1) {
       setAccountNameErrors({
         content:
-          "This is a premium name which is more expensive than a name containing a dash (-) or a number.",
+          "This is a premium name which is not supported by this faucet. Please enter a regular name containing least one dash, a number or no vowels.",
         pointing: "below",
       });
     } else {
