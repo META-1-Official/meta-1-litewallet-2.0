@@ -19,7 +19,7 @@ export async function getUserData(login) {
     }, config);
     return data;
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'Unauthorized'.toLowerCase()) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
@@ -44,7 +44,7 @@ export async function saveUserCurrency(login, currency) {
     );
     return data;
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'Unauthorized'.toLowerCase()) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
@@ -64,7 +64,7 @@ export async function deleteAvatar(login) {
     }, config);
     return data;
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'Unauthorized'.toLowerCase()) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
@@ -85,7 +85,7 @@ export async function changeLastLocation(login, location) {
     }, config);
     return data;
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'Unauthorized'.toLowerCase()) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
@@ -109,7 +109,7 @@ export async function getLastLocation(login) {
     );
     return data;
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'Unauthorized'.toLowerCase()) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
@@ -131,7 +131,7 @@ export async function sendEmail(emailType, emailData) {
     );
     return data;
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'Unauthorized'.toLowerCase()) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }

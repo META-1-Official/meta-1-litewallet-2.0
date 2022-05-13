@@ -132,7 +132,7 @@ const Settings = (props) => {
             setUserImageDefault(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
             setUserImageNavbar(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
           } catch (err) {
-            if (err.response.data.error == 'Unauthorized') {
+            if (err.response.data.error.toLowerCase() == 'unauthorized') {
               tokenFail();
               setTokenModalOpen(true);
               setTokenModalMsg("Authenication failed");
