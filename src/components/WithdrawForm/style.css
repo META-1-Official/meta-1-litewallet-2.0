@@ -35,3 +35,6 @@ button.withdraw {
     position: absolute;
     z-index: 99;
 }
+.custom-input-bg{
+	background-color: #fff !important;
+}
