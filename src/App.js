@@ -27,6 +27,7 @@ import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
+import { getAccessToken, setAccessToken } from "./utils/localstorage";
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -92,7 +93,7 @@ function Application(props) {
       setLoginDataError(true);
     } else {
       setIsLoading(false);
-      localStorage.setItem("accessToken", response.token);
+      setAccessToken(response.token);
     }
   }
 
@@ -101,7 +102,7 @@ function Application(props) {
     if (clicked) {
       await loginHandler(login, password);
     }
-    if (localStorage.getItem('accessToken')) {
+    if (getAccessToken()) {
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
@@ -815,7 +816,7 @@ function Application(props) {
             style={{ backgroundColor: "#fc0", color: "white" }}
             onClick={() => {
               setTokenModalOpen(false);
-              setTokenModalMsg('')
+              setTokenModalMsg('');
               window.location.reload();
             }}
           >

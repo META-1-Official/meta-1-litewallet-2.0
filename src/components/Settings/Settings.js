@@ -14,6 +14,7 @@ import {
 import { saveUserCurrency, deleteAvatar } from "../../API/API";
 import logoNavbar from "../../images/default-pic2.png";
 import logoDefalt from "../../images/default-pic1.png";
+import { getAccessToken, tokenFail } from "../../utils/localstorage";
 
 const Settings = (props) => {
   const {
@@ -124,7 +125,7 @@ const Settings = (props) => {
               {
                 headers: {
                   "Content-Type": "multipart/form-data",
-                  'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                  'Authorization': 'Bearer ' + getAccessToken()
                 },
               }
             );
@@ -132,9 +133,7 @@ const Settings = (props) => {
             setUserImageNavbar(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
           } catch (err) {
             if (err.response.data.error == 'Unauthorized') {
-              localStorage.removeItem("login");
-              localStorage.removeItem("accessToken");
-              sessionStorage.removeItem("location");
+              tokenFail();
               setTokenModalOpen(true);
               setTokenModalMsg("Authenication failed");
             }

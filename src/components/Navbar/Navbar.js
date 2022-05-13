@@ -4,6 +4,7 @@ import "./styles.css";
 import logo from "../../images/Logo.png";
 import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import WidgetOnRamper from "./WidgetOnRamper";
+import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
 
 const Navbar = (props) => {
   const {
@@ -159,9 +160,9 @@ const Navbar = (props) => {
                             className="dropdown-item"
                             style={{ textAlign: "center" }}
                             onClick={() => {
-                              localStorage.removeItem("login");
-                              localStorage.removeItem("accessToken");
-                              sessionStorage.setItem("location", "wallet");
+                              removeLoginDetail();
+                              removeAccessToken();
+                              setLocation("wallet");
                               window.location.reload();
                             }}
                           >
