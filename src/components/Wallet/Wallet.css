@@ -149,7 +149,7 @@
 .css-1wvnaxz-MuiTableCell-root {
   font-family: var(--font) !important;
 }
-.css-1wvnaxz-MuiTableCell-root.MuiTableCell-head {
+.custom_table_head .MuiTableCell-head {
   color: #000 !important;
   background-color: #fff !important;
   font-weight: 600 !important;

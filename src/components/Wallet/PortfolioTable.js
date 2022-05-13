@@ -95,7 +95,7 @@ const PortfolioTable = React.memo((props) => {
         boxShadow: "0 2px 10px 0 rgba(0, 0, 0, .11)",
       }}
     >
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
+      <Table sx={{ minWidth: 700 }} aria-label="customized table" className="custom_table_head" >
         <TableHead>
           <TableRow>
             <StyledTableCell>
