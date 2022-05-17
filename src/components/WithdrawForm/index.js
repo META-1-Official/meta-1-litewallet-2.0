@@ -102,7 +102,7 @@ const WithdrawForm = (props) => {
     } else {
       setAmountError('');
     }
-  }, [selectedFromAmount]);
+  }, [selectedFromAmount, blockPrice]);
 
   useEffect(() => {
     if (!name) {
