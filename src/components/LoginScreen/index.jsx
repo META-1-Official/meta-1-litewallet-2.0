@@ -113,7 +113,7 @@ export default function LoginScreen(props) {
                   onClick={handleSubmit}
                   type={"submit"}
                 >
-                  Login
+                  Link META Wallet
                 </button>
               </form>
             </div>
