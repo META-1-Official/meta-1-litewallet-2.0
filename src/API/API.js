@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAccessToken, tokenFail } from "../utils/localstorage";
 
 export async function getCryptosChange() {
   const { data } = await axios.get(`https://${process.env.REACT_APP_BACK_URL}/getExchangeRate`);
@@ -9,7 +10,7 @@ export async function getCryptosChange() {
 export async function getUserData(login) {
   const config = {
     headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+      'Authorization': 'Bearer ' + getAccessToken()
     }
   }
   try {
@@ -18,10 +19,8 @@ export async function getUserData(login) {
     }, config);
     return data;
   } catch (err) {
-    if (err.response.data.error == 'Unauthorized') {
-      localStorage.removeItem("login");
-      localStorage.removeItem("accessToken");
-      sessionStorage.removeItem("location");
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
@@ -31,7 +30,7 @@ export async function getUserData(login) {
 export async function saveUserCurrency(login, currency) {
   const config = {
     headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+      'Authorization': 'Bearer ' + getAccessToken()
     }
   }
   try {
@@ -45,10 +44,8 @@ export async function saveUserCurrency(login, currency) {
     );
     return data;
   } catch (err) {
-    if (err.response.data.error == 'Unauthorized') {
-      localStorage.removeItem("login");
-      localStorage.removeItem("accessToken");
-      sessionStorage.removeItem("location");
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
@@ -58,7 +55,7 @@ export async function saveUserCurrency(login, currency) {
 export async function deleteAvatar(login) {
   const config = {
     headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+      'Authorization': 'Bearer ' + getAccessToken()
     }
   }
   try {
@@ -67,10 +64,8 @@ export async function deleteAvatar(login) {
     }, config);
     return data;
   } catch (err) {
-    if (err.response.data.error == 'Unauthorized') {
-      localStorage.removeItem("login");
-      localStorage.removeItem("accessToken");
-      sessionStorage.removeItem("location");
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
@@ -80,7 +75,7 @@ export async function deleteAvatar(login) {
 export async function changeLastLocation(login, location) {
   const config = {
     headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+      'Authorization': 'Bearer ' + getAccessToken()
     }
   }
   try {
@@ -90,10 +85,8 @@ export async function changeLastLocation(login, location) {
     }, config);
     return data;
   } catch (err) {
-    if (err.response.data.error == 'Unauthorized') {
-      localStorage.removeItem("login");
-      localStorage.removeItem("accessToken");
-      sessionStorage.removeItem("location");
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
@@ -103,7 +96,7 @@ export async function changeLastLocation(login, location) {
 export async function getLastLocation(login) {
   const config = {
     headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+      'Authorization': 'Bearer ' + getAccessToken()
     }
   }
   try {
@@ -116,10 +109,8 @@ export async function getLastLocation(login) {
     );
     return data;
   } catch (err) {
-    if (err.response.data.error == 'Unauthorized') {
-      localStorage.removeItem("login");
-      localStorage.removeItem("accessToken");
-      sessionStorage.removeItem("location");
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
@@ -129,7 +120,7 @@ export async function getLastLocation(login) {
 export async function sendEmail(emailType, emailData) {
   const config = {
     headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+      'Authorization': 'Bearer ' + getAccessToken()
     }
   }
   try {
@@ -140,10 +131,8 @@ export async function sendEmail(emailType, emailData) {
     );
     return data;
   } catch (err) {
-    if (err.response.data.error == 'Unauthorized') {
-      localStorage.removeItem("login");
-      localStorage.removeItem("accessToken");
-      sessionStorage.removeItem("location");
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };

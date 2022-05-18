@@ -51,8 +51,8 @@ const UserInformationForm = (props) => {
     return /\d/.test(myString);
   }
   const isVowelsNotExistAndHasNumber = (str) => {
-    if (str.match(/[aeiou]/gi) === null) {
-      if (hasNumber(str) && str.includes("-")) {
+    if (str.match(/[aeiou]/gi) === null || hasNumber(str)) {
+      if (str.includes("-")) {
         return true;
       }
       return false;

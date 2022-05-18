@@ -3,6 +3,7 @@ import { Modal, Input, Button } from "semantic-ui-react";
 import "./login.css";
 import styles from "./login.module.scss";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
+import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
 
 export default function LoginScreen(props) {
   const {
@@ -112,7 +113,7 @@ export default function LoginScreen(props) {
                   onClick={handleSubmit}
                   type={"submit"}
                 >
-                  Login
+                  Link META Wallet
                 </button>
               </form>
             </div>
@@ -125,9 +126,9 @@ export default function LoginScreen(props) {
               <button
                 className={styles.Button}
                 onClick={() => {
-                  localStorage.removeItem("login");
-                  localStorage.removeItem("accessToken");
-                  sessionStorage.setItem("location", "wallet");
+                  removeLoginDetail();
+                  removeAccessToken();
+                  setLocation("wallet");
                   window.location.reload();
                 }}
                 type={"button"}

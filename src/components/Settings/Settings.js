@@ -14,6 +14,7 @@ import {
 import { saveUserCurrency, deleteAvatar } from "../../API/API";
 import logoNavbar from "../../images/default-pic2.png";
 import logoDefalt from "../../images/default-pic1.png";
+import { getAccessToken, tokenFail } from "../../utils/localstorage";
 
 const Settings = (props) => {
   const {
@@ -65,7 +66,7 @@ const Settings = (props) => {
   async function removePhoto() {
     const response = await deleteAvatar(localStorage.getItem("login"));
     if (response.tokenExpired) {
-      setTokenModalOpen(true);;
+      setTokenModalOpen(true);
       setTokenModalMsg(response.responseMsg);
       return;
     }
@@ -124,17 +125,15 @@ const Settings = (props) => {
               {
                 headers: {
                   "Content-Type": "multipart/form-data",
-                  'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                  'Authorization': 'Bearer ' + getAccessToken()
                 },
               }
             );
             setUserImageDefault(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
             setUserImageNavbar(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
           } catch (err) {
-            if (err.response.data.error == 'Unauthorized') {
-              localStorage.removeItem("login");
-              localStorage.removeItem("accessToken");
-              sessionStorage.removeItem("location");
+            if (err.response.data.error.toLowerCase() == 'unauthorized') {
+              tokenFail();
               setTokenModalOpen(true);
               setTokenModalMsg("Authenication failed");
             }
