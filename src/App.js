@@ -242,8 +242,8 @@ function Application(props) {
   const onRegistration = (acc, pass, regEmail) => {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
-    onLogin(acc);
     setCredentials(acc, pass);
+    onLogin(acc, true, pass);
     setActiveScreen("wallet");
   };
 
