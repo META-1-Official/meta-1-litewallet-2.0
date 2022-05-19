@@ -21,7 +21,7 @@ export async function getUserData(login) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
   }
@@ -46,7 +46,7 @@ export async function saveUserCurrency(login, currency) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
   }
@@ -66,7 +66,7 @@ export async function deleteAvatar(login) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
   }
@@ -87,7 +87,7 @@ export async function changeLastLocation(login, location) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
   }
@@ -111,7 +111,7 @@ export async function getLastLocation(login) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
   }
@@ -133,7 +133,7 @@ export async function sendEmail(emailType, emailData) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authenication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
   }
