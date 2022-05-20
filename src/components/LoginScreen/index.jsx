@@ -161,10 +161,10 @@ const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
       <h3>META Wallet Creation</h3>
       <p>
         The META 1 Coin Digital Wallet can be created and accessed from your
-        meta1.vision Dashboard account OR on meta-exchange.io.
+        meta1coin.vision Dashboard account OR on meta-exchange.io.
       </p>
       <br />
-      <h3>GET STARTED: Create a META Lite Wallet on meta1.vision Dashboard</h3>
+      <h3>GET STARTED: Create a META Lite Wallet on meta1coin.vision Dashboard</h3>
       <p>
         1. Click the White ‘Create META Wallet’ button to start the process.
         <br />
@@ -219,7 +219,7 @@ const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
         Wallet (accessible on meta-exchange.io). The two versions access the
         same account data on the META Blockchain. Nothing is compromised
         including speed and transactional integrity. Many Coin holders will find
-        it easier to work from the meta1.vision Dashboard. But keep in mind that
+        it easier to work from the meta1coin.vision Dashboard. But keep in mind that
         META Exchange is a powerful leading edge tool with many features and
         advanced functionality.
       </p>
