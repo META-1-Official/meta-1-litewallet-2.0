@@ -263,7 +263,7 @@ const UserInformationForm = (props) => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Form.Field>
-            {searchAccount[0][0] === accountName && (
+            {searchAccount.length > 0 && searchAccount[0][0] === accountName && (
               <p style={{ color: "red" }}>Account is already used </p>
             )}
             <Form.Field>
@@ -279,7 +279,7 @@ const UserInformationForm = (props) => {
                   phone === "" ||
                   accountNameErrors ||
                   password !== generatedPassword ||
-                  searchAccount[0][0] === accountName ||
+                  (searchAccount.length > 0 ? searchAccount[0][0] === accountName : false) ||
                   emailError ||
                   phoneError ||
                   firstNameError ||
