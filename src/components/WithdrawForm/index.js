@@ -202,10 +202,13 @@ const WithdrawForm = (props) => {
     };
     sendEmail(emailType, emailData)
       .then((res) => {
+<<<<<<< HEAD
         if (res.success === 'success') {
+=======
+        if (res.success === 'success'){
+>>>>>>> prod
           setIsLoading(false);
           alert("Email sent, awesome!");
-
           // Reset form inputs
           setName('');
           setEmailAddress('');
@@ -213,11 +216,14 @@ const WithdrawForm = (props) => {
           setBlockPrice(NaN);
           setToAddress('');
         } else {
+<<<<<<< HEAD
           if (res.tokenExpired) {
             props.setTokenModalMsg(res.responseMsg);
             props.setTokenModalOpen(true);
             return;
           }
+=======
+>>>>>>> prod
           setIsLoading(false);
           alert("Oops, something went wrong. Try again");
         }
@@ -274,7 +280,11 @@ const WithdrawForm = (props) => {
             <label>
               <span>Name:</span><br />
               <TextField
+<<<<<<< HEAD
                 InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
+=======
+                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
+>>>>>>> prod
                 value={name}
                 onChange={(e) => { setName(e.target.value) }}
                 className={styles.input}
@@ -289,7 +299,11 @@ const WithdrawForm = (props) => {
             <label>
               <span>Email Address:</span><br />
               <TextField
+<<<<<<< HEAD
                 InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
+=======
+                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
+>>>>>>> prod
                 value={emailAddress}
                 onChange={(e) => { setEmailAddress(e.target.value) }}
                 className={styles.input}
@@ -430,7 +444,11 @@ const WithdrawForm = (props) => {
             <label>
               <span>Destination Address:</span>
               <TextField
+<<<<<<< HEAD
                 InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
+=======
+                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
+>>>>>>> prod
                 value={toAddress}
                 onChange={(e) => { setToAddress(e.target.value) }}
                 className={styles.input}
