@@ -85,7 +85,7 @@ function Application(props) {
     }
   }, []);
 
-  const loginHandler = async (login, password) => {
+  const loginHandler = async (login, password, fromSignUp= false) => {
     setIsLoading(true)
     const response = await loginRequest(login, password);
     if (response.error) {
@@ -94,13 +94,16 @@ function Application(props) {
     } else {
       setIsLoading(false);
       setAccessToken(response.token);
+      if (fromSignUp) {
+        window.location.reload();
+      }
     }
   }
 
-  const onLogin = async (login, clicked = false, password = '') => {
+  const onLogin = async (login, clicked = false, password = '', fromSignUp = false) => {
 
     if (clicked) {
-      await loginHandler(login, password);
+      await loginHandler(login, password, fromSignUp);
     }
     if (getAccessToken()) {
       await getAvatarFromBack(login);
@@ -243,7 +246,7 @@ function Application(props) {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
-    onLogin(acc, true, pass);
+    onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
   };
 
