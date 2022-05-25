@@ -9,8 +9,7 @@ const _createPaperWalletAsPDF = function (
     ownerkeys,
     activeKeys,
     memoKey,
-    accountName,
-    privateKey
+    accountName
 ) {
     const width = 300,
         height = 450, //mm
@@ -44,20 +43,20 @@ const _createPaperWalletAsPDF = function (
         return pdf.internal.getNumberOfPages()
     }
 
-    const keyRow = (publicKey) => {
+    const keyRow = (privateKey) => {
         let currentPage = checkPageH(pdf, rowHeight, 400)
-        gQrcode(publicKey, qrMargin, rowHeight + 10, currentPage)
+        gQrcode(privateKey.toPublicKey().toPublicKeyString(), qrMargin, rowHeight + 10, currentPage)
         if (locked && !!privateKey) {
-            gQrcode(privateKey, qrRightPos, rowHeight + 10, currentPage)
+            gQrcode(privateKey.toWif(), qrRightPos, rowHeight + 10, currentPage)
         }
         pdf.text('PublicKey', textMarginLeft, rowHeight + 20)
-        pdf.text(publicKey, textMarginLeft, rowHeight + 30)
+        pdf.text(privateKey.toPublicKey().toPublicKeyString(), textMarginLeft, rowHeight + 30)
         pdf.rect(textMarginLeft - 1, rowHeight + 24, textWidth, textHeight)
         pdf.text('PrivateKey', textMarginLeft, rowHeight + 40)
         if (locked) {
             pdf.text('PrivateKey', textMarginLeft, rowHeight + 40)
             if (!!privateKey) {
-                pdf.text(privateKey, textMarginLeft, rowHeight + 50)
+                pdf.text(privateKey.toWif(), textMarginLeft, rowHeight + 50)
             } else {
                 pdf.text('Not found.', textMarginLeft, rowHeight + 50)
             }
@@ -92,7 +91,7 @@ const _createPaperWalletAsPDF = function (
     pdf.text('Account:', 18, rowHeight - 10)
     pdf.text(accountName, 42, rowHeight - 10)
 
-    let content = keys.map((publicKeys, index) => {
+    let content = keys.map((privateKeys, index) => {
         if (index >= 1) {
             rowHeight += 25 // add margin-top for block
         }
@@ -104,13 +103,7 @@ const _createPaperWalletAsPDF = function (
         }
         pdf.line(lineMargin, rowHeight + 1, width - lineMargin, rowHeight + 1)
         pdf.line(lineMargin, rowHeight + 9, width - lineMargin, rowHeight + 9)
-        if (typeof publicKeys === 'string') {
-            keyRow(publicKeys)
-        } else {
-            publicKeys.map((publicKey) => {
-                keyRow(publicKey)
-            })
-        }
+        keyRow(privateKeys)
     })
 
     Promise.all(content).then(() => {
@@ -126,12 +119,11 @@ const _createPaperWalletAsPDF = function (
 
 const createPaperWalletAsPDF = function (
     account,
-    ownerKey,
-    activeKey,
-    memoKey,
-    privateKey
+    owner_private,
+    active_private,
+    memo_private,
 ) {
-    _createPaperWalletAsPDF(ownerKey, activeKey, memoKey, account, privateKey)
+    _createPaperWalletAsPDF(owner_private, active_private, memo_private, account)
 }
 
 export { createPaperWalletAsPDF }
