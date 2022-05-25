@@ -78,6 +78,7 @@ function Application(props) {
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
   const [tokenModalMsg, setTokenModalMsg] = useState('');
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
+  const [refreshData, setRefreshData] = useState(false);
 
   useEffect(() => {
     if (login !== null) {
@@ -94,9 +95,6 @@ function Application(props) {
     } else {
       setIsLoading(false);
       setAccessToken(response.token);
-      if (fromSignUp) {
-        window.location.reload();
-      }
     }
   }
 
@@ -112,6 +110,12 @@ function Application(props) {
       localStorage.setItem("login", login);
       if (clicked) {
         setLoginError(true);
+      }
+      if (fromSignUp) {
+        setUserImageDefault(logoDefalt);
+        setUserImageNavbar(logoNavbar);
+        setPortfolio(null);
+        setRefreshData(prev=>!prev);
       }
     }
   };
@@ -173,7 +177,7 @@ function Application(props) {
       }
     }
     fetchPortfolio();
-  }, [portfolioReceiver, portfolio, accountName]);
+  }, [portfolioReceiver, portfolio, accountName, refreshData ]);
 
   useEffect(() => {
     async function connect() {
