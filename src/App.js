@@ -27,7 +27,7 @@ import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
-import { getAccessToken, setAccessToken } from "./utils/localstorage";
+import { getAccessToken, setAccessToken, getLoginDetail } from "./utils/localstorage";
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -253,11 +253,14 @@ function Application(props) {
     }
   }
   const verifyToken = async () => {
-    const data = await getUserData(login);
-    if (data['tokenExpired']) {
-      setTokenModalOpen(true);
-      setTokenModalMsg(data.responseMsg);
-      return;
+    const userName = getLoginDetail();
+    if (userName) {
+      const data = await getUserData(userName);
+      if (data['tokenExpired']) {
+        setTokenModalOpen(true);
+        setTokenModalMsg(data.responseMsg);
+        return;
+      }
     }
   }
   if (isLoading || activeScreen == null) {
