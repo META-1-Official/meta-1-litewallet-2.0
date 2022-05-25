@@ -1,7 +1,5 @@
 yarn.lock
 node_modules
-<<<<<<< HEAD
-./public/process.env.REACT_APP_js
 .env
 .eslintcache
 .DS_Store

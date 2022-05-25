@@ -135,7 +135,7 @@ const Settings = (props) => {
             if (err.response.data.error.toLowerCase() == 'unauthorized') {
               tokenFail();
               setTokenModalOpen(true);
-              setTokenModalMsg("Authenication failed");
+              setTokenModalMsg("Authentication failed");
             }
           }
         } else {

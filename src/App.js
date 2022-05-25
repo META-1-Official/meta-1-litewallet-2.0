@@ -78,6 +78,7 @@ function Application(props) {
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
   const [tokenModalMsg, setTokenModalMsg] = useState('');
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
+  const [refreshData, setRefreshData] = useState(false);
 
   useEffect(() => {
     if (login !== null) {
@@ -85,7 +86,7 @@ function Application(props) {
     }
   }, []);
 
-  const loginHandler = async (login, password) => {
+  const loginHandler = async (login, password, fromSignUp= false) => {
     setIsLoading(true)
     const response = await loginRequest(login, password);
     if (response.error) {
@@ -97,10 +98,10 @@ function Application(props) {
     }
   }
 
-  const onLogin = async (login, clicked = false, password = '') => {
+  const onLogin = async (login, clicked = false, password = '', fromSignUp = false) => {
 
     if (clicked) {
-      await loginHandler(login, password);
+      await loginHandler(login, password, fromSignUp);
     }
     if (getAccessToken()) {
       await getAvatarFromBack(login);
@@ -109,6 +110,12 @@ function Application(props) {
       localStorage.setItem("login", login);
       if (clicked) {
         setLoginError(true);
+      }
+      if (fromSignUp) {
+        setUserImageDefault(logoDefalt);
+        setUserImageNavbar(logoNavbar);
+        setPortfolio(null);
+        setRefreshData(prev=>!prev);
       }
     }
   };
@@ -170,7 +177,7 @@ function Application(props) {
       }
     }
     fetchPortfolio();
-  }, [portfolioReceiver, portfolio, accountName]);
+  }, [portfolioReceiver, portfolio, accountName, refreshData ]);
 
   useEffect(() => {
     async function connect() {
@@ -242,8 +249,8 @@ function Application(props) {
   const onRegistration = (acc, pass, regEmail) => {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
-    onLogin(acc);
     setCredentials(acc, pass);
+    onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
   };
 

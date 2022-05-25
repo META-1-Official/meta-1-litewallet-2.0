@@ -205,7 +205,6 @@ const WithdrawForm = (props) => {
         if (res.success === 'success') {
           setIsLoading(false);
           alert("Email sent, awesome!");
-
           // Reset form inputs
           setName('');
           setEmailAddress('');
