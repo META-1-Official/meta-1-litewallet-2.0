@@ -19,14 +19,43 @@ export default function LoginScreen(props) {
   const [password, setPassword] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [openVideoModal, setOpenVideoModal] = useState(false);
+  const [errorAttr, setErrorAttr] = useState({
+    login: false,
+    password: false
+  });
   const handleSignUpClick = (e) => {
     e.preventDefault();
     onSignUpClick();
   };
+  const validationHandler = () => {
+    let isValid = true;
+    const data = { login: false, password: false };
+    if (login.trim().length === 0 && password.length === 0) {
+      data.login = true;
+      data.password = true;
+      isValid = false;
+    } else {
+      if (login.trim().length === 0) {
+        data.login = true;
+        isValid = false;
+      }
+      if (password.length === 0) {
+        data.password = true;
+        isValid = false;
+      }
+    }
+    setErrorAttr(prev => {
+      return { ...prev, ...data };
+    })
+    return isValid;
+  }
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validationHandler()) {
+      return;
+    }
     if (login.length !== 0 && password.length !== 0) {
-      onSubmit(login, true,password);
+      onSubmit(login, true, password);
     }
   };
 
@@ -79,6 +108,11 @@ export default function LoginScreen(props) {
                   className={styles.input}
                   onChange={(e) => {
                     e.preventDefault();
+                    if (e.target.value.trim()) {
+                      setErrorAttr(prev => {
+                        return { ...prev, login: false };
+                      })
+                    }
                     setLogin(e.target.value);
                   }}
                   placeholder={"Wallet Name"}
@@ -89,6 +123,11 @@ export default function LoginScreen(props) {
                   className={styles.input}
                   onChange={(e) => {
                     e.preventDefault();
+                    if (e.target.value.trim()) {
+                      setErrorAttr(prev => {
+                        return { ...prev, password: false };
+                      })
+                    }
                     setPassword(e.target.value);
                   }}
                   placeholder={"Passsword"}
@@ -107,6 +146,12 @@ export default function LoginScreen(props) {
                 >
                   Wallet name or password is wrong
                 </p>
+                {errorAttr.login && errorAttr.password ?
+                  <p className={styles.ErrorP}>Wallet Name and Password can't be empty</p> :
+                  errorAttr.login ? <p className={styles.ErrorP}>Wallet Name can't be empty</p> :
+                    errorAttr.password ? <p className={styles.ErrorP}>Password can't be empty</p>
+                      : null
+                }
                 <button
                   className={styles.Button}
                   style={{ fontSize: "100%", marginTop: "0" }}
