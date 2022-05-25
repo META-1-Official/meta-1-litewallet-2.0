@@ -102,7 +102,7 @@ const WithdrawForm = (props) => {
     } else {
       setAmountError('');
     }
-  }, [selectedFromAmount]);
+  }, [selectedFromAmount, blockPrice]);
 
   useEffect(() => {
     if (!name) {
@@ -202,7 +202,7 @@ const WithdrawForm = (props) => {
     };
     sendEmail(emailType, emailData)
       .then((res) => {
-        if (res.success === 'success'){
+        if (res.success === 'success') {
           setIsLoading(false);
           alert("Email sent, awesome!");
           // Reset form inputs
@@ -212,6 +212,11 @@ const WithdrawForm = (props) => {
           setBlockPrice(NaN);
           setToAddress('');
         } else {
+          if (res.tokenExpired) {
+            props.setTokenModalMsg(res.responseMsg);
+            props.setTokenModalOpen(true);
+            return;
+          }
           setIsLoading(false);
           alert("Oops, something went wrong. Try again");
         }
@@ -261,16 +266,16 @@ const WithdrawForm = (props) => {
           </div>
         </div>
 
-        {isLoading ? 
+        {isLoading ?
           <MetaLoader size={"small"} />
           :
           <form>
             <label>
               <span>Name:</span><br />
               <TextField
-                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
+                InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
                 value={name}
-                onChange={(e) => {setName(e.target.value)}}
+                onChange={(e) => { setName(e.target.value) }}
                 className={styles.input}
                 id="name-input"
                 variant="filled"
@@ -283,9 +288,9 @@ const WithdrawForm = (props) => {
             <label>
               <span>Email Address:</span><br />
               <TextField
-                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
+                InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
                 value={emailAddress}
-                onChange={(e) => {setEmailAddress(e.target.value)}}
+                onChange={(e) => { setEmailAddress(e.target.value) }}
                 className={styles.input}
                 id="emailaddress-input"
                 variant="filled"
@@ -386,9 +391,8 @@ const WithdrawForm = (props) => {
                           inputMode="numeric"
                           pattern="\d*"
                           type={"number"}
-                          placeholder={`Amount ${
-                            userCurrency.split(" ")[1]
-                          }`}
+                          placeholder={`Amount ${userCurrency.split(" ")[1]
+                            }`}
                           disabled={invalidEx}
                           style={
                             invalidEx ? { opacity: "0.5" } : null
@@ -425,9 +429,9 @@ const WithdrawForm = (props) => {
             <label>
               <span>Destination Address:</span>
               <TextField
-                InputProps={{ disableUnderline: true, className:'custom-input-bg' }}
+                InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
                 value={toAddress}
-                onChange={(e) => {setToAddress(e.target.value)}}
+                onChange={(e) => { setToAddress(e.target.value) }}
                 className={styles.input}
                 id="destination-input"
                 variant="filled"
@@ -443,7 +447,7 @@ const WithdrawForm = (props) => {
               className="btn-primary withdraw"
               onClick={(e) => onClickWithdraw(e)}
               floated="left"
-              disabled = {canWithdraw ? '' : 'disabled'}
+              disabled={canWithdraw ? '' : 'disabled'}
             >
               Withdraw
             </Button>

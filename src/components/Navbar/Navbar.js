@@ -4,6 +4,7 @@ import "./styles.css";
 import logo from "../../images/Logo.png";
 import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import WidgetOnRamper from "./WidgetOnRamper";
+import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
 
 const Navbar = (props) => {
   const {
@@ -101,7 +102,7 @@ const Navbar = (props) => {
                   />
                   <span
                     onClick={() => {
-                      window.open("https://support.meta1.vision");
+                      window.open("https://support.meta1coin.vision");
                     }}
                   >
                     Get help
@@ -159,8 +160,9 @@ const Navbar = (props) => {
                             className="dropdown-item"
                             style={{ textAlign: "center" }}
                             onClick={() => {
-                              localStorage.removeItem("login");
-                              sessionStorage.setItem("location", "wallet");
+                              removeLoginDetail();
+                              removeAccessToken();
+                              setLocation("wallet");
                               window.location.reload();
                             }}
                           >

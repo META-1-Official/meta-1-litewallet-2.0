@@ -14,6 +14,7 @@ import {
 import { saveUserCurrency, deleteAvatar } from "../../API/API";
 import logoNavbar from "../../images/default-pic2.png";
 import logoDefalt from "../../images/default-pic1.png";
+import { getAccessToken, tokenFail } from "../../utils/localstorage";
 
 const Settings = (props) => {
   const {
@@ -27,7 +28,9 @@ const Settings = (props) => {
     setUserCurrency,
     setUserImageDefault,
     setUserImageNavbar,
-    checkPaswordObj
+    checkPaswordObj,
+    setTokenModalMsg,
+    setTokenModalOpen
   } = props;
 
   const [currency, setCurrency] = useState(userCurrency);
@@ -47,16 +50,26 @@ const Settings = (props) => {
 
   const changeCurrencyHandler = async (e) => {
     e.preventDefault();
-    await saveUserCurrency(
+    const response = await saveUserCurrency(
       localStorage.getItem("login"),
       currency.split(" ")[1]
     );
+    if (response.tokenExpired) {
+      setTokenModalOpen(true);
+      setTokenModalMsg(response.responseMsg);
+      return;
+    }
     setUserCurrency(currency);
     setModalOpened(true);
   };
 
   async function removePhoto() {
-    await deleteAvatar(localStorage.getItem("login"));
+    const response = await deleteAvatar(localStorage.getItem("login"));
+    if (response.tokenExpired) {
+      setTokenModalOpen(true);
+      setTokenModalMsg(response.responseMsg);
+      return;
+    }
     setUserImageDefault(logoDefalt);
     setUserImageNavbar(logoNavbar);
   }
@@ -105,17 +118,26 @@ const Settings = (props) => {
             "file",
             document.getElementById("file_upload")?.files[0]
           );
-          const { data } = await axios.post(
-            `https://${process.env.REACT_APP_BACK_URL}/saveAvatar`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
+          try {
+            const { data } = await axios.post(
+              `https://${process.env.REACT_APP_BACK_URL}/saveAvatar`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                  'Authorization': 'Bearer ' + getAccessToken()
+                },
+              }
+            );
+            setUserImageDefault(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
+            setUserImageNavbar(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
+          } catch (err) {
+            if (err.response.data.error.toLowerCase() == 'unauthorized') {
+              tokenFail();
+              setTokenModalOpen(true);
+              setTokenModalMsg("Authentication failed");
             }
-          );
-          setUserImageDefault(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
-          setUserImageNavbar(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
+          }
         } else {
           alert("Invalid file size");
         }
