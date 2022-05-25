@@ -14,7 +14,7 @@ const _createPaperWalletAsPDF = function (
     const width = 300,
         height = 450, //mm
         lineMargin = 5,
-        qrSize = 50,
+        qrSize = 47,
         textMarginLeft = qrSize + 7,
         qrMargin = 5,
         qrRightPos = width - qrSize - qrMargin,
@@ -23,7 +23,7 @@ const _createPaperWalletAsPDF = function (
         logoWidth = (width * 3) / 4,
         logoHeight = logoWidth / 2.8, //  logo original width/height=2.8
         logoPositionX = (width - logoWidth) / 2
-    let rowHeight = logoHeight + 50
+    let rowHeight = logoHeight + 45
     const keys = [activeKeys, ownerkeys, memoKey]
     const keysName = ['Active Key', 'Owner Key', 'Memo Key']
 
