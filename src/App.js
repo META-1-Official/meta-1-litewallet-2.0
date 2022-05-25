@@ -134,12 +134,13 @@ function Application(props) {
 
   async function getAvatarFromBack(login) {
     try {
-      const data = login && await getUserData(login);
+      const data = await getUserData(login);
       if (data['tokenExpired']) {
         setTokenModalOpen(true);
         setTokenModalMsg(data.responseMsg);
         return;
       }
+      if (data === null) return;
       const response = await getCryptosChange();
       setCryptoData(response);
       if (data?.message.userAvatar != null) {
@@ -261,7 +262,8 @@ function Application(props) {
     }
   }
   const verifyToken = async () => {
-    const data = login && await getUserData(login);
+    const data = await getUserData(login);
+    if (data === null) return;
     if (data['tokenExpired']) {
       setTokenModalOpen(true);
       setTokenModalMsg(data.responseMsg);
