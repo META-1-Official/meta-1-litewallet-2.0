@@ -108,6 +108,7 @@ function Application(props) {
       setLoginError(null);
       setAccountName(login);
       localStorage.setItem("login", login);
+      setLogin(login);
       if (clicked) {
         setLoginError(true);
       }
@@ -133,7 +134,7 @@ function Application(props) {
 
   async function getAvatarFromBack(login) {
     try {
-      const data = await getUserData(login);
+      const data = login && await getUserData(login);
       if (data['tokenExpired']) {
         setTokenModalOpen(true);
         setTokenModalMsg(data.responseMsg);
@@ -260,13 +261,14 @@ function Application(props) {
     }
   }
   const verifyToken = async () => {
-    const data = await getUserData(login);
+    const data = login && await getUserData(login);
     if (data['tokenExpired']) {
       setTokenModalOpen(true);
       setTokenModalMsg(data.responseMsg);
       return;
     }
   }
+
   if (isLoading || activeScreen == null) {
     return <MetaLoader size={"large"} />;
   }
