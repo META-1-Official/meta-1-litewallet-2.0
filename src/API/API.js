@@ -8,6 +8,7 @@ export async function getCryptosChange() {
 }
 
 export async function getUserData(login) {
+  console.log('LOGIN', login)
   if (login === null || login === 'null' || login === undefined || login === 'undefined') return null;
   const config = {
     headers: {
