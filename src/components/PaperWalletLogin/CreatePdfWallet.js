@@ -51,6 +51,7 @@ const _createPaperWalletAsPDF = function (
         }
         pdf.text('PublicKey', textMarginLeft, rowHeight + 20)
         pdf.text(privateKey.toPublicKey().toPublicKeyString(), textMarginLeft, rowHeight + 30)
+        pdf.text('PrivateKey', textMarginLeft, rowHeight + 40)
         pdf.rect(textMarginLeft - 1, rowHeight + 24, 258, textHeight)
         if (locked) {
             pdf.text('PrivateKey', textMarginLeft, rowHeight + 40)
@@ -88,7 +89,7 @@ const _createPaperWalletAsPDF = function (
         checkPageH(pdf, rowHeight, 400)
         pdf.text('Public', 22, rowHeight + 7)
         pdf.text(keysName[index], 170, rowHeight + 7)
-        if (!locked) {
+        if (locked) {
             pdf.text('Private', 327, rowHeight + 7)
         }
         pdf.line(lineMargin, rowHeight + 1, 365, rowHeight + 1)
