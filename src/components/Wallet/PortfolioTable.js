@@ -161,7 +161,7 @@ const PortfolioTable = React.memo((props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {lists?.map((datas) => (
+          {data && lists?.map((datas) => (
             <StyledTableRow key={datas?.name}>
               <StyledTableCell component="th" scope="row">
                 {
@@ -175,7 +175,7 @@ const PortfolioTable = React.memo((props) => {
                 {datas?.qty > 0 ? (datas?.qty * 1).toFixed(datas?.pre) : "0.00"}
               </StyledTableCell>
               <StyledTableCell align="center" className={"currencyValues"}>
-                {data && datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1)) * Number(
+                {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1)) * Number(
                   (
                     calculateCurrencyPrice(currencyPrice(datas, data[datas.name]) *
                       Number(userCurrency.split(" ")[2])
