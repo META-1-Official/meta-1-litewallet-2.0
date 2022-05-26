@@ -10,8 +10,10 @@ export default class CheckPassword {
         } catch (e) {
             if (e.message === "The pair of login and password do not match!") {
                 return { error: "Invalid credentials" };
+            } else if (e.message && (e.message.toLowerCase().includes('non-base') || e.message.toLowerCase().includes('expected version'))) {
+                return { error: "Invalid credentials" };
             } else {
-                return { error: "Something went wrong " + e.message };
+                return { error: "Something went wrong" };
             }
         }
     }
