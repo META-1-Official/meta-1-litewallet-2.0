@@ -6,7 +6,7 @@ import Switch from "@mui/material/Switch";
 import fiatIcon from "../../images/4292332.png";
 import { Loader } from "semantic-ui-react";
 import "./Wallet.css";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 import { useQuery } from "react-query";
 
 import PortfolioTable from "./PortfolioTable";

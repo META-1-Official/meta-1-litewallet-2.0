@@ -1,6 +1,6 @@
 import asset_utils from "./asset_utils";
 
-import {ChainTypes} from "meta1js";
+import {ChainTypes} from "meta1-vision-js";
 
 var numeral = require("numeral");
 let id_regex = /\b\d+\.\d+\.(\d+)\b/;
