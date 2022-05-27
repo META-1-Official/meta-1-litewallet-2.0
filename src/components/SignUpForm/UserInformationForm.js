@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { key, ChainValidation } from "meta1js";
+import { key, ChainValidation } from "meta1-vision-js";
 import AccountApi from "../../lib/AccountApi";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import "./SignUpForm.css";

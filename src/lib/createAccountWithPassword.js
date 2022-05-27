@@ -3,7 +3,7 @@ import {
   FetchChain,
   PrivateKey,
   TransactionBuilder,
-} from "meta1js";
+} from "meta1-vision-js";
 
 export function generateKeyFromPassword(accountName, role, password) {
   let seed = accountName + role + password;
