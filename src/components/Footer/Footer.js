@@ -219,10 +219,10 @@ const Footer = (props) => {
                 aria-label="Close"
               />
               <h2 style={{ margin: "0", fontSize: "2.5rem", color: "#000" }}>
-                WELCOME TO <span style={{ color: "#FFC000" }}>META1.IO</span>
+                WELCOME TO <span style={{ color: "#FFC000" }}>META1COIN.VISION</span>
               </h2>
               <h3 style={{ fontSize: "1.7rem", fontWeight: "500" }}>
-                By Using The <span style={{ color: "#FFC000" }}>META1.Io</span>{" "}
+                By Using The <span style={{ color: "#FFC000" }}>META1COIN.Vision</span>{" "}
                 Website You Are Agreeing To The{" "}
                 <strong style={{ fontWeight: "700" }}>Privacy Policy</strong>{" "}
                 And Website Use <strong>Terms Below.</strong>
@@ -234,7 +234,7 @@ const Footer = (props) => {
                 Privacy Statements
               </h4>
               <p style={{ fontSize: "1rem" }}>
-                This website (META1.io, META1Coin.Com) and all META 1 COIN TRUST
+                This website (META1Coin.vision, META1Coin.Com) and all META 1 COIN TRUST
                 business are private, protected by the privacy act of 1974.
                 Title 5 U.S.C. 552(a), the fourth and fifth Amendments of the
                 Constitution for the united States of America, the common law
@@ -334,21 +334,21 @@ const Footer = (props) => {
           <ul>
             <li
               onClick={() => {
-                window.open("https://meta1.vision");
+                window.open(process.env.REACT_APP_WALLET_FOOTER_HREF);
               }}
             >
               <span>Home</span>
             </li>
             <li
               onClick={() => {
-                window.open("https://meta1.vision/META1Contact");
+                window.open(`${process.env.REACT_APP_WALLET_FOOTER_HREF}/meta1-contact`);
               }}
             >
               <span>Contact Us</span>
             </li>
             <li
               onClick={() => {
-                window.open("https://support.meta1.vision");
+                window.open(`${process.env.REACT_APP_WALLET_FOOTER_SUPPORT_HREF}`);
               }}
             >
               <span>Support</span>
