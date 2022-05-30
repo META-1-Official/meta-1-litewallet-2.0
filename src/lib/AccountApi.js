@@ -1,4 +1,4 @@
-import { Apis } from 'meta1-vision-js'
+import { Apis } from 'meta1-vision-ws'
 
 class Api {
     lookupAccounts(startChar, limit) {
