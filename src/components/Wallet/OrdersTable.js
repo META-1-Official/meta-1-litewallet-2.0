@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";

@@ -1,4 +1,4 @@
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 
 async function getHistory(event) {
   const amount = event?.queryKey[0] === "history" ? 10 : 3;

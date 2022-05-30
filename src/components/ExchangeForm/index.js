@@ -15,7 +15,7 @@ import { helpInput, helpMax1, helpSwap } from "../../config/help";
 import Input from "@mui/material/Input";
 import MetaLoader from "../../UI/loader/Loader";
 import "./ExchangeForm.css";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 import InputAdornment from "@mui/material/InputAdornment";
 import leftArrow from "../../images/exchangeAssets/Shape Left.png";
 import rightArrow from "../../images/exchangeAssets/Shape 2 copy 2.png";

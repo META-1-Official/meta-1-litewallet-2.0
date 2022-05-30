@@ -5,7 +5,7 @@ import {
     TransactionHelper,
     ChainTypes,
     ops
-} from "meta1js";
+} from "meta1-vision-js";
 import {Price, Asset} from "./MarketClasses";
 const {operations} = ChainTypes;
 

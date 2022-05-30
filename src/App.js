@@ -17,7 +17,7 @@ import Settings from "./components/Settings/Settings";
 import logoNavbar from "./images/default-pic2.png";
 import logoDefalt from "./images/default-pic1.png";
 import "./App.css";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 import MetaLoader from "./UI/loader/Loader";
 import Navbar from "./components/Navbar/Navbar";
 import LeftPanel from "./components/LeftPanel/LeftPanel";
@@ -108,6 +108,7 @@ function Application(props) {
       setLoginError(null);
       setAccountName(login);
       localStorage.setItem("login", login);
+      setLogin(login);
       if (clicked) {
         setLoginError(true);
       }
@@ -139,6 +140,7 @@ function Application(props) {
         setTokenModalMsg(data.responseMsg);
         return;
       }
+      if (data === null) return;
       const response = await getCryptosChange();
       setCryptoData(response);
       if (data?.message.userAvatar != null) {
@@ -261,12 +263,14 @@ function Application(props) {
   }
   const verifyToken = async () => {
     const data = await getUserData(login);
+    if (data === null) return;
     if (data['tokenExpired']) {
       setTokenModalOpen(true);
       setTokenModalMsg(data.responseMsg);
       return;
     }
   }
+
   if (isLoading || activeScreen == null) {
     return <MetaLoader size={"large"} />;
   }

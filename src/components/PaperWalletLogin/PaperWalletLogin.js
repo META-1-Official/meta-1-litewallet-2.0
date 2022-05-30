@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { generateKeyFromPassword } from "../../lib/createAccountWithPassword";
 import { Button, Form, FormField } from "semantic-ui-react";
 import useDebounce from "../../lib/useDebounce";
-import { PrivateKey } from "meta1js";
+import { PrivateKey } from "meta1-vision-js";
 import { createPaperWalletAsPDF } from "./CreatePdfWallet";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 import "./style.css";
 
 export default function PaperWalletLogin({ portfolioReceiver, accountName }) {

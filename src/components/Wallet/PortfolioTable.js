@@ -9,7 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import MetaLoader from "../../UI/loader/Loader";
 import { Image } from "semantic-ui-react";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 
 import { useQuery } from "react-query";
 import { removeExponent } from "../../utils/commonFunction";
@@ -161,7 +161,7 @@ const PortfolioTable = React.memo((props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {lists?.map((datas) => (
+          {data && lists?.map((datas) => (
             <StyledTableRow key={datas?.name}>
               <StyledTableCell component="th" scope="row">
                 {
