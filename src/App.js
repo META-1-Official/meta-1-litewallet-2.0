@@ -28,9 +28,17 @@ import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, setAccessToken } from "./utils/localstorage";
+import { useDispatch, useSelector } from "react-redux";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector } from "./store/account/selector";
+import { loginRequestService } from "./store/account/actions";
 
 window.Meta1 = Meta1;
 function Application(props) {
+  const accountNameState = useSelector(accountsSelector);
+  const tokenState = useSelector(tokenSelector);
+  const loaderState = useSelector(loaderSelector);
+  const loginErrorState = useSelector(loginErrorSelector);
+  const demoState = useSelector(demoSelector);
   const { metaUrl } = props;
   const domAccount =
     props.account !== null &&
@@ -74,11 +82,12 @@ function Application(props) {
   };
   const [login, setLogin] = useState(localStorage.getItem("login"));
   const [loginError, setLoginError] = useState(null);
-  const [loginDataError, setLoginDataError] = useState(null);
+  const [loginDataError, setLoginDataError] = useState(false);
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
   const [tokenModalMsg, setTokenModalMsg] = useState('');
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
   const [refreshData, setRefreshData] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (login !== null) {
@@ -87,15 +96,7 @@ function Application(props) {
   }, []);
 
   const loginHandler = async (login, password, fromSignUp= false) => {
-    setIsLoading(true)
-    const response = await loginRequest(login, password);
-    if (response.error) {
-      setIsLoading(false);
-      setLoginDataError(true);
-    } else {
-      setIsLoading(false);
-      setAccessToken(response.token);
-    }
+    dispatch(loginRequestService({login ,password, setLoginDataError}));
   }
 
   const onLogin = async (login, clicked = false, password = '', fromSignUp = false) => {
@@ -120,6 +121,15 @@ function Application(props) {
       }
     }
   };
+
+  useEffect(() => {
+    if (loginErrorState) {
+      setLoginDataError(true);
+    }
+    if(accountNameState) {
+      onLogin(accountNameState,false)
+    }
+  },[accountNameState, loginErrorState]);
 
   const loc = React.useMemo(() => {
     if (
@@ -271,7 +281,7 @@ function Application(props) {
     }
   }
 
-  if (isLoading || activeScreen == null) {
+  if (isLoading || loaderState || activeScreen == null) {
     return <MetaLoader size={"large"} />;
   }
 
@@ -500,6 +510,7 @@ function Application(props) {
                   onSignUpClick={() => setActiveScreen("registration")}
                   error={loginError}
                   loginDataError={loginDataError}
+                  setLoginDataError={setLoginDataError}
                   onSubmit={onLogin}
                   portfolio={portfolio}
                   onClickExchangeUSDTHandler={(e) => {

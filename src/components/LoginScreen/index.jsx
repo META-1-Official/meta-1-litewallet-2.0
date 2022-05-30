@@ -14,6 +14,7 @@ export default function LoginScreen(props) {
     portfolio,
     onClickExchangeEOSHandler,
     onClickExchangeUSDTHandler,
+    setLoginDataError
   } = props;
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -52,6 +53,7 @@ export default function LoginScreen(props) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validationHandler()) {
+      setLoginDataError(false);
       return;
     }
     if (login.length !== 0 && password.length !== 0) {
