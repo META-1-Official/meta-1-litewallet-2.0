@@ -1,4 +1,4 @@
-import {ChainStore} from "meta1js";
+import {ChainStore} from "meta1-vision-js";
 import utils from "./utils";
 import counterpart from "counterpart";
 import {estimateFee} from "./trxHelper";

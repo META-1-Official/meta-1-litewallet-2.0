@@ -17,7 +17,7 @@ import Settings from "./components/Settings/Settings";
 import logoNavbar from "./images/default-pic2.png";
 import logoDefalt from "./images/default-pic1.png";
 import "./App.css";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 import MetaLoader from "./UI/loader/Loader";
 import Navbar from "./components/Navbar/Navbar";
 import LeftPanel from "./components/LeftPanel/LeftPanel";
@@ -113,6 +113,7 @@ function Application(props) {
       if (clicked) {
         setLoginError(true);
       }
+      setIsLoading(false);
       if (fromSignUp) {
         setUserImageDefault(logoDefalt);
         setUserImageNavbar(logoNavbar);
