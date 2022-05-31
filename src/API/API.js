@@ -8,6 +8,8 @@ export async function getCryptosChange() {
 }
 
 export async function getUserData(login) {
+  if (login === null || login === 'null' || login === undefined || login === 'undefined') return null;
+
   const config = {
     headers: {
       'Authorization': 'Bearer ' + getAccessToken()
@@ -19,7 +21,7 @@ export async function getUserData(login) {
     }, config);
     return data;
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+    if (err?.response?.data?.error?.toLowerCase() === 'unauthorized') {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }

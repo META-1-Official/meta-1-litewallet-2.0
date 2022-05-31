@@ -102,7 +102,7 @@ const Navbar = (props) => {
                   />
                   <span
                     onClick={() => {
-                      window.open("https://support.meta1coin.vision");
+                      window.open(process.env.REACT_APP_WALLET_FOOTER_SUPPORT_HREF);
                     }}
                   >
                     Get help
