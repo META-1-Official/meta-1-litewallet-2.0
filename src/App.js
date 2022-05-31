@@ -93,7 +93,6 @@ function Application(props) {
       setIsLoading(false);
       setLoginDataError(true);
     } else {
-      setIsLoading(false);
       setAccessToken(response.token);
     }
   }
@@ -112,6 +111,7 @@ function Application(props) {
       if (clicked) {
         setLoginError(true);
       }
+      setIsLoading(false);
       if (fromSignUp) {
         setUserImageDefault(logoDefalt);
         setUserImageNavbar(logoNavbar);
