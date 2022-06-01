@@ -10,7 +10,7 @@ import Input from "@mui/material/Input";
 import { helpSendTo, helpAmount, helpMax1, helpSwap } from "../../config/help";
 import "./style.css";
 import InputAdornment from "@mui/material/InputAdornment";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 
 const FEE = 0.0035;
 

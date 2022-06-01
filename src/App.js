@@ -17,7 +17,7 @@ import Settings from "./components/Settings/Settings";
 import logoNavbar from "./images/default-pic2.png";
 import logoDefalt from "./images/default-pic1.png";
 import "./App.css";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 import MetaLoader from "./UI/loader/Loader";
 import Navbar from "./components/Navbar/Navbar";
 import LeftPanel from "./components/LeftPanel/LeftPanel";
@@ -78,6 +78,7 @@ function Application(props) {
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
   const [tokenModalMsg, setTokenModalMsg] = useState('');
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
+  const [refreshData, setRefreshData] = useState(false);
 
   useEffect(() => {
     if (login !== null) {
@@ -85,30 +86,37 @@ function Application(props) {
     }
   }, []);
 
-  const loginHandler = async (login, password) => {
+  const loginHandler = async (login, password, fromSignUp= false) => {
     setIsLoading(true)
     const response = await loginRequest(login, password);
     if (response.error) {
       setIsLoading(false);
       setLoginDataError(true);
     } else {
-      setIsLoading(false);
       setAccessToken(response.token);
     }
   }
 
-  const onLogin = async (login, clicked = false, password = '') => {
+  const onLogin = async (login, clicked = false, password = '', fromSignUp = false) => {
 
     if (clicked) {
-      await loginHandler(login, password);
+      await loginHandler(login, password, fromSignUp);
     }
     if (getAccessToken()) {
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
       localStorage.setItem("login", login);
+      setLogin(login);
       if (clicked) {
         setLoginError(true);
+      }
+      setIsLoading(false);
+      if (fromSignUp) {
+        setUserImageDefault(logoDefalt);
+        setUserImageNavbar(logoNavbar);
+        setPortfolio(null);
+        setRefreshData(prev=>!prev);
       }
     }
   };
@@ -132,6 +140,7 @@ function Application(props) {
         setTokenModalMsg(data.responseMsg);
         return;
       }
+      if (data === null) return;
       const response = await getCryptosChange();
       setCryptoData(response);
       if (data?.message.userAvatar != null) {
@@ -170,7 +179,7 @@ function Application(props) {
       }
     }
     fetchPortfolio();
-  }, [portfolioReceiver, portfolio, accountName]);
+  }, [portfolioReceiver, portfolio, accountName, refreshData ]);
 
   useEffect(() => {
     async function connect() {
@@ -243,7 +252,7 @@ function Application(props) {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
-    onLogin(acc, true, pass);
+    onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
   };
 
@@ -254,12 +263,14 @@ function Application(props) {
   }
   const verifyToken = async () => {
     const data = await getUserData(login);
+    if (data === null) return;
     if (data['tokenExpired']) {
       setTokenModalOpen(true);
       setTokenModalMsg(data.responseMsg);
       return;
     }
   }
+
   if (isLoading || activeScreen == null) {
     return <MetaLoader size={"large"} />;
   }

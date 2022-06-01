@@ -9,7 +9,7 @@ import {
     FetchChain,
     ChainStore,
     ChainTypes
-} from "meta1js";
+} from "meta1-vision-js";
 import counterpart from "counterpart";
 import {Notification} from "bitshares-ui-style-guide";
 

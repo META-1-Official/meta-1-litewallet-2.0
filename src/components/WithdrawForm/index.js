@@ -1,8 +1,8 @@
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { useState, useEffect } from "react";
-import Meta1 from "meta1dex";
-import { PrivateKey } from "meta1js";
+import Meta1 from "meta1-vision-dex";
+import { PrivateKey } from "meta1-vision-js";
 import {
   Image, Modal, Button, Grid, Icon, Label, Popup
 } from "semantic-ui-react";

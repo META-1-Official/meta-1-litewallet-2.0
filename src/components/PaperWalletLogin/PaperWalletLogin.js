@@ -3,13 +3,13 @@ import React, { useEffect, useState } from "react";
 import { generateKeyFromPassword } from "../../lib/createAccountWithPassword";
 import { Button, Form, FormField } from "semantic-ui-react";
 import useDebounce from "../../lib/useDebounce";
-import { PrivateKey } from "meta1js";
+import { PrivateKey } from "meta1-vision-js";
 import { createPaperWalletAsPDF } from "./CreatePdfWallet";
-import Meta1 from "meta1dex";
+import Meta1 from "meta1-vision-dex";
 import "./style.css";
 
 export default function PaperWalletLogin({ portfolioReceiver, accountName }) {
-  const [account, setAccount] = useState(accountName);
+  const [account, setAccount] = useState(localStorage.getItem("login") || accountName);
   const [password, setPassword] = useState("");
   const [readyToCreate, setReadyToCreate] = useState(false);
   const [accountChecked, setAccountChecked] = useState(true);
@@ -59,21 +59,16 @@ export default function PaperWalletLogin({ portfolioReceiver, accountName }) {
     password
   );
 
-  let privateKey = getPrivateKey(password);
-  let ownerKey = owner_private.toPublicKey().toPublicKeyString();
-  let activeKey = active_private.toPublicKey().toPublicKeyString();
-  let memoKey = memo_private.toPublicKey().toPublicKeyString();
   const handleCreatePaperWallet = async () => {
     try {
       await Meta1.login(localStorage.getItem("login"), password);
       createPaperWalletAsPDF(
         localStorage.getItem("login"),
-        ownerKey,
-        activeKey,
-        memoKey,
-        privateKey
+        owner_private,
+        active_private,
+        memo_private
       );
-    } catch {
+    } catch (e) {
       setCheck(true);
     }
   };
