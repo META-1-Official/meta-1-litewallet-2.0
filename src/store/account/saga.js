@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
-import { loginRequest } from '../../API/API';
+import { deleteAvatar, getUserData, loginRequest, uploadAvatar } from '../../API/API';
 import { setAccessToken, setLoginDetail } from '../../utils/localstorage';
-import { loginError, loginSuccess } from './actions';
+import { deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, uploadAvatarSuccess } from './actions';
 import * as types from './types';
 function* loginHandler(data) {
     try {
@@ -18,6 +18,42 @@ function* loginHandler(data) {
         yield put(loginError({accountName: null, token: ''}));
     }
 }
+function* getUserHandler(data) {
+    const response = yield call(getUserData,data.payload);
+    console.log("response",response);
+    if (response['tokenExpired']) {
+        yield put(getUserError({msg: response.responseMsg}));
+    } else {
+        if (response?.message.userAvatar != null) {
+            let avatarImage = `https://${process.env.REACT_APP_BACK_URL}/public/${response.message.userAvatar}`;
+            yield put(getUserSuccess({user: response,avatarImage }));
+        } else {
+            yield put(getUserSuccess({user: response,avatarImage: null }));
+        }
+    }
+}
+function* uploadAvatarHandler(data) {
+    const response = yield call(uploadAvatar, data.payload);
+    console.log("response",response);
+    if (response['tokenExpired']) {
+        yield put(getUserError({msg: response.responseMsg}));
+    } else {
+        let avatarImage = `https://${process.env.REACT_APP_BACK_URL}/public/${response.message}`;
+        yield put(uploadAvatarSuccess({avatarImage }));
+    }
+}
+function* deleteAvatarHandler(data) {
+    const response = yield call(deleteAvatar, data.payload);
+    console.log("response",response);
+    if (response['tokenExpired']) {
+        yield put(getUserError({msg: response.responseMsg}));
+    } else {
+        yield put(deleteAvatarSuccess());
+    }
+}
 export function* waitForAccount() {
     yield takeEvery(types.LOGIN_REQUEST, loginHandler);
+    yield takeEvery(types.GET_USER_REQUEST, getUserHandler);
+    yield takeEvery(types.UPLOAD_AVATAR_REQUEST, uploadAvatarHandler);
+    yield takeEvery(types.DELETE_AVATAR_REQUEST, deleteAvatarHandler);
 }

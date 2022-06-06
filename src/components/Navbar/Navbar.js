@@ -4,9 +4,13 @@ import "./styles.css";
 import logo from "../../images/Logo.png";
 import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import WidgetOnRamper from "./WidgetOnRamper";
-import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutRequest } from "../../store/account/actions";
+import { navbarProfileImageSelector } from "../../store/account/selector";
 
 const Navbar = (props) => {
+  const dispatch = useDispatch();
+  const navbarProfileImageState = useSelector(navbarProfileImageSelector)
   const {
     onClickHomeHandler,
     onClickPortfolioHandler,
@@ -16,9 +20,7 @@ const Navbar = (props) => {
     onClickSettingsHandler,
     onClickHistoryHandler,
     portfolio,
-    name,
-    userIcon,
-    userIconDefault,
+    name
   } = props;
 
   const { innerWidth: width } = window;
@@ -144,7 +146,7 @@ const Navbar = (props) => {
                         <img
                           className={styles.userImg}
                           id="avatarNavbar"
-                          src={userIcon}
+                          src={navbarProfileImageState}
                           alt="user"
                         />
                       </div>
@@ -160,10 +162,7 @@ const Navbar = (props) => {
                             className="dropdown-item"
                             style={{ textAlign: "center" }}
                             onClick={() => {
-                              removeLoginDetail();
-                              removeAccessToken();
-                              setLocation("wallet");
-                              window.location.reload();
+                              dispatch(logoutRequest());
                             }}
                           >
                             Log Out
@@ -186,7 +185,6 @@ const Navbar = (props) => {
                 onClickHistoryHandler={onClickHistoryHandler}
                 portfolio={portfolio}
                 name={name}
-                userIcon={userIconDefault}
               />
             ) : null}
           </div>

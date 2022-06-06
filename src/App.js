@@ -29,8 +29,10 @@ import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector } from "./store/account/selector";
-import { loginRequestService } from "./store/account/actions";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector } from "./store/account/selector";
+import { getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
+import { cryptoDataSelector, meta1Selector } from "./store/meta1/selector";
+import { getCryptosChangeRequest } from "./store/meta1/actions";
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -38,7 +40,13 @@ function Application(props) {
   const tokenState = useSelector(tokenSelector);
   const loaderState = useSelector(loaderSelector);
   const loginErrorState = useSelector(loginErrorSelector);
+  const isTokenValidState = useSelector(isTokenValidSelector);
+  const userDataState = useSelector(userDataSelector);
+  const errorMsgState = useSelector(errorMsgSelector);
   const demoState = useSelector(demoSelector);
+  const meta1State = useSelector(meta1Selector);
+  const cryptoDataState = useSelector(cryptoDataSelector);
+  
   const { metaUrl } = props;
   const domAccount =
     props.account !== null &&
@@ -63,7 +71,6 @@ function Application(props) {
   const [trader, setTrader] = useState(null);
   const [userImageNavbar, setUserImageNavbar] = useState(logoNavbar);
   const [userImageDefault, setUserImageDefault] = useState(logoDefalt);
-  const [cryptoData, setCryptoData] = useState({});
   const [senderApi, setSenderApi] = useState(null);
   const [portfolioReceiver, setPortfolioReceiver] = useState(null);
   const [accountName, setAccountName] = useState(domAccount);
@@ -100,7 +107,7 @@ function Application(props) {
   }
 
   const onLogin = async (login, clicked = false, password = '', fromSignUp = false) => {
-
+    setIsLoading(true);
     if (clicked) {
       await loginHandler(login, password, fromSignUp);
     }
@@ -125,10 +132,18 @@ function Application(props) {
 
   useEffect(() => {
     if (loginErrorState) {
+      setIsLoading(false);
       setLoginDataError(true);
     }
-    if(accountNameState) {
+    if (accountNameState) {
+      setLoginDataError(false);
       onLogin(accountNameState,false)
+    }
+    if (accountNameState === null) {
+      setAccountName(null);
+      setLogin(null);
+      setPortfolio(null);
+      setActiveScreen("login");
     }
   },[accountNameState, loginErrorState]);
 
@@ -142,31 +157,32 @@ function Application(props) {
     }
     return true;
   }, [activeScreen]);
-
-  async function getAvatarFromBack(login) {
-    try {
-      const data = await getUserData(login);
-      if (data['tokenExpired']) {
-        setTokenModalOpen(true);
-        setTokenModalMsg(data.responseMsg);
-        return;
-      }
-      if (data === null) return;
-      const response = await getCryptosChange();
-      setCryptoData(response);
-      if (data?.message.userAvatar != null) {
-        let avatarImage = `https://${process.env.REACT_APP_BACK_URL}/public/${data.message.userAvatar}`;
+  useEffect(()=>{
+      if (userDataState?.message.userAvatar != null) {
+        let avatarImage = `https://${process.env.REACT_APP_BACK_URL}/public/${userDataState.message.userAvatar}`;
         setUserImageDefault(avatarImage);
         setUserImageNavbar(avatarImage);
       }
-      if (data?.message?.currency === "USD") {
-      } else if (data?.message?.currency) {
+      if (userDataState?.message?.currency === "USD") {
+      } else if (userDataState?.message?.currency) {
         setUserCurrency(
-          `${crypt[data?.message?.currency][1]} ${data?.message?.currency} ${response.ExchangeRate[crypt[data?.message?.currency][0]].rate
+          `${crypt[userDataState?.message?.currency][1]} ${userDataState?.message?.currency} ${cryptoDataState.ExchangeRate[crypt[userDataState?.message?.currency][0]].rate
           }`
         );
       }
-    } catch (e) { }
+  },[cryptoDataState]);
+  useEffect(() => {
+    if (!isTokenValidState) {
+      setTokenModalOpen(true);
+      setTokenModalMsg(errorMsgState);
+    } else {
+      if (userDataState) {
+        dispatch(getCryptosChangeRequest())
+      }
+    }
+  },[userDataState, isTokenValidState]);
+  async function getAvatarFromBack(login) {
+    dispatch(getUserRequest(login));
   }
 
   useEffect(() => {
@@ -272,15 +288,6 @@ function Application(props) {
       await changeLastLocation(localStorage.getItem("login"), location);
     }
   }
-  const verifyToken = async () => {
-    const data = await getUserData(login);
-    if (data === null) return;
-    if (data['tokenExpired']) {
-      setTokenModalOpen(true);
-      setTokenModalMsg(data.responseMsg);
-      return;
-    }
-  }
 
   if (isLoading || loaderState || activeScreen == null) {
     return <MetaLoader size={"large"} />;
@@ -291,88 +298,85 @@ function Application(props) {
       <Navbar
         onClickHomeHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("login");
         }}
         onClickPortfolioHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("wallet");
         }}
         onClickExchangeHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setTradeAsset("BTC");
           setActiveScreen("exchange");
         }}
         onClickPaperWalletHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("paperWallet");
         }}
         onClickOrderTableHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("orderTable");
         }}
         onClickSettingsHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("settings");
         }}
         onClickHistoryHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("orderTable");
         }}
         portfolio={portfolio}
         name={accountName}
         activeScreen={activeScreen}
-        userIcon={userImageNavbar}
-        userIconDefault={userImageDefault}
       />
       <div className={"forAdapt"}>
         <LeftPanel
           onClickHomeHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("login");
           }}
           onClickPortfolioHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("wallet");
           }}
           onClickExchangeHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setTradeAsset("BTC");
             setActiveScreen("exchange");
           }}
           onClickPaperWalletHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("paperWallet");
           }}
           onClickOrderTableHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("orderTable");
           }}
           onClickSettingsHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("settings");
           }}
           onClickHistoryHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("orderTable");
           }}
           portfolio={portfolio}
           name={accountName}
           activeScreen={activeScreen}
-          userIcon={userImageDefault}
         />
         <div style={{ width: "100%" }} className="App">
           <div className="AppContent">
@@ -415,8 +419,6 @@ function Application(props) {
                 }}
               >
                 <Settings
-                  account={accountName}
-                  cryptoData={cryptoData}
                   fetcher={fetchDepositFn}
                   asset={tradeAsset}
                   address={""}
@@ -434,12 +436,9 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
-                  userIcon={userImageDefault}
                   getAvatarFromBack={getAvatarFromBack}
                   userCurrency={userCurrency}
                   setUserCurrency={setUserCurrency}
-                  setUserImageDefault={setUserImageDefault}
-                  setUserImageNavbar={setUserImageNavbar}
                   checkPaswordObj={checkPaswordObj}
                   setTokenModalMsg={setTokenModalMsg}
                   setTokenModalOpen={setTokenModalOpen}
@@ -830,7 +829,7 @@ function Application(props) {
             }}
           >
             <h3 style={{ textAlign: "center" }}>
-              {tokenModalMsg}. Please Login
+              {errorMsgState}. Please Login
             </h3>
           </div>
         </Modal.Content>
@@ -839,8 +838,7 @@ function Application(props) {
             style={{ backgroundColor: "#fc0", color: "white" }}
             onClick={() => {
               setTokenModalOpen(false);
-              setTokenModalMsg('');
-              window.location.reload();
+              dispatch(logoutRequest())
             }}
           >
             OK

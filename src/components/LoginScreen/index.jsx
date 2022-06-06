@@ -4,6 +4,8 @@ import "./login.css";
 import styles from "./login.module.scss";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
+import { useDispatch } from "react-redux";
+import { logoutRequest } from "../../store/account/actions";
 
 export default function LoginScreen(props) {
   const {
@@ -24,6 +26,7 @@ export default function LoginScreen(props) {
     login: false,
     password: false
   });
+  const dispatch = useDispatch();
   const handleSignUpClick = (e) => {
     e.preventDefault();
     onSignUpClick();
@@ -173,10 +176,7 @@ export default function LoginScreen(props) {
               <button
                 className={styles.Button}
                 onClick={() => {
-                  removeLoginDetail();
-                  removeAccessToken();
-                  setLocation("wallet");
-                  window.location.reload();
+                  dispatch(logoutRequest());
                 }}
                 type={"button"}
                 style={{ marginTop: "0" }}
