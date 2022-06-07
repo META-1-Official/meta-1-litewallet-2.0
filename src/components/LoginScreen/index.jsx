@@ -135,7 +135,7 @@ export default function LoginScreen(props) {
                     }
                     setPassword(e.target.value);
                   }}
-                  placeholder={"Passsword"}
+                  placeholder={"Password"}
                   value={password}
                   type="password"
                 />
