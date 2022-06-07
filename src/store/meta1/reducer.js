@@ -7,8 +7,9 @@ const initialState = {
     portfolioReceiver: null,
     trader: null,
     checkPasswordObj: null,
-    fetchDepositFn: null,
-    senderApi: null
+    senderApi: null,
+    userCurrency: '$ USD 1',
+    changeCurrency: false
 };
 
 const meta1Reducer = (state = initialState, action) => {
@@ -20,9 +21,19 @@ const meta1Reducer = (state = initialState, action) => {
         case types.GET_CRYPTOS_CHANGE_ERROR:
             return {...state, loading: false, error: true, msg: 'something went wrong' };
         case types.META1_CONNECT_SUCCESS:
-            const {portfolio, tradeWithPassword, checkPassword, sendWithPassword} = action.payload;
-            console.log(portfolio, tradeWithPassword, checkPassword, sendWithPassword);
-            return {...state  };
+            const {portfolioReceiver, trader, checkPasswordObj, senderApi} = action.payload;
+            console.log(portfolioReceiver, trader, checkPasswordObj, senderApi);
+            return {...state, portfolioReceiver, trader, checkPasswordObj, senderApi };
+        case types.SET_USER_CURRENCY:
+            return {...state, userCurrency: action.payload };
+        case types.SAVE_USER_CURRENCY_REQUEST:
+            return {...state, loading: true, error: false };
+        case types.SAVE_USER_CURRENCY_SUCCESS:
+            return {...state, loading: false, userCurrency: action.payload, changeCurrency: true };
+        case types.SAVE_USER_CURRENCY_ERROR:
+            return {...state, loading: false, error: true, msg:action.payload };
+        case types.SAVE_USER_CURRENCY_RESET:
+            return {...state, changeCurrency:false };
         default:
             return state;
     }

@@ -11,6 +11,8 @@ import { helpSendTo, helpAmount, helpMax1, helpSwap } from "../../config/help";
 import "./style.css";
 import InputAdornment from "@mui/material/InputAdornment";
 import Meta1 from "meta1-vision-dex";
+import { useSelector } from "react-redux";
+import { portfolioReceiverSelector, senderApiSelector } from "../../store/meta1/selector";
 
 const FEE = 0.0035;
 
@@ -19,15 +21,15 @@ const SendForm = React.memo((props) => {
     portfolio,
     onBackClick,
     sender,
-    sendApi,
     asset,
     onSuccessTransfer,
-    portfolioReceiver,
     assets,
     onClickExchangeEOSHandler,
     onClickExchangeUSDTHandler,
     userCurrency,
   } = props;
+  const sendApiState = useSelector(senderApiSelector);
+  const portfolioReceiverState = useSelector(portfolioReceiverSelector);
   const feeAsset = portfolio.find((asset) => asset.name === "META1");
   const amountHold =
     portfolio.find((cur) => cur.name === asset).qty == undefined
@@ -192,7 +194,7 @@ const SendForm = React.memo((props) => {
     async function fetchAccount(debouncedAccount) {
       // Сделать запрос к АП
       try {
-        await portfolioReceiver.fetch(debouncedAccount);
+        await portfolioReceiverState.fetch(debouncedAccount);
         setAccountChecked(true);
         setAccountIsLoading(false);
         if (receiver === sender) {
@@ -229,7 +231,7 @@ const SendForm = React.memo((props) => {
     setError(null);
     setInProgress(true);
     const { password, to, amount, message } = params;
-    const result = await sendApi.perform({
+    const result = await sendApiState.perform({
       password,
       to,
       amount,

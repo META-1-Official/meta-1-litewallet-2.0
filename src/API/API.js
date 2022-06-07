@@ -48,9 +48,9 @@ export async function saveUserCurrency(login, currency) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error:true };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error:true };
   }
 }
 

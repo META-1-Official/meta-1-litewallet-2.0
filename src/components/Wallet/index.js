@@ -31,7 +31,6 @@ function Wallet(props) {
     onSendClick,
     assets,
     accountName,
-    portfolioReceiver,
     setFullPorfolio,
     userCurrency,
   } = props;
@@ -76,7 +75,7 @@ function Wallet(props) {
   useEffect(() => {
     setTimeout(() => {
       document.getElementById("mainBlock").style.height = "92vh";
-    }, 50);
+    }, 700);
   }, []);
 
   const { innerWidth: width } = window;

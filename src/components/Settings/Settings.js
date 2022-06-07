@@ -13,10 +13,11 @@ import {
 } from "semantic-ui-react";
 import { saveUserCurrency } from "../../API/API";
 import { useDispatch, useSelector } from "react-redux";
-import { cryptoDataSelector } from "../../store/meta1/selector";
+import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, userCurrencySelector } from "../../store/meta1/selector";
 import { accountsSelector, profileImageSelector } from "../../store/account/selector";
 import { deleteAvatarRequest, uploadAvatarRequest } from "../../store/account/actions";
-
+import { saveUserCurrencyRequest, saveUserCurrencyReset, setUserCurrencyAction } from "../../store/meta1/actions";
+let isSet = false;
 const Settings = (props) => {
   const {
     onClickExchangeEOSHandler,
@@ -24,12 +25,13 @@ const Settings = (props) => {
     getAvatarFromBack,
     userCurrency,
     setUserCurrency,
-    checkPaswordObj,
     setTokenModalMsg,
     setTokenModalOpen
   } = props;
 
-  const [currency, setCurrency] = useState(userCurrency);
+  const checkPasswordState = useSelector(checkPasswordObjSelector);
+  const userCurrencyState = useSelector(userCurrencySelector);
+  const [currency, setCurrency] = useState(userCurrencyState);
   const [modalOpened, setModalOpened] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -41,33 +43,28 @@ const Settings = (props) => {
   const cryptoDataState = useSelector(cryptoDataSelector);
   const accountNameState = useSelector(accountsSelector);
   const profileImageState =  useSelector(profileImageSelector);
+  const changeCurrencyState = useSelector(changeCurrencySelector);
   useEffect(() => {
     setTimeout(() => {
       document.getElementById("mainBlock").style.height = "auto";
     }, 50);
   }, []);
-
   const changeCurrencyHandler = async (e) => {
     e.preventDefault();
-    const response = await saveUserCurrency(
-      localStorage.getItem("login"),
-      currency.split(" ")[1]
-    );
-    if (response.tokenExpired) {
-      setTokenModalOpen(true);
-      setTokenModalMsg(response.responseMsg);
-      return;
-    }
-    setUserCurrency(currency);
-    setModalOpened(true);
+    dispatch(saveUserCurrencyRequest({login:accountNameState,currency}));
   };
+  useEffect(()=>{
+    if (changeCurrencyState) {
+      setModalOpened(true);
+    }
+  },[changeCurrencyState]);
 
   const uploadImageValidation = async () => {
     if (!password) {
       setIsPasswordTouch(true);
       return;
     }
-    const result = await checkPaswordObj.checkPasword(password)
+    const result = await checkPasswordState.checkPasword(password)
     if (result.error !== null) {
       setPasswordError(result.error);
       return;
@@ -81,7 +78,7 @@ const Settings = (props) => {
       setIsPasswordTouch(true);
       return;
     }
-    const result = await checkPaswordObj.checkPasword(password)
+    const result = await checkPasswordState.checkPasword(password)
     if (result.error !== null) {
       setPasswordError(result.error);
       return;
@@ -138,6 +135,7 @@ const Settings = (props) => {
         open={modalOpened}
         onClose={() => {
           setModalOpened(false);
+          dispatch(saveUserCurrencyReset())
         }}
         id={"modalExch"}
       >
@@ -163,6 +161,7 @@ const Settings = (props) => {
             style={{ backgroundColor: "#fc0", color: "white" }}
             onClick={() => {
               setModalOpened(false);
+              dispatch(saveUserCurrencyReset())
             }}
           >
             OK

@@ -24,3 +24,37 @@ export const meta1ConnectSuccess = (payload) => {
         payload
     }
 }
+
+export const setUserCurrencyAction = (payload) => {
+    return {
+        type: types.SET_USER_CURRENCY,
+        payload
+    }
+}
+
+export const saveUserCurrencyRequest = (payload) => {
+    return {
+        type: types.SAVE_USER_CURRENCY_REQUEST,
+        payload
+    }
+}
+
+export const saveUserCurrencySuccess = (payload) => {
+    return {
+        type: types.SAVE_USER_CURRENCY_SUCCESS,
+        payload
+    }
+}
+
+export const saveUserCurrencyError = (payload) => {
+    return {
+        type: types.SAVE_USER_CURRENCY_ERROR,
+        payload
+    }
+}
+
+export const saveUserCurrencyReset = () => {
+    return {
+        type: types.SAVE_USER_CURRENCY_RESET
+    }
+}

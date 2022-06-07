@@ -13,7 +13,8 @@ const initialState = {
     user: null,
     isTokenValid: true,
     profileImage: logoDefault,
-    navbarProfileImage: logoNavbar
+    navbarProfileImage: logoNavbar,
+    sentMailSuccess: null
 };
 const loginDetail = getLoginDetail();
 if(loginDetail){
@@ -47,6 +48,14 @@ const accountsReducer = (state = initialState, action) => {
             return {...state, loading: true };
         case types.DELETE_AVATAR_SUCCESS:
             return {...state, loading: false, profileImage: logoDefault, navbarProfileImage: logoNavbar };
+        case types.SEND_MAIL_REQUEST:
+            return {...state, loading: true, sentMailSuccess: null };
+        case types.SEND_MAIL_SUCCESS:
+                return {...state, loading: false, sentMailSuccess: true };
+        case types.SEND_MAIL_ERROR:
+            return {...state, loading: false, sentMailSuccess: false };
+        case types.SEND_MAIL_RESET:
+            return {...state, loading: false, sentMailSuccess: null };
         default:
             return state;
     }

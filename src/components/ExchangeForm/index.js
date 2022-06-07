@@ -19,18 +19,19 @@ import Meta1 from "meta1-vision-dex";
 import InputAdornment from "@mui/material/InputAdornment";
 import leftArrow from "../../images/exchangeAssets/Shape Left.png";
 import rightArrow from "../../images/exchangeAssets/Shape 2 copy 2.png";
+import { useSelector } from "react-redux";
+import { traderSelector } from "../../store/meta1/selector";
 
 export default function ExchangeForm(props) {
   const {
     onSuccessModal,
-    trader,
     asset,
     onBackClick,
     metaUrl,
-    portfolioReceiver,
     onSuccessTrade,
     userCurrency,
   } = props;
+  const traderState = useSelector(traderSelector);
   const [portfolio, setPortfolio] = useState(props.portfolio);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
     useState(false);
@@ -310,7 +311,7 @@ export default function ExchangeForm(props) {
       setTradeInProgress(true);
       setPasswordShouldBeProvided(false);
 
-      const buyResult = await trader.perform({
+      const buyResult = await traderState.perform({
         from: selectedFrom.value,
         to: selectedTo.value.trim(),
         amount: selectedToAmount,

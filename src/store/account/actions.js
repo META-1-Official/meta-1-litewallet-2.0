@@ -78,3 +78,27 @@ export const deleteAvatarSuccess = (payload) => {
     }
 }
 
+export const sendMailRequest = (payload) => {
+    return {
+        type: types.SEND_MAIL_REQUEST,
+        payload
+    }
+}
+
+export const sendMailSuccess = () => {
+    return {
+        type: types.SEND_MAIL_SUCCESS
+    }
+}
+
+export const sendMailError = () => {
+    return {
+        type: types.SEND_MAIL_ERROR
+    }
+}
+
+export const sendMailReset = () => {
+    return {
+        type: types.SEND_MAIL_RESET
+    }
+}

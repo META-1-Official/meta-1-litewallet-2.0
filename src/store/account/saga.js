@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
-import { deleteAvatar, getUserData, loginRequest, uploadAvatar } from '../../API/API';
+import { deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar } from '../../API/API';
 import { setAccessToken, setLoginDetail } from '../../utils/localstorage';
-import { deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, uploadAvatarSuccess } from './actions';
+import { deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess } from './actions';
 import * as types from './types';
 function* loginHandler(data) {
     try {
@@ -20,11 +20,10 @@ function* loginHandler(data) {
 }
 function* getUserHandler(data) {
     const response = yield call(getUserData,data.payload);
-    console.log("response",response);
     if (response['tokenExpired']) {
         yield put(getUserError({msg: response.responseMsg}));
     } else {
-        if (response?.message.userAvatar != null) {
+        if (response?.message?.userAvatar != null) {
             let avatarImage = `https://${process.env.REACT_APP_BACK_URL}/public/${response.message.userAvatar}`;
             yield put(getUserSuccess({user: response,avatarImage }));
         } else {
@@ -34,7 +33,6 @@ function* getUserHandler(data) {
 }
 function* uploadAvatarHandler(data) {
     const response = yield call(uploadAvatar, data.payload);
-    console.log("response",response);
     if (response['tokenExpired']) {
         yield put(getUserError({msg: response.responseMsg}));
     } else {
@@ -44,11 +42,23 @@ function* uploadAvatarHandler(data) {
 }
 function* deleteAvatarHandler(data) {
     const response = yield call(deleteAvatar, data.payload);
-    console.log("response",response);
     if (response['tokenExpired']) {
         yield put(getUserError({msg: response.responseMsg}));
     } else {
         yield put(deleteAvatarSuccess());
+    }
+}
+function* sendMailHandler(data) {
+    const response = yield call(sendEmail, data.payload.emailType, data.payload.emailData);
+    if (response.success === 'success') {
+        yield put(sendMailSuccess());
+    } else {
+        if (response['tokenExpired']) {
+            yield put(getUserError({msg: response.responseMsg}));
+        } else {
+            alert("Oops, something went wrong. Try again");
+            yield put(sendMailError());
+        }
     }
 }
 export function* waitForAccount() {
@@ -56,4 +66,5 @@ export function* waitForAccount() {
     yield takeEvery(types.GET_USER_REQUEST, getUserHandler);
     yield takeEvery(types.UPLOAD_AVATAR_REQUEST, uploadAvatarHandler);
     yield takeEvery(types.DELETE_AVATAR_REQUEST, deleteAvatarHandler);
+    yield takeEvery(types.SEND_MAIL_REQUEST, sendMailHandler);
 }
