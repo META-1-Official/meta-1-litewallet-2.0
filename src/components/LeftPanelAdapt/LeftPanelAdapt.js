@@ -2,8 +2,11 @@ import * as React from "react";
 import styles from "./LeftPanelAdapt.module.scss";
 import "./LeftPanelAdapt.css";
 import user from "../../images/default-pic1.png";
+import { profileImageSelector } from "../../store/account/selector";
+import { useSelector } from "react-redux";
 
 const LeftPanelAdapt = (props) => {
+  const profileImageState =  useSelector(profileImageSelector);
   const {
     onClickHomeHandler,
     onClickPortfolioHandler,
@@ -13,8 +16,7 @@ const LeftPanelAdapt = (props) => {
     onClickSettingsHandler,
     onClickHistoryHandler,
     portfolio,
-    name,
-    userIcon,
+    name
   } = props;
 
   return (
@@ -25,7 +27,7 @@ const LeftPanelAdapt = (props) => {
             <img
               className={styles.imageUser}
               id="leftAvatarAdapt"
-              src={userIcon}
+              src={profileImageState}
               alt="user"
             />
           </div>

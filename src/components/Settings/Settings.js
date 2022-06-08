@@ -11,29 +11,27 @@ import {
   Label,
   Popup,
 } from "semantic-ui-react";
-import { saveUserCurrency, deleteAvatar } from "../../API/API";
-import logoNavbar from "../../images/default-pic2.png";
-import logoDefalt from "../../images/default-pic1.png";
-import { getAccessToken, tokenFail } from "../../utils/localstorage";
-
+import { saveUserCurrency } from "../../API/API";
+import { useDispatch, useSelector } from "react-redux";
+import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, userCurrencySelector } from "../../store/meta1/selector";
+import { accountsSelector, profileImageSelector } from "../../store/account/selector";
+import { deleteAvatarRequest, uploadAvatarRequest } from "../../store/account/actions";
+import { saveUserCurrencyRequest, saveUserCurrencyReset, setUserCurrencyAction } from "../../store/meta1/actions";
+let isSet = false;
 const Settings = (props) => {
   const {
     onClickExchangeEOSHandler,
     onClickExchangeUSDTHandler,
-    account,
-    cryptoData,
-    userIcon,
     getAvatarFromBack,
     userCurrency,
     setUserCurrency,
-    setUserImageDefault,
-    setUserImageNavbar,
-    checkPaswordObj,
     setTokenModalMsg,
     setTokenModalOpen
   } = props;
 
-  const [currency, setCurrency] = useState(userCurrency);
+  const checkPasswordState = useSelector(checkPasswordObjSelector);
+  const userCurrencyState = useSelector(userCurrencySelector);
+  const [currency, setCurrency] = useState(userCurrencyState);
   const [modalOpened, setModalOpened] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -41,45 +39,32 @@ const Settings = (props) => {
   const [isRemoveBtn, setIsRemoveBtn] = useState(false);
   const [isPasswordTouch, setIsPasswordTouch] = useState(false);
   const imageRef = useRef();
-
+  const dispatch = useDispatch();
+  const cryptoDataState = useSelector(cryptoDataSelector);
+  const accountNameState = useSelector(accountsSelector);
+  const profileImageState =  useSelector(profileImageSelector);
+  const changeCurrencyState = useSelector(changeCurrencySelector);
   useEffect(() => {
     setTimeout(() => {
       document.getElementById("mainBlock").style.height = "auto";
     }, 50);
   }, []);
-
   const changeCurrencyHandler = async (e) => {
     e.preventDefault();
-    const response = await saveUserCurrency(
-      localStorage.getItem("login"),
-      currency.split(" ")[1]
-    );
-    if (response.tokenExpired) {
-      setTokenModalOpen(true);
-      setTokenModalMsg(response.responseMsg);
-      return;
-    }
-    setUserCurrency(currency);
-    setModalOpened(true);
+    dispatch(saveUserCurrencyRequest({login:accountNameState,currency}));
   };
-
-  async function removePhoto() {
-    const response = await deleteAvatar(localStorage.getItem("login"));
-    if (response.tokenExpired) {
-      setTokenModalOpen(true);
-      setTokenModalMsg(response.responseMsg);
-      return;
+  useEffect(()=>{
+    if (changeCurrencyState) {
+      setModalOpened(true);
     }
-    setUserImageDefault(logoDefalt);
-    setUserImageNavbar(logoNavbar);
-  }
+  },[changeCurrencyState]);
 
   const uploadImageValidation = async () => {
     if (!password) {
       setIsPasswordTouch(true);
       return;
     }
-    const result = await checkPaswordObj.checkPasword(password)
+    const result = await checkPasswordState.checkPasword(password)
     if (result.error !== null) {
       setPasswordError(result.error);
       return;
@@ -93,12 +78,12 @@ const Settings = (props) => {
       setIsPasswordTouch(true);
       return;
     }
-    const result = await checkPaswordObj.checkPasword(password)
+    const result = await checkPasswordState.checkPasword(password)
     if (result.error !== null) {
       setPasswordError(result.error);
       return;
     }
-    removePhoto();
+    dispatch(deleteAvatarRequest(accountNameState))
     closePasswordSectionHandler(false);
   }
 
@@ -113,31 +98,12 @@ const Settings = (props) => {
           e.target?.files[0]?.size < 1000000
         ) {
           const formData = new FormData();
-          formData.append("login", account);
+          formData.append("login", accountNameState);
           formData.append(
             "file",
             document.getElementById("file_upload")?.files[0]
           );
-          try {
-            const { data } = await axios.post(
-              `https://${process.env.REACT_APP_BACK_URL}/saveAvatar`,
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                  'Authorization': 'Bearer ' + getAccessToken()
-                },
-              }
-            );
-            setUserImageDefault(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
-            setUserImageNavbar(`https://${process.env.REACT_APP_BACK_URL}/public/${data.message}`);
-          } catch (err) {
-            if (err.response.data.error.toLowerCase() == 'unauthorized') {
-              tokenFail();
-              setTokenModalOpen(true);
-              setTokenModalMsg("Authentication failed");
-            }
-          }
+          dispatch(uploadAvatarRequest(formData));
         } else {
           alert("Invalid file size");
         }
@@ -169,6 +135,7 @@ const Settings = (props) => {
         open={modalOpened}
         onClose={() => {
           setModalOpened(false);
+          dispatch(saveUserCurrencyReset())
         }}
         id={"modalExch"}
       >
@@ -194,6 +161,7 @@ const Settings = (props) => {
             style={{ backgroundColor: "#fc0", color: "white" }}
             onClick={() => {
               setModalOpened(false);
+              dispatch(saveUserCurrencyReset())
             }}
           >
             OK
@@ -217,7 +185,7 @@ const Settings = (props) => {
                 <div className={styles.imgChangeBlock}>
                   <div className={styles.userNewImgBlock}>
                     <img
-                      src={userIcon}
+                      src={profileImageState}
                       id="imageUser"
                       style={{
                         width: "140px",
@@ -308,7 +276,7 @@ const Settings = (props) => {
                     <input
                       type={"text"}
                       className={styles.input}
-                      placeholder={account}
+                      placeholder={accountNameState}
                       name={"login"}
                       disabled
                     />
@@ -351,17 +319,17 @@ const Settings = (props) => {
                     value={currency}
                   >
                     <option value="$ USD 1">$ (USD)</option>
-                    <option value={`€ EUR ${cryptoData.ExchangeRate[0].rate}`}>
+                    <option value={`€ EUR ${cryptoDataState.ExchangeRate[0].rate}`}>
                       € (EUR)
                     </option>
-                    <option value={`£ GBP ${cryptoData.ExchangeRate[1].rate}`}>
+                    <option value={`£ GBP ${cryptoDataState.ExchangeRate[1].rate}`}>
                       £ (GBP)
                     </option>
-                    <option value={`₽ RUB ${cryptoData.ExchangeRate[2].rate}`}>
+                    <option value={`₽ RUB ${cryptoDataState.ExchangeRate[2].rate}`}>
                       ₽ (RUB)
                     </option>
                     <option
-                      value={`CA$ CAD ${cryptoData.ExchangeRate[3].rate}`}
+                      value={`CA$ CAD ${cryptoDataState.ExchangeRate[3].rate}`}
                     >
                       CA$ (CAD)
                     </option>

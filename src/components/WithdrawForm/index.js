@@ -17,6 +17,9 @@ import styles from "../ExchangeForm/ExchangeForm.module.scss";
 import { helpWithdrawInput, helpMax1 } from "../../config/help";
 import MetaLoader from "../../UI/loader/Loader";
 import { trim } from "../../helpers/string";
+import { useDispatch, useSelector } from "react-redux";
+import { sendEmailSelector } from "../../store/account/selector";
+import { sendMailRequest, sendMailReset } from "../../store/account/actions";
 
 const WITHDRAW_ASSETS = ['ETH', 'USDT']
 
@@ -31,7 +34,7 @@ const MIN_WITHDRAW_AMOUNT = {
 };
 
 const WithdrawForm = (props) => {
-  const { sendEmail, account, onBackClick, userCurrency, asset } = props;
+  const {onBackClick, userCurrency, asset } = props;
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFrom, setSelectedFrom] = useState(props.selectedFrom);
   const [selectedFromAmount, setSelectedFromAmount] = useState("");
@@ -49,7 +52,8 @@ const WithdrawForm = (props) => {
   const [toAddress, setToAddress] = useState("");
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isValidCurrency, setIsValidCurrency] = useState(false);
-
+  const sendEmailState = useSelector(sendEmailSelector);
+  const dispatch = useDispatch();
   const ariaLabel = { "aria-label": "description" };
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
@@ -190,7 +194,6 @@ const WithdrawForm = (props) => {
   const onClickWithdraw = (e) => {
     e.preventDefault();
 
-    setIsLoading(true);
     const emailType = "withdraw";
     const emailData = {
       accountName: props.accountName,
@@ -200,28 +203,21 @@ const WithdrawForm = (props) => {
       amount: selectedFromAmount,
       toAddress: trim(toAddress)
     };
-    sendEmail(emailType, emailData)
-      .then((res) => {
-        if (res.success === 'success') {
-          setIsLoading(false);
-          alert("Email sent, awesome!");
-          // Reset form inputs
-          setName('');
-          setEmailAddress('');
-          setSelectedFromAmount(NaN);
-          setBlockPrice(NaN);
-          setToAddress('');
-        } else {
-          if (res.tokenExpired) {
-            props.setTokenModalMsg(res.responseMsg);
-            props.setTokenModalOpen(true);
-            return;
-          }
-          setIsLoading(false);
-          alert("Oops, something went wrong. Try again");
-        }
-      })
+    dispatch(sendMailRequest({emailType,emailData}))
   }
+
+  useEffect(()=>{
+    if (sendEmailState) {
+      alert("Email sent, awesome!");
+      // Reset form inputs
+      setName('');
+      setEmailAddress('');
+      setSelectedFromAmount(NaN);
+      setBlockPrice(NaN);
+      setToAddress('');
+      dispatch(sendMailReset());
+    }
+  }, [sendEmailState]);
 
   if (selectedFrom == null) return null;
 

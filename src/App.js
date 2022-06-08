@@ -5,7 +5,7 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { getCryptosChange, loginRequest } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { getUserData, changeLastLocation, getLastLocation, sendEmail } from "./API/API";
+import { getUserData, changeLastLocation, getLastLocation } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import WithdrawForm from "./components/WithdrawForm";
@@ -28,9 +28,30 @@ import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, setAccessToken } from "./utils/localstorage";
+import { useDispatch, useSelector } from "react-redux";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector } from "./store/account/selector";
+import { getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
+import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
+import { getCryptosChangeRequest, meta1ConnectSuccess, setUserCurrencyAction } from "./store/meta1/actions";
 
 window.Meta1 = Meta1;
 function Application(props) {
+  const accountNameState = useSelector(accountsSelector);
+  const tokenState = useSelector(tokenSelector);
+  const loaderState = useSelector(loaderSelector);
+  const loginErrorState = useSelector(loginErrorSelector);
+  const isTokenValidState = useSelector(isTokenValidSelector);
+  const userDataState = useSelector(userDataSelector);
+  const errorMsgState = useSelector(errorMsgSelector);
+  const demoState = useSelector(demoSelector);
+  const meta1State = useSelector(meta1Selector);
+  const cryptoDataState = useSelector(cryptoDataSelector);
+
+  const portfolioReceiverState = useSelector(portfolioReceiverSelector);
+  const traderState = useSelector(traderSelector);
+  const checkPasswordObjState = useSelector(checkPasswordObjSelector);
+  const senderApiState = useSelector(senderApiSelector);
+
   const { metaUrl } = props;
   const domAccount =
     props.account !== null &&
@@ -52,14 +73,7 @@ function Application(props) {
   const [fetchDepositFn, setFetchDepositFn] = useState(null);
   const [activeScreen, setActiveScreen] = useState(null);
   const [account, setAccount] = useState(null);
-  const [trader, setTrader] = useState(null);
-  const [userImageNavbar, setUserImageNavbar] = useState(logoNavbar);
-  const [userImageDefault, setUserImageDefault] = useState(logoDefalt);
-  const [cryptoData, setCryptoData] = useState({});
-  const [senderApi, setSenderApi] = useState(null);
-  const [portfolioReceiver, setPortfolioReceiver] = useState(null);
   const [accountName, setAccountName] = useState(domAccount);
-  const [checkPaswordObj, setCheckPaswordObj] = useState(null);
   const [password, setPassword] = useState(
     window.localStorage.getItem("password")
   );
@@ -74,11 +88,13 @@ function Application(props) {
   };
   const [login, setLogin] = useState(localStorage.getItem("login"));
   const [loginError, setLoginError] = useState(null);
-  const [loginDataError, setLoginDataError] = useState(null);
+  const [loginDataError, setLoginDataError] = useState(false);
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
   const [tokenModalMsg, setTokenModalMsg] = useState('');
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
   const [refreshData, setRefreshData] = useState(false);
+  const [fromSignUp, setFromSignUp] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (login !== null) {
@@ -86,21 +102,10 @@ function Application(props) {
     }
   }, []);
 
-  const loginHandler = async (login, password, fromSignUp= false) => {
-    setIsLoading(true)
-    const response = await loginRequest(login, password);
-    if (response.error) {
-      setIsLoading(false);
-      setLoginDataError(true);
-    } else {
-      setAccessToken(response.token);
-    }
-  }
-
-  const onLogin = async (login, clicked = false, password = '', fromSignUp = false) => {
-
+  const onLogin = async (login, clicked = false, password = '', fromSignUpFlag = false) => {
+    setIsLoading(true);
     if (clicked) {
-      await loginHandler(login, password, fromSignUp);
+      dispatch(loginRequestService({login ,password, setLoginDataError}));
     }
     if (getAccessToken()) {
       await getAvatarFromBack(login);
@@ -112,14 +117,35 @@ function Application(props) {
         setLoginError(true);
       }
       setIsLoading(false);
-      if (fromSignUp) {
-        setUserImageDefault(logoDefalt);
-        setUserImageNavbar(logoNavbar);
-        setPortfolio(null);
-        setRefreshData(prev=>!prev);
+      if (fromSignUpFlag) {
+        setFromSignUp(prev => {
+          return true
+        });
       }
     }
   };
+
+  useEffect(() => {
+    if (loginErrorState) {
+      setIsLoading(false);
+      setLoginDataError(true);
+    }
+    if (accountNameState) {
+      setLoginDataError(false);
+      onLogin(accountNameState,false)
+      if (fromSignUp) {
+        setPortfolio(null);
+        setRefreshData(prev=>!prev);
+        setFromSignUp(false);
+      }
+    }
+    if (accountNameState === null) {
+      setAccountName(null);
+      setLogin(null);
+      setPortfolio(null);
+      setActiveScreen("login");
+    }
+  },[accountNameState, loginErrorState]);
 
   const loc = React.useMemo(() => {
     if (
@@ -131,44 +157,39 @@ function Application(props) {
     }
     return true;
   }, [activeScreen]);
-
-  async function getAvatarFromBack(login) {
-    try {
-      const data = await getUserData(login);
-      if (data['tokenExpired']) {
-        setTokenModalOpen(true);
-        setTokenModalMsg(data.responseMsg);
-        return;
-      }
-      if (data === null) return;
-      const response = await getCryptosChange();
-      setCryptoData(response);
-      if (data?.message.userAvatar != null) {
-        let avatarImage = `https://${process.env.REACT_APP_BACK_URL}/public/${data.message.userAvatar}`;
-        setUserImageDefault(avatarImage);
-        setUserImageNavbar(avatarImage);
-      }
-      if (data?.message?.currency === "USD") {
-      } else if (data?.message?.currency) {
-        setUserCurrency(
-          `${crypt[data?.message?.currency][1]} ${data?.message?.currency} ${response.ExchangeRate[crypt[data?.message?.currency][0]].rate
+  useEffect(()=>{
+      if (userDataState?.message?.currency === "USD") {
+      } else if (userDataState?.message?.currency) {
+          const userCurrencyData = `${crypt[userDataState?.message?.currency][1]} ${userDataState?.message?.currency} ${cryptoDataState.ExchangeRate[crypt[userDataState?.message?.currency][0]].rate
           }`
-        );
+          dispatch(setUserCurrencyAction(userCurrencyData))
       }
-    } catch (e) { }
+  },[cryptoDataState]);
+  useEffect(() => {
+    if (!isTokenValidState) {
+      setTokenModalOpen(true);
+      setTokenModalMsg(errorMsgState);
+    } else {
+      if (userDataState) {
+        dispatch(getCryptosChangeRequest())
+      }
+    }
+  },[userDataState, isTokenValidState]);
+  async function getAvatarFromBack(login) {
+    dispatch(getUserRequest(login));
   }
 
   useEffect(() => {
     async function fetchPortfolio() {
-      if (portfolioReceiver === null) return;
+      if (portfolioReceiverState === null) return;
       if (portfolio !== null) return;
-      if (accountName === null || accountName.length === 0) return;
+      if (accountNameState === null || accountNameState.length === 0) return;
       try {
-        const fetched = await portfolioReceiver.fetch();
+        const fetched = await portfolioReceiverState.fetch();
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
-        localStorage.setItem("account", accountName);
+        localStorage.setItem("account", accountNameState);
         setActiveScreen(
           sessionStorage.getItem("location") != null
             ? sessionStorage.getItem("location")
@@ -179,7 +200,7 @@ function Application(props) {
       }
     }
     fetchPortfolio();
-  }, [portfolioReceiver, portfolio, accountName, refreshData ]);
+  }, [portfolioReceiverState, portfolio, accountName, refreshData ]);
 
   useEffect(() => {
     async function connect() {
@@ -188,8 +209,8 @@ function Application(props) {
         () => {
           setIsLoading(false);
           if (
-            accountName == null ||
-            accountName.length === 0 ||
+            accountNameState == null ||
+            accountNameState.length === 0 ||
             !localStorage.getItem("login")
           ) {
             setActiveScreen("login");
@@ -200,35 +221,60 @@ function Application(props) {
                 : "wallet"
             );
 
-            setPortfolioReceiver(
-              new Portfolio({
-                metaApi: Meta1,
-                accountName: accountName,
-              })
-            );
-            setTrader(
-              new TradeWithPassword({
-                metaApi: Meta1,
-                login: accountName,
-              })
-            );
-            setCheckPaswordObj(
-              new CheckPassword({
-                metaApi: Meta1,
-                login: accountName,
-              })
-            );
+            // setPortfolioReceiver(
+            //   new Portfolio({
+            //     metaApi: Meta1,
+            //     accountName: accountName,
+            //   })
+            // );
+            // setTrader(
+            //   new TradeWithPassword({
+            //     metaApi: Meta1,
+            //     login: accountName,
+            //   })
+            // );
+            // setCheckPaswordObj(
+            //   new CheckPassword({
+            //     metaApi: Meta1,
+            //     login: accountName,
+            //   })
+            // );
 
             setFetchDepositFn((asset) => (asset) => {
-              return fetchDepositAddress({ accountName, asset });
+              return fetchDepositAddress({ accountNameState, asset });
             });
 
-            setSenderApi(
-              new SendWithPassword({
-                metaApi: Meta1,
-                login: accountName,
-              })
-            );
+            // setSenderApi(
+            //   new SendWithPassword({
+            //     metaApi: Meta1,
+            //     login: accountName,
+            //   })
+            // );
+            const portfolioObj = new Portfolio({
+              metaApi: Meta1,
+              accountName: accountNameState,
+            });
+            const tradeWithPasswordObj = new TradeWithPassword({
+              metaApi: Meta1,
+              login: accountNameState,
+            });
+
+            const checkPasswordObj = new CheckPassword({
+              metaApi: Meta1,
+              login: accountNameState,
+            });
+          
+            const sendWithPasswordObj = new SendWithPassword({
+              metaApi: Meta1,
+              login: accountNameState,
+            });
+            const obj = { 
+                portfolioReceiver: portfolioObj,
+                trader: tradeWithPasswordObj,
+                checkPasswordObj,
+                senderApi: sendWithPasswordObj
+            };
+            dispatch(meta1ConnectSuccess(obj))
           }
         },
         () => {
@@ -238,11 +284,11 @@ function Application(props) {
       );
     }
     connect();
-  }, [accountName]);
+  }, [accountNameState]);
 
   function refetchPortfolio() {
     setTimeout(async () => {
-      const fetched = await portfolioReceiver.fetch();
+      const fetched = await portfolioReceiverState.fetch();
       setPortfolio(fetched.portfolio);
       setFullPortfolio(fetched.full);
     }, 2000);
@@ -261,17 +307,8 @@ function Application(props) {
       await changeLastLocation(localStorage.getItem("login"), location);
     }
   }
-  const verifyToken = async () => {
-    const data = await getUserData(login);
-    if (data === null) return;
-    if (data['tokenExpired']) {
-      setTokenModalOpen(true);
-      setTokenModalMsg(data.responseMsg);
-      return;
-    }
-  }
 
-  if (isLoading || activeScreen == null) {
+  if (isLoading || loaderState || activeScreen == null) {
     return <MetaLoader size={"large"} />;
   }
 
@@ -280,88 +317,85 @@ function Application(props) {
       <Navbar
         onClickHomeHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("login");
         }}
         onClickPortfolioHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("wallet");
         }}
         onClickExchangeHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setTradeAsset("BTC");
           setActiveScreen("exchange");
         }}
         onClickPaperWalletHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("paperWallet");
         }}
         onClickOrderTableHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("orderTable");
         }}
         onClickSettingsHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("settings");
         }}
         onClickHistoryHandler={(e) => {
           e.preventDefault();
-          verifyToken();
+          dispatch(getUserRequest(login));
           setActiveScreen("orderTable");
         }}
         portfolio={portfolio}
         name={accountName}
         activeScreen={activeScreen}
-        userIcon={userImageNavbar}
-        userIconDefault={userImageDefault}
       />
       <div className={"forAdapt"}>
         <LeftPanel
           onClickHomeHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("login");
           }}
           onClickPortfolioHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("wallet");
           }}
           onClickExchangeHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setTradeAsset("BTC");
             setActiveScreen("exchange");
           }}
           onClickPaperWalletHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("paperWallet");
           }}
           onClickOrderTableHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("orderTable");
           }}
           onClickSettingsHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("settings");
           }}
           onClickHistoryHandler={(e) => {
             e.preventDefault();
-            verifyToken();
+            dispatch(getUserRequest(login));
             setActiveScreen("orderTable");
           }}
           portfolio={portfolio}
           name={accountName}
           activeScreen={activeScreen}
-          userIcon={userImageDefault}
         />
         <div style={{ width: "100%" }} className="App">
           <div className="AppContent">
@@ -404,8 +438,6 @@ function Application(props) {
                 }}
               >
                 <Settings
-                  account={accountName}
-                  cryptoData={cryptoData}
                   fetcher={fetchDepositFn}
                   asset={tradeAsset}
                   address={""}
@@ -423,13 +455,9 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
-                  userIcon={userImageDefault}
                   getAvatarFromBack={getAvatarFromBack}
                   userCurrency={userCurrency}
                   setUserCurrency={setUserCurrency}
-                  setUserImageDefault={setUserImageDefault}
-                  setUserImageNavbar={setUserImageNavbar}
-                  checkPaswordObj={checkPaswordObj}
                   setTokenModalMsg={setTokenModalMsg}
                   setTokenModalOpen={setTokenModalOpen}
                 />
@@ -456,12 +484,10 @@ function Application(props) {
                     setActiveScreen("wallet");
                   }}
                   onSuccessModal={() => setActiveScreen("wallet")}
-                  portfolioReceiver={portfolioReceiver}
                   onSuccessTrade={() => {
                     setPortfolio(null);
                     refetchPortfolio();
                   }}
-                  trader={trader}
                   portfolio={portfolio}
                   asset={tradeAsset}
                   metaUrl={metaUrl}
@@ -500,6 +526,7 @@ function Application(props) {
                   onSignUpClick={() => setActiveScreen("registration")}
                   error={loginError}
                   loginDataError={loginDataError}
+                  setLoginDataError={setLoginDataError}
                   onSubmit={onLogin}
                   portfolio={portfolio}
                   onClickExchangeUSDTHandler={(e) => {
@@ -532,7 +559,7 @@ function Application(props) {
                 }}
               >
                 <SendForm
-                  portfolioReceiver={portfolioReceiver}
+
                   onBackClick={(e) => {
                     e.preventDefault();
                     setActiveScreen("wallet");
@@ -544,7 +571,6 @@ function Application(props) {
                     refetchPortfolio();
                   }}
                   asset={tradeAsset}
-                  sendApi={senderApi}
                   sender={accountName}
                   assets={assets}
                   onClickExchangeUSDTHandler={(e) => {
@@ -608,7 +634,6 @@ function Application(props) {
                 <WithdrawForm
                   account={account}
                   accountName={accountName}
-                  sendEmail={sendEmail}
                   asset={tradeAsset}
                   assets={assets}
                   portfolio={portfolio}
@@ -656,7 +681,6 @@ function Application(props) {
                       >
                         <Wallet
                           assets={assets}
-                          portfolioReceiver={portfolioReceiver}
                           portfolio={portfolioFull}
                           tradeAsset={tradeAsset}
                           onSendClick={(assetName) => {
@@ -733,7 +757,7 @@ function Application(props) {
                       </h5>
                     </div>
                     <div className={"paperWalletStyles"}>
-                      <PaperWalletLogin portfolioReceiver={portfolioReceiver} />
+                      <PaperWalletLogin />
                     </div>
                   </div>
                   <Footer
@@ -818,7 +842,7 @@ function Application(props) {
             }}
           >
             <h3 style={{ textAlign: "center" }}>
-              {tokenModalMsg}. Please Login
+              {errorMsgState}. Please Login
             </h3>
           </div>
         </Modal.Content>
@@ -827,8 +851,7 @@ function Application(props) {
             style={{ backgroundColor: "#fc0", color: "white" }}
             onClick={() => {
               setTokenModalOpen(false);
-              setTokenModalMsg('');
-              window.location.reload();
+              dispatch(logoutRequest())
             }}
           >
             OK

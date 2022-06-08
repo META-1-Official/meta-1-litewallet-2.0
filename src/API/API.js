@@ -48,6 +48,28 @@ export async function saveUserCurrency(login, currency) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error:true };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error:true };
+  }
+}
+
+export async function uploadAvatar(formData) {
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + getAccessToken(),
+      "Content-Type": "multipart/form-data",
+    }
+  }
+  try {
+    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/saveAvatar`,
+      formData,
+      config
+    );
+    return data;
+  } catch (err) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
