@@ -22,7 +22,6 @@ const meta1Reducer = (state = initialState, action) => {
             return {...state, loading: false, error: true, msg: 'something went wrong' };
         case types.META1_CONNECT_SUCCESS:
             const {portfolioReceiver, trader, checkPasswordObj, senderApi} = action.payload;
-            console.log(portfolioReceiver, trader, checkPasswordObj, senderApi);
             return {...state, portfolioReceiver, trader, checkPasswordObj, senderApi };
         case types.SET_USER_CURRENCY:
             return {...state, userCurrency: action.payload };
