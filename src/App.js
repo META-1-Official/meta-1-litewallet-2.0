@@ -782,7 +782,7 @@ function Application(props) {
                   <div>
                     <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
-                        <strong></strong>
+                        <strong>Transfer History</strong>
                       </h5>
                     </div>
                     <div className={"justFlexAndDirect"}>
