@@ -20,6 +20,7 @@ import { trim } from "../../helpers/string";
 import { useDispatch, useSelector } from "react-redux";
 import { sendEmailSelector } from "../../store/account/selector";
 import { sendMailRequest, sendMailReset } from "../../store/account/actions";
+import { userCurrencySelector } from "../../store/meta1/selector";
 
 const WITHDRAW_ASSETS = ['ETH', 'USDT']
 
@@ -34,7 +35,8 @@ const MIN_WITHDRAW_AMOUNT = {
 };
 
 const WithdrawForm = (props) => {
-  const {onBackClick, userCurrency, asset } = props;
+  const {onBackClick, asset } = props;
+  const userCurrencyState = useSelector(userCurrencySelector);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFrom, setSelectedFrom] = useState(props.selectedFrom);
   const [selectedFromAmount, setSelectedFromAmount] = useState("");
@@ -98,7 +100,7 @@ const WithdrawForm = (props) => {
       console.log("@1 - ", selectedFromAmount === 0)
       if (parseFloat(selectedFrom.balance) < parseFloat(selectedFromAmount)) {
         setAmountError('Amount exceeded the balance.');
-      } else if (parseFloat(MIN_WITHDRAW_AMOUNT['USDT']) > parseFloat(blockPrice)) {
+      } else if (parseFloat(MIN_WITHDRAW_AMOUNT['USDT']) > parseFloat(blockPrice)/userCurrencyState.split(' ')[2]) {
         setAmountError('Amount is too small.');
       } else {
         setAmountError('');
@@ -163,14 +165,14 @@ const WithdrawForm = (props) => {
       let priceForOne = (
         Number(document.getElementById("inputAmount").value) * priceForAsset
       ).toFixed(3);
-      setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
+      setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
     }, 25);
   };
 
   const calculateUsdPriceHandler = (e) => {
     if (e.target.value.length != 0) {
       const priceForOne = (Number(e.target.value) * priceForAsset).toFixed(2);
-      setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
+      setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
     } else {
       setBlockPrice(NaN);
     }
@@ -183,7 +185,7 @@ const WithdrawForm = (props) => {
       let priceForOne = (
         Number(e.target.value) /
         priceForAsset /
-        Number(userCurrency.split(" ")[2])
+        Number(userCurrencyState.split(" ")[2])
       ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
       setSelectedFromAmount(priceForOne);
     } else {
@@ -387,7 +389,7 @@ const WithdrawForm = (props) => {
                           inputMode="numeric"
                           pattern="\d*"
                           type={"number"}
-                          placeholder={`Amount ${userCurrency.split(" ")[1]
+                          placeholder={`Amount ${userCurrencyState.split(" ")[1]
                             }`}
                           disabled={invalidEx}
                           style={
@@ -395,7 +397,7 @@ const WithdrawForm = (props) => {
                           }
                           value={blockPrice}
                         />
-                        <span>{userCurrency.split(" ")[0]}</span>
+                        <span>{userCurrencyState.split(" ")[0]}</span>
                       </div>
                     </div>
                   }
