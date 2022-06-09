@@ -637,7 +637,6 @@ function Application(props) {
                   asset={tradeAsset}
                   assets={assets}
                   portfolio={portfolio}
-                  userCurrency={userCurrency}
                   onBackClick={(e) => {
                     e.preventDefault();
                     setActiveScreen("wallet");

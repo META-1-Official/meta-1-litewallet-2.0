@@ -13,6 +13,8 @@ import Meta1 from "meta1-vision-dex";
 
 import { useQuery } from "react-query";
 import { removeExponent } from "../../utils/commonFunction";
+import { userCurrencySelector } from "../../store/meta1/selector";
+import { useSelector } from "react-redux";
 
 const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
@@ -27,7 +29,7 @@ const PortfolioTable = React.memo((props) => {
     userCurrency,
     isCurrencySelected
   } = props;
-
+  const userCurrencyState = useSelector(userCurrencySelector);
   const { data, isLoading, error } = useQuery("cryptosTable", getDatas);
 
   async function getDatas() {
@@ -122,7 +124,7 @@ const PortfolioTable = React.memo((props) => {
             <StyledTableCell>
               <div className="text-left" style={{ width: "6rem" }}>
                 <div className="table_title" id={"valueTitle"}>
-                  {`VALUE (${isCurrencySelected ? isCurrencySelected : userCurrency.split(" ")[1]})`}
+                  {`VALUE (${isCurrencySelected ? isCurrencySelected : userCurrencyState.split(" ")[1]})`}
                 </div>
               </div>
             </StyledTableCell>
@@ -134,7 +136,7 @@ const PortfolioTable = React.memo((props) => {
             <StyledTableCell>
               <div className="text-left" style={{ width: "6rem" }}>
                 <div className="table_title" id={"priceTitle"}>
-                  {`PRICE (${isCurrencySelected ? isCurrencySelected : userCurrency.split(" ")[1]})`}
+                  {`PRICE (${isCurrencySelected ? isCurrencySelected : userCurrencyState.split(" ")[1]})`}
                 </div>
               </div>
             </StyledTableCell>
@@ -178,14 +180,9 @@ const PortfolioTable = React.memo((props) => {
                 {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1)) * Number(
                   (
                     calculateCurrencyPrice(currencyPrice(datas, data[datas.name]) *
-                      Number(userCurrency.split(" ")[2])
+                      Number(userCurrencyState.split(" ")[2])
                     ))
                 )) : removeExponent(0)}
-                {/* {removeExponent(Number(
-                  (
-                    currencyValue(datas) * Number(userCurrency.split(" ")[2])
-                  ).toFixed(datas.pre)
-                ))} */}
               </StyledTableCell>
               <StyledTableCell align="left">
                 {
@@ -204,11 +201,10 @@ const PortfolioTable = React.memo((props) => {
                 }
               </StyledTableCell>
               <StyledTableCell align="right" className={"currencyPrices"}>
-                {/* {datas?.qty > 0 ? removeExponent(Number((datas?.qty * 1).toFixed(datas?.pre)) * currencyValue(datas) * Number(userCurrency.split(" ")[2])) : removeExponent(0)} */}
                 {removeExponent(Number(
                   (
                     calculateCurrencyPrice(currencyPrice(datas, data[datas.name]) *
-                      Number(userCurrency.split(" ")[2]))
+                      Number(userCurrencyState.split(" ")[2]))
                   )
                 ))}
               </StyledTableCell>

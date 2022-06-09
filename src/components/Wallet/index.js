@@ -10,6 +10,8 @@ import Meta1 from "meta1-vision-dex";
 import { useQuery } from "react-query";
 
 import PortfolioTable from "./PortfolioTable";
+import { userCurrencySelector } from "../../store/meta1/selector";
+import { useSelector } from "react-redux";
 
 // Трансферы между мета1 аккаунтами
 // вместо BitShares ставь Meta1
@@ -34,6 +36,7 @@ function Wallet(props) {
     setFullPorfolio,
     userCurrency,
   } = props;
+  const userCurrencyState = useSelector(userCurrencySelector);
   const [currentCurrency, setCurrentCurrency] = useState(0);
   const [orders, setOrders] = useState(null);
   const [hideZero, setHideZero] = useState(true);
@@ -124,7 +127,7 @@ function Wallet(props) {
   const changeCurrencyToFiat = async () => {
     document.getElementById("switchContainer").style.display = "none";
     setCurrentCurrency(currentCurrency + 1);
-    document.getElementById("forCheck").innerText = userCurrency.split(" ")[1];
+    document.getElementById("forCheck").innerText = userCurrencyState.split(" ")[1];
   };
 
   const changeCryptoCurrency = async (e) => {
@@ -146,7 +149,7 @@ function Wallet(props) {
     }
     if (crypto !== "META1") {
       if (document.getElementById("forCheck").innerText === "META1") {
-        chosen = userCurrency.split(" ")[1];
+        chosen = userCurrencyState.split(" ")[1];
         let data = await getAllByOne('USDT', crypto);
         sessionStorage.setItem('currencyResult', JSON.stringify(data))
         setCurrentCurrency(currentCurrency + 1);
@@ -181,7 +184,6 @@ function Wallet(props) {
         hideZero={hideZero}
         data={data}
         isLoading={isLoading}
-        userCurrency={props.userCurrency}
         isCurrencySelected={isCurrencySelected}
       />
     );
@@ -210,9 +212,9 @@ function Wallet(props) {
                 {loader && isLoading ? (
                   <Loader size="mini" active inline="centered" />
                 ) : (
-                  userCurrency.split(" ")[0] +
+                  userCurrencyState.split(" ")[0] +
                   " " +
-                  (totalSum * userCurrency.split(" ")[2]).toFixed(2)
+                  (totalSum * userCurrencyState.split(" ")[2]).toFixed(2)
                 )}
               </strong>
             </h2>
@@ -243,7 +245,7 @@ function Wallet(props) {
           </div>
           <div className="rightSideBlock">
             <div className={"blockChoose"}>
-              <noscript id={"forCheck"}>{userCurrency.split(" ")[1]}</noscript>
+              <noscript id={"forCheck"}>{userCurrencyState.split(" ")[1]}</noscript>
               <div className={"blockChoosen"} onClick={openDrop}>
                 <span style={{ textAlign: "center", paddingRight: '2px' }}>
                   Select currency to display
@@ -268,7 +270,7 @@ function Wallet(props) {
                       className="imgContainer"
                     />
                     <span className="spanDrop">
-                      Fiat ({userCurrency.split(" ")[0]})
+                      Fiat ({userCurrencyState.split(" ")[0]})
                     </span>
                   </li>
                   {assets.map((el, index) => (
@@ -315,7 +317,6 @@ function Wallet(props) {
         <div className="portfolio-table">
           <Portfolio
             onAssetSelect={onAssetSelect}
-            userCurrency={userCurrency}
           />
         </div>
       </div>
