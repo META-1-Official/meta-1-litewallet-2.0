@@ -341,7 +341,7 @@ const Footer = (props) => {
             </li>
             <li
               onClick={() => {
-                window.open(`${process.env.REACT_APP_WALLET_FOOTER_HREF}/meta1-contact`);
+                window.open(`${process.env.REACT_APP_WALLET_FOOTER_HREF}/ContactUs`);
               }}
             >
               <span>Contact Us</span>
