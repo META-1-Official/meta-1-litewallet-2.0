@@ -12,7 +12,7 @@ import "./style.css";
 import InputAdornment from "@mui/material/InputAdornment";
 import Meta1 from "meta1-vision-dex";
 import { useSelector } from "react-redux";
-import { portfolioReceiverSelector, senderApiSelector } from "../../store/meta1/selector";
+import { portfolioReceiverSelector, senderApiSelector, userCurrencySelector } from "../../store/meta1/selector";
 
 const FEE = 0.0035;
 
@@ -25,9 +25,9 @@ const SendForm = React.memo((props) => {
     onSuccessTransfer,
     assets,
     onClickExchangeEOSHandler,
-    onClickExchangeUSDTHandler,
-    userCurrency,
+    onClickExchangeUSDTHandler
   } = props;
+  const userCurrencyState = useSelector(userCurrencySelector);
   const sendApiState = useSelector(senderApiSelector);
   const portfolioReceiverState = useSelector(portfolioReceiverSelector);
   const feeAsset = portfolio.find((asset) => asset.name === "META1");
@@ -167,7 +167,7 @@ const SendForm = React.memo((props) => {
     let priceForOne = Number(e.target.value) * priceForAsset;
     setBlockPrice(
       Number(priceForOne).toFixed(precisionAssets[asset]) *
-      Number(userCurrency.split(" ")[2])
+      Number(userCurrencyState.split(" ")[2])
     );
   };
 
@@ -184,7 +184,7 @@ const SendForm = React.memo((props) => {
     let priceForOne = (
       Number(e.target.value.split("$")[0]) /
       priceForAsset /
-      Number(userCurrency.split(" ")[2])
+      Number(userCurrencyState.split(" ")[2])
     ).toFixed(precisionAssets[asset]);
     setAmount(priceForOne);
     setBlockPrice(e.target.value);
@@ -258,7 +258,7 @@ const SendForm = React.memo((props) => {
     setBlockPrice(
       Number(assetData.balance * priceForAsset).toFixed(
         precisionAssets[asset]
-      ) * Number(userCurrency.split(" ")[2])
+      ) * Number(userCurrencyState.split(" ")[2])
     );
   };
 
@@ -472,10 +472,10 @@ const SendForm = React.memo((props) => {
                             calculateCryptoPriceHandler(e);
                           }
                         }}
-                        placeholder={`Amount ${userCurrency.split(" ")[1]}`}
+                        placeholder={`Amount ${userCurrencyState.split(" ")[1]}`}
                         value={amount ? blockPrice : ""}
                       />
-                      <span style={{ fontSize: '16px' }} className={styles['abs-sp']} >{userCurrency.split(" ")[0]}</span>
+                      <span style={{ fontSize: '16px' }} className={styles['abs-sp']} >{userCurrencyState.split(" ")[0]}</span>
                     </div>
                     <div
                       style={{
@@ -573,7 +573,7 @@ const SendForm = React.memo((props) => {
                         {Number(amount) ? amount : 0} {assetData.label}
                       </h3>
                       <span>
-                        {blockPrice || 0} {userCurrency.split(" ")[1]}
+                        {blockPrice || 0} {userCurrencyState.split(" ")[1]}
                       </span>
                     </div>
                   </div>

@@ -476,7 +476,6 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
-                  userCurrency={userCurrency}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -533,7 +532,6 @@ function Application(props) {
                 }}
               >
                 <SendForm
-
                   onBackClick={(e) => {
                     e.preventDefault();
                     setActiveScreen("wallet");
@@ -557,7 +555,6 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
-                  userCurrency={userCurrency}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
