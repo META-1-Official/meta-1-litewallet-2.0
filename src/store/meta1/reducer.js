@@ -33,6 +33,8 @@ const meta1Reducer = (state = initialState, action) => {
             return {...state, loading: false, error: true, msg:action.payload };
         case types.SAVE_USER_CURRENCY_RESET:
             return {...state, changeCurrency:false };
+        case types.RESET_META_STORE:
+            return {...initialState };
         default:
             return state;
     }

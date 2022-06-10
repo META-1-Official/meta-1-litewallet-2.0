@@ -58,3 +58,9 @@ export const saveUserCurrencyReset = () => {
         type: types.SAVE_USER_CURRENCY_RESET
     }
 }
+
+export const resetMetaStore  = () => {
+    return {
+        type: types.RESET_META_STORE
+    }   
+}
