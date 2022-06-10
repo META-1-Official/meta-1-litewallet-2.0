@@ -17,9 +17,14 @@ export default function DepositForm(props) {
   const { fetcher, account, onBackClick, asset } = props;
   const [isLoading, setIsLoading] = useState(false);
   const [address, setAddress] = useState(props.address);
+  const [refreshData, setRefreshData] = useState(false);
   const canDeposit = address.length > 0;
   useEffect(() => {
     async function fetchAddress(asset) {
+      if (typeof fetcher !== 'function') {
+        setRefreshData(prev => !prev);
+        return;
+      }
       try {
         setIsLoading(true);
         const fetchedAsset = asset === "USDT" ? "eth" : asset;
@@ -38,7 +43,7 @@ export default function DepositForm(props) {
     }
 
     if (asset !== undefined) fetchAddress(asset);
-  }, [asset]);
+  }, [asset, refreshData]);
 
   return (
     <>
