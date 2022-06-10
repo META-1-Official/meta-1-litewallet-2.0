@@ -220,36 +220,9 @@ function Application(props) {
                 ? sessionStorage.getItem("location")
                 : "wallet"
             );
-
-            // setPortfolioReceiver(
-            //   new Portfolio({
-            //     metaApi: Meta1,
-            //     accountName: accountName,
-            //   })
-            // );
-            // setTrader(
-            //   new TradeWithPassword({
-            //     metaApi: Meta1,
-            //     login: accountName,
-            //   })
-            // );
-            // setCheckPaswordObj(
-            //   new CheckPassword({
-            //     metaApi: Meta1,
-            //     login: accountName,
-            //   })
-            // );
-
             setFetchDepositFn((asset) => (asset) => {
-              return fetchDepositAddress({ accountNameState, asset });
+              return fetchDepositAddress({ accountName: accountNameState, asset });
             });
-
-            // setSenderApi(
-            //   new SendWithPassword({
-            //     metaApi: Meta1,
-            //     login: accountName,
-            //   })
-            // );
             const portfolioObj = new Portfolio({
               metaApi: Meta1,
               accountName: accountNameState,
