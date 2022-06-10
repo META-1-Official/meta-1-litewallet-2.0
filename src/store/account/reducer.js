@@ -28,7 +28,7 @@ const accountsReducer = (state = initialState, action) => {
         case types.LOGIN_REQUEST:
             return {...state, loading: true, loginError: false };
         case types.LOGIN_SUCCESS:
-            return {...state, loading: false, account: action.payload.accountName, token: action.payload.token, isLogin:true,loginError:false,msg:null };
+            return {...initialState, loading: false, account: action.payload.accountName, token: action.payload.token, isLogin:true,loginError: false, msg: null };
         case types.LOGIN_ERROR:
             return {...state, loading: false, account: null, token: '', isLogin:false, loginError:true };
         case types.LOGOUT_REQUEST:
