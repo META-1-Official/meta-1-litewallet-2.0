@@ -21,8 +21,6 @@
     "jspdf": "^1.4.1",
     "lodash": "^4.17.20",
     "meta1-vision-dex": "^0.6.27-d",
-    "meta1-vision-js": "^3.3.11-d",
-    "meta1-vision-ws": "^3.1.7-d",
     "multicoin-address-validator": "^0.5.9",
     "parcel-bundler": "^1.12.4",
     "prop-types": "^15.7.2",
