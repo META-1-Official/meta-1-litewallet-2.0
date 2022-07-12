@@ -28,7 +28,7 @@ export default function SubmitForm(props) {
       <Grid.Column style={{ marginTop: "1rem" }} width={16}>
         <Form>
           <Form.Field>
-            <label>Password</label>
+            <label>Passkey</label>
             <div className="ui action input">
               <input value={props.password} type="text" disabled />
               <Popup

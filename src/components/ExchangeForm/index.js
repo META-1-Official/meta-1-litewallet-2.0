@@ -867,7 +867,7 @@ export default function ExchangeForm(props) {
                   <Input
                     size="medium"
                     type="password"
-                    placeholder="password"
+                    placeholder="Passkey"
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
                   />
