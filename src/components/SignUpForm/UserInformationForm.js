@@ -241,7 +241,7 @@ const UserInformationForm = (props) => {
             </Form.Field>
 
             <Form.Field>
-              <label>Password test</label>
+              <label>Copy Wallet Passkey</label>
               <div className="ui action input">
                 <input value={generatedPassword} type="text" disabled />
                 <CopyToClipboard text={generatedPassword} onCopy={() => {}}>
@@ -256,7 +256,7 @@ const UserInformationForm = (props) => {
             </Form.Field>
 
             <Form.Field>
-              <label>Password Confirmation</label>
+              <label>Passkey Confirmation</label>
               <input
                 type="password"
                 value={password}
