@@ -266,11 +266,14 @@ const UserInformationForm = (props) => {
             {searchAccount.length > 0 && searchAccount[0][0] === accountName && (
               <p style={{ color: "red" }}>Account is already used </p>
             )}
+            <div>
+                <span style={{ fontFamily: 'inherit', color: 'red' }}>Please make sure you have copied and SAVED your Passkey in another location (such as a word document or to your note pad) before clicking on the Submit Button. If you have not saved this Passkey, it can NOT be recovered.</span>
+            </div>
             <Form.Field>
               <Button
                 // onClick={() => setIsSubmitted(true)}
                 className="yellow"
-                style={{ color: "#240000" }}
+                style={{ color: "#240000", marginTop:'1em' }}
                 type="submit"
                 disabled={
                   firstName === "" ||
