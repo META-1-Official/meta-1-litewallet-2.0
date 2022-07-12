@@ -97,14 +97,14 @@ export default function PaperWalletLogin({ accountName }) {
         </FormField>
         <FormField>
           <label basic className="paper_wallet_login_label">
-            Password
+          Passkey
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {check !== false && <p style={{ color: "red" }}>Invalid Password</p>}
+          {check !== false && <p style={{ color: "red" }}>Invalid Passkey</p>}
         </FormField>
         <Button
           color="yellow"

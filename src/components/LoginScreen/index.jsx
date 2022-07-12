@@ -135,7 +135,7 @@ export default function LoginScreen(props) {
                     }
                     setPassword(e.target.value);
                   }}
-                  placeholder={"Password"}
+                  placeholder={"Passkey"}
                   value={password}
                   type="password"
                 />
@@ -149,12 +149,12 @@ export default function LoginScreen(props) {
                   className={styles.ErrorP}
                   style={loginDataError ? null : { display: "none" }}
                 >
-                  Wallet name or password is wrong
+                  Wallet name or Passkey is wrong
                 </p>
                 {errorAttr.login && errorAttr.password ?
-                  <p className={styles.ErrorP}>Wallet Name and Password can't be empty</p> :
+                  <p className={styles.ErrorP}>Wallet Name and Passkey can't be empty</p> :
                   errorAttr.login ? <p className={styles.ErrorP}>Wallet Name can't be empty</p> :
-                    errorAttr.password ? <p className={styles.ErrorP}>Password can't be empty</p>
+                    errorAttr.password ? <p className={styles.ErrorP}>Passkey can't be empty</p>
                       : null
                 }
                 <button

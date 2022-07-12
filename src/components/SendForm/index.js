@@ -289,7 +289,7 @@ const SendForm = React.memo((props) => {
       <div class="ui large fluid labeled input action">
         <input
           type="password"
-          placeholder="password"
+          placeholder="Passkey"
           value={password}
           onChange={(e) => setPassword(e.target.value.trim())}
         />
@@ -517,7 +517,7 @@ const SendForm = React.memo((props) => {
                   <Grid.Column>
                     <TextField
                       InputProps={{ disableUnderline: true }}
-                      label="Password"
+                      label="Passkey"
                       className={styles.input}
                       type={"password"}
                       id="reddit-input pass"
