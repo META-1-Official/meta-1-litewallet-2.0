@@ -67,7 +67,7 @@ const UserInformationForm = (props) => {
       if (!error1) {
         setAccountNameErrors({
           content:
-            "This is a premium name which is not supported by this faucet. Please enter a regular name containing least one dash, a number or no vowels.",
+            "Please enter a wallet nickname (not your personal name)  containing small letters, at least one dash, a number and no vowels",
           pointing: "below",
         });
       } else {
@@ -79,7 +79,7 @@ const UserInformationForm = (props) => {
     } else if (!error1) {
       setAccountNameErrors({
         content:
-          "This is a premium name which is not supported by this faucet. Please enter a regular name containing least one dash, a number or no vowels.",
+          "Please enter a wallet nickname (not your personal name)  containing small letters, at least one dash, a number and no vowels",
         pointing: "below",
       });
     } else {
