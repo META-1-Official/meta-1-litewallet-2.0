@@ -171,6 +171,6 @@ export async function loginRequest(accountName, password) {
     );
     return { ...data, error: false };
   } catch (e) {
-    return { message: "Wallet name or password is wrong", error: true };
+    return { message: "Wallet name or passkey is wrong", error: true };
   }
 }

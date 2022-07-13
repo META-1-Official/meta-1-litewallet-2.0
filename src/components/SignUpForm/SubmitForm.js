@@ -52,14 +52,14 @@ export default function SubmitForm(props) {
             className={"messageRed"}
             icon="attention"
             header="Important information"
-            content="If you forget your password phrase you will be unable to access your account and your funds. We cannot reset or restore your password! Memorize or write down your username and password!"
+            content="If you forget your passkey phrase you will be unable to access your account and your funds. We cannot reset or restore your passkey! Memorize or write down your username and passkey!"
           />
 
           <Form.Field>
             <Checkbox
               onChange={(e) => setAccess(!access)}
               checked={access}
-              label="I understand that I will lose access to my funds if I lose my password"
+              label="I understand that I will lose access to my funds if I lose my passkey"
             />
           </Form.Field>
 
@@ -67,7 +67,7 @@ export default function SubmitForm(props) {
             <Checkbox
               onChange={(e) => setRecover(!recover)}
               checked={recover}
-              label="I understand that no one can recover my password if I lose or forget it"
+              label="I understand that no one can recover my passkey if I lose or forget it"
             />
           </Form.Field>
 
@@ -75,7 +75,7 @@ export default function SubmitForm(props) {
             <Checkbox
               onChange={(e) => setStored(!stored)}
               checked={stored}
-              label="I have written down or otherwise stored my password"
+              label="I have written down or otherwise stored my passkey"
             />
           </Form.Field>
 
