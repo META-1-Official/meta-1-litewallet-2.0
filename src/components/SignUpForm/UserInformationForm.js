@@ -243,7 +243,7 @@ const UserInformationForm = (props) => {
             <Form.Field>
               <label>Copy Wallet Passkey</label>
               <div className="ui action input">
-                <input value={generatedPassword} type="text" disabled />
+                <input value={generatedPassword} type="text" disabled style={{ opacity: '1' }} />
                 <CopyToClipboard text={generatedPassword} onCopy={() => {}}>
                   <div
                     name="copyToken"

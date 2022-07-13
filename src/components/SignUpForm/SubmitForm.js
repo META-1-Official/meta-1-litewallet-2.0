@@ -30,7 +30,7 @@ export default function SubmitForm(props) {
           <Form.Field>
             <label>Passkey</label>
             <div className="ui action input">
-              <input value={props.password} type="text" disabled />
+              <input value={props.password} type="text" disabled style={{ opacity: '1' }} />
               <Popup
                 content="Copy to Clipboard."
                 trigger={
