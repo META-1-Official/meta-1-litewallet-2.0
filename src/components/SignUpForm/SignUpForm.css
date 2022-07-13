@@ -71,3 +71,7 @@ input {
     width: 100%;
   }
 }
+.dark-wallet-key {
+  opacity: 1 !important;
+  font-weight: 800;
+}
