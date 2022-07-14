@@ -223,13 +223,13 @@ const UserInformationForm = (props) => {
             </div>
 
             <Form.Field>
-              <label>Account Name</label>
+              <label>Wallet Name</label>
               <input
                 control={Input}
                 value={accountName}
                 type="text"
                 error={accountNameErrors}
-                placeholder="Account Name"
+                placeholder="Wallet Name"
                 onChange={({ target }) => {
                   setAccountName(target.value.toLocaleLowerCase());
                   setTouchedAccountName(true);
