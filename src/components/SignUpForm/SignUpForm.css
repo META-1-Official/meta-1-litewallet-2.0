@@ -75,3 +75,13 @@ input {
   opacity: 1 !important;
   font-weight: 800;
 }
+.show_text{
+  position: relative;
+
+}
+.copy_text{
+  position: absolute;
+  right: 4px;
+  bottom: -21px;
+  font-size: 12px;
+}
