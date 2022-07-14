@@ -247,11 +247,12 @@ const UserInformationForm = (props) => {
                 <CopyToClipboard text={generatedPassword} onCopy={() => {}}>
                   <div
                     name="copyToken"
-                    className="ui yellow right icon button brown"
+                    className="ui yellow right icon button brown show_text"
                   >
                     <i className="fal fa-copy" />
                   </div>
                 </CopyToClipboard>
+                <span className="copy_text">copy</span>
               </div>
             </Form.Field>
 
