@@ -235,7 +235,7 @@ const UserInformationForm = (props) => {
                   setTouchedAccountName(true);
                 }}
               />
-              {accountNameErrors?.content && touchedAccountName ? (
+              {accountName && accountNameErrors?.content && touchedAccountName ? (
                 <p style={{ color: "red" }}> {accountNameErrors?.content}</p>
               ) : null}
             </Form.Field>
