@@ -61,7 +61,14 @@ const UserInformationForm = (props) => {
     }
   }
   useEffect(() => {
-    const error = ChainValidation.is_account_name_error(debouncedAccountName);
+    let error = ChainValidation.is_account_name_error(debouncedAccountName);
+    if (typeof error === 'string') {
+      if (error.includes('Account')) {
+        error = error.replaceAll('Account','Wallet');
+      } else if (error.includes('account')) {
+        error = error.replaceAll('account','wallet');
+      }
+    }
     const error1 = isVowelsNotExistAndHasNumber(debouncedAccountName);
     if (error) {
       if (!error1) {
@@ -223,13 +230,13 @@ const UserInformationForm = (props) => {
             </div>
 
             <Form.Field>
-              <label>Account Name</label>
+              <label>Wallet Name</label>
               <input
                 control={Input}
                 value={accountName}
                 type="text"
                 error={accountNameErrors}
-                placeholder="Account Name"
+                placeholder="Wallet Name"
                 onChange={({ target }) => {
                   setAccountName(target.value.toLocaleLowerCase());
                   setTouchedAccountName(true);
