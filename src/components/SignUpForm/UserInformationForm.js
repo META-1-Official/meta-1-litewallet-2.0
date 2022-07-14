@@ -61,14 +61,7 @@ const UserInformationForm = (props) => {
     }
   }
   useEffect(() => {
-    let error = ChainValidation.is_account_name_error(debouncedAccountName);
-    if (typeof error === 'string') {
-      if (error.includes('Account')) {
-        error = error.replaceAll('Account','Wallet');
-      } else if (error.includes('account')) {
-        error = error.replaceAll('account','wallet');
-      }
-    }
+    const error = ChainValidation.is_account_name_error(debouncedAccountName);
     const error1 = isVowelsNotExistAndHasNumber(debouncedAccountName);
     if (error) {
       if (!error1) {
