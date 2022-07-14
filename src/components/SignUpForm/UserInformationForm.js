@@ -67,7 +67,7 @@ const UserInformationForm = (props) => {
       if (!error1) {
         setAccountNameErrors({
           content:
-            "Please enter a wallet nickname (not your personal name)  containing small letters, at least one dash, a number and no vowels",
+            "Please enter a wallet nickname (not your personal name) containing at least one dash, a number",
           pointing: "below",
         });
       } else {
@@ -79,7 +79,7 @@ const UserInformationForm = (props) => {
     } else if (!error1) {
       setAccountNameErrors({
         content:
-          "Please enter a wallet nickname (not your personal name)  containing small letters, at least one dash, a number and no vowels",
+          "Please enter a wallet nickname (not your personal name) containing at least one dash, a number",
         pointing: "below",
       });
     } else {
