@@ -252,7 +252,7 @@ const UserInformationForm = (props) => {
                     <i className="fal fa-copy" />
                   </div>
                 </CopyToClipboard>
-                <span className="copy_text">copy</span>
+                <span className="copy_text">Copy</span>
               </div>
             </Form.Field>
 
