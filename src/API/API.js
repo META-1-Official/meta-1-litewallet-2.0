@@ -117,6 +117,16 @@ export async function changeLastLocation(login, location) {
   }
 }
 
+export async function saveBalance(login) {
+  const config = {}
+  try {
+    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/saveBalance`, {
+      accountName: login,
+    }, config);
+    return data;
+  } catch (err) {}
+}
+
 export async function getLastLocation(login) {
   const config = {
     headers: {
