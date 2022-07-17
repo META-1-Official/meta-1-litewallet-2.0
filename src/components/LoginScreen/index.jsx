@@ -135,7 +135,7 @@ export default function LoginScreen(props) {
                     }
                     setPassword(e.target.value);
                   }}
-                  placeholder={"Password"}
+                  placeholder={"Passkey"}
                   value={password}
                   type="password"
                 />
@@ -149,12 +149,12 @@ export default function LoginScreen(props) {
                   className={styles.ErrorP}
                   style={loginDataError ? null : { display: "none" }}
                 >
-                  Wallet name or password is wrong
+                  Wallet name or Passkey is wrong
                 </p>
                 {errorAttr.login && errorAttr.password ?
-                  <p className={styles.ErrorP}>Wallet Name and Password can't be empty</p> :
+                  <p className={styles.ErrorP}>Wallet Name and Passkey can't be empty</p> :
                   errorAttr.login ? <p className={styles.ErrorP}>Wallet Name can't be empty</p> :
-                    errorAttr.password ? <p className={styles.ErrorP}>Password can't be empty</p>
+                    errorAttr.password ? <p className={styles.ErrorP}>Passkey can't be empty</p>
                       : null
                 }
                 <button
@@ -229,14 +229,14 @@ const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
         letters, blank spaces, @, +, !, nor any other non- number/letter
         characters except a dash)
         <br />
-        4. Copy the Generated Password / Passphrase (52 characters) Do NOT
-        create your own password. You must use the auto generated password and
-        properly paste it into the confirm password field; You can click the
-        small clipboard under the ‘generated’ password field (lower right side).
-        Be sure to properly record and secure both the password ‘KEY’ and
+        4. Copy the Generated Passkey / Passphrase (52 characters) Do NOT
+        create your own passkey. You must use the auto generated passkey and
+        properly paste it into the confirm passkey field; You can click the
+        small clipboard under the ‘generated’ passkey field (lower right side).
+        Be sure to properly record and secure both the passkey ‘KEY’ and
         account name in a safe location.
         <br />
-        5. PASTE password phrase into the confirmation box below.
+        5. PASTE passkey phrase into the confirmation box below.
         <br />
         6. Click Submit
         <br />

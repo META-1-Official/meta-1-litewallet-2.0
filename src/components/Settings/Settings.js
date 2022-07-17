@@ -229,7 +229,7 @@ const Settings = (props) => {
                       </div>
                     </div>}
                     {!!openPasswordSection && <div>
-                      <label>Enter Password</label>
+                      <label>Enter Passkey</label>
                       <input
                         type='password'
                         value={password}
@@ -240,7 +240,7 @@ const Settings = (props) => {
                         onBlur={() => setIsPasswordTouch(true)}
                         className={styles.input_password}
                       />
-                      {!password && isPasswordTouch && <span style={{ color: 'red', display: 'block' }}>Password field can't be empty</span>}
+                      {!password && isPasswordTouch && <span style={{ color: 'red', display: 'block' }}>Passkey field can't be empty</span>}
                       <button onClick={!isRemoveBtn ? uploadImageValidation : removeImageValidation} className={styles.Button_Password} >Submit</button>
                       <button onClick={closePasswordSectionHandler} className={styles.Button_Password}>Cancel</button>
                     </div>}
