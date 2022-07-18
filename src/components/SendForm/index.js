@@ -12,7 +12,7 @@ import "./style.css";
 import InputAdornment from "@mui/material/InputAdornment";
 import Meta1 from "meta1-vision-dex";
 import { useSelector } from "react-redux";
-import { portfolioReceiverSelector, senderApiSelector, userCurrencySelector } from "../../store/meta1/selector";
+import { checkPasswordObjSelector, portfolioReceiverSelector, senderApiSelector, userCurrencySelector } from "../../store/meta1/selector";
 
 const FEE = 0.0035;
 
@@ -58,6 +58,7 @@ const SendForm = React.memo((props) => {
   const [password, setPassword] = useState("");
   const [clickedInputs, setClickedInputs] = useState(false);
   const [feeAlert, setFeeAlert] = useState(false);
+  const checkPasswordState = useSelector(checkPasswordObjSelector);
 
   useEffect(() => {
     async function getData() {
@@ -231,6 +232,13 @@ const SendForm = React.memo((props) => {
     setError(null);
     setInProgress(true);
     const { password, to, amount, message } = params;
+    const passwordResult = await checkPasswordState.checkPasword(password);
+    if (passwordResult.error !== null) {
+      setError(passwordResult.error);
+      setRepeat(true);
+      setInProgress(false);
+      return;
+    }
     const result = await sendApiState.perform({
       password,
       to,
