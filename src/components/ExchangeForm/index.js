@@ -20,7 +20,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import leftArrow from "../../images/exchangeAssets/Shape Left.png";
 import rightArrow from "../../images/exchangeAssets/Shape 2 copy 2.png";
 import { useSelector } from "react-redux";
-import { traderSelector, userCurrencySelector } from "../../store/meta1/selector";
+import { checkPasswordObjSelector, traderSelector, userCurrencySelector } from "../../store/meta1/selector";
 
 export default function ExchangeForm(props) {
   const {
@@ -52,6 +52,7 @@ export default function ExchangeForm(props) {
   const [clickedInputs, setClickedInputs] = useState(false);
   const [error, setError] = useState();
   const [feeAlert, setFeeAlert] = useState(false);
+  const checkPasswordState = useSelector(checkPasswordObjSelector);
 
   useEffect(() => {
     console.log(pair);
@@ -310,7 +311,13 @@ export default function ExchangeForm(props) {
     try {
       setTradeInProgress(true);
       setPasswordShouldBeProvided(false);
-
+      const result = await checkPasswordState.checkPasword(password);
+      if (result.error !== null) {
+        setTradeError(result.error);
+        setPassword("");
+        setTradeInProgress(false);
+        return;
+      }
       const buyResult = await traderState.perform({
         from: selectedFrom.value,
         to: selectedTo.value.trim(),
