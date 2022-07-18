@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
-import { getCryptosChange, saveUserCurrency } from '../../API/API';
+import { getCryptosChange, saveBalance, saveUserCurrency } from '../../API/API';
 import { getUserError } from '../account/actions';
-import { getCryptosChangeError, getCryptosChangeSuccess, meta1ConnectError, meta1ConnectSuccess, saveUserCurrencyError, saveUserCurrencySuccess } from './actions';
+import { getCryptosChangeError, getCryptosChangeSuccess, meta1ConnectError, meta1ConnectSuccess, saveBalanceError, saveBalanceSuccess, saveUserCurrencyError, saveUserCurrencySuccess } from './actions';
 import * as types from './types';
 
 
@@ -11,6 +11,15 @@ function* getCryptosChangeHandler() {
         yield put(getCryptosChangeSuccess({cryptoData: response}));
     } else {
         yield put(getCryptosChangeError())
+    }
+}
+
+function* saveBalanceHandler(data) {
+    const response = yield call(saveBalance, data.payload);
+    if (response.message === 'success') {
+        yield put(saveBalanceSuccess());
+    } else {
+        yield put(saveBalanceError());
     }
 }
 
@@ -29,4 +38,5 @@ function* saveUserCurrencyHandler(data) {
 export function* waitForMeta1() {
     yield takeEvery(types.GET_CRYPTOS_CHANGE_REQUEST, getCryptosChangeHandler);
     yield takeEvery(types.SAVE_USER_CURRENCY_REQUEST, saveUserCurrencyHandler);
+    yield takeEvery(types.SAVE_BALANCE_REQUEST, saveBalanceHandler);
 }

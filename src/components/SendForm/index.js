@@ -11,8 +11,10 @@ import { helpSendTo, helpAmount, helpMax1, helpSwap } from "../../config/help";
 import "./style.css";
 import InputAdornment from "@mui/material/InputAdornment";
 import Meta1 from "meta1-vision-dex";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { checkPasswordObjSelector, portfolioReceiverSelector, senderApiSelector, userCurrencySelector } from "../../store/meta1/selector";
+import { accountsSelector } from "../../store/account/selector";
+import { saveBalanceRequest } from "../../store/meta1/actions";
 
 const FEE = 0.0035;
 
@@ -30,6 +32,8 @@ const SendForm = React.memo((props) => {
   const userCurrencyState = useSelector(userCurrencySelector);
   const sendApiState = useSelector(senderApiSelector);
   const portfolioReceiverState = useSelector(portfolioReceiverSelector);
+  const accountState = useSelector(accountsSelector);
+  const dispatch = useDispatch();
   const feeAsset = portfolio.find((asset) => asset.name === "META1");
   const amountHold =
     portfolio.find((cur) => cur.name === asset).qty == undefined
@@ -256,6 +260,7 @@ const SendForm = React.memo((props) => {
       }
       setRepeat(true);
     } else {
+      dispatch(saveBalanceRequest(accountState))
       setModalOpened(true);
     }
     setInProgress(false);

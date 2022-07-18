@@ -64,3 +64,21 @@ export const resetMetaStore  = () => {
         type: types.RESET_META_STORE
     }   
 }
+
+export const saveBalanceRequest = (payload) => {
+    return {
+        type: types.SAVE_BALANCE_REQUEST,
+        payload
+    }  
+}
+
+export const saveBalanceSuccess = () => {
+    return {
+        type: types.SAVE_BALANCE_SUCCESS
+    }  
+}
+export const saveBalanceError = () => {
+    return {
+        type: types.SAVE_BALANCE_ERROR
+    }  
+}
