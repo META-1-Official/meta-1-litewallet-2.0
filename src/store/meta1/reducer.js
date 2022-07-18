@@ -33,6 +33,12 @@ const meta1Reducer = (state = initialState, action) => {
             return {...state, loading: false, error: true, msg:action.payload };
         case types.SAVE_USER_CURRENCY_RESET:
             return {...state, changeCurrency:false };
+        case types.SAVE_BALANCE_REQUEST:
+            return {...state, loading: true };
+        case types.SAVE_BALANCE_SUCCESS:
+            return {...state, loading: false };
+        case types.SAVE_BALANCE_ERROR:
+            return {...state, loading: false };
         case types.RESET_META_STORE:
             return {...initialState };
         default:

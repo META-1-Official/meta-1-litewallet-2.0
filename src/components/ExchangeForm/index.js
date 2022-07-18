@@ -19,8 +19,10 @@ import Meta1 from "meta1-vision-dex";
 import InputAdornment from "@mui/material/InputAdornment";
 import leftArrow from "../../images/exchangeAssets/Shape Left.png";
 import rightArrow from "../../images/exchangeAssets/Shape 2 copy 2.png";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { checkPasswordObjSelector, traderSelector, userCurrencySelector } from "../../store/meta1/selector";
+import { accountsSelector } from "../../store/account/selector";
+import { saveBalanceRequest } from "../../store/meta1/actions";
 
 export default function ExchangeForm(props) {
   const {
@@ -32,6 +34,7 @@ export default function ExchangeForm(props) {
   } = props;
   const traderState = useSelector(traderSelector);
   const userCurrencyState = useSelector(userCurrencySelector);
+  const accountState = useSelector(accountsSelector);
   const [portfolio, setPortfolio] = useState(props.portfolio);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
     useState(false);
@@ -53,6 +56,7 @@ export default function ExchangeForm(props) {
   const [error, setError] = useState();
   const [feeAlert, setFeeAlert] = useState(false);
   const checkPasswordState = useSelector(checkPasswordObjSelector);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     console.log(pair);
@@ -327,6 +331,7 @@ export default function ExchangeForm(props) {
       if (buyResult.error) {
         setTradeError(buyResult.error);
       } else {
+        dispatch(saveBalanceRequest(accountState))
         setModalOpened(true);
       }
       setPassword("");
