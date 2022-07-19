@@ -20,7 +20,7 @@
     "jquery": "^3.6.0",
     "jspdf": "^1.4.1",
     "lodash": "^4.17.20",
-    "meta1-vision-dex": "^0.6.27-d",
+    "meta1-vision-dex": "0.6.26-t",
     "multicoin-address-validator": "^0.5.9",
     "parcel-bundler": "^1.12.4",
     "prop-types": "^15.7.2",
