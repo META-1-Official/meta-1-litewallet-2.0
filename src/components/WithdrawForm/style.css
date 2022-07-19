@@ -1,0 +1,43 @@
+div.withdraw {
+	padding: 20px;
+}
+div.withdraw label {
+	width: 50%;
+	margin-top: 20px;
+}
+.headerTitle {
+	background: #fff;
+	box-shadow: var(--boxShadowIndex);
+	padding: 1rem 0 .2rem 2rem;
+	color: var(--textGold)
+}
+.headTl {
+	font-size: 1.2rem;
+	color: var(--textBrown);
+	font-weight: 600;
+}
+.input {
+	padding-top: 5px;
+}
+.custom-input-bg{
+	background-color: #fff!important;
+}
+@media only screen and (max-width: 768px) {
+	div.withdraw label {
+		width: 100%;
+	}
+}
+.c-danger, .c-red {
+	color: red;
+}
+button.withdraw {
+	margin-top: 20px;
+}
+
+#from .ui.pointing.label, #to .ui.pointing.label {
+    position: absolute;
+    z-index: 99;
+}
+.custom-input-bg{
+	background-color: #fff !important;
+}

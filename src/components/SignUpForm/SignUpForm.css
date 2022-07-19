@@ -1,75 +1,87 @@
 @media (max-width: 767px) {
-	.singup-grid, .singup-grid .column {
-		
-	}
+  .singup-grid,
+  .singup-grid .column {
+  }
 }
 .signup-form {
-	width: 100% !important;
+  width: 100% !important;
 }
 .messageRed {
-	background: #FF8E8E66!important;
-	border: 1px solid rgba(255, 100, 106, 0.51) !important;
-
+  background: #ff8e8e66 !important;
+  border: 1px solid rgba(255, 100, 106, 0.51) !important;
 }
-button{
-	color: var(--textBrown);
+button {
+  color: var(--textBrown);
 }
 .brown {
-	color: var(--textBrown) !important;
+  color: var(--textBrown) !important;
 }
-.input_cont, .ui .form .field .prompt.label {
-	font-weight: 400 !important;
-	color: red !important;
+.input_cont,
+.ui .form .field .prompt.label {
+  font-weight: 400 !important;
+  color: red !important;
 }
 label {
-	font-size: .8rem;
-	color: var(--textBrown);
-	font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--textBrown);
+  font-weight: 700;
 }
 input {
-	box-shadow: var(--boxShadowIndex);
-	outline: none!important;
+  box-shadow: var(--boxShadowIndex);
 }
 .head-title {
-	font-size: 1.2rem;
-	margin: 1.1rem 0!important;
-	padding: 0!important;
-	color: var(--textBrown);
+  font-size: 1.2rem;
+  margin: 1.1rem 0 !important;
+  padding: 0 !important;
+  color: var(--textBrown);
 }
 .createWalletForm {
-	margin: 1rem;
+  margin: 1rem;
 }
 .regForm {
-	padding: 1rem 2rem;
-	border-radius: 4px;
-	box-shadow: var(--boxShadowIndex);
-	background: #fff;
-	width: 70%;
-	position: relative;
-	margin-right: 1rem;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  box-shadow: var(--boxShadowIndex);
+  background: #fff;
+  width: 70%;
+  position: relative;
+  margin-right: 1rem;
 }
 .adaptThing {
-	display: flex;
-	flex-direction: column;
-	width: 30%;
-	position: relative;
-
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  position: relative;
 }
 .justFlexAndDirect {
-	display: flex;
-	flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
-@media screen and (max-width: 450px){
-	.adaptThing {
-		flex-direction: column;
-		width: 100%;
-	}
-	.justFlexAndDirect{
-		flex-direction: column;
-	}
+@media screen and (max-width: 450px) {
+  .adaptThing {
+    flex-direction: column;
+    width: 100%;
+  }
+  .justFlexAndDirect {
+    flex-direction: column;
+  }
 }
 @media (max-width: 600px) {
-	.regForm{
-		width: 100%;
-	}
+  .regForm {
+    width: 100%;
+  }
+}
+.dark-wallet-key {
+  opacity: 1 !important;
+  font-weight: 800;
+}
+.show_text{
+  position: relative;
+
+}
+.copy_text{
+  position: absolute;
+  right: 4px;
+  bottom: -21px;
+  font-size: 12px;
 }

@@ -1,23 +1,53 @@
-# Getting Started with Create React App
+# Lite Wallet 2.0 project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## `yarn` to install
+## **Project Installation Guide**
 
-## `yarn start` to start dev server
+#### Download the repository via git
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-## build widget prod
-```
-META_URL=wss://maia.meta1.io/ws LINK_ACCOUNT_URL=https://meta1.io/api/link yarn build:widget
+```sh
+git clone https://github.com/META-1-Official/meta-1-litewallet-2.0/tree/main
 ```
 
-## build widget test
+#### Install the global dependencies by writing the command
+
+```sh
+sudo npm install -g pm2 yarn
 ```
-META_URL=wss://maia.meta1.io/ws LINK_ACCOUNT_URL=https://devtest.meta1.io/api/link yarn build:widget
+
+#### Install the project dependencies by writing the command (in project repo)
+
+```sh
+yarn install
 ```
+
+#### Create an .env file in the project directory and write to it:
+
+**BACK_URL=\*backend server URL\***
+
+#### Start pm2 server
+
+```sh
+pm2 start --name lite-wallet yarn -- start
+```
+
+#### Install and Configure Nginx
+
+&nbsp;
+&nbsp;
+
+---
+
+### Available Scripts
+
+In the project directory, you can run:
+
+#### `yarn start`
+
+Runs the app.
+Server is located at [http://localhost:3000](http://localhost:3000).
+
+#### `yarn build`
+
+Build the project in "build" director

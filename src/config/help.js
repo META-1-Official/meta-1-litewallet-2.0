@@ -16,6 +16,8 @@ export const helpTextPortfolio = {
 
 export const helpInput = (cur1, cur2) =>
     `Type in this field how much of ${cur1} you want to get for ${cur2}`
+export const helpWithdrawInput = (cur1) =>
+    `Type in this field how much of ${cur1} you want to withdraw`
 export const helpMax1 = (cur1) => `Click this button to sell all your ${cur1}`
 export const helpMax2 = (cur) => `Click this button to buy the same amount of ${cur} as you have on your balance`
 

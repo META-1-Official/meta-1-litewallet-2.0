@@ -1,53 +1,57 @@
 :root {
-	font-size: 16px;
-	--primary-yellow: #fc0fc0;
+  font-size: 16px;
+  --primary-yellow: #fc0fc0;
+}
+
+html {
+  overflow-x: hidden;
 }
 body {
-	margin: 0;
-	font-family: 'Poppins', sans-serif!important;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  font-family: "Poppins", sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-	monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }
 
 /* Custom yael */
 @media (min-width: 768px) {
-	.text-right {
-		text-align: right !important;
-	}
+  .text-right {
+    text-align: right !important;
+  }
 }
 /**/
 .hidden {
-	display: none !important;
+  display: none !important;
 }
 @media (max-width: 767px) {
-	.ui.table:not(.unstackable) tr>th.vissible-medium,
-	.ui.table:not(.unstackable) tr>td.vissible-medium {
-		display: none !important;
-	}
+  .ui.table:not(.unstackable) tr > th.vissible-medium,
+  .ui.table:not(.unstackable) tr > td.vissible-medium {
+    display: none !important;
+  }
 }
 @media (min-width: 768px) {
-	.vissible-small {
-		display: none !important;
-	}
+  .vissible-small {
+    display: none !important;
+  }
 }
 .padding-y {
-	padding-top: 1rem;
-	padding-bottom: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 .padding-y-large {
-	padding-top: 1.5rem;
-	padding-bottom: 1.5rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 .margin-y-small {
-	margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 .flex-middle {
-	align-items: center !important;
+  align-items: center !important;
 }
 
 /* Logins */
@@ -60,64 +64,62 @@ code {
 
 /* Titles */
 .head-title {
-	margin-bottom: 2rem;
-	padding-bottom: 0.5rem;
-	font-size: 1.71428571rem;
-	border-bottom: solid 1px #d5d6d7;
-}
-
-input:active {
-	border: 1px solid rgba(34,36,38,.15) !important;
-	outline: rgba(34,36,38,.15);
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.71428571rem;
+  border-bottom: solid 1px #d5d6d7;
 }
 input:focus {
-	border: 1px solid rgba(34,36,38,.15);
-	outline: rgba(34,36,38,.15);
-
+  border: 1px solid rgb(229, 232, 235) !important;
+  outline: rgb(229, 232, 235) !important;
 }
 
 /* Btn yellow */
-.ui.basic.yellow.button, .ui.basic.yellow.buttons .button {
-	color: --primary-yellow !important;
-	font-weight: 600;
+.ui.basic.yellow.button,
+.ui.basic.yellow.buttons .button {
+  color: --primary-yellow !important;
+  font-weight: 600;
 }
 @media (min-width: 768px) {
-	.ui.basic.yellow.button, .ui.basic.yellow.buttons .button {
-		box-shadow: none !important;
-	}
+  .ui.basic.yellow.button,
+  .ui.basic.yellow.buttons .button {
+    box-shadow: none !important;
+  }
 }
-.ui.basic.yellow.button:hover, .ui.basic.yellow.buttons .button:hover {
-	background-color: rgba(0,0,0,.05) !important;
-	box-shadow: none !important;
+.ui.basic.yellow.button:hover,
+.ui.basic.yellow.buttons .button:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  box-shadow: none !important;
 }
 
 /* Table border */
 .ui.sortable.table thead th {
-	border-left: 0;
+  border-left: 0;
 }
 .ui.sortable.table thead th.no-sort {
-	cursor: inherit;
+  cursor: inherit;
 }
 .ui.sortable.table thead th.no-sort:hover {
-	background-color: #f9fafb;
+  background-color: #f9fafb;
 }
 .ui.sortable.table thead th.no-sort .button {
-	float: right;
+  float: right;
 }
 
 :root {
-	--headerBgColor: #330000;
-	--gold: #fdc000;
-	--green: #00AA08;
-	--red: rgb(248, 0, 0);
-	--trade: #6D494A;
-	--bodybg: #F0F1F4;
-	--boxShadowIndex: 0px 20px 30px 0px rgba(54, 8, 0, 0.1);
-	--footerbg: #D8DBE4;
-	--tooltipred: #D52525;
-	--textBrown: #240000;
-	--textGrey: rgba(80, 83, 97, 0.47);
-	--textGold: #FFC000;
-	--logoMain: #E9BD37;
-	--font: 'Poppins', sans-serif!important;
+  --headerBgColor: #330000;
+  --gold: #fdc000;
+  --blue: blue;
+  --green: #00aa08;
+  --red: rgb(248, 0, 0);
+  --trade: #6d494a;
+  --bodybg: #f0f1f4;
+  --boxShadowIndex: 0px 20px 30px 0px rgba(54, 8, 0, 0.1);
+  --footerbg: #d8dbe4;
+  --tooltipred: #d52525;
+  --textBrown: #240000;
+  --textGrey: rgba(80, 83, 97, 0.47);
+  --textGold: #ffc000;
+  --logoMain: #e9bd37;
+  --font: "Poppins", sans-serif !important;
 }
