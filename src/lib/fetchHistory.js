@@ -1,4 +1,18 @@
 import Meta1 from "meta1-vision-dex";
+import {
+	ChainTypes as grapheneChainTypes,
+} from 'meta1-vision-js';
+import { trxTypes } from "../utils/orderStatusConstant";
+
+const {operations} = grapheneChainTypes;
+const ops = Object.keys(operations);
+ops.push(
+	'property_create_operation',
+	'property_update_operation',
+	'property_approve_operation',
+	'property_delete_operation',
+	'asset_price_publish_operation'
+);
 
 async function getHistory(event) {
   const amount = event?.queryKey[0] === "history" ? 10 : 3;
@@ -10,6 +24,7 @@ async function getHistory(event) {
   );
   let newRawData = [];
   for (let i = 0; i < rawData.length; i++) {
+    const resultStatus = trxTypes[ops[rawData[i].op[0]]];
     if (rawData[i].virtual_op === 0 && newRawData.length !== amount) {
       // Exchange proccesing
       if (rawData[i].op[1]?.seller) {
@@ -32,7 +47,7 @@ async function getHistory(event) {
           volume:
             rawData[i].op[1]?.min_to_receive?.amount /
             10 ** preAsset[0].precision,
-          status: "Done",
+          status: resultStatus,
           time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
             `,
         });
@@ -57,6 +72,7 @@ async function getHistory(event) {
           volume:
             rawData[i].op[1]?.amount?.amount / 10 ** exchangeAsset[0].precision,
           status: "Done",
+          resultStatus: resultStatus,
           time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
             `,
         });

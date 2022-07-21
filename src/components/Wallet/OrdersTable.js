@@ -107,7 +107,7 @@ export const OrdersTable = (props) => {
                 <StyledTableCell align="left">
                   <h6
                     style={
-                      el.status === "Done"
+                      el.status === "Place order"
                         ? { margin: "0", color: "#00aa08" }
                         : { margin: "0", color: "rgb(248, 0, 0)" }
                     }
