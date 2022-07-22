@@ -107,9 +107,9 @@ export const OrdersTable = (props) => {
                 <StyledTableCell align="left">
                   <h6
                     className={
-                      el.status === "Place order" || el.status === "Transfer"
-                        ? 'success-class'
-                        : 'cancel-class'
+                      el.status === "Cancel order"
+                        ? 'cancel-class'
+                        : 'success-class'
                     }
                   >
                     {el.status}
