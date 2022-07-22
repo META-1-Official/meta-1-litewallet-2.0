@@ -334,3 +334,13 @@
     margin-top: 0.3rem;
   }
 }
+
+.success-class {
+  margin: 0; 
+  color: #00aa08;
+}
+
+.cancel-class {
+  margin: 0; 
+  color: rgb(248, 0, 0);
+}

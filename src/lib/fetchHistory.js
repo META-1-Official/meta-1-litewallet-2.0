@@ -71,11 +71,35 @@ async function getHistory(event) {
           usersData: `${from} / ${to}`,
           volume:
             rawData[i].op[1]?.amount?.amount / 10 ** exchangeAsset[0].precision,
-          status: "Done",
-          resultStatus: resultStatus,
+          status: resultStatus,
           time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
             `,
         });
+      } else {
+        if (resultStatus==='Cancel order') {
+          if (rawData[i].op[0]===2) {
+            let exchangeAsset = await Meta1.db.get_objects([
+              rawData[i]?.op[1]?.fee?.asset_id,
+            ]);
+            let block = await Meta1.db.get_block(rawData[i].block_num);
+            let date = new Date(block.timestamp);
+            let splitedBlock = new Date(date).toUTCString().split(" ");
+            newRawData.push({
+              asset: {
+                name: "",
+                abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
+              },
+              type: "Cancel",
+              usersData: `${localStorage.getItem("login")}`,
+              volume:
+                rawData[i].op[1]?.fee?.amount / 10 ** exchangeAsset[0].precision,
+              status: resultStatus,
+              time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
+                `,
+            });
+          }
+        }
+        
       }
     }
   }
