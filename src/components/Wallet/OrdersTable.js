@@ -106,10 +106,10 @@ export const OrdersTable = (props) => {
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <h6
-                    style={
-                      el.status === "Place order"
-                        ? { margin: "0", color: "#00aa08" }
-                        : { margin: "0", color: "rgb(248, 0, 0)" }
+                    className={
+                      el.status === "Place order" || el.status === "Transfer"
+                        ? 'success-class'
+                        : 'cancel-class'
                     }
                   >
                     {el.status}
