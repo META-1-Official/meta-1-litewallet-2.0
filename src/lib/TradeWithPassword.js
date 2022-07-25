@@ -25,6 +25,8 @@ export default class TradeWithPassword {
         return { error: "Invalid credentials" };
       } else if (e.message === 'Amount equal 0!') {
         return { error: 'Amount almost 0!' };
+      } else if (typeof e.message === 'string' && e.message.includes("Assert Exception: LHS >= RHS")) {
+        return { error: 'Assert Exception: LHS >= RHS' };
       } else {
         return { error: "Something went wrong" };
       }
