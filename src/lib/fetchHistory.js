@@ -93,7 +93,7 @@ async function getHistory(event) {
               usersData: `${localStorage.getItem("login")}`,
               volume:
                 rawData[i].op[1]?.fee?.amount / 10 ** exchangeAsset[0].precision,
-              status: resultStatus,
+              status: "Cancelled order",
               time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
                 `,
             });
