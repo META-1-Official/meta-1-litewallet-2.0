@@ -198,9 +198,13 @@ export default function ExchangeForm(props) {
     }
     setInvalidEx(false);
     const selectedAmount=currentValue?currentValue:selectedFromAmount
+    let amount;
     if (selectedAmount !== "" && selectedAmount) {
-      const amount =
-        (selectedAmount / pair.lowest_ask).toString().substr(0, 11) * 1;
+      if (pair.base === "META1") {
+        amount = (selectedAmount / pair.latest).toString().substr(0, 11) * 1;
+      } else {
+        amount = (selectedAmount / pair.lowest_ask).toString().substr(0, 11) * 1;
+      }
       setSelectedToAmount(amount);
     } else {
       setSelectedToAmount(0);
