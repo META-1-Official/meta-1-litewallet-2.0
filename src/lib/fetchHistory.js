@@ -25,81 +25,118 @@ async function getHistory(event) {
   let newRawData = [];
   for (let i = 0; i < rawData.length; i++) {
     const resultStatus = trxTypes[ops[rawData[i].op[0]]];
-    if (rawData[i].virtual_op === 0 && newRawData.length !== amount) {
-      // Exchange proccesing
-      if (rawData[i].op[1]?.seller) {
-        let exchangeAsset = await Meta1.db.get_objects([
-          rawData[i]?.op[1]?.amount_to_sell?.asset_id,
-        ]);
-        let preAsset = await Meta1.db.get_objects([
-          rawData[i]?.op[1]?.min_to_receive?.asset_id,
-        ]);
-        let block = await Meta1.db.get_block(rawData[i].block_num);
-        let date = new Date(block.timestamp);
-        let splitedBlock = new Date(date).toUTCString().split(" ");
-        newRawData.push({
-          asset: {
-            name: "",
-            abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
-          },
-          type: "Exchange",
-          usersData: `${localStorage.getItem("login")}`,
-          volume:
-            rawData[i].op[1]?.min_to_receive?.amount /
-            10 ** preAsset[0].precision,
-          status: resultStatus,
-          time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
-            `,
-        });
+    if (newRawData.length !== amount) {
+      if (resultStatus === 'Fill order') {
+        if (rawData[i].op[0] === 4) {
+          let exchangeAsset = await Meta1.db.get_objects([
+            rawData[i]?.op[1]?.fill_price?.quote?.asset_id,
+          ]);
+          let block = await Meta1.db.get_block(rawData[i].block_num);
+          let date = new Date(block.timestamp);
+          let splitedBlock = new Date(date).toUTCString().split(" ");
+          let typeData;
+          let op1 = rawData[i].op[1];
+          let preAsset = await Meta1.db.get_objects([
+            op1?.fill_price?.quote?.asset_id
+          ]);
+          if( op1.fill_price?.quote?.asset_id === op1.pays.asset_id) {
+            typeData = "Fill (sold)";
+          } else if( op1.fill_price?.quote?.asset_id === op1.receives.asset_id) {
+            typeData = "Fill (bought)";
+          }
+          console.log("preAsset",preAsset)
+          newRawData.push({
+            rawData: rawData[i],
+            exchangeAsset: exchangeAsset,
+            asset: {
+              name: "",
+              abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
+            },
+            type: typeData,
+            usersData: `${localStorage.getItem("login")}`,
+            volume:
+            op1?.fill_price?.quote?.amount / 10 ** preAsset[0].precision,
+            status: resultStatus,
+            time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
+              `,
+          });
+        }
       }
-      // Send proccesing
-      else if (rawData[i].op[1]?.from) {
-        let exchangeAsset = await Meta1.db.get_objects([
-          rawData[i]?.op[1]?.amount.asset_id,
-        ]);
-        let from = (await Meta1.accounts[rawData[i]?.op[1]?.from]).name;
-        let to = (await Meta1.accounts[rawData[i]?.op[1]?.to]).name;
-        let block = await Meta1.db.get_block(rawData[i].block_num);
-        let date = new Date(block.timestamp);
-        let splitedBlock = new Date(date).toUTCString().split(" ");
-        newRawData.push({
-          asset: {
-            name: "",
-            abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
-          },
-          type: "Send",
-          usersData: `${from} / ${to}`,
-          volume:
-            rawData[i].op[1]?.amount?.amount / 10 ** exchangeAsset[0].precision,
-          status: resultStatus,
-          time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
-            `,
-        });
-      } else {
-        if (resultStatus==='Cancel order') {
-          if (rawData[i].op[0]===2) {
-            let exchangeAsset = await Meta1.db.get_objects([
-              rawData[i]?.op[1]?.fee?.asset_id,
-            ]);
-            let block = await Meta1.db.get_block(rawData[i].block_num);
-            let date = new Date(block.timestamp);
-            let splitedBlock = new Date(date).toUTCString().split(" ");
-            newRawData.push({
-              asset: {
-                name: "",
-                abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
-              },
-              type: "Cancel",
-              usersData: `${localStorage.getItem("login")}`,
-              volume:
-                rawData[i].op[1]?.fee?.amount / 10 ** exchangeAsset[0].precision,
-              status: "Cancelled order",
-              time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
-                `,
-            });
+      if (rawData[i].virtual_op === 0) {
+        // Exchange proccesing
+        if (rawData[i].op[1]?.seller) {
+          let exchangeAsset = await Meta1.db.get_objects([
+            rawData[i]?.op[1]?.amount_to_sell?.asset_id,
+          ]);
+          let preAsset = await Meta1.db.get_objects([
+            rawData[i]?.op[1]?.min_to_receive?.asset_id,
+          ]);
+          let block = await Meta1.db.get_block(rawData[i].block_num);
+          let date = new Date(block.timestamp);
+          let splitedBlock = new Date(date).toUTCString().split(" ");
+          newRawData.push({
+            asset: {
+              name: "",
+              abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
+            },
+            type: "Exchange",
+            usersData: `${localStorage.getItem("login")}`,
+            volume:
+              rawData[i].op[1]?.min_to_receive?.amount /
+              10 ** preAsset[0].precision,
+            status: resultStatus,
+            time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
+              `,
+          });
+        }
+        // Send proccesing
+        else if (rawData[i].op[1]?.from) {
+          let exchangeAsset = await Meta1.db.get_objects([
+            rawData[i]?.op[1]?.amount.asset_id,
+          ]);
+          let from = (await Meta1.accounts[rawData[i]?.op[1]?.from]).name;
+          let to = (await Meta1.accounts[rawData[i]?.op[1]?.to]).name;
+          let block = await Meta1.db.get_block(rawData[i].block_num);
+          let date = new Date(block.timestamp);
+          let splitedBlock = new Date(date).toUTCString().split(" ");
+          newRawData.push({
+            asset: {
+              name: "",
+              abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
+            },
+            type: "Send",
+            usersData: `${from} / ${to}`,
+            volume:
+              rawData[i].op[1]?.amount?.amount / 10 ** exchangeAsset[0].precision,
+            status: resultStatus,
+            time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
+              `,
+          });
+        } else {
+          if (resultStatus==='Cancel order') {
+            if (rawData[i].op[0]===2) {
+              let exchangeAsset = await Meta1.db.get_objects([
+                rawData[i]?.op[1]?.fee?.asset_id,
+              ]);
+              let block = await Meta1.db.get_block(rawData[i].block_num);
+              let date = new Date(block.timestamp);
+              let splitedBlock = new Date(date).toUTCString().split(" ");
+              newRawData.push({
+                asset: {
+                  name: "",
+                  abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
+                },
+                type: "Cancel",
+                usersData: `${localStorage.getItem("login")}`,
+                volume:
+                  rawData[i].op[1]?.fee?.amount / 10 ** exchangeAsset[0].precision,
+                status: "Cancelled order",
+                time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
+                  `,
+              });
+            }
           }
         }
-        
       }
     }
   }
