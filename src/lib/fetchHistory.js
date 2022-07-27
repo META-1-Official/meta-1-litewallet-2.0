@@ -44,7 +44,6 @@ async function getHistory(event) {
           } else if( op1.fill_price?.quote?.asset_id === op1.receives.asset_id) {
             typeData = "Fill (bought)";
           }
-          console.log("preAsset",preAsset)
           newRawData.push({
             rawData: rawData[i],
             exchangeAsset: exchangeAsset,
