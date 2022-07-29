@@ -157,7 +157,7 @@ const Navbar = (props) => {
                         <button
                           className="dropdown-item"
                           style={{ textAlign: "center" }}
-                          onClick={() => openInNewTab('https://support.meta1coin.vision/how-to-deposit-into-your-meta-lite-wallet')}
+                          onClick={() => openInNewTab(process.env.REACT_APP_FUND_WALLET_WITH_CRYPTOCURRENCY)}
                         >
                           Fund Wallet With Cryptocurrency
                         </button>
@@ -166,7 +166,7 @@ const Navbar = (props) => {
                         <button
                           className="dropdown-item"
                           style={{ textAlign: "center" }}
-                          onClick={() => openInNewTab('https://meta1coin.vision/private-digital-currency/meta-1-coin')}
+                          onClick={() => openInNewTab(process.env.REACT_APP_FUND_WALLET_WITH_WIRE_OR_CHECK)}
                         >
                           Fund Wallet with Wire or Check
                         </button>
