@@ -124,7 +124,7 @@ const Navbar = (props) => {
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    Fund Account
+                    Fund Wallet
                    <span 
                    className="nav-link dropdown-toggle for-dropdown"
                     id="navbarScrollingDropdown"
