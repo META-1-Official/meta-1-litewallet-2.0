@@ -114,10 +114,7 @@ const Navbar = (props) => {
                 </div>
                 <div className="nav-item dropdown parent-this">
                   <a
-                    className={
-                      name && portfolio ? styles.btn : styles.btnDisabled + 'nav-link dropdown-toggle for-dropdown'
-                    }
-
+                    className={styles.btn}
                     href="#"
                     id="navbarScrollingDropdown"
                     role="button"
@@ -135,44 +132,41 @@ const Navbar = (props) => {
                     >
                     </div>
                   </a>
-                  {name && portfolio ? (
-                    <ul
-                      className="dropdown-menu"
-                      aria-labelledby="navbarScrollingDropdown"
-                      style={{ marginLeft: "-4rem", width: "8rem" }}
-                    >
-
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          style={{ textAlign: "center" }}
-                          disabled={!name && !portfolio}
-                          data-bs-toggle="modal"
-                          data-bs-target="#fund"
-                        >
-                          Fund Wallet With Credit/Debit Card
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          style={{ textAlign: "center" }}
-                          onClick={() => openInNewTab(process.env.REACT_APP_FUND_WALLET_WITH_CRYPTOCURRENCY)}
-                        >
-                          Fund Wallet With Cryptocurrency
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          style={{ textAlign: "center" }}
-                          onClick={() => openInNewTab(process.env.REACT_APP_FUND_WALLET_WITH_WIRE_OR_CHECK)}
-                        >
-                          Fund Wallet with Wire or Check
-                        </button>
-                      </li>
-                    </ul>
-                  ) : null}
+                  <ul
+                    className="dropdown-menu"
+                    aria-labelledby="navbarScrollingDropdown"
+                    style={{ marginLeft: "-4rem", width: "8rem" }}
+                  >
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        style={{ textAlign: "center" }}
+                        disabled={!name && !portfolio}
+                        data-bs-toggle="modal"
+                        data-bs-target="#fund"
+                      >
+                        Fund Wallet With Credit/Debit Card
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        style={{ textAlign: "center" }}
+                        onClick={() => openInNewTab(process.env.REACT_APP_FUND_WALLET_WITH_CRYPTOCURRENCY)}
+                      >
+                        Fund Wallet With Cryptocurrency
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        style={{ textAlign: "center" }}
+                        onClick={() => openInNewTab(process.env.REACT_APP_FUND_WALLET_WITH_WIRE_OR_CHECK)}
+                      >
+                        Fund Wallet with Wire or Check
+                      </button>
+                    </li>
+                  </ul>
                 </div>
                 <div className={styles.line + styles.adaptNeed} />
                 <div
