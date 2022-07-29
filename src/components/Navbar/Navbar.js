@@ -25,7 +25,9 @@ const Navbar = (props) => {
 
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
-
+  const openInNewTab = url => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
   return (
     <>
       <div
@@ -110,16 +112,68 @@ const Navbar = (props) => {
                     Get help
                   </span>
                 </div>
-                <button
-                  className={
-                    name && portfolio ? styles.btn : styles.btnDisabled
-                  }
-                  disabled={!name && !portfolio}
-                  data-bs-toggle="modal"
-                  data-bs-target="#fund"
-                >
-                  Fund Account
-                </button>
+                <div className="nav-item dropdown parent-this">
+                  <a
+                    className={
+                      name && portfolio ? styles.btn : styles.btnDisabled + 'nav-link dropdown-toggle for-dropdown'
+                    }
+
+                    href="#"
+                    id="navbarScrollingDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Fund Account
+                   <span 
+                   className="nav-link dropdown-toggle for-dropdown"
+                    id="navbarScrollingDropdown"
+                   ></span>
+                    <div
+                      className={"imgUser"}
+                      style={{ marginLeft: ".3rem" }}
+                    >
+                    </div>
+                  </a>
+                  {name && portfolio ? (
+                    <ul
+                      className="dropdown-menu"
+                      aria-labelledby="navbarScrollingDropdown"
+                      style={{ marginLeft: "-4rem", width: "8rem" }}
+                    >
+
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          style={{ textAlign: "center" }}
+                          disabled={!name && !portfolio}
+                          data-bs-toggle="modal"
+                          data-bs-target="#fund"
+                        >
+                          Fund Wallet With Credit/Debit Card
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          style={{ textAlign: "center" }}
+                          onClick={() => openInNewTab('https://support.meta1coin.vision/how-to-deposit-into-your-meta-lite-wallet')}
+                        >
+                          Fund Wallet With Cryptocurrency
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          style={{ textAlign: "center" }}
+                          onClick={() => openInNewTab('https://meta1coin.vision/private-digital-currency/meta-1-coin')}
+                        >
+                          Fund Wallet with Wire or Check
+                        </button>
+                      </li>
+                    </ul>
+                  ) : null}
+                </div>
                 <div className={styles.line + styles.adaptNeed} />
                 <div
                   className={styles.adaptNeed}
