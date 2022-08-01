@@ -184,3 +184,14 @@ export async function loginRequest(accountName, password) {
     return { message: "Wallet name or passkey is wrong", error: true };
   }
 }
+
+export async function getHistoryData(accountName,from) {
+  try {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_EXPLORER_META1_URL}/api/v1/es/account_history?account_id=${accountName}&from=${from}&size=100&type=data&sort_by=-account_history.sequence`
+    );
+    return { ...data, error: false };
+  } catch (e) {
+    return { message: "something went wrong", error: true };
+  }
+}

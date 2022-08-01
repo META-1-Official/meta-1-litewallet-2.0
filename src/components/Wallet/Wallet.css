@@ -344,3 +344,18 @@
   margin: 0; 
   color: rgb(248, 0, 0);
 }
+
+.page_sec {
+  width: 100% !important;
+  display: flex;
+  text-align: center !important;
+  justify-content: end;
+  padding: 10px;
+}
+.page_sec span {
+  padding: 5px;
+}
+.page_sec ul {
+  width: 100% !important;
+  
+}

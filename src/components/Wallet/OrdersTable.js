@@ -12,13 +12,24 @@ import Paper from "@mui/material/Paper";
 import { getAsset, getFullName } from "./cryptoChooser";
 import getHistory from "../../lib/fetchHistory";
 import { removeExponent } from "../../utils/commonFunction";
+import { Grid, Pagination, Stack } from "@mui/material";
+import { useEffect, useState } from "react";
+import { opMapping } from "../../helpers/utility";
 
 export const OrdersTable = (props) => {
   const { column, direction, assets, account } = props;
+  const [pageNum, setPageNum] = useState(1);
+  const [perPage,setPerPage]= useState(100);
+  const [filterCollection, setFilterCollection] = useState([]);
 
-  const { data, isLoading, error } = useQuery("history", getHistory, {
+  const { data, isLoading, error } = useQuery(["history", pageNum], getHistory, {
     refetchInterval: 1500,
   });
+  useEffect(()=>{
+    if (Array.isArray(data)) {
+      setFilterCollection(data);
+    }
+  },[data]);
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -69,7 +80,7 @@ export const OrdersTable = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((el, index) => (
+            {filterCollection.map((el, index) => (
               <StyledTableRow key={index}>
                 <StyledTableCell
                   component="th"
@@ -82,37 +93,39 @@ export const OrdersTable = (props) => {
                       flexDirection: "row",
                     }}
                   >
-                    {getAsset(el.asset.abbr)}
+                    {getAsset(el.symbol)}
                     <div style={{ marginLeft: ".5rem" }}>
                       <p style={{ margin: 0, fontSize: "1rem" }}>
-                        {el.asset.abbr}
+                        {el.symbol}
                       </p>
                       <p style={{ margin: 0, fontSize: ".7rem" }}>
-                        {getFullName(el.asset.abbr)}
+                        {getFullName(el.symbol)}
                       </p>
                     </div>
                   </div>
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  <h6 style={{ margin: "0" }}>{el.type}</h6>
+                  <h6>
+                    {opMapping[el.op_type]}
+                  </h6>
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  <h6 style={{ margin: "0" }}>{el.usersData}</h6>
+                <StyledTableCell align="left">
+                  <h6 style={{ margin: "0" }}>{el.operation_text}</h6>
                 </StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="left">
                   <h6 style={{ margin: "0" }}>
-                    <strong>{removeExponent(Number(el.volume))}</strong>
+                  <strong>{removeExponent(Number(el.amount))}</strong>
                   </h6>
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <h6
                     className={
-                      el.status === "Cancelled order"
+                      opMapping[el.op_type] && opMapping[el.op_type].includes('cancel')
                         ? 'cancel-class'
                         : 'success-class'
                     }
                   >
-                    {el.status}
+                    {opMapping[el.op_type]}
                   </h6>
                 </StyledTableCell>
                 <StyledTableCell align="left">
@@ -123,6 +136,21 @@ export const OrdersTable = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Grid spacing={2}>
+        <Grid item md={12}>
+          <Stack spacing={2}>
+            {filterCollection.length>0 && <div className="page_sec">
+              <span>Total of {filterCollection[0].count} operations</span>
+              <Pagination 
+                count={Math.ceil(filterCollection[0].count/perPage)} 
+                shape="rounded"
+                page={pageNum}
+                onChange={(e, num) => { setPageNum(num) }}
+              />
+            </div>}
+          </Stack>
+        </Grid>
+      </Grid>
     </>
   );
 };

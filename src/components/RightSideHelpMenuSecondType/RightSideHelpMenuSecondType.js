@@ -5,6 +5,7 @@ import MetaLoader from "../../UI/loader/Loader";
 import { getAsset } from "../Wallet/cryptoChooser";
 import getHistory from "../../lib/fetchHistory";
 import { removeExponent } from '../../utils/commonFunction'
+import { opMapping } from "../../helpers/utility";
 const RightSideHelpMenuSecondType = (props) => {
   const { onClickExchangeEOSHandler, onClickExchangeUSDTHandler } = props;
 
@@ -116,7 +117,7 @@ const RightSideHelpMenuSecondType = (props) => {
                   width: "6rem",
                 }}
               >
-                {getAsset(el.asset.abbr)}
+                {getAsset(el.symbol)}
                 <p
                   style={{
                     color: "",
@@ -124,18 +125,18 @@ const RightSideHelpMenuSecondType = (props) => {
                     fontSize: ".8rem",
                   }}
                 >
-                  <strong>{el.asset.abbr}</strong>
+                  <strong>{el.symbol}</strong>
                 </p>
               </div>
               <div
                 style={{ margin: "auto 0", width: "4rem", textAlign: "end" }}
               >
-                <p>{el.type}</p>
+                <p>{opMapping[el.op_type]}</p>
               </div>
               <div
                 style={{ margin: ".25rem 0", width: "6rem", textAlign: "end" }}
               >
-                <p>{removeExponent(Number(el.volume))}</p>
+                <p>{removeExponent(Number(el.amount))}</p>
               </div>
             </div>
           ))
