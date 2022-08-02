@@ -185,10 +185,10 @@ export async function loginRequest(accountName, password) {
   }
 }
 
-export async function getHistoryData(accountName,from) {
+export async function getHistoryData(accountName,from, size) {
   try {
     const { data } = await axios.get(
-      `${process.env.REACT_APP_EXPLORER_META1_URL}/api/v1/es/account_history?account_id=${accountName}&from=${from}&size=100&type=data&sort_by=-account_history.sequence`
+      `${process.env.REACT_APP_EXPLORER_META1_URL}/api/v1/es/account_history?account_id=${accountName}&from=${from}&size=${size}&type=data&sort_by=-account_history.sequence`
     );
     return { ...data, error: false };
   } catch (e) {

@@ -5,7 +5,8 @@ import { operationType, opText } from "../helpers/utility";
 async function getHistory(event) {
   const numberOfRecords = event?.queryKey[0] === "history" ? 10000 : 3;
   const pageNo = event?.queryKey[1] || 1;
-  const response = await getHistoryData(localStorage.getItem("login"), (pageNo-1)*100);
+  const perPage = event?.queryKey[2] || 20;
+  const response = await getHistoryData(localStorage.getItem("login"), (pageNo-1)*perPage, perPage);
   const historyData = response.data.splice(0,numberOfRecords).map(async (value) => {
     let timestamp;
     let witness;

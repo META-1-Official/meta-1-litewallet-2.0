@@ -5,7 +5,17 @@ import MetaLoader from "../../UI/loader/Loader";
 import { getAsset } from "../Wallet/cryptoChooser";
 import getHistory from "../../lib/fetchHistory";
 import { removeExponent } from '../../utils/commonFunction'
-import { opMapping } from "../../helpers/utility";
+import { trxTypes } from "../../helpers/utility";
+import { ChainTypes as grapheneChainTypes } from 'meta1-vision-js';
+const {operations} = grapheneChainTypes;
+const ops = Object.keys(operations);
+ops.push(
+	'property_create_operation',
+	'property_update_operation',
+	'property_approve_operation',
+	'property_delete_operation',
+	'asset_price_publish_operation'
+);
 const RightSideHelpMenuSecondType = (props) => {
   const { onClickExchangeEOSHandler, onClickExchangeUSDTHandler } = props;
 
@@ -131,7 +141,7 @@ const RightSideHelpMenuSecondType = (props) => {
               <div
                 style={{ margin: "auto 0", width: "4rem", textAlign: "end" }}
               >
-                <p>{opMapping[el.op_type]}</p>
+                <p>{trxTypes[ops[el.op_type]]}</p>
               </div>
               <div
                 style={{ margin: ".25rem 0", width: "6rem", textAlign: "end" }}
