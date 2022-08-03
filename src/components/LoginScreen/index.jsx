@@ -64,12 +64,6 @@ export default function LoginScreen(props) {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      document.getElementById("mainBlock").style.height = "92vh";
-    }, 5);
-  }, []);
-
   return (
     <div className={styles.body}>
       <header className={styles.header}>
