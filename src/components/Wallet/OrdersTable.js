@@ -139,8 +139,6 @@ export const OrdersTable = (props) => {
               <MenuItem value={20}>20/ Page</MenuItem>
               <MenuItem value={50}>50/ Page</MenuItem>
               <MenuItem value={100}>100/ Page</MenuItem>
-              {filterCollection.length > 0 && filterCollection[0].count > 100 && filterCollection[0].count &&
-                <MenuItem value={filterCollection[0].count}>{filterCollection[0].count}/ Page</MenuItem>}
             </Select>
           </FormControl>
           </Stack>
