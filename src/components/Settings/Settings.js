@@ -253,8 +253,7 @@ const Settings = (props) => {
                     Account Profile
                   </h3>
                   <span>
-                    You can update an login wallet associated with your account
-                    using the form below.
+                    You can not update an login wallet associated with your account using the form below.
                   </span>
                 </div>
                 <form className={styles.changeDataForm}>
