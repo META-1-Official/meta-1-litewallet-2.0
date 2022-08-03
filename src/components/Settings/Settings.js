@@ -44,11 +44,6 @@ const Settings = (props) => {
   const accountNameState = useSelector(accountsSelector);
   const profileImageState =  useSelector(profileImageSelector);
   const changeCurrencyState = useSelector(changeCurrencySelector);
-  useEffect(() => {
-    setTimeout(() => {
-      document.getElementById("mainBlock").style.height = "auto";
-    }, 50);
-  }, []);
   const changeCurrencyHandler = async (e) => {
     e.preventDefault();
     dispatch(saveUserCurrencyRequest({login:accountNameState,currency}));

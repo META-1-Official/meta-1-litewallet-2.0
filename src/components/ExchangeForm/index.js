@@ -146,14 +146,6 @@ export default function ExchangeForm(props) {
   }, [props.assets, props.portfolio]);
 
   useEffect(() => {
-    if (!isMobile) {
-      setTimeout(() => {
-        document.getElementById("mainBlock").style.height = "92vh";
-      }, 25);
-    }
-  }, []);
-
-  useEffect(() => {
     if (pair == null) return;
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
       setInvalidEx(true);

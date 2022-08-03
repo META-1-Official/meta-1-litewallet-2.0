@@ -75,12 +75,6 @@ function Wallet(props) {
     }, 1500);
   }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      document.getElementById("mainBlock").style.height = "92vh";
-    }, 700);
-  }, []);
-
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
 
