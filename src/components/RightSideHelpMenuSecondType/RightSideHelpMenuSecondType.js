@@ -119,29 +119,12 @@ const RightSideHelpMenuSecondType = (props) => {
               }}
             >
               <div
-                style={{
-                  margin: "auto 0",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: "6rem",
-                }}
+                style={{ margin: "auto 0", width: "6rem", textAlign: "end" }}
               >
-                {getAsset(el.symbol)}
-                <p
-                  style={{
-                    color: "",
-                    marginLeft: ".5rem",
-                    fontSize: ".8rem",
-                  }}
-                >
-                  <strong>{el.symbol}</strong>
-                </p>
-              </div>
-              <div
-                style={{ margin: "auto 0", width: "4rem", textAlign: "end" }}
-              >
-                <p>{trxTypes[ops[el.op_type]]}</p>
+                <span
+                  className={styles.spanStatusBtn}
+                  style={{ background: `#${el.op_color}` }}
+                >{trxTypes[ops[el.op_type]]}</span>
               </div>
               <div
                 style={{ margin: ".25rem 0", width: "6rem", textAlign: "end" }}
