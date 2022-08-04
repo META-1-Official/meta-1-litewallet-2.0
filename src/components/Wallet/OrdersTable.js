@@ -64,6 +64,23 @@ export const OrdersTable = (props) => {
     },
   }));
 
+  const paginationOptions = [10,20,50,100];
+  let paginationOptionsFilter = [];
+  if (filterCollection.length > 0) {
+    if (filterCollection[0].count <= 50) {
+      if(filterCollection[0].count > 10) {
+        for(let i = 0; i < paginationOptions.length; i++) {
+          if (paginationOptions[i] <= filterCollection[0].count) {
+            paginationOptionsFilter.push(paginationOptions[i]);
+          } else if (paginationOptions[i-1] < filterCollection[0].count && paginationOptions[i] > filterCollection[0].count) {
+            paginationOptionsFilter.push(paginationOptions[i]);
+          }
+        }
+      }
+    } else {
+      paginationOptionsFilter = [...paginationOptions];
+    }
+  }
   if (isLoading) return <MetaLoader size={"small"} />;
 
   return (
@@ -111,7 +128,15 @@ export const OrdersTable = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Grid container spacing={2}>
+      
+      {filterCollection.length > 0 && filterCollection[0].count <= 10 && <Grid container spacing={2}>
+        <Grid item md={12}>
+          <div className="page_sec">
+            <span>Total of {filterCollection[0].count} operations</span>
+          </div>
+        </Grid>
+      </Grid>}
+      {filterCollection.length > 0 && filterCollection[0].count > 10 && <Grid container spacing={2}>
         <Grid item md={10}>
           <Stack spacing={2}>
             {filterCollection.length>0 && <div className="page_sec">
@@ -135,15 +160,14 @@ export const OrdersTable = (props) => {
               onChange={(e) => setPerPage(e.target.value)}
               label="Records per Page"
             >
-              <MenuItem value={10}>10/ Page</MenuItem>
-              <MenuItem value={20}>20/ Page</MenuItem>
-              <MenuItem value={50}>50/ Page</MenuItem>
-              <MenuItem value={100}>100/ Page</MenuItem>
+              {paginationOptionsFilter.map((option, index) => {
+                return <MenuItem key={index} value={option}>{option}/ Page</MenuItem>
+              })}
             </Select>
           </FormControl>
           </Stack>
         </Grid>
-      </Grid>
+      </Grid>}
     </>
   );
 };
