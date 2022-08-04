@@ -247,46 +247,6 @@ const Settings = (props) => {
                     </div>
                   </div>
                 </div>
-                <hr style={{ color: "rgba(80, 83, 97, 0.47)" }} />
-                <div className={styles.extraInfoChangeBlock}>
-                  <h3 style={{ fontWeight: "400", margin: "0 0 .3rem 0" }}>
-                    Account Profile
-                  </h3>
-                  <span>
-                    You can update an login wallet associated with your account
-                    using the form below.
-                  </span>
-                </div>
-                <form className={styles.changeDataForm}>
-                  <div className={styles.changeDataInput}>
-                    <label
-                      style={{
-                        color: "rgb(90, 103, 118)!important",
-                        margin: ".5rem 0",
-                      }}
-                      htmlFor="email"
-                    >
-                      Login<span style={{ color: "red" }}>*</span>
-                    </label>
-                    <input
-                      type={"text"}
-                      className={styles.input}
-                      placeholder={accountNameState}
-                      name={"login"}
-                      disabled
-                    />
-                  </div>
-                  <div className={styles.blockButton}>
-                    <button
-                      type={"submit"}
-                      style={{ width: "10rem", marginBottom: "2rem" }}
-                      className={styles.Button + " " + styles.disabled}
-                      disabled
-                    >
-                      Update
-                    </button>
-                  </div>
-                </form>
               </div>
             </div>
             <div className={styles.changeCurrencyBlock}>
