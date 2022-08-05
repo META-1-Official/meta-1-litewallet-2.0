@@ -20,43 +20,7 @@ async function getHistory(event) {
   );
   let newRawData = [];
   for (let i = 0; i < rawData.length; i++) {
-    const resultStatus = trxTypes[ops[rawData[i].op[0]]];
     if (newRawData.length !== amount) {
-      if (resultStatus === 'Fill order') {
-        if (rawData[i].op[0] === 4) {
-          let exchangeAsset = await Meta1.db.get_objects([
-            rawData[i]?.op[1]?.fill_price?.quote?.asset_id,
-          ]);
-          let block = await Meta1.db.get_block(rawData[i].block_num);
-          let date = new Date(block.timestamp);
-          let splitedBlock = new Date(date).toUTCString().split(" ");
-          let typeData;
-          let op1 = rawData[i].op[1];
-          let preAsset = await Meta1.db.get_objects([
-            op1?.fill_price?.quote?.asset_id
-          ]);
-          if( op1.fill_price?.quote?.asset_id === op1.pays.asset_id) {
-            typeData = "Fill (sold)";
-          } else if( op1.fill_price?.quote?.asset_id === op1.receives.asset_id) {
-            typeData = "Fill (bought)";
-          }
-          newRawData.push({
-            rawData: rawData[i],
-            exchangeAsset: exchangeAsset,
-            asset: {
-              name: "",
-              abbr: exchangeAsset[0]?.symbol?.toUpperCase(),
-            },
-            type: typeData,
-            usersData: `${localStorage.getItem("login")}`,
-            volume:
-            op1?.fill_price?.quote?.amount / 10 ** preAsset[0].precision,
-            status: resultStatus,
-            time: `${splitedBlock[1]} ${splitedBlock[2]}, ${splitedBlock[3]}, ${splitedBlock[4]}
-              `,
-          });
-        }
-      }
       if (rawData[i].virtual_op === 0) {
         // Exchange proccesing
         if (rawData[i].op[1]?.seller) {
