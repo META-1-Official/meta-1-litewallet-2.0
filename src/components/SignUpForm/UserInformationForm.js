@@ -51,7 +51,7 @@ const UserInformationForm = (props) => {
     return /\d/.test(myString);
   }
   const isVowelsNotExistAndHasNumber = (str) => {
-    if (str.match(/[aeiou]/gi) === null || hasNumber(str)) {
+    if (hasNumber(str)) {
       if (str.includes("-")) {
         return true;
       }
@@ -67,7 +67,7 @@ const UserInformationForm = (props) => {
       if (!error1) {
         setAccountNameErrors({
           content:
-            "This is a premium name which is not supported by this faucet. Please enter a regular name containing least one dash, a number or no vowels.",
+            "Please enter a wallet nickname (not your personal name) containing at least one dash, a number",
           pointing: "below",
         });
       } else {
@@ -79,7 +79,7 @@ const UserInformationForm = (props) => {
     } else if (!error1) {
       setAccountNameErrors({
         content:
-          "This is a premium name which is not supported by this faucet. Please enter a regular name containing least one dash, a number or no vowels.",
+          "Please enter a wallet nickname (not your personal name) containing at least one dash, a number",
         pointing: "below",
       });
     } else {
@@ -223,40 +223,41 @@ const UserInformationForm = (props) => {
             </div>
 
             <Form.Field>
-              <label>Account Name</label>
+              <label>Wallet Name</label>
               <input
                 control={Input}
                 value={accountName}
                 type="text"
                 error={accountNameErrors}
-                placeholder="Account Name"
+                placeholder="Wallet Name"
                 onChange={({ target }) => {
                   setAccountName(target.value.toLocaleLowerCase());
                   setTouchedAccountName(true);
                 }}
               />
-              {accountNameErrors?.content && touchedAccountName ? (
+              {accountName && accountNameErrors?.content && touchedAccountName ? (
                 <p style={{ color: "red" }}> {accountNameErrors?.content}</p>
               ) : null}
             </Form.Field>
 
             <Form.Field>
-              <label>Password test</label>
+              <label>Copy Wallet Passkey</label>
               <div className="ui action input">
-                <input value={generatedPassword} type="text" disabled />
+                <input value={generatedPassword} type="text" disabled className="dark-wallet-key" />
                 <CopyToClipboard text={generatedPassword} onCopy={() => {}}>
                   <div
                     name="copyToken"
-                    className="ui yellow right icon button brown"
+                    className="ui yellow right icon button brown show_text"
                   >
                     <i className="fal fa-copy" />
                   </div>
                 </CopyToClipboard>
+                <span className="copy_text">Copy</span>
               </div>
             </Form.Field>
 
             <Form.Field>
-              <label>Password Confirmation</label>
+              <label>Passkey Confirmation</label>
               <input
                 type="password"
                 value={password}
@@ -266,11 +267,14 @@ const UserInformationForm = (props) => {
             {searchAccount.length > 0 && searchAccount[0][0] === accountName && (
               <p style={{ color: "red" }}>Account is already used </p>
             )}
+            <div>
+                <span style={{ fontFamily: 'inherit', color: 'red' }}>Please make sure you have copied and SAVED your Passkey in another location (such as a word document or to your note pad) before clicking on the Submit Button. If you have not saved this Passkey, it can NOT be recovered.</span>
+            </div>
             <Form.Field>
               <Button
                 // onClick={() => setIsSubmitted(true)}
                 className="yellow"
-                style={{ color: "#240000" }}
+                style={{ color: "#240000", marginTop:'1em' }}
                 type="submit"
                 disabled={
                   firstName === "" ||

@@ -48,6 +48,28 @@ export async function saveUserCurrency(login, currency) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error:true };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error:true };
+  }
+}
+
+export async function uploadAvatar(formData) {
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + getAccessToken(),
+      "Content-Type": "multipart/form-data",
+    }
+  }
+  try {
+    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/saveAvatar`,
+      formData,
+      config
+    );
+    return data;
+  } catch (err) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
@@ -93,6 +115,16 @@ export async function changeLastLocation(login, location) {
     }
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
   }
+}
+
+export async function saveBalance(login) {
+  const config = {}
+  try {
+    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/saveBalance`, {
+      accountName: login,
+    }, config);
+    return data;
+  } catch (err) {}
 }
 
 export async function getLastLocation(login) {
@@ -149,6 +181,17 @@ export async function loginRequest(accountName, password) {
     );
     return { ...data, error: false };
   } catch (e) {
-    return { message: "Wallet name or password is wrong", error: true };
+    return { message: "Wallet name or passkey is wrong", error: true };
+  }
+}
+
+export async function getHistoryData(accountName,from, size) {
+  try {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_EXPLORER_META1_URL}/api/v1/es/account_history?account_id=${accountName}&from=${from}&size=${size}&type=data&sort_by=-account_history.sequence`
+    );
+    return { ...data, error: false };
+  } catch (e) {
+    return { message: "something went wrong", error: true };
   }
 }

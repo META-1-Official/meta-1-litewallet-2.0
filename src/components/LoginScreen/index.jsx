@@ -4,6 +4,8 @@ import "./login.css";
 import styles from "./login.module.scss";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
+import { useDispatch } from "react-redux";
+import { logoutRequest } from "../../store/account/actions";
 
 export default function LoginScreen(props) {
   const {
@@ -14,6 +16,7 @@ export default function LoginScreen(props) {
     portfolio,
     onClickExchangeEOSHandler,
     onClickExchangeUSDTHandler,
+    setLoginDataError
   } = props;
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +26,7 @@ export default function LoginScreen(props) {
     login: false,
     password: false
   });
+  const dispatch = useDispatch();
   const handleSignUpClick = (e) => {
     e.preventDefault();
     onSignUpClick();
@@ -52,18 +56,13 @@ export default function LoginScreen(props) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validationHandler()) {
+      setLoginDataError(false);
       return;
     }
     if (login.length !== 0 && password.length !== 0) {
       onSubmit(login, true, password);
     }
   };
-
-  useEffect(() => {
-    setTimeout(() => {
-      document.getElementById("mainBlock").style.height = "92vh";
-    }, 5);
-  }, []);
 
   return (
     <div className={styles.body}>
@@ -130,7 +129,7 @@ export default function LoginScreen(props) {
                     }
                     setPassword(e.target.value);
                   }}
-                  placeholder={"Password"}
+                  placeholder={"Passkey"}
                   value={password}
                   type="password"
                 />
@@ -144,12 +143,12 @@ export default function LoginScreen(props) {
                   className={styles.ErrorP}
                   style={loginDataError ? null : { display: "none" }}
                 >
-                  Wallet name or password is wrong
+                  Wallet name or Passkey is wrong
                 </p>
                 {errorAttr.login && errorAttr.password ?
-                  <p className={styles.ErrorP}>Wallet Name and Password can't be empty</p> :
+                  <p className={styles.ErrorP}>Wallet Name and Passkey can't be empty</p> :
                   errorAttr.login ? <p className={styles.ErrorP}>Wallet Name can't be empty</p> :
-                    errorAttr.password ? <p className={styles.ErrorP}>Password can't be empty</p>
+                    errorAttr.password ? <p className={styles.ErrorP}>Passkey can't be empty</p>
                       : null
                 }
                 <button
@@ -171,10 +170,7 @@ export default function LoginScreen(props) {
               <button
                 className={styles.Button}
                 onClick={() => {
-                  removeLoginDetail();
-                  removeAccessToken();
-                  setLocation("wallet");
-                  window.location.reload();
+                  dispatch(logoutRequest());
                 }}
                 type={"button"}
                 style={{ marginTop: "0" }}
@@ -227,14 +223,14 @@ const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
         letters, blank spaces, @, +, !, nor any other non- number/letter
         characters except a dash)
         <br />
-        4. Copy the Generated Password / Passphrase (52 characters) Do NOT
-        create your own password. You must use the auto generated password and
-        properly paste it into the confirm password field; You can click the
-        small clipboard under the ‘generated’ password field (lower right side).
-        Be sure to properly record and secure both the password ‘KEY’ and
+        4. Copy the Generated Passkey / Passphrase (52 characters) Do NOT
+        create your own passkey. You must use the auto generated passkey and
+        properly paste it into the confirm passkey field; You can click the
+        small clipboard under the ‘generated’ passkey field (lower right side).
+        Be sure to properly record and secure both the passkey ‘KEY’ and
         account name in a safe location.
         <br />
-        5. PASTE password phrase into the confirmation box below.
+        5. PASTE passkey phrase into the confirmation box below.
         <br />
         6. Click Submit
         <br />

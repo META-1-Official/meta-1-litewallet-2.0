@@ -11,6 +11,10 @@ import { helpSendTo, helpAmount, helpMax1, helpSwap } from "../../config/help";
 import "./style.css";
 import InputAdornment from "@mui/material/InputAdornment";
 import Meta1 from "meta1-vision-dex";
+import { useDispatch, useSelector } from "react-redux";
+import { checkPasswordObjSelector, portfolioReceiverSelector, senderApiSelector, userCurrencySelector } from "../../store/meta1/selector";
+import { accountsSelector } from "../../store/account/selector";
+import { saveBalanceRequest } from "../../store/meta1/actions";
 
 const FEE = 0.0035;
 
@@ -19,15 +23,17 @@ const SendForm = React.memo((props) => {
     portfolio,
     onBackClick,
     sender,
-    sendApi,
     asset,
     onSuccessTransfer,
-    portfolioReceiver,
     assets,
     onClickExchangeEOSHandler,
-    onClickExchangeUSDTHandler,
-    userCurrency,
+    onClickExchangeUSDTHandler
   } = props;
+  const userCurrencyState = useSelector(userCurrencySelector);
+  const sendApiState = useSelector(senderApiSelector);
+  const portfolioReceiverState = useSelector(portfolioReceiverSelector);
+  const accountState = useSelector(accountsSelector);
+  const dispatch = useDispatch();
   const feeAsset = portfolio.find((asset) => asset.name === "META1");
   const amountHold =
     portfolio.find((cur) => cur.name === asset).qty == undefined
@@ -56,6 +62,7 @@ const SendForm = React.memo((props) => {
   const [password, setPassword] = useState("");
   const [clickedInputs, setClickedInputs] = useState(false);
   const [feeAlert, setFeeAlert] = useState(false);
+  const checkPasswordState = useSelector(checkPasswordObjSelector);
 
   useEffect(() => {
     async function getData() {
@@ -165,7 +172,7 @@ const SendForm = React.memo((props) => {
     let priceForOne = Number(e.target.value) * priceForAsset;
     setBlockPrice(
       Number(priceForOne).toFixed(precisionAssets[asset]) *
-      Number(userCurrency.split(" ")[2])
+      Number(userCurrencyState.split(" ")[2])
     );
   };
 
@@ -182,7 +189,7 @@ const SendForm = React.memo((props) => {
     let priceForOne = (
       Number(e.target.value.split("$")[0]) /
       priceForAsset /
-      Number(userCurrency.split(" ")[2])
+      Number(userCurrencyState.split(" ")[2])
     ).toFixed(precisionAssets[asset]);
     setAmount(priceForOne);
     setBlockPrice(e.target.value);
@@ -192,7 +199,7 @@ const SendForm = React.memo((props) => {
     async function fetchAccount(debouncedAccount) {
       // Сделать запрос к АП
       try {
-        await portfolioReceiver.fetch(debouncedAccount);
+        await portfolioReceiverState.fetch(debouncedAccount);
         setAccountChecked(true);
         setAccountIsLoading(false);
         if (receiver === sender) {
@@ -229,7 +236,14 @@ const SendForm = React.memo((props) => {
     setError(null);
     setInProgress(true);
     const { password, to, amount, message } = params;
-    const result = await sendApi.perform({
+    const passwordResult = await checkPasswordState.checkPasword(password);
+    if (passwordResult.error !== null) {
+      setError(passwordResult.error);
+      setRepeat(true);
+      setInProgress(false);
+      return;
+    }
+    const result = await sendApiState.perform({
       password,
       to,
       amount,
@@ -246,6 +260,7 @@ const SendForm = React.memo((props) => {
       }
       setRepeat(true);
     } else {
+      dispatch(saveBalanceRequest(accountState))
       setModalOpened(true);
     }
     setInProgress(false);
@@ -256,7 +271,7 @@ const SendForm = React.memo((props) => {
     setBlockPrice(
       Number(assetData.balance * priceForAsset).toFixed(
         precisionAssets[asset]
-      ) * Number(userCurrency.split(" ")[2])
+      ) * Number(userCurrencyState.split(" ")[2])
     );
   };
 
@@ -287,7 +302,7 @@ const SendForm = React.memo((props) => {
       <div class="ui large fluid labeled input action">
         <input
           type="password"
-          placeholder="password"
+          placeholder="Passkey"
           value={password}
           onChange={(e) => setPassword(e.target.value.trim())}
         />
@@ -470,10 +485,10 @@ const SendForm = React.memo((props) => {
                             calculateCryptoPriceHandler(e);
                           }
                         }}
-                        placeholder={`Amount ${userCurrency.split(" ")[1]}`}
+                        placeholder={`Amount ${userCurrencyState.split(" ")[1]}`}
                         value={amount ? blockPrice : ""}
                       />
-                      <span style={{ fontSize: '16px' }} className={styles['abs-sp']} >{userCurrency.split(" ")[0]}</span>
+                      <span style={{ fontSize: '16px' }} className={styles['abs-sp']} >{userCurrencyState.split(" ")[0]}</span>
                     </div>
                     <div
                       style={{
@@ -515,7 +530,7 @@ const SendForm = React.memo((props) => {
                   <Grid.Column>
                     <TextField
                       InputProps={{ disableUnderline: true }}
-                      label="Password"
+                      label="Passkey"
                       className={styles.input}
                       type={"password"}
                       id="reddit-input pass"
@@ -571,7 +586,7 @@ const SendForm = React.memo((props) => {
                         {Number(amount) ? amount : 0} {assetData.label}
                       </h3>
                       <span>
-                        {blockPrice || 0} {userCurrency.split(" ")[1]}
+                        {blockPrice || 0} {userCurrencyState.split(" ")[1]}
                       </span>
                     </div>
                   </div>

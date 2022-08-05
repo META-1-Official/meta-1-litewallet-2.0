@@ -19,18 +19,22 @@ import Meta1 from "meta1-vision-dex";
 import InputAdornment from "@mui/material/InputAdornment";
 import leftArrow from "../../images/exchangeAssets/Shape Left.png";
 import rightArrow from "../../images/exchangeAssets/Shape 2 copy 2.png";
+import { useDispatch, useSelector } from "react-redux";
+import { checkPasswordObjSelector, traderSelector, userCurrencySelector } from "../../store/meta1/selector";
+import { accountsSelector } from "../../store/account/selector";
+import { saveBalanceRequest } from "../../store/meta1/actions";
 
 export default function ExchangeForm(props) {
   const {
     onSuccessModal,
-    trader,
     asset,
     onBackClick,
     metaUrl,
-    portfolioReceiver,
-    onSuccessTrade,
-    userCurrency,
+    onSuccessTrade
   } = props;
+  const traderState = useSelector(traderSelector);
+  const userCurrencyState = useSelector(userCurrencySelector);
+  const accountState = useSelector(accountsSelector);
   const [portfolio, setPortfolio] = useState(props.portfolio);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
     useState(false);
@@ -51,6 +55,8 @@ export default function ExchangeForm(props) {
   const [clickedInputs, setClickedInputs] = useState(false);
   const [error, setError] = useState();
   const [feeAlert, setFeeAlert] = useState(false);
+  const checkPasswordState = useSelector(checkPasswordObjSelector);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     console.log(pair);
@@ -79,17 +85,17 @@ export default function ExchangeForm(props) {
     if (Number(selectedFromAmount) <= 0 && clickedInputs) {
       setError(
         `The amount must be greater than ${(
-          0.003 * Number(userCurrency.split(" ")[2])
-        ).toFixed(4)} ${userCurrency.split(" ")[1]}`
+          0.003 * Number(userCurrencyState.split(" ")[2])
+        ).toFixed(4)} ${userCurrencyState.split(" ")[1]}`
       );
     } else {
       setError("");
     }
-    if (Number(blockPrice) <= 0.003 * Number(userCurrency.split(" ")[2])){
+    if (Number(blockPrice) <= 0.003 * Number(userCurrencyState.split(" ")[2])){
         setError(
           `The amount must be greater than ${Number(
-            (0.003 * Number(userCurrency.split(" ")[2])).toFixed(4)
-          )} ${userCurrency.split(" ")[1]}`
+            (0.003 * Number(userCurrencyState.split(" ")[2])).toFixed(4)
+          )} ${userCurrencyState.split(" ")[1]}`
         );
 
       } else if (feeAsset == undefined) {
@@ -140,14 +146,6 @@ export default function ExchangeForm(props) {
   }, [props.assets, props.portfolio]);
 
   useEffect(() => {
-    if (!isMobile) {
-      setTimeout(() => {
-        document.getElementById("mainBlock").style.height = "92vh";
-      }, 25);
-    }
-  }, []);
-
-  useEffect(() => {
     if (pair == null) return;
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
       setInvalidEx(true);
@@ -165,7 +163,7 @@ export default function ExchangeForm(props) {
         priceAsset=lastPrice
       }
       let priceForOne = (Number(e.target.value) * priceAsset).toFixed(10);
-      setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
+      setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
     } else {
       setBlockPrice(NaN);
     }
@@ -176,7 +174,7 @@ export default function ExchangeForm(props) {
     let priceForOne = (
       Number(e.target.value) /
       priceForAsset /
-      Number(userCurrency.split(" ")[2])
+      Number(userCurrencyState.split(" ")[2])
     ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
     setSelectedFromAmount(priceForOne);
   };
@@ -192,9 +190,13 @@ export default function ExchangeForm(props) {
     }
     setInvalidEx(false);
     const selectedAmount=currentValue?currentValue:selectedFromAmount
+    let amount;
     if (selectedAmount !== "" && selectedAmount) {
-      const amount =
-        (selectedAmount / pair.lowest_ask).toString().substr(0, 11) * 1;
+      if (pair.base === "META1") {
+        amount = (selectedAmount / pair.latest).toString().substr(0, 11) * 1;
+      } else {
+        amount = (selectedAmount / pair.lowest_ask).toString().substr(0, 11) * 1;
+      }
       setSelectedToAmount(amount);
     } else {
       setSelectedToAmount(0);
@@ -309,8 +311,14 @@ export default function ExchangeForm(props) {
     try {
       setTradeInProgress(true);
       setPasswordShouldBeProvided(false);
-
-      const buyResult = await trader.perform({
+      const result = await checkPasswordState.checkPasword(password);
+      if (result.error !== null) {
+        setTradeError(result.error);
+        setPassword("");
+        setTradeInProgress(false);
+        return;
+      }
+      const buyResult = await traderState.perform({
         from: selectedFrom.value,
         to: selectedTo.value.trim(),
         amount: selectedToAmount,
@@ -319,6 +327,7 @@ export default function ExchangeForm(props) {
       if (buyResult.error) {
         setTradeError(buyResult.error);
       } else {
+        dispatch(saveBalanceRequest(accountState))
         setModalOpened(true);
       }
       setPassword("");
@@ -336,7 +345,7 @@ export default function ExchangeForm(props) {
       let priceForOne = (
         Number(document.getElementById("inputAmount").value) * priceForAsset
       ).toFixed(3);
-      setBlockPrice(priceForOne * Number(userCurrency.split(" ")[2]));
+      setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
     }, 25);
   };
   const ariaLabel = { "aria-label": "description" };
@@ -618,7 +627,7 @@ export default function ExchangeForm(props) {
                                     inputmode="numeric"
                                     pattern="\d*"
                                     type={"number"}
-                                    placeholder={`Amount ${userCurrency.split(" ")[1]
+                                    placeholder={`Amount ${userCurrencyState.split(" ")[1]
                                       }`}
                                     disabled={invalidEx}
                                     style={
@@ -626,7 +635,7 @@ export default function ExchangeForm(props) {
                                     }
                                     value={blockPrice}
                                   />
-                                  <span className={styles['abs-sp']} >{userCurrency.split(" ")[0]}</span>
+                                  <span className={styles['abs-sp']} >{userCurrencyState.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
@@ -763,7 +772,7 @@ export default function ExchangeForm(props) {
                                       ? blockPrice
                                       : 0}
                                   </span>
-                                  <span className={styles['abs-sp']}>{userCurrency.split(" ")[0]}</span>
+                                  <span className={styles['abs-sp']}>{userCurrencyState.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
@@ -795,7 +804,7 @@ export default function ExchangeForm(props) {
                     </h4>
                     <span>
                       {!invalidEx && blockPrice
-                        ? `${blockPrice}${userCurrency.split(" ")[0]}`
+                        ? `${blockPrice}${userCurrencyState.split(" ")[0]}`
                         : 0}
                     </span>
                   </div>
@@ -841,7 +850,7 @@ export default function ExchangeForm(props) {
                     </h4>
                     <span>
                       {!invalidEx && blockPrice
-                        ? `${blockPrice}${userCurrency.split(" ")[0]}`
+                        ? `${blockPrice}${userCurrencyState.split(" ")[0]}`
                         : 0}
                     </span>
                   </div>
@@ -866,7 +875,7 @@ export default function ExchangeForm(props) {
                   <Input
                     size="medium"
                     type="password"
-                    placeholder="password"
+                    placeholder="Passkey"
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
                   />

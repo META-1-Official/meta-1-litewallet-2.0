@@ -9,12 +9,18 @@ export default class TradeWithPassword {
 
     try {
       const pair = await this.metaApi.ticker(from, to);
+      let pairAmt;
+      if (from === "META1") {
+        pairAmt = pair.latest;
+      } else {
+        pairAmt = pair.lowest_ask;
+      }
       const account = await this.metaApi.login(this.login, password);
       const buyResult = await account.buy(
         to,
         from,
         parseFloat(amount),
-        pair.lowest_ask,
+        pairAmt,
         false,
         new Date("12/12/2031")
       );

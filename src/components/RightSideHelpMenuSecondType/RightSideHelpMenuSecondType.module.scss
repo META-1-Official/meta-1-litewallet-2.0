@@ -104,6 +104,27 @@
     margin: 1rem 0.5rem 1rem 0.5rem !important;
   }
 }
+.introHistory {
+  height: 18rem;
+  p {
+    font-size: 0.75rem;
+  }
+}
+.spanStatusBtn {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  text-align: center;
+  max-width: 104px;
+  min-height: 34px;
+  text-transform: uppercase;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  white-space: pre-wrap;
+  color: rgba(0, 0, 0, 0.87) !important;
+  font-weight: 200;
+}
 .helpBlock {
   display: flex;
   flex-direction: column;

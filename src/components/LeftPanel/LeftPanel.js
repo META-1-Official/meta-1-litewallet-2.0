@@ -5,6 +5,8 @@ import user from "../../images/default-pic1.png";
 import firstPart from "../../images/assetsForSidebar/Shape 2.png";
 import secondPart from "../../images/assetsForSidebar/Shape 2 copy.png";
 import homeIcon from "../../images/assetsForSidebar/Shape 5.png";
+import { useSelector } from "react-redux";
+import { profileImageSelector } from "../../store/account/selector";
 
 const LeftPanel = (props) => {
   const {
@@ -17,10 +19,9 @@ const LeftPanel = (props) => {
     onClickHistoryHandler,
     portfolio,
     name,
-    activeScreen,
-    userIcon,
+    activeScreen
   } = props;
-
+  const profileImageState =  useSelector(profileImageSelector);
   const portfolioScrollPositionHoverEvent = (e) => {
     if (e.clientY <= 70) {
       if (document.querySelector('#modalBlock')) {
@@ -65,7 +66,7 @@ const LeftPanel = (props) => {
           <div>
             <img
               className={styles.imageUser}
-              src={userIcon}
+              src={profileImageState}
               id="leftAvatar"
               alt="user"
             />

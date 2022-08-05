@@ -4,9 +4,13 @@ import "./styles.css";
 import logo from "../../images/Logo.png";
 import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import WidgetOnRamper from "./WidgetOnRamper";
-import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutRequest } from "../../store/account/actions";
+import { navbarProfileImageSelector } from "../../store/account/selector";
 
 const Navbar = (props) => {
+  const dispatch = useDispatch();
+  const navbarProfileImageState = useSelector(navbarProfileImageSelector)
   const {
     onClickHomeHandler,
     onClickPortfolioHandler,
@@ -16,14 +20,14 @@ const Navbar = (props) => {
     onClickSettingsHandler,
     onClickHistoryHandler,
     portfolio,
-    name,
-    userIcon,
-    userIconDefault,
+    name
   } = props;
 
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
-
+  const openInNewTab = url => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
   return (
     <>
       <div
@@ -108,16 +112,62 @@ const Navbar = (props) => {
                     Get help
                   </span>
                 </div>
-                <button
-                  className={
-                    name && portfolio ? styles.btn : styles.btnDisabled
-                  }
-                  disabled={!name && !portfolio}
-                  data-bs-toggle="modal"
-                  data-bs-target="#fund"
-                >
-                  Fund Account
-                </button>
+                <div className="nav-item dropdown parent-this">
+                  <a
+                    className={styles.btn}
+                    href="#"
+                    id="navbarScrollingDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Fund Wallet
+                   <span 
+                   className="nav-link dropdown-toggle for-dropdown"
+                    id="navbarScrollingDropdown"
+                   ></span>
+                    <div
+                      className={"imgUser"}
+                      style={{ marginLeft: ".3rem" }}
+                    >
+                    </div>
+                  </a>
+                  <ul
+                    className="dropdown-menu"
+                    aria-labelledby="navbarScrollingDropdown"
+                    style={{ marginLeft: "-4rem", width: "8rem" }}
+                  >
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        style={{ textAlign: "center" }}
+                        disabled={!name && !portfolio}
+                        data-bs-toggle="modal"
+                        data-bs-target="#fund"
+                      >
+                        Fund Wallet With Credit/Debit Card
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        style={{ textAlign: "center" }}
+                        onClick={() => openInNewTab(process.env.REACT_APP_FUND_WALLET_WITH_CRYPTOCURRENCY)}
+                      >
+                        Fund Wallet With Cryptocurrency
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        style={{ textAlign: "center" }}
+                        onClick={() => openInNewTab(process.env.REACT_APP_FUND_WALLET_WITH_WIRE_OR_CHECK)}
+                      >
+                        Fund Wallet with Wire or Check
+                      </button>
+                    </li>
+                  </ul>
+                </div>
                 <div className={styles.line + styles.adaptNeed} />
                 <div
                   className={styles.adaptNeed}
@@ -144,7 +194,7 @@ const Navbar = (props) => {
                         <img
                           className={styles.userImg}
                           id="avatarNavbar"
-                          src={userIcon}
+                          src={navbarProfileImageState}
                           alt="user"
                         />
                       </div>
@@ -160,10 +210,7 @@ const Navbar = (props) => {
                             className="dropdown-item"
                             style={{ textAlign: "center" }}
                             onClick={() => {
-                              removeLoginDetail();
-                              removeAccessToken();
-                              setLocation("wallet");
-                              window.location.reload();
+                              dispatch(logoutRequest());
                             }}
                           >
                             Log Out
@@ -186,7 +233,6 @@ const Navbar = (props) => {
                 onClickHistoryHandler={onClickHistoryHandler}
                 portfolio={portfolio}
                 name={name}
-                userIcon={userIconDefault}
               />
             ) : null}
           </div>

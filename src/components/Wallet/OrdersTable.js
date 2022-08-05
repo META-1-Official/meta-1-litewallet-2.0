@@ -1,5 +1,4 @@
 import { useQuery } from "react-query";
-import Meta1 from "meta1-vision-dex";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,14 +11,20 @@ import Paper from "@mui/material/Paper";
 import { getAsset, getFullName } from "./cryptoChooser";
 import getHistory from "../../lib/fetchHistory";
 import { removeExponent } from "../../utils/commonFunction";
+import { useEffect, useState } from "react";
 
 export const OrdersTable = (props) => {
   const { column, direction, assets, account } = props;
-
-  const { data, isLoading, error } = useQuery("history", getHistory, {
-    refetchInterval: 1500,
-  });
-
+  const [pageNum, setPageNum] = useState(1);
+  const [perPage,setPerPage]= useState(10);
+  const [filterCollection, setFilterCollection] = useState([]);
+  const { data, isLoading, error } = useQuery(["history", pageNum, perPage], getHistory);
+  useEffect(()=>{
+    if (Array.isArray(data)) {
+      setFilterCollection(data);
+    }
+  },[data]);
+  
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.white,
@@ -50,7 +55,7 @@ export const OrdersTable = (props) => {
     <>
       <TableContainer style={{ overflow: "auto" }} component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
+        <TableHead>
             <TableRow style={{ display: "table-row" }}>
               <StyledTableCell
                 sorted={column === "id" ? direction : null}
@@ -69,7 +74,7 @@ export const OrdersTable = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((el, index) => (
+            {filterCollection?.map((el, index) => (
               <StyledTableRow key={index}>
                 <StyledTableCell
                   component="th"
@@ -106,11 +111,7 @@ export const OrdersTable = (props) => {
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <h6
-                    style={
-                      el.status === "Done"
-                        ? { margin: "0", color: "#00aa08" }
-                        : { margin: "0", color: "rgb(248, 0, 0)" }
-                    }
+                    className='success-class'
                   >
                     {el.status}
                   </h6>

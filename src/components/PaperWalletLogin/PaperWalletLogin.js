@@ -7,20 +7,23 @@ import { PrivateKey } from "meta1-vision-js";
 import { createPaperWalletAsPDF } from "./CreatePdfWallet";
 import Meta1 from "meta1-vision-dex";
 import "./style.css";
+import { useSelector } from "react-redux";
+import { portfolioReceiverSelector } from "../../store/meta1/selector";
 
-export default function PaperWalletLogin({ portfolioReceiver, accountName }) {
+export default function PaperWalletLogin({ accountName }) {
   const [account, setAccount] = useState(localStorage.getItem("login") || accountName);
   const [password, setPassword] = useState("");
   const [readyToCreate, setReadyToCreate] = useState(false);
   const [accountChecked, setAccountChecked] = useState(true);
   const [check, setCheck] = useState(false);
   const debouncedAccount = useDebounce(account, 500);
+  const portfolioReceiverState =  useSelector(portfolioReceiverSelector);
   useEffect(() => {
     if (account?.length > 0) {
       async function fetchAccount(debouncedAccount) {
         // Сделать запрос к АП
         try {
-          await portfolioReceiver.fetch(debouncedAccount);
+          await portfolioReceiverState.fetch(debouncedAccount);
           setAccountChecked(true);
         } catch (e) {
           setAccountChecked(false);
@@ -94,14 +97,14 @@ export default function PaperWalletLogin({ portfolioReceiver, accountName }) {
         </FormField>
         <FormField>
           <label basic className="paper_wallet_login_label">
-            Password
+          Passkey
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {check !== false && <p style={{ color: "red" }}>Invalid Password</p>}
+          {check !== false && <p style={{ color: "red" }}>Invalid Passkey</p>}
         </FormField>
         <Button
           color="yellow"

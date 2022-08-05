@@ -25,3 +25,42 @@
 .navbar-toggler-icon {
   filter: invert(1);
 }
+div#navbarSupportedContent a#navbarScrollingDropdown {
+  display: inline-block;
+  text-align: center;
+  position: relative;
+}
+div#navbarSupportedContent .dropdown-toggle::after {
+  position: absolute;
+  right: -5px;
+  top: 0;
+}
+div#navbarSupportedContent ul.dropdown-menu {
+  min-width: 330px !important;
+  width: 100% !important;
+  left: auto !important;
+  right: 0;
+}
+div#navbarSupportedContent ul.dropdown-menu.for-size {
+  min-width: 110px !important;
+}
+div#navbarSupportedContent ul.dropdown-menu.show li button {
+  text-align: left !important;
+}
+div#navbarSupportedContent a#navbarScrollingDropdown:hover {
+  color: #000 !important;
+}
+div#navbarSupportedContent .nav-item.dropdown.parent-this .dropdown-toggle::after{
+  position: absolute;
+  right: 15px;
+  top: -10px;
+  color: #000;
+}
+div#navbarSupportedContent .nav-item.dropdown.parent-this a#navbarScrollingDropdown {
+  padding-right: 15px;
+  padding-left: 0px;
+  width: 145px;
+}
+div#navbarSupportedContent ul.dropdown-menu.show li button:hover {
+  color: #330000 !important;
+}

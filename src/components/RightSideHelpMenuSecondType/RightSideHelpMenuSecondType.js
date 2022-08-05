@@ -5,6 +5,17 @@ import MetaLoader from "../../UI/loader/Loader";
 import { getAsset } from "../Wallet/cryptoChooser";
 import getHistory from "../../lib/fetchHistory";
 import { removeExponent } from '../../utils/commonFunction'
+import { trxTypes } from "../../helpers/utility";
+import { ChainTypes as grapheneChainTypes } from 'meta1-vision-js';
+const {operations} = grapheneChainTypes;
+const ops = Object.keys(operations);
+ops.push(
+	'property_create_operation',
+	'property_update_operation',
+	'property_approve_operation',
+	'property_delete_operation',
+	'asset_price_publish_operation'
+);
 const RightSideHelpMenuSecondType = (props) => {
   const { onClickExchangeEOSHandler, onClickExchangeUSDTHandler } = props;
 
@@ -90,7 +101,7 @@ const RightSideHelpMenuSecondType = (props) => {
           </div>
         </div>
       </div>
-      <div className={styles.intro}>
+      <div className={`${styles.intro} ${props.fromHistory ? styles.introHistory : ''}`}>
         <h5>Recent Transactions</h5>
         <hr />
         {isLoading ? (
@@ -108,13 +119,16 @@ const RightSideHelpMenuSecondType = (props) => {
               }}
             >
               <div
-                style={{
+                style={ props.fromHistory? {
                   margin: "auto 0",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
                   width: "6rem",
-                }}
+                }: {
+                margin: "auto 0",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                width: "6rem",
+              }}
               >
                 {getAsset(el.asset.abbr)}
                 <p
