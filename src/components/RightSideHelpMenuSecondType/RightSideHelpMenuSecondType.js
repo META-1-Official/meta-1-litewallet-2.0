@@ -101,7 +101,7 @@ const RightSideHelpMenuSecondType = (props) => {
           </div>
         </div>
       </div>
-      <div className={styles.intro}>
+      <div className={`${styles.intro} ${props.fromHistory ? styles.introHistory : ''}`}>
         <h5>Recent Transactions</h5>
         <hr />
         {isLoading ? (
@@ -119,17 +119,37 @@ const RightSideHelpMenuSecondType = (props) => {
               }}
             >
               <div
-                style={{ margin: "auto 0", width: "6rem", textAlign: "end" }}
+                style={ props.fromHistory? {
+                  margin: "auto 0",
+                  width: "6rem",
+                }: {
+                margin: "auto 0",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                width: "6rem",
+              }}
               >
-                <span
-                  className={styles.spanStatusBtn}
-                  style={{ background: `#${el.op_color}` }}
-                >{trxTypes[ops[el.op_type]]}</span>
+                {getAsset(el.asset.abbr)}
+                <p
+                  style={{
+                    color: "",
+                    marginLeft: ".5rem",
+                    fontSize: ".8rem",
+                  }}
+                >
+                  <strong>{el.asset.abbr}</strong>
+                </p>
+              </div>
+              <div
+                style={{ margin: "auto 0", width: "4rem", textAlign: "end" }}
+              >
+                <p>{el.type}</p>
               </div>
               <div
                 style={{ margin: ".25rem 0", width: "6rem", textAlign: "end" }}
               >
-                <p>{removeExponent(Number(el.amount))}</p>
+                <p>{removeExponent(Number(el.volume))}</p>
               </div>
             </div>
           ))

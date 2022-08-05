@@ -697,6 +697,7 @@ function Application(props) {
                             setTradeAsset("EOS");
                             setActiveScreen("exchange");
                           }}
+                          fromHistory={true}
                         />
                       </div>
                     </div>
@@ -776,6 +777,7 @@ function Application(props) {
                             setTradeAsset("EOS");
                             setActiveScreen("exchange");
                           }}
+                          fromHistory={true}
                         />
                       </div>
                     </div>

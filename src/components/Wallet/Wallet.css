@@ -343,6 +343,11 @@
   }
 }
 
+.success-class {
+  margin: 0; 
+  color: #00aa08;
+}
+
 .span-status-btn {
   font-style: normal;
   font-weight: 400;
