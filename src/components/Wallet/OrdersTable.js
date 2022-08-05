@@ -1,5 +1,4 @@
 import { useQuery } from "react-query";
-import Meta1 from "meta1-vision-dex";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,21 +11,7 @@ import Paper from "@mui/material/Paper";
 import { getAsset, getFullName } from "./cryptoChooser";
 import getHistory from "../../lib/fetchHistory";
 import { removeExponent } from "../../utils/commonFunction";
-import { FormControl, Grid, InputLabel, MenuItem, Pagination, Select, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import { trxTypes } from "../../helpers/utility";
-import { ChainTypes as grapheneChainTypes } from 'meta1-vision-js';
-import TrxHash from './TransactionHash';
-
-const {operations} = grapheneChainTypes;
-const ops = Object.keys(operations);
-ops.push(
-	'property_create_operation',
-	'property_update_operation',
-	'property_approve_operation',
-	'property_delete_operation',
-	'asset_price_publish_operation'
-);
 
 export const OrdersTable = (props) => {
   const { column, direction, assets, account } = props;
@@ -64,61 +49,72 @@ export const OrdersTable = (props) => {
     },
   }));
 
-  const paginationOptions = [10,20,50,100];
-  let paginationOptionsFilter = [];
-  if (filterCollection.length > 0) {
-    if (filterCollection[0].count <= 50) {
-      if(filterCollection[0].count > 10) {
-        for(let i = 0; i < paginationOptions.length; i++) {
-          if (paginationOptions[i] <= filterCollection[0].count) {
-            paginationOptionsFilter.push(paginationOptions[i]);
-          } else if (paginationOptions[i-1] < filterCollection[0].count && paginationOptions[i] > filterCollection[0].count) {
-            paginationOptionsFilter.push(paginationOptions[i]);
-          }
-        }
-      }
-    } else {
-      paginationOptionsFilter = [...paginationOptions];
-    }
-  }
   if (isLoading) return <MetaLoader size={"small"} />;
 
   return (
     <>
       <TableContainer style={{ overflow: "auto" }} component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
+        <TableHead>
             <TableRow style={{ display: "table-row" }}>
               <StyledTableCell
                 sorted={column === "id" ? direction : null}
                 onClick={() => {}}
                 align="left"
               >
-                Operation
+                Assets
               </StyledTableCell>
-              <StyledTableCell align="left">
+              <StyledTableCell align="left">Type</StyledTableCell>
+              <StyledTableCell align="center">
                 Sender / Receiver
               </StyledTableCell>
-              <StyledTableCell align="left">Transaction Hash</StyledTableCell>
+              <StyledTableCell align="right">Volume</StyledTableCell>
+              <StyledTableCell align="left">Status</StyledTableCell>
               <StyledTableCell align="left">Time</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filterCollection.map((el, index) => (
+            {filterCollection?.map((el, index) => (
               <StyledTableRow key={index}>
-                <StyledTableCell align="center">
-                  <span
-                    style={{background: `#${el.op_color}`}}
-                    className='span-status-btn'
+                <StyledTableCell
+                  component="th"
+                  style={{ width: "20%" }}
+                  scope="row"
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                    }}
                   >
-                    {trxTypes[ops[el.op_type]]}
-                  </span>
+                    {getAsset(el.asset.abbr)}
+                    <div style={{ marginLeft: ".5rem" }}>
+                      <p style={{ margin: 0, fontSize: "1rem" }}>
+                        {el.asset.abbr}
+                      </p>
+                      <p style={{ margin: 0, fontSize: ".7rem" }}>
+                        {getFullName(el.asset.abbr)}
+                      </p>
+                    </div>
+                  </div>
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  <h6 style={{ margin: "0" }}>{el.operation_text}</h6>
+                  <h6 style={{ margin: "0" }}>{el.type}</h6>
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <h6 style={{ margin: "0" }}>{el.usersData}</h6>
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  <h6 style={{ margin: "0" }}>
+                    <strong>{removeExponent(Number(el.volume))}</strong>
+                  </h6>
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  <TrxHash trx={el.block_num} />
+                  <h6
+                    className='success-class'
+                  >
+                    {el.status}
+                  </h6>
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <h6 style={{ margin: "0" }}>{el.time}</h6>
@@ -128,46 +124,6 @@ export const OrdersTable = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      
-      {filterCollection.length > 0 && filterCollection[0].count <= 10 && <Grid container spacing={2}>
-        <Grid item md={12}>
-          <div className="page_sec">
-            <span>Total of {filterCollection[0].count} operations</span>
-          </div>
-        </Grid>
-      </Grid>}
-      {filterCollection.length > 0 && filterCollection[0].count > 10 && <Grid container spacing={2}>
-        <Grid item md={10}>
-          <Stack spacing={2}>
-            {filterCollection.length>0 && <div className="page_sec">
-              <span>Total of {filterCollection[0].count} operations</span>
-              <Pagination 
-                count={Math.ceil(filterCollection[0].count/perPage)} 
-                shape="rounded"
-                page={pageNum}
-                onChange={(e, num) => { setPageNum(num) }}
-              />
-            </div>}
-          </Stack>
-        </Grid>
-        <Grid item md={1.5}  class='grid-css' >
-          <Stack spacing={2}>
-          <FormControl variant="standard">
-            <Select
-              labelId="demo-simple-select-standard-label"
-              id="demo-simple-select-standard"
-              value={perPage}
-              onChange={(e) => setPerPage(e.target.value)}
-              label="Records per Page"
-            >
-              {paginationOptionsFilter.map((option, index) => {
-                return <MenuItem key={index} value={option}>{option}/ Page</MenuItem>
-              })}
-            </Select>
-          </FormControl>
-          </Stack>
-        </Grid>
-      </Grid>}
     </>
   );
 };
