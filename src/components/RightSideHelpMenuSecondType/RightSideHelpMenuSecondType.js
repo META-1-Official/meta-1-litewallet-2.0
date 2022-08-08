@@ -119,10 +119,7 @@ const RightSideHelpMenuSecondType = (props) => {
               }}
             >
               <div
-                style={ props.fromHistory? {
-                  margin: "auto 0",
-                  width: "6rem",
-                }: {
+                style={{
                 margin: "auto 0",
                 display: "flex",
                 flexDirection: "row",
@@ -132,11 +129,7 @@ const RightSideHelpMenuSecondType = (props) => {
               >
                 {getAsset(el.asset.abbr)}
                 <p
-                  style={{
-                    color: "",
-                    marginLeft: ".5rem",
-                    fontSize: ".8rem",
-                  }}
+                  className={styles.symbol_para}
                 >
                   <strong>{el.asset.abbr}</strong>
                 </p>
