@@ -1,5 +1,5 @@
 import axios from "axios";
-import CryptoJS from "crypto-js";
+import AES from 'crypto-js/aes';
 import { getAccessToken, tokenFail } from "../utils/localstorage";
 
 export async function getCryptosChange() {
@@ -177,7 +177,7 @@ export async function sendEmail(emailType, emailData) {
 export async function loginRequest(accountName, password) {
   try {
     // Decrypt password
-    const _password = CryptoJS.AES.encrypt(password, process.env.REACT_APP_SECRET_PASSPHRASE);
+    const _password = AES.encrypt(password, process.env.REACT_APP_SECRET_PASSPHRASE).toString();
 
     const { data } = await axios.post(
       `https://${process.env.REACT_APP_BACK_URL}/login`,
