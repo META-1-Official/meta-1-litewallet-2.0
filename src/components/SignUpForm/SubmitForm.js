@@ -34,15 +34,18 @@ export default function SubmitForm(props) {
               <Popup
                 content="Copy to Clipboard."
                 trigger={
-                  <CopyToClipboard text={props.password} onCopy={() => {}}>
-                    <button
-                      name="copyToken"
-                      style={{ color: "#240000" }}
-                      class="ui yellow right icon button"
-                    >
-                      <i class="copy icon" />
-                    </button>
-                  </CopyToClipboard>
+                  <div>
+                    <CopyToClipboard text={props.password} onCopy={() => {}}>
+                      <button
+                        name="copyToken"
+                        style={{ color: "#240000" }}
+                        class="ui yellow right icon button"
+                      >
+                        <i class="copy icon" />
+                      </button>
+                    </CopyToClipboard>
+                    <span className="copy_text copy_text_passkey">Copy</span>
+                  </div>
                 }
               />
             </div>
