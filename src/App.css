@@ -116,6 +116,13 @@ span.css-llftvd {
   flex-direction: column;
   width: 27%;
 }
+.marginBottomZero {
+  margin-bottom: 0px;
+}
+.margin-class {
+  margin-top: 7px;
+  margin-left: 9px;
+}
 /*.modal {*/
 /*  height: 20rem!important;*/
 /*  margin: auto!important;*/
