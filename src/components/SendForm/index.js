@@ -16,7 +16,7 @@ import { checkPasswordObjSelector, portfolioReceiverSelector, senderApiSelector,
 import { accountsSelector } from "../../store/account/selector";
 import { saveBalanceRequest } from "../../store/meta1/actions";
 
-const FEE = 0.0035;
+const FEE = 0.00035;
 
 const SendForm = React.memo((props) => {
   const {
