@@ -535,7 +535,7 @@ export default function ExchangeForm(props) {
           </Modal.Actions>
         </Modal>
         <div className={"adaptForMainExchange"}>
-          <div className={styles.mainBlock}>
+          <div className={`${styles.mainBlock} marginBottomZero`}>
             <div className={styles.mainBlockExchange}>
               <div className={styles.leftBlockExchange}>
                 <h2 style={{ textAlign: "center" }}>Exchange</h2>

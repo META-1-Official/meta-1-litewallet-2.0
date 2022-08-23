@@ -757,7 +757,7 @@ function Application(props) {
                       </h5>
                     </div>
                     <div className={"justFlexAndDirect"}>
-                      <div className={"paperWalletStylesTH"}>
+                      <div className={"paperWalletStylesTH marginBottomZero"}>
                         <OrdersTable
                           data={orders}
                           column={null}
@@ -765,7 +765,7 @@ function Application(props) {
                           assets={assets}
                         />
                       </div>
-                      <div className={"bottomAdaptBlock"}>
+                      <div className={"bottomAdaptBlock margin-class"}>
                         <RightSideHelpMenuSecondType
                           onClickExchangeUSDTHandler={(e) => {
                             e.preventDefault();
