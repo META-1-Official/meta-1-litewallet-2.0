@@ -16,7 +16,7 @@ import { checkPasswordObjSelector, portfolioReceiverSelector, senderApiSelector,
 import { accountsSelector } from "../../store/account/selector";
 import { saveBalanceRequest } from "../../store/meta1/actions";
 
-const FEE = 0.00035;
+const FEE = 0.00034;
 
 const SendForm = React.memo((props) => {
   const {
@@ -499,7 +499,7 @@ const SendForm = React.memo((props) => {
                       }}
                     >
                       <span style={{ color: "#505361", paddingTop: "2rem" }}>
-                        FEE: 0.00035 META1
+                        FEE: {FEE} META1
                       </span>
                       <div
                         className="max-button-new"
