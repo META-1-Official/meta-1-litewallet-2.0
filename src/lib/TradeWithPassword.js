@@ -12,6 +12,8 @@ export default class TradeWithPassword {
       let pairAmt;
       if (from === "META1") {
         pairAmt = pair.latest;
+      } else if (from === "USDT") {
+        pairAmt = pair.latest;
       } else {
         pairAmt = pair.lowest_ask;
       }

@@ -194,6 +194,8 @@ export default function ExchangeForm(props) {
     if (selectedAmount !== "" && selectedAmount) {
       if (pair.base === "META1") {
         amount = (selectedAmount / pair.latest).toString().substr(0, 11) * 1;
+      } else if (pair.base === "USDT") {
+        amount = (selectedAmount / pair.latest).toString().substr(0, 11) * 1;
       } else {
         amount = (selectedAmount / pair.lowest_ask).toString().substr(0, 11) * 1;
       }
