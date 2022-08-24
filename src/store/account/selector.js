@@ -11,6 +11,6 @@ export const errorMsgSelector = (state) => get(state, ['accounts', 'msg']);
 export const profileImageSelector = (state) => get(state, ['accounts', 'profileImage']);
 export const navbarProfileImageSelector = (state) => get(state, ['accounts', 'navbarProfileImage']);
 export const sendEmailSelector = (state) => get(state, ['accounts', 'sentMailSuccess']);
-
+export const oldUserSelector = (state) => get(state, ['accounts', 'oldUser']);
 
 export const demoSelector = (state) => get(state, ['accounts']);

@@ -102,3 +102,10 @@ export const sendMailReset = () => {
         type: types.SEND_MAIL_RESET
     }
 }
+
+export const setOldUser = (payload) => {
+    return {
+        type: types.SET_OLD_USER,
+        payload
+    }
+}
