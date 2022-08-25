@@ -133,7 +133,7 @@ const Navbar = (props) => {
                     </div>
                   </a>
                   <ul
-                    className="dropdown-menu"
+                    className="dropdown-menu dropdown-width"
                     aria-labelledby="navbarScrollingDropdown"
                     style={{ marginLeft: "-4rem", width: "8rem" }}
                   >
