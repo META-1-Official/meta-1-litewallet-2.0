@@ -135,8 +135,20 @@
   align-items: center;
   display: flex;
   white-space: pre-wrap;
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: #fff !important;
+  border-radius: 5px;
   font-weight: 200;
+  max-width: 70px;
+  line-height: 12px;
+}
+.transactionSpanPlace {
+  background: #856916;
+}
+.transactionSpanFill {
+  background: #127655;
+}
+.transactionSpanCancel {
+  background: #823637;
 }
 .helpBlock {
   display: flex;

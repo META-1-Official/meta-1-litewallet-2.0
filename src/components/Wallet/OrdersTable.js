@@ -107,8 +107,7 @@ export const OrdersTable = (props) => {
               <StyledTableRow key={index}>
                 <StyledTableCell align="center">
                   <span
-                    style={{background: `#${el.op_color}`}}
-                    className='span-status-btn'
+                    className={`span-status-btn ${trxTypes[ops[el.op_type]] === 'Cancel order' ? 'transaction-span-cancel' : trxTypes[ops[el.op_type]] === 'Place order' ? 'transaction-span-place' : 'transaction-span-fill' }`}
                   >
                     {trxTypes[ops[el.op_type]]}
                   </span>
