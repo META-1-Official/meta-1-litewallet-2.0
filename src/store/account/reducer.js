@@ -60,7 +60,12 @@ const accountsReducer = (state = initialState, action) => {
             return {...state, loading: false, sentMailSuccess: null };
         case types.CHECK_TRANSFERABLE_WALLET_MODAL:
             return { ...state, loading: false, checkTransferableModel: action.payload };
-        
+        case types.CHECK_TRANSFERABLE_REQUEST:
+            return {...state, loading: true };
+        case types.CHECK_TRANSFERABLE_SUCCESS:
+            return {...state, loading: false, oldUser: action.payload.oldUser };
+        case types.CHECK_TRANSFERABLE_ERROR:
+            return {...state, loading: false, oldUser: false };
         default:
             return state;
     }

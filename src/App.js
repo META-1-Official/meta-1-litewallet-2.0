@@ -1,3 +1,5 @@
+import axios from "axios";
+import { PrivateKey, Signature } from "meta1-vision-js";
 import "regenerator-runtime/runtime";
 import TradeWithPassword from "./lib/TradeWithPassword";
 import SendWithPassword from "./lib/SendWithPassword";
@@ -30,7 +32,7 @@ import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector } from "./store/account/selector";
-import { getUserRequest, loginRequestService, logoutRequest, checkTransferableModelAction } from "./store/account/actions";
+import { getUserRequest, loginRequestService, logoutRequest, checkTransferableModelAction, checkTransferableRequest } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 
@@ -178,6 +180,7 @@ function Application(props) {
   },[userDataState, isTokenValidState]);
   async function getAvatarFromBack(login) {
     dispatch(getUserRequest(login));
+    dispatch(checkTransferableRequest({ login }));
   }
 
   useEffect(() => {
@@ -279,6 +282,28 @@ function Application(props) {
   async function chngLastLocation(location) {
     if (location && location !== "login") {
       await changeLastLocation(localStorage.getItem("login"), location);
+    }
+  }
+
+  const validateSignature = async () => {
+    let privateKey = "5KiWcc2YoKj5x3SwhKgWZsQp27TBSh5ThoT8xweWYABnBNiueL4";
+    let signerPkey = PrivateKey.fromWif(privateKey);
+    let message = "abc-test";
+
+    console.log("\nPrivate key:", signerPkey.toWif());
+    console.log("Public key :", signerPkey.toPublicKey().toString().replace('GPH', process.env.REACT_APP_SIGNATURE_KEY), "\n");
+
+    let signature = Signature.sign(message, signerPkey).toHex();
+    console.log("Signature :", signature, "\n");
+    try {
+      const { data } = await axios.post(
+        `https://${process.env.REACT_APP_BACK_URL}/validateSignature`,
+        { accountName, signature, publicKey: "DEV118SB7ywDSkQfATQpTRnRoaFgPvprN4TfuqZPKwt7JijrPwdtQ3i" }
+      );
+      console.log("_____data____", data);
+      return { ...data, error: false };
+    } catch (e) {
+      return { message: "Wallet name or passkey is wrong", error: true };
     }
   }
 
@@ -852,7 +877,10 @@ function Application(props) {
         <Modal.Actions className="claim_modal-action">
           <Button
             className="claim_wallet_btn"
-            onClick={() => dispatch(checkTransferableModelAction(false))}
+            onClick={() => {
+              validateSignature();
+              dispatch(checkTransferableModelAction(false));
+            }}
           >
             Claim Wallet</Button>
         </Modal.Actions>
