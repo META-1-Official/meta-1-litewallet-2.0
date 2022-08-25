@@ -347,6 +347,15 @@
   margin: 0; 
   color: #00aa08;
 }
+.transaction-span-place {
+  background: #856916;
+}
+.transaction-span-fill {
+  background: #127655;
+}
+.transaction-span-cancel {
+  background: #823637;
+}
 
 .span-status-btn {
   font-style: normal;
@@ -360,6 +369,10 @@
   align-items: center;
   display: flex;
   white-space: pre-wrap;
+  border-radius: 5px;
+  color: #fff;
+  max-width: 80px;
+  line-height: 12px;
 }
 
 .page_sec {

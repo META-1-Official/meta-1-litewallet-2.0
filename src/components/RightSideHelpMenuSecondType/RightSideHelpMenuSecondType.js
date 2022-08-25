@@ -122,8 +122,7 @@ const RightSideHelpMenuSecondType = (props) => {
                 style={{ margin: "auto 0", width: "6rem", textAlign: "end" }}
               >
                 <span
-                  className={styles.spanStatusBtn}
-                  style={{ background: `#${el.op_color}` }}
+                  className={`${styles.spanStatusBtn} ${trxTypes[ops[el.op_type]] === 'Cancel order' ? styles.transactionSpanCancel : trxTypes[ops[el.op_type]] === 'Place order' ? styles.transactionSpanPlace : styles.transactionSpanFill }`}
                 >{trxTypes[ops[el.op_type]]}</span>
               </div>
               <div
