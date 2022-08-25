@@ -36,10 +36,12 @@ div#navbarSupportedContent .dropdown-toggle::after {
   top: 0;
 }
 div#navbarSupportedContent ul.dropdown-menu {
-  min-width: 330px !important;
-  width: 100% !important;
   left: auto !important;
   right: 0;
+}
+div#navbarSupportedContent ul.dropdown-width {
+  min-width: 330px !important;
+  width: 100% !important;
 }
 div#navbarSupportedContent ul.dropdown-menu.for-size {
   min-width: 110px !important;
@@ -64,3 +66,7 @@ div#navbarSupportedContent .nav-item.dropdown.parent-this a#navbarScrollingDropd
 div#navbarSupportedContent ul.dropdown-menu.show li button:hover {
   color: #330000 !important;
 }
+
+
+
+
