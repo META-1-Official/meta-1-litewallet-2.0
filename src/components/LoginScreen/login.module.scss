@@ -161,3 +161,15 @@
     text-decoration: none !important;
   }
 }
+.checkTransferButtonDisplay {
+  display: block;
+}
+.checkTransferError {
+  color: red !important;
+  font-size: 15px !important;
+  margin-left: 1rem !important;
+}
+.checkTransferPassword {
+  margin-top: 0.5rem !important;
+}
+

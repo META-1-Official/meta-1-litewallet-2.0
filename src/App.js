@@ -29,8 +29,8 @@ import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, oldUserSelector } from "./store/account/selector";
-import { getUserRequest, loginRequestService, logoutRequest, setOldUser } from "./store/account/actions";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector } from "./store/account/selector";
+import { getUserRequest, loginRequestService, logoutRequest, checkTransferableModelAction } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 
@@ -51,7 +51,7 @@ function Application(props) {
   const traderState = useSelector(traderSelector);
   const checkPasswordObjState = useSelector(checkPasswordObjSelector);
   const senderApiState = useSelector(senderApiSelector);
-  const oldUserState = useSelector(oldUserSelector);
+  const checkTransferableModelState = useSelector(checkTransferableModelSelector);
   const { metaUrl } = props;
   const domAccount =
     props.account !== null &&
@@ -833,8 +833,8 @@ function Application(props) {
       <Modal
         size="mini"
         className="claim_wallet_modal"
-        onClose={() => dispatch(setOldUser({ oldUser: false }))}
-        open={oldUserState}
+        onClose={() => dispatch(checkTransferableModelAction(false))}
+        open={checkTransferableModelState}
         id={"modalExch"}
       >
 
@@ -852,7 +852,7 @@ function Application(props) {
         <Modal.Actions className="claim_modal-action">
           <Button
             className="claim_wallet_btn"
-            onClick={() => dispatch(setOldUser({ oldUser: false }))}
+            onClick={() => dispatch(checkTransferableModelAction(false))}
           >
             Claim Wallet</Button>
         </Modal.Actions>

@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
 import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar } from '../../API/API';
 import { setAccessToken, setLoginDetail } from '../../utils/localstorage';
-import { deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess } from './actions';
+import { checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess } from './actions';
 import * as types from './types';
 function* loginHandler(data) {
     try {
@@ -9,13 +9,7 @@ function* loginHandler(data) {
         if (!response.error) {
             setAccessToken(response.token);
             setLoginDetail(response.accountName)
-            const resp1 = yield call(checkOldUser, data.payload.login)
-            if (!resp1.error) {
-                yield put(loginSuccess({ accountName: response.accountName, token: response.token, oldUser: resp1.found }));
-            } else {
-                yield put(loginSuccess({ accountName: response.accountName, token: response.token, oldUser: false }));
-            }
-
+            yield put(loginSuccess({ accountName: response.accountName, token: response.token }));
         } else {
             yield put(loginError({ accountName: null, token: '' }));
         }
@@ -67,10 +61,23 @@ function* sendMailHandler(data) {
         }
     }
 }
+function* checkTransferableHandler(data) {
+    const response = yield call(checkOldUser, data.payload.login);
+    if (!response.error) {
+        if (response.found) {
+            yield put(checkTransferableSuccess({ oldUser: response.found }));
+        } else {
+            yield put(checkTransferableError());
+        }
+    } else {
+        yield put(checkTransferableError());
+    }
+}
 export function* waitForAccount() {
     yield takeEvery(types.LOGIN_REQUEST, loginHandler);
     yield takeEvery(types.GET_USER_REQUEST, getUserHandler);
     yield takeEvery(types.UPLOAD_AVATAR_REQUEST, uploadAvatarHandler);
     yield takeEvery(types.DELETE_AVATAR_REQUEST, deleteAvatarHandler);
     yield takeEvery(types.SEND_MAIL_REQUEST, sendMailHandler);
+    yield takeEvery(types.CHECK_TRANSFERABLE_REQUEST, checkTransferableHandler);
 }

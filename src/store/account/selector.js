@@ -12,5 +12,6 @@ export const profileImageSelector = (state) => get(state, ['accounts', 'profileI
 export const navbarProfileImageSelector = (state) => get(state, ['accounts', 'navbarProfileImage']);
 export const sendEmailSelector = (state) => get(state, ['accounts', 'sentMailSuccess']);
 export const oldUserSelector = (state) => get(state, ['accounts', 'oldUser']);
+export const checkTransferableModelSelector = (state) => get(state, ['accounts', 'checkTransferableModel']);
 
 export const demoSelector = (state) => get(state, ['accounts']);
