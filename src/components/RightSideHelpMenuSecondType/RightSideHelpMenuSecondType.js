@@ -31,8 +31,8 @@ const RightSideHelpMenuSecondType = (props) => {
   };
 
   return (
-    <div className={styles.adaptNeed}>
-      <div className={styles.newCrypto}>
+    <div className={`${styles.adaptNeed} ${props.fromHistory ? styles.newAdaptNeed : ''}`}>
+      <div className={`${styles.newCrypto} ${typeof props.fromHistory === 'boolean' && props.fromHistory ? styles.newCryptoCustom : ''} ${typeof props.fromHistory === 'string' && props.fromHistory === 'exchange' ? styles.newCryptoCustomExchange : ''}`}>
         <h5 style={{ fontWeight: "bold", fontSize: "1rem" }}>
           New Crypto on META1
         </h5>
@@ -101,7 +101,7 @@ const RightSideHelpMenuSecondType = (props) => {
           </div>
         </div>
       </div>
-      <div className={`${styles.intro} ${props.fromHistory ? styles.introHistory : ''}`}>
+      <div className={`${styles.intro} ${typeof props.fromHistory === "boolean" && props.fromHistory ? styles.newIntro : ''} ${typeof props.fromHistory === 'string' && props.fromHistory === 'exchange' ? styles.newCryptoCustomExchange : ''}`}>
         <h5>Recent Transactions</h5>
         <hr />
         {isLoading ? (

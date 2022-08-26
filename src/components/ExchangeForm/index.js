@@ -920,8 +920,9 @@ export default function ExchangeForm(props) {
               )}
             </div>
           </div>
-          <div className={"flexNeed customFlexNeed"} >
+          <div className={"flexNeed customFlexNeed newCustomFlexNeed"} >
             <RightSideHelpMenuSecondType
+              fromHistory="exchange"
               onClickExchangeEOSHandler={() => {
                 setSelectedFrom({
                   image: "/static/media/EOS.fb40b8e0.svg",

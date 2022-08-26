@@ -123,6 +123,10 @@ span.css-llftvd {
   margin-top: 7px;
   margin-left: 9px;
 }
+.newBottomAdaptBlock {
+  width: 96%;
+  margin: 0 1.5rem;
+}
 /*.modal {*/
 /*  height: 20rem!important;*/
 /*  margin: auto!important;*/
@@ -148,6 +152,9 @@ span.css-llftvd {
   }
   .paperWalletStyles {
     width: 88% !important;
+  }
+  .newBottomAdaptBlock {
+    margin: 0 1rem;
   }
 }
 

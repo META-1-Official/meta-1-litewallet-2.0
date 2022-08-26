@@ -141,6 +141,14 @@
   max-width: 70px;
   line-height: 12px;
 }
+.newIntro, .newAdaptNeed, .newCryptoCustom {
+  margin-left: 0;
+  margin-right: 0;
+}
+.newCryptoCustomExchange {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
 .transactionSpanPlace {
   background: #856916;
 }

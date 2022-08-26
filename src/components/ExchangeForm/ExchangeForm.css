@@ -193,6 +193,10 @@
   flex-direction: row;
 }
 
+.newCustomFlexNeed {
+  margin: 0 1rem;
+}
+
 @media (max-width: 600px) {
   .flexNeed {
     flex-direction: column;
