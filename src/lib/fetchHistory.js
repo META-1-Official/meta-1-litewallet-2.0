@@ -6,7 +6,11 @@ async function getHistory(event) {
   const numberOfRecords = event?.queryKey[0] === "history" ? 10000 : 3;
   const pageNo = event?.queryKey[1] || 1;
   const perPage = event?.queryKey[2] || 20;
-  const response = await getHistoryData(localStorage.getItem("login"), (pageNo-1)*perPage, perPage);
+  let searchFilterValues = event?.queryKey[3] || '';
+  if(event?.queryKey[3] === 0) {
+    searchFilterValues = event?.queryKey[3];
+  }
+  const response = await getHistoryData(localStorage.getItem("login"), (pageNo-1)*perPage, perPage, searchFilterValues);
   const historyData = response.data.splice(0,numberOfRecords).map(async (value) => {
     let timestamp;
     let witness;

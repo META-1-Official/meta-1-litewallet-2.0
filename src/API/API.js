@@ -189,11 +189,15 @@ export async function loginRequest(accountName, password) {
   }
 }
 
-export async function getHistoryData(accountName,from, size) {
+export async function getHistoryData(accountName,from, size, searchFilterValues = '') {
+  let url = `${process.env.REACT_APP_EXPLORER_META1_URL}/api/v1/es/account_history?account_id=${accountName}&from=${from}&size=${size}&type=data&sort_by=-account_history.sequence`;
+  if (searchFilterValues) {
+    url+=`&object_ids=${searchFilterValues}`;
+  } else if (searchFilterValues === 0) {
+    url+=`&object_ids=${searchFilterValues}`;
+  }
   try {
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_EXPLORER_META1_URL}/api/v1/es/account_history?account_id=${accountName}&from=${from}&size=${size}&type=data&sort_by=-account_history.sequence`
-    );
+    const { data } = await axios.get(url);
     return { ...data, error: false };
   } catch (e) {
     return { message: "something went wrong", error: true };
