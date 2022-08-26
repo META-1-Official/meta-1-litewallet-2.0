@@ -340,6 +340,9 @@
 .search-filter:before{
   border: none !important;
 }
+.search-filter:after{
+  border: none !important;
+}
 @media (max-width: 991px) {
   .search-grid {
     justify-content: space-evenly;
