@@ -209,7 +209,6 @@ export async function checkOldUser(accountName) {
     const { data } = await axios.get(
       `https://${process.env.REACT_APP_BACK_URL}/checkTransferable?accountName=${accountName}`
     );
-    console.log("_____data", data)
     return { ...data, error: false };
   } catch (e) {
     return { message: "Wallet name or passkey is wrong", error: true };
