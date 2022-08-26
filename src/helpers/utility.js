@@ -449,7 +449,7 @@ export const opText = (operation_type, operation) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text =
           response_name +
-          ' cancel order ';
+          ' cancelled order ';
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -552,7 +552,7 @@ export const opText = (operation_type, operation) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text =
           response_name +
-          ' updated account data ';
+          ' updated their wallet data change ';
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -568,7 +568,7 @@ export const opText = (operation_type, operation) => {
           operation_text =
             response_name +
             type +
-            ' the account ' +
+            ' the wallet ' +
             response_name2;
           return { op_text: operation_text, symbol: null, amount: 0 };
         });
@@ -578,7 +578,7 @@ export const opText = (operation_type, operation) => {
       return UseAccount(operation.account_to_upgrade).then((response) => {
         operation_text =
           response +
-          ' upgraded the account ';
+          ' upgraded the wallet ';
 
         return { op_text: operation_text, symbol: null, amount: 0 };
       });

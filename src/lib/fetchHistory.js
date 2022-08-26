@@ -9,6 +9,8 @@ async function getHistory(event) {
   let searchFilterValues = event?.queryKey[3] || '';
   if(event?.queryKey[3] === 0) {
     searchFilterValues = event?.queryKey[3];
+  } else if(event?.queryKey[3] === 'no found') {
+    return [];
   }
   const response = await getHistoryData(localStorage.getItem("login"), (pageNo-1)*perPage, perPage, searchFilterValues);
   const historyData = response.data.splice(0,numberOfRecords).map(async (value) => {

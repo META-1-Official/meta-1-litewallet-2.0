@@ -63,6 +63,22 @@ export const OrdersTable = (props) => {
     },
   }));
 
+  const allFilterStatusArr = [
+    'transfer',
+    'limit_order_create',
+    'limit_order_cancel',
+    'fill_order',
+    'account_create',
+    'account_update',
+    'asset_create',
+    'witness_withdraw_pay',
+    'vesting_balance_withdraw',
+  ];
+  
+  const searchFilterListing = allFilterStatusArr.map( data => {
+    return { name: trxTypes[data].replace('account', 'wallet'), value: ops.indexOf(data) >= 0 ? ops.indexOf(data) : 'no found' };
+  });
+
   const paginationOptions = [10,20,50,100];
   let paginationOptionsFilter = [];
   if (filterCollection.length > 0) {
@@ -96,9 +112,9 @@ export const OrdersTable = (props) => {
             label="Search"
             className="search-filter"
           >
-            <MenuItem value='-1' style={{color:'#000'}} >Show All</MenuItem>
-            {ops.map((option, index) => {
-              return option.length && <MenuItem key={index} value={index}>{trxTypes[option]}</MenuItem>
+            <MenuItem value='-1' >Show All</MenuItem>
+            {searchFilterListing.map((option, index) => {
+              return <MenuItem key={index} value={option.value}>{option.name}</MenuItem>
             })}
           </Select>
         </FormControl>
@@ -128,7 +144,7 @@ export const OrdersTable = (props) => {
                   <span
                     className={`span-status-btn ${trxTypes[ops[el.op_type]] === 'Cancel order' ? 'transaction-span-cancel' : trxTypes[ops[el.op_type]] === 'Place order' ? 'transaction-span-place' : 'transaction-span-fill' }`}
                   >
-                    {trxTypes[ops[el.op_type]]}
+                    {trxTypes[ops[el.op_type]].replace('account', 'wallet')}
                   </span>
                 </StyledTableCell>
                 <StyledTableCell align="left">
