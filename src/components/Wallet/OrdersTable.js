@@ -108,7 +108,10 @@ export const OrdersTable = (props) => {
             labelId="demo-simple-select-standard-label"
             id="demo-simple-select-standard"
             value={filterValues}
-            onChange={(e) => setFilterValues(e.target.value)}
+            onChange={(e) => {
+              setPageNum(1);
+              setFilterValues(e.target.value);
+            }}
             label="Search"
             className="search-filter"
           >
@@ -194,7 +197,10 @@ export const OrdersTable = (props) => {
               labelId="demo-simple-select-standard-label"
               id="demo-simple-select-standard"
               value={perPage}
-              onChange={(e) => setPerPage(e.target.value)}
+              onChange={(e) => {
+                setPageNum(1);
+                setPerPage(e.target.value)}
+              }
               label="Records per Page"
             >
               {paginationOptionsFilter.map((option, index) => {
