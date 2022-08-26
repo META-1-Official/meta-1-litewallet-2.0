@@ -203,3 +203,14 @@ export async function getHistoryData(accountName,from, size, searchFilterValues 
     return { message: "something went wrong", error: true };
   }
 }
+
+export async function checkOldUser(accountName) {
+  try {
+    const { data } = await axios.get(
+      `https://${process.env.REACT_APP_BACK_URL}/checkTransferable?accountName=${accountName}`
+    );
+    return { ...data, error: false };
+  } catch (e) {
+    return { message: "Wallet name or passkey is wrong", error: true };
+  }
+}

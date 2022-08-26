@@ -102,3 +102,27 @@ export const sendMailReset = () => {
         type: types.SEND_MAIL_RESET
     }
 }
+export const checkTransferableModelAction = (payload) => {
+    return {
+        type: types.CHECK_TRANSFERABLE_WALLET_MODAL,
+        payload
+    }
+}
+export const checkTransferableRequest = (payload) => {
+    return {
+        type: types.CHECK_TRANSFERABLE_REQUEST,
+        payload
+    }
+}
+
+export const checkTransferableSuccess = (payload) => {
+    return {
+        type: types.CHECK_TRANSFERABLE_SUCCESS,
+        payload
+    }
+}
+export const checkTransferableError = () => {
+    return {
+        type: types.CHECK_TRANSFERABLE_ERROR,
+    }
+}
