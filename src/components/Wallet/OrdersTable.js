@@ -30,8 +30,9 @@ export const OrdersTable = (props) => {
   const { column, direction, assets, account } = props;
   const [pageNum, setPageNum] = useState(1);
   const [perPage,setPerPage]= useState(10);
+  const [filterValues, setFilterValues] = useState('-1')
   const [filterCollection, setFilterCollection] = useState([]);
-  const { data, isLoading, error } = useQuery(["history", pageNum, perPage], getHistory);
+  const { data, isLoading, error } = useQuery(["history", pageNum, perPage, filterValues === "-1" ? '' : filterValues], getHistory);
   useEffect(()=>{
     if (Array.isArray(data)) {
       setFilterCollection(data);
@@ -84,6 +85,24 @@ export const OrdersTable = (props) => {
 
   return (
     <>
+    <Grid item md={10} className='search-grid'>
+        <Stack spacing={2}></Stack>
+        <FormControl variant="standard" >
+          <Select
+            labelId="demo-simple-select-standard-label"
+            id="demo-simple-select-standard"
+            value={filterValues}
+            onChange={(e) => setFilterValues(e.target.value)}
+            label="Search"
+            className="search-filter"
+          >
+            <MenuItem value='-1' style={{color:'#000'}} >Show All</MenuItem>
+            {ops.map((option, index) => {
+              return option.length && <MenuItem key={index} value={index}>{trxTypes[option]}</MenuItem>
+            })}
+          </Select>
+        </FormControl>
+      </Grid>
       <TableContainer style={{ overflow: "auto" }} component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
@@ -123,6 +142,11 @@ export const OrdersTable = (props) => {
                 </StyledTableCell>
               </StyledTableRow>
             ))}
+            {filterCollection.length === 0 && <StyledTableRow>
+              <StyledTableCell align="center" colSpan={4}>
+                  <span>No record found</span>
+              </StyledTableCell>
+            </StyledTableRow>}
           </TableBody>
         </Table>
       </TableContainer>
@@ -137,7 +161,7 @@ export const OrdersTable = (props) => {
         <Grid item md={10}>
           <Stack spacing={2}>
             {filterCollection.length>0 && <div className="page_sec">
-              <span>Total of {filterCollection[0].count} operationsss</span>
+              <span>Total of {filterCollection[0].count} operations</span>
               <Pagination 
                 count={Math.ceil(filterCollection[0].count/perPage)} 
                 shape="rounded"

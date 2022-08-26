@@ -320,7 +320,31 @@
 .grid-css {
   margin-top: 1.6rem;
 }
-
+.search-grid {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 10px 0 0;
+}
+.search-filter {
+  border-radius: 7px;
+  padding: 0;
+  text-align: center;
+  width: 25px;
+  background: #fdc000 !important;
+  border: none !important;
+  padding: 0 !important;
+  width: 200px;
+  color: #240000 !important;
+  font-weight: 400;
+}
+.search-filter:before{
+  border: none !important;
+}
+@media (max-width: 991px) {
+  .search-grid {
+    justify-content: space-evenly;
+  } 
+}
 @media (max-width: 600px) {
   .choosenContainerItem {
     display: flex;
@@ -340,6 +364,10 @@
   .grid-css {
     padding-bottom: 1rem;
     margin-left: 3rem;
+  }
+  .search-grid {
+    margin-right: 20px !important;
+    justify-content: flex-end;
   }
 }
 
@@ -387,5 +415,4 @@
 }
 .page_sec ul {
   width: 100% !important;
-  
 }
