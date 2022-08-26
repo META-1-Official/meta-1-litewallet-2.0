@@ -1,3 +1,5 @@
+import axios from "axios";
+import { PrivateKey, Signature } from "meta1-vision-js";
 import "regenerator-runtime/runtime";
 import TradeWithPassword from "./lib/TradeWithPassword";
 import SendWithPassword from "./lib/SendWithPassword";
@@ -29,8 +31,8 @@ import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector } from "./store/account/selector";
-import { getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector } from "./store/account/selector";
+import { checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 
@@ -51,6 +53,7 @@ function Application(props) {
   const traderState = useSelector(traderSelector);
   const checkPasswordObjState = useSelector(checkPasswordObjSelector);
   const senderApiState = useSelector(senderApiSelector);
+  const checkTransferableModelState = useSelector(checkTransferableModelSelector);
 
   const { metaUrl } = props;
   const domAccount =
@@ -108,6 +111,7 @@ function Application(props) {
       dispatch(loginRequestService({login ,password, setLoginDataError}));
     }
     if (getAccessToken()) {
+      dispatch(checkTransferableRequest({ login }))
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
@@ -830,6 +834,35 @@ function Application(props) {
           </Button>
         </Modal.Actions>
       </Modal>}
+      <Modal
+        size="mini"
+        className="claim_wallet_modal"
+        onClose={() => dispatch(checkTransferableModelAction(false))}
+        open={checkTransferableModelState}
+        id={"modalExch"}
+      >
+
+        <Modal.Content >
+          <div
+            className="claim_wallet_btn_div"
+
+          >
+            <h3 className="claim_model_content">
+              Hello {accountName}<br />
+              To Claim your previous wallet META1, click on Button
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              dispatch(checkTransferableModelAction(false));
+            }}
+          >
+            Claim Wallet</Button>
+        </Modal.Actions>
+      </Modal>
     </>
   );
 }

@@ -4,8 +4,10 @@ import "./login.css";
 import styles from "./login.module.scss";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
-import { useDispatch } from "react-redux";
-import { logoutRequest } from "../../store/account/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
+import { accountsSelector, isLoginSelector, oldUserSelector } from "../../store/account/selector";
+import { checkPasswordObjSelector } from "../../store/meta1/selector";
 
 export default function LoginScreen(props) {
   const {
@@ -26,6 +28,16 @@ export default function LoginScreen(props) {
     login: false,
     password: false
   });
+  const [checkTransfer, setCheckTransfer] = useState({
+    password: '',
+    showPasswordColumn: false,
+    errorMsg: '',
+    error: false
+  });
+  const accountState = useSelector(accountsSelector);
+  const isLoginState = useSelector(isLoginSelector);
+  const checkPasswordState= useSelector(checkPasswordObjSelector);
+  const oldUserState = useSelector(oldUserSelector);
   const dispatch = useDispatch();
   const handleSignUpClick = (e) => {
     e.preventDefault();
@@ -52,6 +64,42 @@ export default function LoginScreen(props) {
       return { ...prev, ...data };
     })
     return isValid;
+  }
+  const checkTransferStateHandler = (attr, value) => {
+    if(attr === 'reset') {
+      setCheckTransfer({
+        password: '',
+        showPasswordColumn: false,
+        errorMsg: '',
+        error: false
+      });
+      return;
+    }
+    setCheckTransfer(prev => {
+      return { ...prev, [attr]:value }
+    })
+    if(attr === 'errorMsg') {
+      setTimeout(() => {
+        setCheckTransfer(prev => {
+          return { ...prev, errorMsg: '', error: false }
+        })
+      },3000)
+    }
+  }
+  const checkTransferSubmitHandler = async () => {
+    if(!checkTransfer.password.trim()){
+      checkTransferStateHandler('error',true);
+      checkTransferStateHandler('errorMsg',"Passkey can't be empty");
+      return;
+    }
+    const result = await checkPasswordState.checkPasword(checkTransfer.password)
+    if (result.error !== null) {
+      checkTransferStateHandler('error',true);
+      checkTransferStateHandler('errorMsg','Passkey is Wrong');
+      return;
+    }
+    dispatch(checkTransferableModelAction(true));
+    checkTransferStateHandler('reset');
   }
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -179,6 +227,48 @@ export default function LoginScreen(props) {
               </button>
             </div>
           )}
+
+{isLoginState && oldUserState && <div className={styles.linkMeta}>
+              <h5>
+                <strong>To Claim Meta1 Wallet, click here</strong>
+              </h5>
+              <br />
+              <button
+                className={`${styles.Button} ${styles.checkTransferButtonDisplay}`}
+                onClick={() => checkTransferStateHandler('showPasswordColumn', true) }
+                type={"button"}
+                style={{ marginTop: "0" }}
+              >
+                Claim Meta1 Wallet
+              </button>
+              {checkTransfer.showPasswordColumn && <>
+                <input
+                  className={styles.input}
+                  onChange={(e) => {
+                    checkTransferStateHandler(e.target.name, e.target.value);
+                  }}
+                  name="password"
+                  placeholder={"Passkey"}
+                  value={checkTransfer.password}
+                  type="password"
+                />
+                <button
+                  className={`${styles.Button} ${styles.checkTransferPassword}`}
+                  onClick={() => checkTransferSubmitHandler() }
+                  type={"button"}
+                  style={{ marginTop: "0" }}
+                >
+                  Submit
+                </button>
+              </>
+              }
+              <span
+                  className={styles.checkTransferError}
+                  style={checkTransfer.error ? null : { display: "none" }}
+                >
+                 {checkTransfer.errorMsg}
+              </span>
+            </div>}
         </div>
         <div className={styles.rightBlockContent}>
           <RightSideHelpMenuFirstType
