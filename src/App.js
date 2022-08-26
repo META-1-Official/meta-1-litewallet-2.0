@@ -765,7 +765,7 @@ function Application(props) {
                           assets={assets}
                         />
                       </div>
-                      <div className={"bottomAdaptBlock margin-class"}>
+                      <div className={"bottomAdaptBlock margin-class newBottomAdaptBlock"}>
                         <RightSideHelpMenuSecondType
                           onClickExchangeUSDTHandler={(e) => {
                             e.preventDefault();
