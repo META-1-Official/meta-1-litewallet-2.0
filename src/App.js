@@ -761,7 +761,7 @@ function Application(props) {
                       </h5>
                     </div>
                     <div className={"justFlexAndDirect"}>
-                      <div className={"paperWalletStylesTH marginBottomZero"}>
+                      <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
                         <OrdersTable
                           data={orders}
                           column={null}
