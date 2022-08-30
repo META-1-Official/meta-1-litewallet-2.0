@@ -153,3 +153,10 @@ export const checkAccountSignatureReset = () => {
         type: types.CHECK_ACCOUNT_SIGNATURE_RESET,
     }
 }
+
+export const checkTokenRequest = (payload) => {
+    return {
+        type: types.CHECK_TOKEN_REQUEST,
+        payload
+    }
+}

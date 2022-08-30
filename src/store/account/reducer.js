@@ -76,6 +76,8 @@ const accountsReducer = (state = initialState, action) => {
             return {...state, loading: false, signatureError: true, isSignatureValid: false };
         case types.CHECK_ACCOUNT_SIGNATURE_RESET:
             return {...state, loading: false, signatureError: false, isSignatureValid: false };
+        case types.CHECK_TOKEN_REQUEST:
+            return state;
         default:
             return state;
     }
