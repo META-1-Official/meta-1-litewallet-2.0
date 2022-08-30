@@ -126,3 +126,10 @@ export const checkTransferableError = () => {
         type: types.CHECK_TRANSFERABLE_ERROR,
     }
 }
+
+export const checkTokenRequest = (payload) => {
+    return {
+        type: types.CHECK_TOKEN_REQUEST,
+        payload
+    }
+}
