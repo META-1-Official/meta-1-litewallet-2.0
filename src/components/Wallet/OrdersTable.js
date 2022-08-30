@@ -16,6 +16,9 @@ import { ChainTypes as grapheneChainTypes } from 'meta1-vision-js';
 import { FormControl, Grid, InputLabel, MenuItem, Pagination, Select, Stack } from "@mui/material";
 import { trxTypes } from "../../helpers/utility";
 import TrxHash from './TransactionHash';
+import { checkTokenRequest } from "../../store/account/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { accountsSelector } from "../../store/account/selector";
 
 const {operations} = grapheneChainTypes;
 const ops = Object.keys(operations);
@@ -27,6 +30,8 @@ ops.push(
 	'asset_price_publish_operation'
 );
 export const OrdersTable = (props) => {
+  const dispatch = useDispatch();
+  const accountNameState = useSelector(accountsSelector);
   const { column, direction, assets, account } = props;
   const [pageNum, setPageNum] = useState(1);
   const [perPage,setPerPage]= useState(10);
@@ -109,6 +114,7 @@ export const OrdersTable = (props) => {
             id="demo-simple-select-standard"
             value={filterValues}
             onChange={(e) => {
+              dispatch(checkTokenRequest(accountNameState));
               setPageNum(1);
               setFilterValues(e.target.value);
             }}
@@ -185,7 +191,10 @@ export const OrdersTable = (props) => {
                 count={Math.ceil(filterCollection[0].count/perPage)} 
                 shape="rounded"
                 page={pageNum}
-                onChange={(e, num) => { setPageNum(num) }}
+                onChange={(e, num) => {
+                  setPageNum(num);
+                  dispatch(checkTokenRequest(accountNameState));
+                }}
               />
             </div>}
           </Stack>
@@ -198,6 +207,7 @@ export const OrdersTable = (props) => {
               id="demo-simple-select-standard"
               value={perPage}
               onChange={(e) => {
+                dispatch(checkTokenRequest(accountNameState));
                 setPageNum(1);
                 setPerPage(e.target.value)}
               }

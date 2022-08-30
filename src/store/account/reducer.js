@@ -66,6 +66,8 @@ const accountsReducer = (state = initialState, action) => {
             return {...state, loading: false, oldUser: action.payload.oldUser };
         case types.CHECK_TRANSFERABLE_ERROR:
             return {...state, loading: false, oldUser: false };
+        case types.CHECK_TOKEN_REQUEST:
+            return state;
         default:
             return state;
     }
