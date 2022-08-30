@@ -212,3 +212,19 @@ export async function checkOldUser(accountName) {
     return { message: "Wallet name or passkey is wrong", error: true };
   }
 }
+
+export async function validateSignature(accountName, password) {
+  try {
+    const payload = buildSignature(accountName, password);
+    const { data } = await axios.post(
+      `https://${process.env.REACT_APP_BACK_URL}/validateSignature`,
+      payload
+    );
+    if (!data.isValid) {
+      return { message: "Invalid Signature", error: true };
+    }
+    return { ...data, error: false };
+  } catch (e) {
+    return { message: "Invalid Signature", error: true };
+  }
+}

@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
-import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar } from '../../API/API';
+import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar, validateSignature } from '../../API/API';
 import { setAccessToken, setLoginDetail } from '../../utils/localstorage';
-import { checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess } from './actions';
+import { checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess } from './actions';
 import * as types from './types';
 function* loginHandler(data) {
     try {
@@ -74,6 +74,16 @@ function* checkTransferableHandler(data) {
         yield put(checkTransferableError());
     }
 }
+
+function* CheckAccountSignatureHandler(data) {
+    const response = yield call(validateSignature, data.payload.login, data.payload.password);
+    if (!response.error) {
+        yield put(checkAccountSignatureSuccess());
+    } else {
+        yield put(checkAccountSignatureError());
+    }
+}
+
 export function* waitForAccount() {
     yield takeEvery(types.LOGIN_REQUEST, loginHandler);
     yield takeEvery(types.GET_USER_REQUEST, getUserHandler);
@@ -81,4 +91,5 @@ export function* waitForAccount() {
     yield takeEvery(types.DELETE_AVATAR_REQUEST, deleteAvatarHandler);
     yield takeEvery(types.SEND_MAIL_REQUEST, sendMailHandler);
     yield takeEvery(types.CHECK_TRANSFERABLE_REQUEST, checkTransferableHandler);
+    yield takeEvery(types.CHECK_ACCOUNT_SIGNATURE_REQUEST, CheckAccountSignatureHandler );
 }

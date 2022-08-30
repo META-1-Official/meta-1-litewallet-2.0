@@ -16,7 +16,9 @@ const initialState = {
     navbarProfileImage: logoNavbar,
     sentMailSuccess: null,
     oldUser: false,
-    checkTransferableModel: false
+    checkTransferableModel: false,
+    signatureError: false,
+    isSignatureValid: false
 };
 const loginDetail = getLoginDetail();
 if(loginDetail){
@@ -66,6 +68,14 @@ const accountsReducer = (state = initialState, action) => {
             return {...state, loading: false, oldUser: action.payload.oldUser };
         case types.CHECK_TRANSFERABLE_ERROR:
             return {...state, loading: false, oldUser: false };
+        case types.CHECK_ACCOUNT_SIGNATURE_REQUEST:
+            return {...state, loading: false, signatureError: false };
+        case types.CHECK_ACCOUNT_SIGNATURE_SUCCESS:
+            return {...state, loading: false, signatureError: false, isSignatureValid: true };
+        case types.CHECK_ACCOUNT_SIGNATURE_ERROR:
+            return {...state, loading: false, signatureError: true, isSignatureValid: false };
+        case types.CHECK_ACCOUNT_SIGNATURE_RESET:
+            return {...state, loading: false, signatureError: false, isSignatureValid: false };
         default:
             return state;
     }
