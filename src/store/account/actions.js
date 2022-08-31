@@ -160,3 +160,30 @@ export const checkTokenRequest = (payload) => {
         payload
     }
 }
+
+export const passKeyRequestService = (payload) => {
+    return {
+        type: types.PASS_KEY_REQUEST,
+        payload
+    }
+}
+
+export const passKeySuccessService = (payload) => {
+    return {
+        type: types.PASS_KEY_SUCCESS,
+        payload
+    }
+}
+
+export const passKeyErrorService = (payload) => {
+    return {
+        type: types.PASS_KEY_ERROR,
+        payload
+    }
+}
+
+export const passKeyResetService = () => {
+    return {
+        type: types.PASS_KEY_RESET,
+    }
+}

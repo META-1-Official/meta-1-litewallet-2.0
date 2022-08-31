@@ -15,5 +15,7 @@ export const oldUserSelector = (state) => get(state, ['accounts', 'oldUser']);
 export const checkTransferableModelSelector = (state) => get(state, ['accounts', 'checkTransferableModel']);
 export const signatureErrorSelector = (state) => get(state, ['accounts', 'signatureError']);
 export const isSignatureValidSelector = (state) => get(state, ['accounts', 'isSignatureValid']);
+export const isValidPasswordKeySelector = (state) => get(state, ['accounts', 'isValidPasswordKey']);
+export const passwordKeyErrorSelector = (state) => get(state, ['accounts', 'passwordKeyError']);
 
 export const demoSelector = (state) => get(state, ['accounts']);

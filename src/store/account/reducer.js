@@ -18,7 +18,10 @@ const initialState = {
     oldUser: false,
     checkTransferableModel: false,
     signatureError: false,
-    isSignatureValid: false
+    isSignatureValid: false,
+    isValidPasswordKey: false,
+    passwordKeyError: false
+
 };
 const loginDetail = getLoginDetail();
 if(loginDetail){
@@ -78,6 +81,14 @@ const accountsReducer = (state = initialState, action) => {
             return {...state, loading: false, signatureError: false, isSignatureValid: false };
         case types.CHECK_TOKEN_REQUEST:
             return state;
+        case types.PASS_KEY_REQUEST:
+            return {...state, isValidPasswordKey: false, passwordKeyError: false };
+        case types.PASS_KEY_SUCCESS:
+            return {...state, isValidPasswordKey: true, passwordKeyError: false };
+        case types.PASS_KEY_ERROR:
+            return {...state, isValidPasswordKey: false , passwordKeyError: true};
+        case types.PASS_KEY_RESET:
+            return {...state, isValidPasswordKey: false, passwordKeyError: false };
         default:
             return state;
     }
