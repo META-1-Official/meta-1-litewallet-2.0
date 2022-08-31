@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
-import { checkOldUser, deleteAvatar, getUserData, loginRequest, passKeyRequest, sendEmail, uploadAvatar } from '../../API/API';
+import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar, validateSignature } from '../../API/API';
 import { setAccessToken, setLoginDetail } from '../../utils/localstorage';
-import { checkTokenRequest, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, passKeyErrorService, passKeySuccessService, sendMailError, sendMailSuccess, uploadAvatarSuccess } from './actions';
+import { checkTokenRequest, checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService } from './actions';
 import * as types from './types';
 function* loginHandler(data) {
     try {
@@ -75,6 +75,16 @@ function* checkTransferableHandler(data) {
     }
 }
 
+function* CheckAccountSignatureHandler(data) {
+    const response = yield call(validateSignature, data.payload.login, data.payload.password);
+    if (!response.error) {
+        yield put(checkAccountSignatureSuccess());
+    } else {
+        yield put(checkAccountSignatureError());
+    }
+}
+
+
 function* checkTokenHandler(data) {
     const response = yield call(getUserData,data.payload);
     if (response['tokenExpired']) {
@@ -83,7 +93,7 @@ function* checkTokenHandler(data) {
 }
 
 function* passKeyHandler(data) {
-    const response = yield call(passKeyRequest,data.payload.login,data.payload.password);
+    const response = yield call(validateSignature, data.payload.login, data.payload.password);
     if (!response.error) {
         yield put(passKeySuccessService());
     } else {
@@ -98,6 +108,7 @@ export function* waitForAccount() {
     yield takeEvery(types.DELETE_AVATAR_REQUEST, deleteAvatarHandler);
     yield takeEvery(types.SEND_MAIL_REQUEST, sendMailHandler);
     yield takeEvery(types.CHECK_TRANSFERABLE_REQUEST, checkTransferableHandler);
+    yield takeEvery(types.CHECK_ACCOUNT_SIGNATURE_REQUEST, CheckAccountSignatureHandler );
     yield takeEvery(types.CHECK_TOKEN_REQUEST, checkTokenHandler);
     yield takeEvery(types.PASS_KEY_REQUEST, passKeyHandler);
 }

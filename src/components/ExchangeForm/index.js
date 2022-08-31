@@ -66,7 +66,7 @@ export default function ExchangeForm(props) {
 
   useEffect(() => {
     if (!isValidPasswordKeyState && passwordKeyErrorState) {
-        setTradeError("Invalid Signature");
+        setTradeError("Invalid Credentials");
         setPassword("");
         setTradeInProgress(false);
         return;

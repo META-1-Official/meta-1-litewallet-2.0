@@ -127,6 +127,33 @@ export const checkTransferableError = () => {
     }
 }
 
+export const checkAccountSignatureRequest = (payload) => {
+    return {
+        type: types.CHECK_ACCOUNT_SIGNATURE_REQUEST,
+        payload
+    }
+}
+
+export const checkAccountSignatureSuccess = (payload) => {
+    return {
+        type: types.CHECK_ACCOUNT_SIGNATURE_SUCCESS,
+        payload
+    }
+}
+
+export const checkAccountSignatureError = (payload) => {
+    return {
+        type: types.CHECK_ACCOUNT_SIGNATURE_ERROR,
+        payload
+    }
+}
+
+export const checkAccountSignatureReset = () => {
+    return {
+        type: types.CHECK_ACCOUNT_SIGNATURE_RESET,
+    }
+}
+
 export const checkTokenRequest = (payload) => {
     return {
         type: types.CHECK_TOKEN_REQUEST,

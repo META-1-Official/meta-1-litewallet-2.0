@@ -5,9 +5,10 @@ import styles from "./login.module.scss";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
-import { accountsSelector, isLoginSelector, oldUserSelector } from "../../store/account/selector";
+import { checkAccountSignatureRequest, checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
+import { accountsSelector, isLoginSelector, isSignatureValidSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
 import { checkPasswordObjSelector } from "../../store/meta1/selector";
+import { validateSignature } from "../../API/API";
 
 export default function LoginScreen(props) {
   const {
@@ -36,9 +37,23 @@ export default function LoginScreen(props) {
   });
   const accountState = useSelector(accountsSelector);
   const isLoginState = useSelector(isLoginSelector);
-  const checkPasswordState= useSelector(checkPasswordObjSelector);
   const oldUserState = useSelector(oldUserSelector);
+  const signatureErrorState = useSelector(signatureErrorSelector);
+  const isSignatureValidState = useSelector(isSignatureValidSelector);
   const dispatch = useDispatch();
+
+  useEffect(()=>{
+    if (signatureErrorState) {
+      checkTransferStateHandler('error', true);
+      checkTransferStateHandler('errorMsg', "Invalid Signature ");
+      dispatch(checkAccountSignatureReset());
+    }
+    if (isSignatureValidState) {
+      dispatch(checkTransferableModelAction(true));
+      checkTransferStateHandler('reset');
+    }
+  },[signatureErrorState, isSignatureValidState])
+
   const handleSignUpClick = (e) => {
     e.preventDefault();
     onSignUpClick();
@@ -92,14 +107,7 @@ export default function LoginScreen(props) {
       checkTransferStateHandler('errorMsg',"Passkey can't be empty");
       return;
     }
-    const result = await checkPasswordState.checkPasword(checkTransfer.password)
-    if (result.error !== null) {
-      checkTransferStateHandler('error',true);
-      checkTransferStateHandler('errorMsg','Passkey is Wrong');
-      return;
-    }
-    dispatch(checkTransferableModelAction(true));
-    checkTransferStateHandler('reset');
+    dispatch(checkAccountSignatureRequest({ login: accountState, password: checkTransfer.password }));
   }
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -228,7 +236,7 @@ export default function LoginScreen(props) {
             </div>
           )}
 
-{isLoginState && oldUserState && <div className={styles.linkMeta}>
+          {isLoginState && oldUserState && <div className={styles.linkMeta}>
               <h5>
                 <strong>To Claim Meta1 Wallet, click here</strong>
               </h5>

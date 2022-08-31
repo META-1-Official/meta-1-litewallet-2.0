@@ -32,7 +32,7 @@ import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector } from "./store/account/selector";
-import { checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
+import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 
@@ -837,7 +837,10 @@ function Application(props) {
       <Modal
         size="mini"
         className="claim_wallet_modal"
-        onClose={() => dispatch(checkTransferableModelAction(false))}
+        onClose={() => {
+          dispatch(checkTransferableModelAction(false));
+          dispatch(checkAccountSignatureReset());
+        }}
         open={checkTransferableModelState}
         id={"modalExch"}
       >
@@ -858,6 +861,7 @@ function Application(props) {
             className="claim_wallet_btn"
             onClick={() => {
               dispatch(checkTransferableModelAction(false));
+              dispatch(checkAccountSignatureReset());
             }}
           >
             Claim Wallet</Button>

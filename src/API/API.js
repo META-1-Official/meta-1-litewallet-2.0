@@ -213,18 +213,18 @@ export async function checkOldUser(accountName) {
   }
 }
 
-export async function passKeyRequest(accountName, password) {
-  try {
-    const payload = buildSignature(accountName, password);
-    const { data } = await axios.post(
-      `https://${process.env.REACT_APP_BACK_URL}/validateSignature`,
-      payload
-    );
-    if (data.isValid) {
-      return { ...data, error: false };
+export async function validateSignature(accountName, password) {
+    try {
+        const payload = buildSignature(accountName, password);
+        const { data } = await axios.post(
+            `https://${process.env.REACT_APP_BACK_URL}/validateSignature`,
+            payload
+        );
+        if (!data.isValid) {
+            return { message: "Invalid Signature", error: true };
+        }
+        return { ...data, error: false };
+    } catch (e) {
+        return { message: "Invalid Signature", error: true };
     }
-    return { message: "Invalid Signature", error: true };
-  } catch (e) {
-    return { message: "Invalid Signature", error: true };
-  }
 }
