@@ -14,8 +14,8 @@ import {
 import { saveUserCurrency } from "../../API/API";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, userCurrencySelector } from "../../store/meta1/selector";
-import { accountsSelector, profileImageSelector } from "../../store/account/selector";
-import { deleteAvatarRequest, uploadAvatarRequest } from "../../store/account/actions";
+import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector, profileImageSelector } from "../../store/account/selector";
+import { deleteAvatarRequest, passKeyRequestService, passKeyResetService, uploadAvatarRequest } from "../../store/account/actions";
 import { saveUserCurrencyRequest, saveUserCurrencyReset, setUserCurrencyAction } from "../../store/meta1/actions";
 let isSet = false;
 const Settings = (props) => {
@@ -44,6 +44,25 @@ const Settings = (props) => {
   const accountNameState = useSelector(accountsSelector);
   const profileImageState =  useSelector(profileImageSelector);
   const changeCurrencyState = useSelector(changeCurrencySelector);
+  const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
+  const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
+  
+  useEffect(() => {
+    if (!isValidPasswordKeyState && passwordKeyErrorState) {
+      setPasswordError("Invalid Signature");
+      return;
+    }
+    if (isValidPasswordKeyState) {
+      if (isRemoveBtn) {
+        dispatch(passKeyResetService());
+        dispatch(deleteAvatarRequest(accountNameState));
+      }
+      else {
+        imageRef.current.click();
+      }
+      closePasswordSectionHandler(false);
+    }
+  }, [isValidPasswordKeyState, passwordKeyErrorState])
   const changeCurrencyHandler = async (e) => {
     e.preventDefault();
     dispatch(saveUserCurrencyRequest({login:accountNameState,currency}));
@@ -59,13 +78,7 @@ const Settings = (props) => {
       setIsPasswordTouch(true);
       return;
     }
-    const result = await checkPasswordState.checkPasword(password)
-    if (result.error !== null) {
-      setPasswordError(result.error);
-      return;
-    }
-    imageRef.current.click();
-    closePasswordSectionHandler(false);
+    dispatch(passKeyRequestService({ login: accountNameState, password}));
   }
 
   const removeImageValidation = async () => {
@@ -73,18 +86,11 @@ const Settings = (props) => {
       setIsPasswordTouch(true);
       return;
     }
-    const result = await checkPasswordState.checkPasword(password)
-    if (result.error !== null) {
-      setPasswordError(result.error);
-      return;
-    }
-    dispatch(deleteAvatarRequest(accountNameState))
-    closePasswordSectionHandler(false);
+    dispatch(passKeyRequestService({ login: accountNameState, password}));
   }
 
   async function uploadFile(e) {
     e.preventDefault();
-
     if (e.target?.files[0]?.name) {
       let type = e.target?.files[0]?.name.split(".")[1];
       if (type === "png" || type === "jpeg" || type === "jpg") {
@@ -210,6 +216,9 @@ const Settings = (props) => {
                             onChange={(e) => {
                               uploadFile(e);
                             }}
+                            onClick={()=>{
+                              dispatch(passKeyResetService());
+                            }}
                             ref={imageRef}
                             className={styles.uploadButton}
                           />
@@ -314,7 +323,10 @@ const Settings = (props) => {
       <Modal
         size="mini"
         open={passwordError !== ''}
-        onClose={() => setPasswordError('')}
+        onClose={() => {
+          setPasswordError('');
+          dispatch(passKeyResetService());
+        }}
         id={"modalExch"}
       >
         <Modal.Header>Error occured</Modal.Header>
@@ -332,7 +344,10 @@ const Settings = (props) => {
           </Grid>
         </Modal.Content>
         <Modal.Actions>
-          <Button positive onClick={() => setPasswordError('')}>
+          <Button positive onClick={() => {
+            setPasswordError('');
+            dispatch(passKeyResetService());
+          }}>
             OK
           </Button>
         </Modal.Actions>

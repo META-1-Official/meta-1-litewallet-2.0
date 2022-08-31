@@ -21,8 +21,9 @@ import leftArrow from "../../images/exchangeAssets/Shape Left.png";
 import rightArrow from "../../images/exchangeAssets/Shape 2 copy 2.png";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPasswordObjSelector, traderSelector, userCurrencySelector } from "../../store/meta1/selector";
-import { accountsSelector } from "../../store/account/selector";
+import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector } from "../../store/account/selector";
 import { saveBalanceRequest } from "../../store/meta1/actions";
+import { passKeyRequestService, passKeyResetService } from "../../store/account/actions";
 
 export default function ExchangeForm(props) {
   const {
@@ -55,13 +56,44 @@ export default function ExchangeForm(props) {
   const [clickedInputs, setClickedInputs] = useState(false);
   const [error, setError] = useState();
   const [feeAlert, setFeeAlert] = useState(false);
-  const checkPasswordState = useSelector(checkPasswordObjSelector);
+  const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
+  const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
   const dispatch = useDispatch();
 
   useEffect(() => {
     console.log(pair);
   }, [pair]);
 
+  useEffect(() => {
+    if (!isValidPasswordKeyState && passwordKeyErrorState) {
+        setTradeError("Invalid Signature");
+        setPassword("");
+        setTradeInProgress(false);
+        return;
+    }
+    if (isValidPasswordKeyState) {
+      dispatch(passKeyResetService());
+      performTradeSubmit();
+    }
+  },[isValidPasswordKeyState, passwordKeyErrorState])
+
+  const performTradeSubmit = async () => {
+    const buyResult = await traderState.perform({
+      from: selectedFrom.value,
+      to: selectedTo.value.trim(),
+      amount: selectedToAmount,
+      password: password,
+    });
+    
+    if (buyResult.error) {
+      setTradeError(buyResult.error);
+    } else {
+      dispatch(saveBalanceRequest(accountState))
+      setModalOpened(true);
+    }
+    setPassword("");
+    setTradeInProgress(false);
+  }
   useEffect(() => {
     async function getPriceForAsset() {
       if (asset !== "META1" && asset !== "USDT") {
@@ -310,34 +342,10 @@ export default function ExchangeForm(props) {
   };
 
   const performTrade = async () => {
-    try {
-      setTradeInProgress(true);
-      setPasswordShouldBeProvided(false);
-      const result = await checkPasswordState.checkPasword(password);
-      if (result.error !== null) {
-        setTradeError(result.error);
-        setPassword("");
-        setTradeInProgress(false);
-        return;
-      }
-      const buyResult = await traderState.perform({
-        from: selectedFrom.value,
-        to: selectedTo.value.trim(),
-        amount: selectedToAmount,
-        password: password,
-      });
-      if (buyResult.error) {
-        setTradeError(buyResult.error);
-      } else {
-        dispatch(saveBalanceRequest(accountState))
-        setModalOpened(true);
-      }
-      setPassword("");
-      setTradeInProgress(false);
-    } catch (e) {
-      setTradeInProgress(false);
-    }
-  };
+    setTradeInProgress(true);
+    setPasswordShouldBeProvided(false);
+    dispatch(passKeyRequestService({ login: accountState, password}));
+  }
 
   const setAssetMax = (e) => {
     e.preventDefault();
@@ -426,7 +434,10 @@ export default function ExchangeForm(props) {
         <Modal
           size="mini"
           open={tradeError !== null}
-          onClose={() => setTradeError(null)}
+          onClose={() => {
+            setTradeError(null);
+            dispatch(passKeyResetService());
+          }}
           id={"modalExch"}
         >
           <Modal.Header>Error occured</Modal.Header>
@@ -444,7 +455,10 @@ export default function ExchangeForm(props) {
             </Grid>
           </Modal.Content>
           <Modal.Actions>
-            <Button positive onClick={() => setTradeError(null)}>
+            <Button positive onClick={() => {
+              setTradeError(null);
+              dispatch(passKeyResetService());
+            }}>
               OK
             </Button>
           </Modal.Actions>
