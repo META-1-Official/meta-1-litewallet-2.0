@@ -87,7 +87,7 @@ const SendForm = React.memo((props) => {
 
   useEffect(() => {
     if (!isValidPasswordKeyState && passwordKeyErrorState) {
-      setError("Invalid Signature");
+      setError("Invalid Credentials");
       setRepeat(true);
       dispatch(passKeyResetService());
       setInProgress(false);

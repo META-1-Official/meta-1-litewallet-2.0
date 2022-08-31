@@ -49,7 +49,7 @@ const Settings = (props) => {
   
   useEffect(() => {
     if (!isValidPasswordKeyState && passwordKeyErrorState) {
-      setPasswordError("Invalid Signature");
+      setPasswordError("Invalid Credentials");
       return;
     }
     if (isValidPasswordKeyState) {
