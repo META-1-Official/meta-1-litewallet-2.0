@@ -176,7 +176,7 @@ export async function sendEmail(emailType, emailData) {
 
 export async function loginRequest(accountName, password) {
   try {
-    const payload = buildSignature(accountName, password);
+    const payload = await buildSignature(accountName, password);
     const { data } = await axios.post(
       `https://${process.env.REACT_APP_BACK_URL}/login`,
       payload
