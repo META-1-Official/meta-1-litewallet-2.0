@@ -3,6 +3,7 @@ import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploa
 import { setAccessToken, setLoginDetail } from '../../utils/localstorage';
 import { checkTokenRequest, checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService } from './actions';
 import * as types from './types';
+import Meta1 from "meta1-vision-dex";
 function* loginHandler(data) {
     try {
         const response = yield call(loginRequest,data.payload.login,data.payload.password)
@@ -93,10 +94,15 @@ function* checkTokenHandler(data) {
 }
 
 function* passKeyHandler(data) {
-    const response = yield call(validateSignature, data.payload.login, data.payload.password);
-    if (!response.error) {
-        yield put(passKeySuccessService());
-    } else {
+    try {
+        yield Meta1.connect(process.env.REACT_APP_MAIA);
+        const loginResult = yield Meta1.login(data.payload.login, data.payload.password);
+        if (loginResult) {
+            yield put(passKeySuccessService());
+        } else {
+            yield put(passKeyErrorService());
+        }
+    } catch (err) {
         yield put(passKeyErrorService());
     }
 }
