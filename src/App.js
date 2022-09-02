@@ -142,6 +142,9 @@ function Application(props) {
         setRefreshData(prev=>!prev);
         dispatch(resetMetaStore());
         setFromSignUp(false);
+        if (accountNameState) {
+          setActiveScreen("wallet");
+        }
       }
     }
     if (accountNameState === null) {
