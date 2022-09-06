@@ -4,19 +4,27 @@ import { setAccessToken, setLoginDetail } from '../../utils/localstorage';
 import { checkTokenRequest, checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService } from './actions';
 import * as types from './types';
 import Meta1 from "meta1-vision-dex";
+import { signUpHandler } from '../../utils/common';
 function* loginHandler(data) {
     try {
-        const response = yield call(loginRequest,data.payload.login,data.payload.password)
+        if (data?.payload?.fromSignUpFlag) {
+            const result = yield signUpHandler(data.payload.login, data.payload.password);
+            if (result && !result.status) {
+                yield put(loginError({accountName: null, token: '', msg: 'Account Creation is under process. Please try after sometime' }));
+                return;
+            }
+        }
+        const response = yield call(loginRequest,data.payload.login, data.payload.password);
         if(!response.error){
             setAccessToken(response.token);
             setLoginDetail(response.accountName)
             yield put(loginSuccess({accountName: response.accountName, token: response.token}));
         } else {
-            yield put(loginError({accountName: null, token: ''}));
+            yield put(loginError({accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
         }
     } catch(e){
         data.payload.setLoginDataError(true);
-        yield put(loginError({accountName: null, token: ''}));
+        yield put(loginError({accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
     }
 }
 function* getUserHandler(data) {
