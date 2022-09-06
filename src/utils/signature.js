@@ -6,15 +6,16 @@ const {Login, PrivateKey, Signature} = require("meta1-vision-js");
 export async function buildSignature(accountName, password) {
     let publicKey, signature;
 
-    try {
-        const signerPkey = PrivateKey.fromWif(password);
-        publicKey = signerPkey.toPublicKey().toString();
-        signature = Signature.sign(accountName, signerPkey).toHex();
-    } catch(err) {
-        await Meta1.connect(process.env.REACT_APP_MAIA);
-        const loginResult = await Meta1.login(accountName, password);
-        
-        if (loginResult) {
+    // Connect & Login
+    await Meta1.connect(process.env.REACT_APP_MAIA);
+    const loginResult = await Meta1.login(accountName, password);
+
+    if (loginResult) {
+        try {
+            const signerPkey = PrivateKey.fromWif(password);
+            publicKey = signerPkey.toPublicKey().toString();
+            signature = Signature.sign(accountName, signerPkey).toHex();
+        } catch(err) {
             const account = await Login.generateKeys(accountName, password, ['owner'], 'DEV11');
             const ownerPrivateKey = account.privKeys.owner.toWif();
             publicKey = account.pubKeys.owner;
