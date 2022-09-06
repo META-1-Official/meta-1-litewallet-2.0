@@ -6,7 +6,7 @@ import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideH
 import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
 import { checkAccountSignatureRequest, checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
-import { accountsSelector, isLoginSelector, isSignatureValidSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
+import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
 import { checkPasswordObjSelector } from "../../store/meta1/selector";
 import { validateSignature } from "../../API/API";
 
@@ -40,6 +40,7 @@ export default function LoginScreen(props) {
   const oldUserState = useSelector(oldUserSelector);
   const signatureErrorState = useSelector(signatureErrorSelector);
   const isSignatureValidState = useSelector(isSignatureValidSelector);
+  const loginErrorMsgState = useSelector(loginErrorMsgSelector);
   const dispatch = useDispatch();
 
   useEffect(()=>{
@@ -199,7 +200,7 @@ export default function LoginScreen(props) {
                   className={styles.ErrorP}
                   style={loginDataError ? null : { display: "none" }}
                 >
-                  Wallet name or Passkey is wrong
+                  {loginErrorMsgState}
                 </p>
                 {errorAttr.login && errorAttr.password ?
                   <p className={styles.ErrorP}>Wallet Name and Passkey can't be empty</p> :

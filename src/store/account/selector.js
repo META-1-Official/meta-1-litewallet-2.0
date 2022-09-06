@@ -17,5 +17,6 @@ export const signatureErrorSelector = (state) => get(state, ['accounts', 'signat
 export const isSignatureValidSelector = (state) => get(state, ['accounts', 'isSignatureValid']);
 export const isValidPasswordKeySelector = (state) => get(state, ['accounts', 'isValidPasswordKey']);
 export const passwordKeyErrorSelector = (state) => get(state, ['accounts', 'passwordKeyError']);
+export const loginErrorMsgSelector = (state) => get(state, ['accounts', 'loginErrorMsg']);
 
 export const demoSelector = (state) => get(state, ['accounts']);
