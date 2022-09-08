@@ -15,6 +15,7 @@ const LeftPanelAdapt = (props) => {
     onClickOrderTableHandler,
     onClickSettingsHandler,
     onClickHistoryHandler,
+    onClickOpenOrderHandler,
     portfolio,
     name
   } = props;
@@ -125,7 +126,7 @@ const LeftPanelAdapt = (props) => {
           <hr />
           <li
             className={"event dropdown-item"}
-            onClick={portfolio ? onClickOrderTableHandler : null}
+            onClick={portfolio ? onClickOpenOrderHandler : null}
             style={{ cursor: "pointer", textAlign: "center", color: "#fff" }}
             data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent"

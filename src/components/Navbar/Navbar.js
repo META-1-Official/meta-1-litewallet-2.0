@@ -19,6 +19,7 @@ const Navbar = (props) => {
     onClickOrderTableHandler,
     onClickSettingsHandler,
     onClickHistoryHandler,
+    onClickOpenOrderHandler,
     portfolio,
     name
   } = props;
@@ -233,6 +234,7 @@ const Navbar = (props) => {
                 onClickHistoryHandler={onClickHistoryHandler}
                 portfolio={portfolio}
                 name={name}
+                onClickOpenOrderHandler={onClickOpenOrderHandler}
               />
             ) : null}
           </div>
