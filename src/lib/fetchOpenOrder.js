@@ -22,24 +22,25 @@ async function getOpenOrder(event) {
             let order = null;
 
             order = ChainStore.getObject(orderID).toJS();
-
             const baseResult = await UseAsset(order.sell_price.base.asset_id);
             const quoteResult = await UseAsset(order.sell_price.quote.asset_id);
 
             let quoteAmount = order?.sell_price?.quote?.amount / Math.pow(10, quoteResult?.data?.precision);
-            let baseAmount = order?.sell_price?.base?.amount / Math.pow(10, baseResult?.data?.precision);
+            let quoteAmount1 =  Number(((order?.for_sale / order?.sell_price?.base?.amount) * order?.sell_price?.quote?.amount / Math.pow(10, quoteResult?.data?.precision)).toFixed(8));
+            let baseAmount = order?.for_sale / Math.pow(10, baseResult?.data?.precision);
+            let baseAmount1 = order?.sell_price?.base?.amount / Math.pow(10, baseResult?.data?.precision);
             
             const newPair = await Meta1.ticker(
                 baseResult?.data?.symbol,
                 quoteResult?.data?.symbol
                 );
                 
-            obj.fromTo = `${quoteAmount} ${quoteResult?.data?.symbol}/${baseAmount} ${baseResult?.data?.symbol}`;
-            obj.price = `${(Number(quoteAmount) / Number(baseAmount)).toFixed(5)} `;
+            obj.fromTo = `${quoteAmount1} ${quoteResult?.data?.symbol} / ${baseAmount} ${baseResult?.data?.symbol}`;
+            obj.price = `${(Number(quoteAmount) / Number(baseAmount1)).toFixed(5)} `;
             obj.priceSymbol = `${quoteResult?.data?.symbol}/${baseResult?.data?.symbol}`;
             obj.creationDate = formatDate(order.expiration, true);
             obj.expiration = formatDate(order.expiration);
-            obj.marketPrice = (1 / Number(newPair.latest)).toFixed(6);
+            obj.marketPrice = (1 / Number(newPair.latest)).toFixed(5);
             obj.order = order;
             return obj;
 

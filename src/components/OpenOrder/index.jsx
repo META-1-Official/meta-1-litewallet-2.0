@@ -110,7 +110,7 @@ const OpenOrder = (props) => {
 									<h6 style={{ margin: "0" }}>{el.marketPrice}</h6>
 								</StyledTableCell>
 								<StyledTableCell align="left">
-									<h6 style={{ margin: "0" }}>{el.expiration}</h6>
+									<h6 style={{ margin: "0" }}>{el.creationDate}</h6>
 								</StyledTableCell>
 								<StyledTableCell align="left">
 									<h6 style={{ margin: "0" }}>{el.expiration}</h6>
