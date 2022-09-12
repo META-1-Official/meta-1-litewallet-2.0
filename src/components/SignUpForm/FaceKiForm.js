@@ -51,6 +51,7 @@ export default function FaceKiForm(props) {
         );
         if (response_enroll.status === 'Enroll OK') {
           alert('Successfully enrolled');
+          const add_response = await postUserKycProfile(email, `usr_${privKey}`);
           setFaceKISuccess(true);
         }
       }

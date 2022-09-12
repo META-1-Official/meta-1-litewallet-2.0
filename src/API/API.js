@@ -247,7 +247,7 @@ export async function postUserKycProfile(email, facekiID) {
       `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/users`,
       {
         email,
-        facekiID,
+        voiceitID: facekiID,
       }
     );
     return data;
