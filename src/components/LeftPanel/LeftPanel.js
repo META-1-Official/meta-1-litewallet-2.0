@@ -17,6 +17,7 @@ const LeftPanel = (props) => {
     onClickOrderTableHandler,
     onClickSettingsHandler,
     onClickHistoryHandler,
+    onClickOpenOrderHandler,
     portfolio,
     name,
     activeScreen
@@ -117,7 +118,7 @@ const LeftPanel = (props) => {
             </li>
             <li
               className={"event"}
-              onClick={portfolio ? onClickOrderTableHandler : null}
+              onClick={portfolio ? onClickOpenOrderHandler : null}
               style={{ cursor: "pointer" }}
             >
               Open Orders
