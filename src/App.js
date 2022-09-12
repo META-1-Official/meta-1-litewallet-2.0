@@ -98,7 +98,12 @@ function Application(props) {
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
   const [refreshData, setRefreshData] = useState(false);
   const [fromSignUp, setFromSignUp] = useState(false);
+  const [isSignatureProcessing, setIsSignatureProcessing] = useState(false);
+  const [signatureResult, setSignatureResult] = useState(null);
   const dispatch = useDispatch();
+
+  const urlParams = window.location.search.replace('?', '').split('&');
+  const signatureParam = urlParams[0].split('=');
 
   useEffect(() => {
     if (login !== null) {
@@ -129,6 +134,14 @@ function Application(props) {
       }
     }
   };
+
+  useEffect(() => {
+    if (signatureParam[0] === 'signature') {
+      setIsSignatureProcessing(true);
+      setSignatureResult(signatureParam[1]);
+      setActiveScreen('registration');
+    }
+  },[signatureParam]);
 
   useEffect(() => {
     if (loginErrorState) {
@@ -276,12 +289,13 @@ function Application(props) {
     }, 2000);
   }
 
-  const onRegistration = (acc, pass, regEmail) => {
+  const onRegistration = async (acc, pass, regEmail) => {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
-    onLogin(acc, true, pass, true);
+    await onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
+    window.location.replace('http://localhost:3000');
   };
 
   async function chngLastLocation(location) {
@@ -411,6 +425,8 @@ function Application(props) {
                     setActiveScreen("exchange");
                   }}
                   portfolio={portfolio}
+                  isSignatureProcessing={isSignatureProcessing}
+                  signatureResult={signatureResult}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {

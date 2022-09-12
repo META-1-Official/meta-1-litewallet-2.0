@@ -33,7 +33,7 @@ function* getUserHandler(data) {
         yield put(getUserError({msg: response.responseMsg}));
     } else {
         if (response?.message?.userAvatar != null) {
-            let avatarImage = `https://${process.env.REACT_APP_BACK_URL}/public/${response.message.userAvatar}`;
+            let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message.userAvatar}`;
             yield put(getUserSuccess({user: response,avatarImage }));
         } else {
             yield put(getUserSuccess({user: response,avatarImage: null }));
@@ -45,7 +45,7 @@ function* uploadAvatarHandler(data) {
     if (response['tokenExpired']) {
         yield put(getUserError({msg: response.responseMsg}));
     } else {
-        let avatarImage = `https://${process.env.REACT_APP_BACK_URL}/public/${response.message}`;
+        let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message}`;
         yield put(uploadAvatarSuccess({avatarImage }));
     }
 }

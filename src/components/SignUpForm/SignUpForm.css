@@ -89,3 +89,143 @@ input {
   margin: 3px;
 }
 
+.main-div {
+  height: 650px;
+  background-color: rgb(198, 196, 191);
+  display: block;
+  align-items: center;
+}
+
+.child-div {
+  margin: auto;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image {
+  height: 388px;
+  width: 500px;
+  mask-image: radial-gradient(circle at 50% 30%, black 25%, rgba(0, 0, 0, 0.6) 25%);
+}
+
+.btn-div {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  bottom: 40px;
+}
+
+.btn-grp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+.btn-1 {
+  width: 150px;
+  height: 40px;
+  background: #00AD6A;
+  border-radius: 6px; 
+  color: white;
+  border: none;
+}
+
+.btn-2 {
+  width: 150px;
+  margin-left: 50px !important;
+  height: 40px;
+  background: #FFC000;
+  border-radius: 6px;
+  color: black;
+  border: none;
+}
+
+.under-div {
+  height: 550px;
+  width: 600px;
+  padding: 1rem;
+  margin: 0 auto;
+}
+
+.btn_x {
+  border: none;
+  background-color: transparent;
+  float: right;
+  color: #eb7134;
+  width: 40px !important;
+  opacity: 1;
+  font-size: 20px;
+}
+
+.btn_back {
+  border: none;
+  background-color: transparent;
+  float: left;
+  color: #eb7134;
+  height: 40px;
+  width: 40px;
+  font-size: 25px;
+}
+
+.header_p {
+  text-align: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.header_ptag {
+  font-size: 14px;
+}
+
+.header_tag {
+  height: 500px;
+  width: 550px;
+  background-color: rgb(210, 205, 205);
+  margin: auto;
+  border-radius: 10px;
+}
+
+.header_head {
+  margin-bottom: 10px;
+  margin-left: 215px;
+}
+
+.span-class {
+  position: relative;
+  margin-bottom: 10px;
+  color: white;
+  text-align: center;
+}
+
+.position-head {
+  display: flex;
+  justify-content: center;
+  color:#fff;
+  width: 100%;
+  align-items: center;
+}
+
+video {
+  margin-bottom: 30px;
+  border-radius: 5px;
+}
+
+.membership_head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.divider {
+  width: 180px;
+  height: 3px;
+  background-color: #FFC000;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
