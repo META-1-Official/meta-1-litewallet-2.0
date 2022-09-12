@@ -3,7 +3,7 @@ import { buildSignature } from "../utils/signature";
 import { getAccessToken, tokenFail } from "../utils/localstorage";
 
 export async function getCryptosChange() {
-  const { data } = await axios.get(`https://${process.env.REACT_APP_BACK_URL}/getExchangeRate`);
+  const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/getExchangeRate`);
 
   return data;
 }
@@ -17,7 +17,7 @@ export async function getUserData(login) {
     }
   }
   try {
-    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/getUserData`, {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getUserData`, {
       login: login,
     }, config);
     return data;
@@ -38,7 +38,7 @@ export async function saveUserCurrency(login, currency) {
   }
   try {
     const { data } = await axios.post(
-      `https://${process.env.REACT_APP_BACK_URL}/saveUserCurrency`,
+      `${process.env.REACT_APP_BACK_URL}/saveUserCurrency`,
       {
         login: login,
         currency: currency,
@@ -63,7 +63,7 @@ export async function uploadAvatar(formData) {
     }
   }
   try {
-    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/saveAvatar`,
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/saveAvatar`,
       formData,
       config
     );
@@ -84,7 +84,7 @@ export async function deleteAvatar(login) {
     }
   }
   try {
-    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/deleteAvatar`, {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/deleteAvatar`, {
       login: login,
     }, config);
     return data;
@@ -104,7 +104,7 @@ export async function changeLastLocation(login, location) {
     }
   }
   try {
-    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/saveLocation`, {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/saveLocation`, {
       login: login,
       location: location,
     }, config);
@@ -121,7 +121,7 @@ export async function changeLastLocation(login, location) {
 export async function saveBalance(login) {
   const config = {}
   try {
-    const { data } = await axios.post(`https://${process.env.REACT_APP_BACK_URL}/saveBalance`, {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/saveBalance`, {
       accountName: login,
     }, config);
     return data;
@@ -136,7 +136,7 @@ export async function getLastLocation(login) {
   }
   try {
     const { data } = await axios.post(
-      `https://${process.env.REACT_APP_BACK_URL}/getLastLocation`,
+      `${process.env.REACT_APP_BACK_URL}/getLastLocation`,
       {
         login: login,
       },
@@ -160,7 +160,7 @@ export async function sendEmail(emailType, emailData) {
   }
   try {
     const { data } = await axios.post(
-      `https://${process.env.REACT_APP_BACK_URL}/sendEmail`,
+      `${process.env.REACT_APP_BACK_URL}/sendEmail`,
       { emailType, emailData },
       config
     );
@@ -178,7 +178,7 @@ export async function loginRequest(accountName, password) {
   try {
     const payload = await buildSignature(accountName, password);
     const { data } = await axios.post(
-      `https://${process.env.REACT_APP_BACK_URL}/login`,
+      `${process.env.REACT_APP_BACK_URL}/login`,
       payload
     );
     return { ...data, error: false };
@@ -205,7 +205,7 @@ export async function getHistoryData(accountName,from, size, searchFilterValues 
 export async function checkOldUser(accountName) {
   try {
     const { data } = await axios.get(
-      `https://${process.env.REACT_APP_BACK_URL}/checkTransferable?accountName=${accountName}`
+      `${process.env.REACT_APP_BACK_URL}/checkTransferable?accountName=${accountName}`
     );
     return { ...data, error: false };
   } catch (e) {
@@ -217,7 +217,7 @@ export async function validateSignature(accountName, password) {
     try {
         const payload = buildSignature(accountName, password);
         const { data } = await axios.post(
-            `https://${process.env.REACT_APP_BACK_URL}/validateSignature`,
+            `${process.env.REACT_APP_BACK_URL}/validateSignature`,
             payload
         );
         if (!data.isValid) {
@@ -228,3 +228,94 @@ export async function validateSignature(accountName, password) {
         return { message: "Invalid Signature", error: true };
     }
 }
+
+// ESIGNATURE
+export async function getUserKycProfile(email) {
+  try {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/users?email=${email}`
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+
+export async function postUserKycProfile(email, facekiID) {
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/users`,
+      {
+        email,
+        facekiID,
+      }
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+};
+
+export async function getESigToken(email) {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/sign/token?email=${email}`
+    );
+    
+    if (response.headers.authorization) {
+      return response.headers.authorization;
+    } else return undefined;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+};
+
+// FACEKI
+export async function liveLinessCheck(image) {
+  try {
+    let form_data = new FormData();
+    form_data.append('image', image);
+
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_FACEKI_URL}/face/attribute`,
+      form_data,
+      { headers: { 'content-type': 'multipart/form-data' } },
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+};
+
+export async function enroll(image, name) {
+  try {
+    let form_data = new FormData();
+    form_data.append('image', image);
+    form_data.append('name', name);
+
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_FACEKI_URL}/enroll_user`,
+      form_data,
+      { headers: { 'content-type': 'multipart/form-data' } },
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+};
+
+export async function verify(image) {
+  try {
+    let form_data = new FormData();
+    form_data.append('image', image);
+
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_FACEKI_URL}/verify_user`,
+      form_data,
+      { headers: { 'content-type': 'multipart/form-data' } },
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+};

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UserInformationForm } from "./UserInformationForm.js";
 import SubmitForm from "./SubmitForm.js";
 import createAccountWithPassword from "../../lib/createAccountWithPassword.js";
-import { Button, Grid, Icon } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
+import OpenLogin from '@toruslabs/openlogin';
 
 import "./SignUpForm.css";
+import FaceKiForm from "./FaceKiForm.js";
 
 export default function SignUpForm(props) {
   const {
@@ -13,6 +15,8 @@ export default function SignUpForm(props) {
     onClickExchangeEOSHandler,
     onClickExchangeUSDTHandler,
     portfolio,
+    isSignatureProcessing,
+    signatureResult
   } = props;
   const [accountName, setAccountName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -20,12 +24,34 @@ export default function SignUpForm(props) {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState('userform');
+  const [authData, setAuthData] = useState(null);
+  const [privKey, setPrivKey] = useState(null);
 
-  const stepFirstSubmit = (
+  useEffect(() => {
+    if (isSignatureProcessing) {
+      setAccountName(localStorage.getItem('login'));
+      setPassword(localStorage.getItem('password'));
+      setFirstName(localStorage.getItem('firstname'));
+      setLastName(localStorage.getItem('lastname'));
+      setPhone(localStorage.getItem('phone'));
+      setEmail(localStorage.getItem('email'));
+      setStep('signature');
+    }
+  }, [])
+
+  const openLogin = new OpenLogin({
+    clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
+    network: process.env.REACT_APP_TORUS_NETWORK,
+    uxMode: 'popup',
+    whiteLabel: {
+      name: 'META1'
+    },
+  });
+
+  const stepGoToTorus = (
     accName,
     pass,
-    newEmail,
     newPhone,
     newLastName,
     newFirstName
@@ -33,13 +59,17 @@ export default function SignUpForm(props) {
     setAccountName(accName);
     setFirstName(newFirstName);
     setPassword(pass);
-    setEmail(newEmail);
     setLastName(newLastName);
     setPhone(newPhone);
-    setStep(2);
+    renderTorusStep();
   };
 
-  const stepSecondSubmit = async () => {
+  const stepGoToEsignature = () => {
+    setStep('submit');
+  };
+
+  const stepLastSubmit = async () => {
+    
     try {
       await createAccountWithPassword(
         accountName,
@@ -53,26 +83,91 @@ export default function SignUpForm(props) {
         lastName,
         firstName
       );
-      localStorage.setItem("login", accountName);
+      localStorage.removeItem('password');
+      localStorage.removeItem('firstname');
+      localStorage.removeItem('lastname');
+      localStorage.removeItem('phone');
+      localStorage.removeItem('email');
       onRegistration(accountName, password, email);
-    } catch (e) {}
+    } catch (e) { }
   };
 
-  const stepForm =
-    step === 1 ? (
-      <UserInformationForm
-        {...props}
-        onSubmit={stepFirstSubmit}
-        accountName={accountName}
-        lastName={lastName}
-        firstName={firstName}
-        password={password}
-        email={email}
-        phone={phone}
-      />
-    ) : (
-      <SubmitForm onSubmit={stepSecondSubmit} password={password} />
-    );
+  const renderStep = () => {
+    switch (step) {
+      case 'userform':
+        return <UserInformationForm
+          {...props}
+          onSubmit={stepGoToTorus}
+          accountName={accountName}
+          lastName={lastName}
+          firstName={firstName}
+          password={password}
+          phone={phone}
+        />
+      case 'faceki':
+        return <FaceKiForm
+          {...props}
+          onClick={stepGoToEsignature}
+          accountName={accountName}
+          lastName={lastName}
+          firstName={firstName}
+          password={password}
+          email={email}
+          privKey={privKey}
+        />
+      case 'submit':
+        return <SubmitForm
+          {...props}
+          onSubmit={stepLastSubmit}
+          accountName={accountName}
+          lastName={lastName}
+          firstName={firstName}
+          password={password}
+          privKey={privKey}
+          email={email}
+          phone={phone} />
+      case 'signature':
+        return <SubmitForm
+          {...props}
+          onSubmit={stepLastSubmit}
+          accountName={accountName}
+          lastName={lastName}
+          firstName={firstName}
+          password={password}
+          privKey={privKey}
+          email={email}
+          signatureResult={signatureResult}
+          phone={phone} />
+      default:
+        return null;
+    }
+  }
+
+  const renderTorusStep = async () => {
+    if (
+      !openLogin
+    ) {
+      return;
+    }
+
+    try {
+      await openLogin.init();
+      await openLogin.login();
+      if (openLogin.privKey) {
+        const privKey = openLogin.privKey;
+        const data = await openLogin.getUserInfo();
+
+        setAuthData(data);
+        setPrivKey(privKey);
+        setEmail(data?.email);
+
+        console.log('User logged in');
+        setStep('faceki');
+      }
+    } catch (error) {
+      console.log('Error in Torus Render', error);
+    }
+  }
 
   return (
     <>
@@ -94,7 +189,6 @@ export default function SignUpForm(props) {
           <div className={"justFlexAndDirect"}>
             <div className={"regForm"}>
               <Button
-                onClick={step === 1 ? props.onBackClick : () => setStep(1)}
                 style={{ color: "#fdc000", fontSize: ".9rem" }}
                 labelPosition="left"
               >
@@ -111,7 +205,7 @@ export default function SignUpForm(props) {
                   Back
                 </span>
               </Button>
-              {stepForm}
+              {renderStep()}
             </div>
             <div className={"adaptThing"}>
               <RightSideHelpMenuFirstType
