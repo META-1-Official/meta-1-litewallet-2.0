@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { key, ChainValidation } from "meta1-vision-js";
 import AccountApi from "../../lib/AccountApi";
 import "./SignUpForm.css";
-
+import 'react-phone-number-input/style.css';
+import PhoneInput from 'react-phone-number-input';
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
 
 const useDebounce = (value, timeout) => {
@@ -140,28 +141,15 @@ const UserInformationForm = (props) => {
                   </Form.Field>                  
                   <Form.Field>
                     <label>Phone Number</label>
-                    <input
+                    <PhoneInput
+                      placeholder="Enter phone number"
                       value={phone}
-                      onChange={(event) => {
-                        setPhone(event.target.value);
-                        if (
-                          !/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g.test(
-                            event.target.value
-                          )
-                        ) {
-                          setPhoneError("Invalid Phone");
-                        } else {
-                          setPhoneError(null);
-                        }
-                      }}
-                      title="+1-234-567-8900"
-                      placeholder="Phone Number"
-                      pattern="+[0-9]{2}-[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                      type="tel"
+                      defaultCountry="US"
+                      maxlength="15"
                       required
-                    />
-                    {phoneError && (
-                      <p style={{ color: "red" }}> {phoneError}</p>
+                      onChange={setPhone} />
+                    {phone === undefined && (
+                      <p style={{ color: "red" }}>Phone number can't be empty</p>
                     )}
                   </Form.Field>
                 </Grid.Column>
@@ -217,6 +205,7 @@ const UserInformationForm = (props) => {
                   firstName === "" ||
                   lastName === "" ||
                   phone === "" ||
+                  phone === undefined ||
                   accountNameErrors ||
                   (searchAccount.length > 0 ? searchAccount[0][0] === accountName : false) ||
                   phoneError ||
