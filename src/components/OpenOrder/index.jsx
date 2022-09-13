@@ -20,29 +20,13 @@ const OpenOrder = (props) => {
 	const accountNameState = useSelector(accountsSelector);
 	const { column, direction } = props;
 	const [filterCollection, setFilterCollection] = useState([]);
-	const [refreshData, setRefreshData] = useState(false);
-	const [chainStoreObj, setChainStoreObj] = useState(null);
 
-	const { data, isLoading, error } = useQuery(["openOrder", chainStoreObj], getOpenOrder);
+	const { data, isLoading, error } = useQuery(["openOrder", accountNameState], getOpenOrder);
 	useEffect(() => {
 		if (Array.isArray(data)) {
 			setFilterCollection(data);
 		}
 	}, [data]);
-
-	useEffect(() => {
-		let newObj = ChainStore.getAccount(
-			accountNameState,
-			undefined
-		);
-
-		if (newObj) {
-			setChainStoreObj(newObj);
-		}
-		if (!newObj) {
-			setRefreshData(prev => !prev)
-		}
-	}, [refreshData]);
 
 	const StyledTableCell = styled(TableCell)(({ theme }) => ({
 		[`&.${tableCellClasses.head}`]: {
