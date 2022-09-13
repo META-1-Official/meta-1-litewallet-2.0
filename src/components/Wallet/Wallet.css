@@ -419,3 +419,6 @@
 .page_sec ul {
   width: 100% !important;
 }
+.dashboard .image {
+  mask-image: none !important;
+}

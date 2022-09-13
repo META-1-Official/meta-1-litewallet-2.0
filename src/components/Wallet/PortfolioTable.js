@@ -167,7 +167,7 @@ const PortfolioTable = React.memo((props) => {
             <StyledTableRow key={datas?.name}>
               <StyledTableCell component="th" scope="row">
                 {
-                  <div className="asset-image">
+                  <div className="asset-image dashboard">
                     <Image size="mini" src={datas?.image} />
                     <div className="asset-name">{datas?.name}</div>
                   </div>
