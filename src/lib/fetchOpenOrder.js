@@ -1,19 +1,34 @@
 import { ChainStore } from 'meta1-vision-js';
 import UseAsset from '../helpers/useAssets';
 import Meta1 from "meta1-vision-dex";
+import moment from 'moment';
 
-const formatDate = (date, flag = false) => {
-    const newDate = new Date(date).toString().split(' ');
-    if (flag) {
-        return `${newDate[1]} ${newDate[2]}, ${Number(newDate[3])-1} ${newDate[4].slice(0,5)}`
-    } else {
-        return `${newDate[1]} ${newDate[2]}, ${newDate[3]} ${newDate[4].slice(0,5)}`
+function makeISODateString(date_str) {
+    if (typeof date_str === 'string' && !/Z$/.test(date_str)) {
+        date_str += 'Z';
     }
+    return date_str;
+}
+
+const getChainStore = (accountNameState) => {
+    return new Promise((resolve,fail)=>{
+        let newObj = ChainStore.getAccount(
+                accountNameState,
+                undefined
+            );
+        if (newObj) {
+            resolve(newObj);
+        }
+        if (!newObj) {
+            fail("fail");
+        }
+    })
 }
 
 async function getOpenOrder(event) {
-    const chainStoreObj = event?.queryKey[1] || null;
-
+    const accountNameState = event?.queryKey[1] || null;
+    const isInverted = false;
+    const chainStoreObj =  await getChainStore(accountNameState);
     if (chainStoreObj) {
         const openOrderIds = chainStoreObj.get('orders');
 
@@ -31,19 +46,20 @@ async function getOpenOrder(event) {
             let baseAmount1 = order?.sell_price?.base?.amount / Math.pow(10, baseResult?.data?.precision);
             
             const newPair = await Meta1.ticker(
-                baseResult?.data?.symbol,
-                quoteResult?.data?.symbol
+                !isInverted ? baseResult?.data?.symbol : quoteResult?.data?.symbol,
+                !isInverted ? quoteResult?.data?.symbol : baseResult?.data?.symbol
                 );
                 
-            obj.fromTo = `${quoteAmount1} ${quoteResult?.data?.symbol} / ${baseAmount} ${baseResult?.data?.symbol}`;
-            obj.price = `${(Number(quoteAmount) / Number(baseAmount1)).toFixed(5)} `;
-            obj.priceSymbol = `${quoteResult?.data?.symbol}/${baseResult?.data?.symbol}`;
-            obj.creationDate = formatDate(order.expiration, true);
-            obj.expiration = formatDate(order.expiration);
+            obj.fromTo = !isInverted  
+                            ? `${quoteAmount1} ${quoteResult?.data?.symbol} / ${baseAmount} ${baseResult?.data?.symbol}`
+                            : `${baseAmount} ${baseResult?.data?.symbol} / ${quoteAmount1} ${quoteResult?.data?.symbol}`;
+            obj.price = !isInverted ? `${(Number(quoteAmount) / Number(baseAmount1)).toFixed(5)} ` : `${(Number(baseAmount) / Number(quoteAmount1)).toFixed(5)} `;
+            obj.priceSymbol = !isInverted ? `${quoteResult?.data?.symbol}/${baseResult?.data?.symbol}` : `${baseResult?.data?.symbol}/${quoteResult?.data?.symbol}`;
+            obj.creationDate = moment(makeISODateString(order.expiration)).add(-1, 'years').format('MMM DD, YYYY hh:mm');
+            obj.expiration = moment(makeISODateString(order.expiration)).format('MMM DD, YYYY hh:mm');
             obj.marketPrice = (1 / Number(newPair.latest)).toFixed(5);
             obj.order = order;
             return obj;
-
         });
         const res = await Promise.all(dataSource).then((values) => {
             return values;
