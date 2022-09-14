@@ -24,7 +24,7 @@ export default class TradeWithPassword {
         parseFloat(amount),
         pairAmt,
         false,
-        new Date("12/12/2031")
+        new Date(new Date().setYear(new Date().getFullYear()+1))
       );
 
       return { result: buyResult, error: null };
