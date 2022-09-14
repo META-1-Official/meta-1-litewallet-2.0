@@ -2,6 +2,7 @@ import { ChainStore } from 'meta1-vision-js';
 import UseAsset from '../helpers/useAssets';
 import Meta1 from "meta1-vision-dex";
 import moment from 'moment';
+import { LimitOrder } from '../utils/MarketClasses';
 
 function makeISODateString(date_str) {
     if (typeof date_str === 'string' && !/Z$/.test(date_str)) {
@@ -49,7 +50,14 @@ async function getOpenOrder(event) {
                 !isInverted ? baseResult?.data?.symbol : quoteResult?.data?.symbol,
                 !isInverted ? quoteResult?.data?.symbol : baseResult?.data?.symbol
                 );
-                
+            
+            let assets = {
+                [order.sell_price.base.asset_id]: {precision: baseResult?.data?.precision},
+                [order.sell_price.quote.asset_id]: {precision: quoteResult?.data?.precision},
+            };
+            let marketBaseId = !isInverted ? order.sell_price.base.asset_id : order.sell_price.quote.asset_id;
+            let orderLimit = new LimitOrder(order, assets, marketBaseId)
+            
             obj.fromTo = !isInverted  
                             ? `${quoteAmount1} ${quoteResult?.data?.symbol} / ${baseAmount} ${baseResult?.data?.symbol}`
                             : `${baseAmount} ${baseResult?.data?.symbol} / ${quoteAmount1} ${quoteResult?.data?.symbol}`;
@@ -58,7 +66,8 @@ async function getOpenOrder(event) {
             obj.creationDate = moment(makeISODateString(order.expiration)).add(-1, 'years').format('MMM DD, YYYY hh:mm');
             obj.expiration = moment(makeISODateString(order.expiration)).format('MMM DD, YYYY hh:mm');
             obj.marketPrice = (1 / Number(newPair.latest)).toFixed(5);
-            obj.order = order;
+            obj.order = orderLimit;
+            obj.marketName = quoteResult?.data?.symbol.includes('META') ? `${baseResult?.data?.symbol}_${quoteResult?.data?.symbol}` : `${quoteResult?.data?.symbol}_${baseResult?.data?.symbol}`;
             return obj;
         });
         const res = await Promise.all(dataSource).then((values) => {

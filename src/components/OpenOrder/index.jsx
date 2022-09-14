@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector } from "../../store/account/selector";
 import getOpenOrder from "../../lib/fetchOpenOrder";
 import { ChainStore } from "meta1-vision-js";
+import moment from "moment";
 
 const OpenOrder = (props) => {
 	const accountNameState = useSelector(accountsSelector);
@@ -24,6 +25,24 @@ const OpenOrder = (props) => {
 	const { data, isLoading, error } = useQuery(["openOrder", accountNameState], getOpenOrder);
 	useEffect(() => {
 		if (Array.isArray(data)) {
+			data.sort((a, b) => {
+				return a.order.getPrice() - b.order.getPrice();
+			});
+
+			data.sort((a, b) => {
+				if (a.marketName > b.marketName) {
+				return 1;
+				}
+				if (a.marketName < b.marketName) {
+				return -1;
+				}
+			});
+			data.sort((a, b) => {
+				return (
+				moment(b.order.expiration).valueOf() -
+				moment(a.order.expiration).valueOf()
+				);
+			});
 			setFilterCollection(data);
 		}
 	}, [data]);
