@@ -3,6 +3,7 @@ import UseAsset from '../helpers/useAssets';
 import Meta1 from "meta1-vision-dex";
 import moment from 'moment';
 import { LimitOrder } from '../utils/MarketClasses';
+import { getCryptosChange } from '../API/API';
 
 function makeISODateString(date_str) {
     if (typeof date_str === 'string' && !/Z$/.test(date_str)) {
@@ -12,11 +13,19 @@ function makeISODateString(date_str) {
 }
 
 const getChainStore = (accountNameState) => {
-    return new Promise((resolve,fail)=>{
+    return new Promise( async (resolve,fail)=>{
+        await ChainStore.clearCache()
+        
         let newObj = ChainStore.getAccount(
             accountNameState,
             undefined
         );
+        await getCryptosChange();
+        newObj = ChainStore.getAccount(
+            accountNameState,
+            undefined
+        );
+
         if (newObj) {
             resolve(newObj);
         }
