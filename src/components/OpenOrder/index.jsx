@@ -27,7 +27,9 @@ const OpenOrder = (props) => {
 		symbol: []
 	});
 
-	const { data, isLoading, error } = useQuery(["openOrder", accountNameState, isInvent], getOpenOrder);
+	const { data, isLoading, error } = useQuery(["openOrder", accountNameState, isInvent], getOpenOrder, {
+		refetchInterval: 10000
+	});
 	useEffect(() => {
 		if (Array.isArray(data)) {
 			data.sort((a, b) => {
