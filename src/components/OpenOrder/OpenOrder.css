@@ -10,6 +10,7 @@
 
 .price_symbol{
     color: #ffc000;
+    cursor: pointer;
 }
 
 .price_symbol_model button {
