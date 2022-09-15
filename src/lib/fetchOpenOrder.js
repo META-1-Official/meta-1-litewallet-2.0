@@ -14,9 +14,9 @@ function makeISODateString(date_str) {
 const getChainStore = (accountNameState) => {
     return new Promise((resolve,fail)=>{
         let newObj = ChainStore.getAccount(
-                accountNameState,
-                undefined
-            );
+            accountNameState,
+            undefined
+        );
         if (newObj) {
             resolve(newObj);
         }
@@ -28,7 +28,7 @@ const getChainStore = (accountNameState) => {
 
 async function getOpenOrder(event) {
     const accountNameState = event?.queryKey[1] || null;
-    const isInverted = false;
+    const isInventState = event?.queryKey[2] || null;
     const chainStoreObj =  await getChainStore(accountNameState);
     if (chainStoreObj) {
         const openOrderIds = chainStoreObj.get('orders');
@@ -41,6 +41,9 @@ async function getOpenOrder(event) {
             const baseResult = await UseAsset(order.sell_price.base.asset_id);
             const quoteResult = await UseAsset(order.sell_price.quote.asset_id);
 
+            const marketName = quoteResult?.data?.symbol.includes('META') ? `${baseResult?.data?.symbol}_${quoteResult?.data?.symbol}` : `${quoteResult?.data?.symbol}_${baseResult?.data?.symbol}`;
+            let isInverted = isInventState?.symbol.includes(marketName);
+
             let quoteAmount = order?.sell_price?.quote?.amount / Math.pow(10, quoteResult?.data?.precision);
             let quoteAmount1 =  Number(((order?.for_sale / order?.sell_price?.base?.amount) * order?.sell_price?.quote?.amount / Math.pow(10, quoteResult?.data?.precision)).toFixed(8));
             let baseAmount = order?.for_sale / Math.pow(10, baseResult?.data?.precision);
@@ -49,7 +52,7 @@ async function getOpenOrder(event) {
             const newPair = await Meta1.ticker(
                 !isInverted ? baseResult?.data?.symbol : quoteResult?.data?.symbol,
                 !isInverted ? quoteResult?.data?.symbol : baseResult?.data?.symbol
-                );
+            );
             
             let assets = {
                 [order.sell_price.base.asset_id]: {precision: baseResult?.data?.precision},
@@ -67,7 +70,8 @@ async function getOpenOrder(event) {
             obj.expiration = moment(makeISODateString(order.expiration)).format('MMM DD, YYYY hh:mm');
             obj.marketPrice = (1 / Number(newPair.latest)).toFixed(5);
             obj.order = orderLimit;
-            obj.marketName = quoteResult?.data?.symbol.includes('META') ? `${baseResult?.data?.symbol}_${quoteResult?.data?.symbol}` : `${quoteResult?.data?.symbol}_${baseResult?.data?.symbol}`;
+            obj.marketName = marketName;
+            obj.isInverted = isInverted;
             return obj;
         });
         const res = await Promise.all(dataSource).then((values) => {

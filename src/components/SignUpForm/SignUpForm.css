@@ -105,12 +105,6 @@ input {
   align-items: center;
 }
 
-.image {
-  height: 388px;
-  width: 500px;
-  mask-image: radial-gradient(circle at 50% 30%, black 25%, rgba(0, 0, 0, 0.6) 25%);
-}
-
 .btn-div {
   display: flex;
   align-items: center;

@@ -10,19 +10,24 @@ import MetaLoader from "../../UI/loader/Loader";
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 import './OpenOrder.css';
-import { Grid } from "@mui/material";
+import { Button, Grid, Popover, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector } from "../../store/account/selector";
 import getOpenOrder from "../../lib/fetchOpenOrder";
 import { ChainStore } from "meta1-vision-js";
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import moment from "moment";
 
 const OpenOrder = (props) => {
 	const accountNameState = useSelector(accountsSelector);
 	const { column, direction } = props;
 	const [filterCollection, setFilterCollection] = useState([]);
+	const [isInvent, setIsInvent] = useState({
+		current: false,
+		symbol: []
+	});
 
-	const { data, isLoading, error } = useQuery(["openOrder", accountNameState], getOpenOrder);
+	const { data, isLoading, error } = useQuery(["openOrder", accountNameState, isInvent], getOpenOrder);
 	useEffect(() => {
 		if (Array.isArray(data)) {
 			data.sort((a, b) => {
@@ -46,6 +51,23 @@ const OpenOrder = (props) => {
 			setFilterCollection(data);
 		}
 	}, [data]);
+
+	const inventHandler = (currentValue, symbol) => {
+		let symbolArr = isInvent.symbol;
+
+		if (currentValue) {
+			symbolArr.splice(symbolArr.indexOf(symbol),1);	
+		} else {
+			symbolArr.push(symbol)
+		}	
+
+		setIsInvent(prev => {
+			return {
+				current: !currentValue,
+				symbol : symbolArr
+			}
+		});
+	}
 
 	const StyledTableCell = styled(TableCell)(({ theme }) => ({
 		[`&.${tableCellClasses.head}`]: {
@@ -99,15 +121,37 @@ const OpenOrder = (props) => {
 						{filterCollection && filterCollection.map((el, index) => (
 							<StyledTableRow key={index}>
 								<StyledTableCell align="center">
-									<span className="success-title">
-										Buy
+									<span className={`${el.isInverted ? 'danger-title' : 'success-title'}`}>
+										{el.isInverted ? 'Sell' : 'Buy'}
 									</span>
 								</StyledTableCell>
 								<StyledTableCell align="left">
 									<h6 style={{ margin: "0" }}>{el.fromTo}</h6>
 								</StyledTableCell>
 								<StyledTableCell align="left">
-								<h6 style={{ margin: "0" }}>{el.price}<span className="price_symbol">{el.priceSymbol}</span></h6>
+								<PopupState variant="popover" popupId="demo-popup-popover">
+									{(popupState) => (
+										<div>
+											<h6 {...bindTrigger(popupState)} style={{ margin: "0" }}>{el.price}<span className="price_symbol">{el.priceSymbol}</span></h6>
+											<Popover
+												className="price_symbol_model"
+												{...bindPopover(popupState)}
+												anchorOrigin={{
+													vertical: 'top',
+													horizontal: 'center',
+												}}
+												transformOrigin={{
+													vertical: 'bottom',
+													horizontal: 'center',
+												}}
+											>
+												<Typography className="price_symbol_model" sx={{ p: 2 }}>
+													<Button className="inside_model_btn" onClick={() => inventHandler(el.isInverted, el.marketName)} >Invert the price</Button>
+												</Typography>
+											</Popover>
+										</div>
+									)}
+								</PopupState>
 								</StyledTableCell>
 								<StyledTableCell align="left">
 									<h6 style={{ margin: "0" }}>{el.marketPrice}</h6>
@@ -128,8 +172,6 @@ const OpenOrder = (props) => {
 					</TableBody>
 				</Table>
 			</TableContainer>
-
-
 			{filterCollection.length > 0 && <Grid container spacing={2}>
 				<Grid item md={12}>
 					<div className="page_sec">

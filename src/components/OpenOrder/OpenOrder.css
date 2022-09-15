@@ -3,6 +3,27 @@
     font-weight: 700;
 }
 
+.danger-title {
+    color: #f04124 !important;
+    font-weight: 700;
+}
+
 .price_symbol{
     color: #ffc000;
+}
+
+.price_symbol_model button {
+    border: none;
+    border-radius: 3px;
+    margin: 0 0.2rem;
+    font-weight: bold;
+    color: var(--textBrown);
+    background: var(--gold);
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.price_symbol_model button:hover {
+    background: var(--gold);
+    color: #fff;
 }
