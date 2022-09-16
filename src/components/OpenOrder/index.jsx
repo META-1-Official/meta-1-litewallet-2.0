@@ -10,26 +10,30 @@ import MetaLoader from "../../UI/loader/Loader";
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 import './OpenOrder.css';
-import { Button, Grid, Popover, Typography } from "@mui/material";
+import { Button, FormControl, Grid, MenuItem, Pagination, Popover, Select, Stack, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector } from "../../store/account/selector";
 import getOpenOrder from "../../lib/fetchOpenOrder";
 import { ChainStore } from "meta1-vision-js";
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import moment from "moment";
+import { checkTokenRequest } from "../../store/account/actions";
 
 const OpenOrder = (props) => {
 	const accountNameState = useSelector(accountsSelector);
 	const { column, direction } = props;
 	const [filterCollection, setFilterCollection] = useState([]);
+	const [rowCollection, setRowCollection] = useState([]);
 	const [isInvent, setIsInvent] = useState({
 		current: false,
 		symbol: []
 	});
-
-	const { data, isLoading, error } = useQuery(["openOrder", accountNameState, isInvent], getOpenOrder, {
+	const [pageNum, setPageNum] = useState(1);
+	const [perPage,setPerPage]= useState(10);
+	const { data, isLoading, error } = useQuery(["openOrder", accountNameState, isInvent, pageNum], getOpenOrder, {
 		refetchInterval: 10000
 	});
+	const dispatch = useDispatch();
 	useEffect(() => {
 		if (Array.isArray(data)) {
 			data.sort((a, b) => {
@@ -50,9 +54,19 @@ const OpenOrder = (props) => {
 				moment(a.order.expiration).valueOf()
 				);
 			});
-			setFilterCollection(data);
+			setRowCollection(data);
 		}
 	}, [data]);
+
+	useEffect(()=>{
+		const newData = [...rowCollection];
+		let start = (pageNum-1) * perPage;
+		if (newData.length <= 10 && pageNum > 1) {
+			start = 0;
+			setPageNum(1);
+		}
+		setFilterCollection(newData.slice(start,start+perPage));
+	},[rowCollection]);
 
 	const inventHandler = (currentValue, symbol) => {
 		let symbolArr = isInvent.symbol;
@@ -174,11 +188,23 @@ const OpenOrder = (props) => {
 					</TableBody>
 				</Table>
 			</TableContainer>
-			{filterCollection.length > 0 && <Grid container spacing={2}>
+
+			{rowCollection.length > 0 && rowCollection.length > 10 && <Grid container spacing={2}>
 				<Grid item md={12}>
-					<div className="page_sec">
-						<span>Total of {filterCollection.length} operations</span>
-					</div>
+					<Stack spacing={2}>
+						{rowCollection.length>0 && <div className="page_sec">
+						<span>Total of {rowCollection.length} operations</span>
+						<Pagination 
+							count={Math.ceil(rowCollection.length/perPage)} 
+							shape="rounded"
+							page={pageNum}
+							onChange={(e, num) => {
+							setPageNum(num);
+							dispatch(checkTokenRequest(accountNameState));
+							}}
+						/>
+						</div>}
+					</Stack>
 				</Grid>
 			</Grid>}
 
