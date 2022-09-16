@@ -123,14 +123,7 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
-    if (Number(blockPrice) <= 0.003 * Number(userCurrencyState.split(" ")[2])){
-        setError(
-          `The amount must be greater than ${Number(
-            (0.003 * Number(userCurrencyState.split(" ")[2])).toFixed(4)
-          )} ${userCurrencyState.split(" ")[1]}`
-        );
-
-      } else if (feeAsset == undefined) {
+    if (feeAsset == undefined) {
       setError("Not enough FEE");
     } else {
       setError("");
