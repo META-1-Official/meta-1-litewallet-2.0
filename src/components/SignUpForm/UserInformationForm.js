@@ -5,7 +5,6 @@ import "./SignUpForm.css";
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
 import countryCodes from '../../utils/countryCode.json'
 import { MenuItem, Select } from "@mui/material";
-import { getFlags } from "../../utils/commonFunction";
 
 const useDebounce = (value, timeout) => {
   const [state, setState] = useState(value);
@@ -221,7 +220,7 @@ const UserInformationForm = (props) => {
                         }}
                       >
                         {countryCodes?.map((data, index) => {
-                          return <MenuItem key={index} value={data?.id}>{data?.iso2} {getFlags(data?.iso2)}</MenuItem>
+                          return <MenuItem key={index} value={data?.id}>{data?.iso2} <img className="countryFlag-img" src={`https://flagcdn.com/24x18/${data?.iso2.toLowerCase()}.png`} alt='flag' /></MenuItem>
                         })}
                       </Select>
                       <span className="phone-number-code">+{selectedCountryObj?.countryCode ? selectedCountryObj?.countryCode : ''}</span>

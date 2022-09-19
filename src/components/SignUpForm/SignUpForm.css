@@ -260,3 +260,8 @@ video {
 .country-code legend {
   display: none;
 }
+
+.countryFlag-img {
+  padding-left: 3px;
+  width: 21px;
+}
