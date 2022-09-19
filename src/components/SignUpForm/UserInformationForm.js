@@ -5,6 +5,7 @@ import "./SignUpForm.css";
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
 import countryCodes from '../../utils/countryCode.json'
 import { MenuItem, Select } from "@mui/material";
+import { getFlags } from "../../utils/commonFunction";
 
 const useDebounce = (value, timeout) => {
   const [state, setState] = useState(value);
@@ -48,15 +49,6 @@ const UserInformationForm = (props) => {
           "XXX XXX XXXX"
       ]
   });
-
-  function isoToEmoji(str) {
-    const code = str
-      .toUpperCase()
-      .split('')
-      .map(e => 127397 + e.charCodeAt(0));
-  
-    return String.fromCodePoint(...code);
-  }
   
   useEffect(() => {
     setPhone(`+${selectedCountryObj.countryCode}${phoneFormat.replaceAll(' ','')}`)
@@ -229,7 +221,7 @@ const UserInformationForm = (props) => {
                         }}
                       >
                         {countryCodes?.map((data, index) => {
-                          return <MenuItem key={index} value={data?.id}>{data?.iso2} {isoToEmoji(data?.iso2)}</MenuItem>
+                          return <MenuItem key={index} value={data?.id}>{data?.iso2} {getFlags(data?.iso2)}</MenuItem>
                         })}
                       </Select>
                       <span className="phone-number-code">+{selectedCountryObj?.countryCode ? selectedCountryObj?.countryCode : ''}</span>
