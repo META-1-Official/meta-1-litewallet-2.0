@@ -181,7 +181,7 @@ const OpenOrder = (props) => {
 							</StyledTableRow>
 						))}
 						{filterCollection && filterCollection.length === 0 && <StyledTableRow>
-							<StyledTableCell align="center" colSpan={4}>
+							<StyledTableCell align="center" colSpan={6}>
 								<span>No record found</span>
 							</StyledTableCell>
 						</StyledTableRow>}
