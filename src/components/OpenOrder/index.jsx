@@ -113,7 +113,7 @@ const OpenOrder = (props) => {
 
 	return (
 		<>
-			<TableContainer style={{ overflow: "auto" }} component={Paper}>
+			<TableContainer className="openOrder-table" component={Paper}>
 				<Table sx={{ minWidth: 700 }} aria-label="customized table">
 					<TableHead>
 						<TableRow style={{ display: "table-row" }}>
@@ -136,7 +136,7 @@ const OpenOrder = (props) => {
 					<TableBody>
 						{filterCollection && filterCollection.map((el, index) => (
 							<StyledTableRow key={index}>
-								<StyledTableCell align="center">
+								<StyledTableCell align="left">
 									<span className={`${el.isInverted ? 'danger-title' : 'success-title'}`}>
 										{el.isInverted ? 'Sell' : 'Buy'}
 									</span>
