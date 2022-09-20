@@ -189,12 +189,12 @@ const OpenOrder = (props) => {
 				</Table>
 			</TableContainer>
 
-			{rowCollection.length > 0 && rowCollection.length > 10 && <Grid container spacing={2}>
+			{rowCollection.length > 0 && <Grid container spacing={2}>
 				<Grid item md={12}>
 					<Stack spacing={2}>
 						{rowCollection.length>0 && <div className="page_sec">
 						<span>Total of {rowCollection.length} operations</span>
-						<Pagination 
+						{rowCollection.length > 10 && <Pagination 
 							count={Math.ceil(rowCollection.length/perPage)} 
 							shape="rounded"
 							page={pageNum}
@@ -202,7 +202,7 @@ const OpenOrder = (props) => {
 							setPageNum(num);
 							dispatch(checkTokenRequest(accountNameState));
 							}}
-						/>
+						/>}
 						</div>}
 					</Stack>
 				</Grid>
