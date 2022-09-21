@@ -1,16 +1,15 @@
 import Meta1 from "meta1-vision-dex";
 import { generateKeyFromPassword } from "../lib/createAccountWithPassword";
-const {Login, PrivateKey, Signature} = require("meta1-vision-js");
-
+const { Login, PrivateKey, Signature } = require("meta1-vision-js");
 
 export async function buildSignature(accountName, password, is4Migration=false) {
     let publicKey, signature;
 
+    // Migration
     if (is4Migration) {
         const signerPkey = PrivateKey.fromWif(password);
         publicKey = signerPkey.toPublicKey().toString();
         signature = Signature.sign(accountName, signerPkey).toHex();
-
         return { accountName, publicKey, signature };
     }
 
@@ -23,7 +22,7 @@ export async function buildSignature(accountName, password, is4Migration=false) 
             const signerPkey = PrivateKey.fromWif(password);
             publicKey = signerPkey.toPublicKey().toString();
             signature = Signature.sign(accountName, signerPkey).toHex();
-        } catch(err) {
+        } catch (err) {
             const account = await Login.generateKeys(accountName, password, ['owner'], 'DEV11');
             const ownerPrivateKey = account.privKeys.owner.toWif();
             publicKey = account.pubKeys.owner;
