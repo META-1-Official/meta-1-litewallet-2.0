@@ -1,10 +1,17 @@
 import Meta1 from "meta1-vision-dex";
 import { generateKeyFromPassword } from "../lib/createAccountWithPassword";
-const {Login, PrivateKey, Signature} = require("meta1-vision-js");
+const { Login, PrivateKey, Signature } = require("meta1-vision-js");
 
 
-export async function buildSignature(accountName, password) {
+export async function buildSignature(accountName, password, isForMigration = false) {
     let publicKey, signature;
+
+    if (isForMigration) {
+        const signerPkey = PrivateKey.fromWif(password);
+        publicKey = signerPkey.toPublicKey().toString();
+        signature = Signature.sign(accountName, signerPkey).toHex();
+        return { accountName, publicKey, signature };
+    }
 
     // Connect & Login
     await Meta1.connect(process.env.REACT_APP_MAIA);
@@ -15,7 +22,7 @@ export async function buildSignature(accountName, password) {
             const signerPkey = PrivateKey.fromWif(password);
             publicKey = signerPkey.toPublicKey().toString();
             signature = Signature.sign(accountName, signerPkey).toHex();
-        } catch(err) {
+        } catch (err) {
             const account = await Login.generateKeys(accountName, password, ['owner'], 'DEV11');
             const ownerPrivateKey = account.privKeys.owner.toWif();
             publicKey = account.pubKeys.owner;

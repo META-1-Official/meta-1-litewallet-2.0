@@ -4,10 +4,13 @@ import SubmitForm from "./SubmitForm.js";
 import createAccountWithPassword from "../../lib/createAccountWithPassword.js";
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
+
+import { checkOldUser } from "../../API/API";
 import OpenLogin from '@toruslabs/openlogin';
 
 import "./SignUpForm.css";
 import FaceKiForm from "./FaceKiForm.js";
+import MigrationForm from "./MigrationForm.js";
 
 export default function SignUpForm(props) {
   const {
@@ -49,6 +52,27 @@ export default function SignUpForm(props) {
     },
   });
 
+  const stepUserInfoSubmit = async (
+    accName,
+    pass,
+    newPhone,
+    newLastName,
+    newFirstName
+  ) => {
+    setAccountName(accName);
+    setFirstName(newFirstName);
+    setPassword(pass);
+    setLastName(newLastName);
+    setPhone(newPhone);
+
+    const response = await checkOldUser(accName);
+    
+    if (response?.found === true) {
+      setStep('migration');
+    }
+    else renderTorusStep();
+  };
+
   const stepGoToTorus = (
     accName,
     pass,
@@ -69,7 +93,7 @@ export default function SignUpForm(props) {
   };
 
   const stepLastSubmit = async () => {
-    
+
     try {
       await createAccountWithPassword(
         accountName,
@@ -97,7 +121,7 @@ export default function SignUpForm(props) {
       case 'userform':
         return <UserInformationForm
           {...props}
-          onSubmit={stepGoToTorus}
+          onSubmit={stepUserInfoSubmit}
           accountName={accountName}
           lastName={lastName}
           firstName={firstName}
@@ -108,6 +132,17 @@ export default function SignUpForm(props) {
         return <FaceKiForm
           {...props}
           onClick={stepGoToEsignature}
+          accountName={accountName}
+          lastName={lastName}
+          firstName={firstName}
+          password={password}
+          email={email}
+          privKey={privKey}
+        />
+      case 'migration':
+        return <MigrationForm
+          {...props}
+          onClick={stepGoToTorus}
           accountName={accountName}
           lastName={lastName}
           firstName={firstName}

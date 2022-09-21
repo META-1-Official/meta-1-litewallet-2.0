@@ -202,33 +202,6 @@ export async function getHistoryData(accountName,from, size, searchFilterValues 
   }
 }
 
-export async function checkOldUser(accountName) {
-  try {
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_BACK_URL}/checkTransferable?accountName=${accountName}`
-    );
-    return { ...data, error: false };
-  } catch (e) {
-    return { message: "Wallet name or passkey is wrong", error: true };
-  }
-}
-
-export async function validateSignature(accountName, password) {
-    try {
-        const payload = buildSignature(accountName, password);
-        const { data } = await axios.post(
-            `${process.env.REACT_APP_BACK_URL}/validateSignature`,
-            payload
-        );
-        if (!data.isValid) {
-            return { message: "Invalid Signature", error: true };
-        }
-        return { ...data, error: false };
-    } catch (e) {
-        return { message: "Invalid Signature", error: true };
-    }
-}
-
 // ESIGNATURE
 export async function getUserKycProfile(email) {
   try {
@@ -319,3 +292,53 @@ export async function verify(image) {
     return { message: "Something is wrong", error: true };
   }
 };
+
+// MIGRATION
+export async function checkOldUser(accountName) {
+  try {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_BACK_URL_DEV1}/checkTransferable?accountName=${accountName}`
+    );
+    return { ...data, error: false };
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+
+export async function validateSignature(accountName, password) {
+    try {
+        const payload = buildSignature(accountName, password, true);
+        console.log(payload);
+        const { data } = await axios.post(
+            `${process.env.REACT_APP_BACK_URL_DEV1}/validateSignature`,
+            payload
+        );
+        return data;
+    } catch (e) {
+        return { message: "Invalid Signature", error: true };
+    }
+}
+
+export async function checkMigrationable(accountName) {
+  try {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_BACK_URL_DEV1}/migration-status?identifier=${accountName}`
+    );
+    return { ...data, error: false };
+  } catch (e) {
+    return { message: "Not able to migrate", error: true };
+  }
+}
+
+export async function migrate(accountName, password) {
+  try {
+      const payload = buildSignature(accountName, password);
+      const { data } = await axios.post(
+          `${process.env.REACT_APP_BACK_URL_DEV1}/migrate`,
+          payload
+      );
+      return data;
+  } catch (e) {
+      return { message: "Something is wrong", error: true };
+  }
+}

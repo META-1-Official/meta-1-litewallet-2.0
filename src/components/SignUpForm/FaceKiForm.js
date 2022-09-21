@@ -28,7 +28,7 @@ export default function FaceKiForm(props) {
 
     if (!imageSrc) {
       alert('Check your camera');
-      return;
+      return; 
     };
 
     var file = dataURLtoFile(imageSrc, 'a.jpg');
