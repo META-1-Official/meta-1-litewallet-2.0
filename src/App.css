@@ -180,6 +180,11 @@ span.css-llftvd {
     flex-direction: column !important;
   }
 }
+@media screen and (max-width: 769px) {
+  .justFlexAndDirectMobile {
+    padding-right: 28px;
+  }
+}
 @media screen and (max-width: 600px) {
   .bottomAdaptBlock {
     display: flex !important;

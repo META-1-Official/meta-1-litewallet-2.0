@@ -841,7 +841,7 @@ function Application(props) {
                         <strong>Open Order</strong>
                       </h5>
                     </div>
-                    <div className={"justFlexAndDirect"}>
+                    <div className="justFlexAndDirect justFlexAndDirectMobile">
                       <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
                         <OpenOrder
                           data={orders}
