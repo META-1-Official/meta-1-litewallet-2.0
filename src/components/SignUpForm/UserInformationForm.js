@@ -200,9 +200,9 @@ const UserInformationForm = (props) => {
                     {firstNameError && (
                       <p style={{ color: "red" }}> {firstNameError}</p>
                     )}
-                  </Form.Field>                  
+                  </Form.Field>                
                   <Form.Field>
-                    <label>Phone Number</label>
+                    <label>Select Country</label>
                     <div className="phone-number-div">
                       <Select
                         labelId="demo-simple-select-label"
@@ -218,57 +218,116 @@ const UserInformationForm = (props) => {
                           setPhoneFormat('');
                           setPhoneError('');
                         }}
+                        style={{maxHeight:'37px'}}
                       >
                         {countryCodes?.map((data, index) => {
-                          return <MenuItem key={index} value={data?.id}>{data?.iso2} <img className="countryFlag-img" src={`https://flagcdn.com/24x18/${data?.iso2.toLowerCase()}.png`} alt='flag' /></MenuItem>
+                          return <MenuItem key={index} value={data?.id}>
+                            <div className="country-select-data">
+                              <div>
+                                <img className="countryFlag-img" src={`https://flagcdn.com/24x18/${data?.iso2.toLowerCase()}.png`} alt='flag' /> 
+                                <span className="countryName-span">{data.defaultName}</span>
+                              </div>
+                              <div className="countryCode-span">+{data?.countryCode}</div>
+                            </div>
+                          </MenuItem>
                         })}
                       </Select>
-                      <span className="phone-number-code">+{selectedCountryObj?.countryCode ? selectedCountryObj?.countryCode : ''}</span>
-                      <input
-                        value={phoneFormat}
-                        type='tel'
-                        className="phone-number-input"
-                        onChange={(e) => phoneNumberChangeHandler(e)}
-                        onKeyDown={(event)=> {
-                          if ( event.key !=="Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
-                            event.preventDefault();
-                          } else if ( event.key !=="Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
-                            event.preventDefault();
-                          } else if (event.key === " ") {
-                            event.preventDefault();
-                          }
-                        }}
-                        placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 &&  selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
-                        required
-                      />
                     </div>
-                    {phoneError && (
-                      <p style={{ color: "red" }}>{phoneError}</p>
-                    )}
                   </Form.Field>
                 </Grid.Column>
                 <Grid.Column width={isMobile ? 16 : 8}>
-                  <Form.Field>
-                    <label>Last Name</label>
-                    <input
-                      value={lastName}
-                      onChange={(event) => {
-                        setLastName(event.target.value);
-                        if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
-                          setLastNameError(
-                            "Your Last Name must not contain special characters"
-                          );
-                        } else {
-                          setLastNameError(null);
-                        }
-                      }}
-                      placeholder="Last Name"
-                      required
-                    />
-                    {lastNameError && (
-                      <p style={{ color: "red" }}> {lastNameError}</p>
-                    )}
-                  </Form.Field>                  
+                  {!isMobile && <>
+                    <Form.Field>  
+                      <label>Last Name</label>
+                      <input
+                        value={lastName}
+                        onChange={(event) => {
+                          setLastName(event.target.value);
+                          if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
+                            setLastNameError(
+                              "Your Last Name must not contain special characters"
+                            );
+                          } else {
+                            setLastNameError(null);
+                          }
+                        }}
+                        placeholder="Last Name"
+                        required
+                      />
+                      {lastNameError && (
+                        <p style={{ color: "red" }}> {lastNameError}</p>
+                      )}
+                    </Form.Field>
+                    <Form.Field>
+                      <label>Phone Number</label>
+                      <input
+                          value={phoneFormat}
+                          type='tel'
+                          className="phone-number-input"
+                          onChange={(e) => phoneNumberChangeHandler(e)}
+                          onKeyDown={(event)=> {
+                            if ( event.key !=="Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
+                              event.preventDefault();
+                            } else if ( event.key !=="Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
+                              event.preventDefault();
+                            } else if (event.key === " ") {
+                              event.preventDefault();
+                            }
+                          }}
+                          placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 &&  selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
+                          required
+                        />
+                        {phoneError && (
+                          <p style={{ color: "red" }}>{phoneError}</p>
+                        )}
+                    </Form.Field>
+                  </>}
+                  {isMobile && <>
+                    <Form.Field>
+                      <label>Phone Number</label>
+                      <input
+                          value={phoneFormat}
+                          type='tel'
+                          className="phone-number-input"
+                          onChange={(e) => phoneNumberChangeHandler(e)}
+                          onKeyDown={(event)=> {
+                            if ( event.key !=="Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
+                              event.preventDefault();
+                            } else if ( event.key !=="Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
+                              event.preventDefault();
+                            } else if (event.key === " ") {
+                              event.preventDefault();
+                            }
+                          }}
+                          placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 &&  selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
+                          required
+                        />
+                        {phoneError && (
+                          <p style={{ color: "red" }}>{phoneError}</p>
+                        )}
+                    </Form.Field>
+                    <Form.Field>  
+                      <label>Last Name</label>
+                      <input
+                        value={lastName}
+                        onChange={(event) => {
+                          setLastName(event.target.value);
+                          if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
+                            setLastNameError(
+                              "Your Last Name must not contain special characters"
+                            );
+                          } else {
+                            setLastNameError(null);
+                          }
+                        }}
+                        placeholder="Last Name"
+                        required
+                      />
+                      {lastNameError && (
+                        <p style={{ color: "red" }}> {lastNameError}</p>
+                      )}
+                    </Form.Field>
+                  </>}            
                 </Grid.Column>
               </Grid>
             </div>
