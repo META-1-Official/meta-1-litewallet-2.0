@@ -223,3 +223,45 @@ video {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.options-height {
+  max-height: 150px !important;
+}
+
+.phone-number-div {
+  display: flex;
+}
+
+.phone-number-input {
+  margin-left: 5px !important;
+}
+
+.phone-number-div .country-code ::before {
+  border: none !important;
+}
+.phone-number-div .country-code ::after {
+  border: none !important;
+}
+
+.phone-number-div .country-code :active {
+  border: none !important;
+}
+
+.phone-number-code {
+  font-size: 18px;
+  padding-top: 20px;
+  padding-left: 16px;
+}
+
+.country-code {
+  width: 150px;
+}
+
+.country-code legend {
+  display: none;
+}
+
+.countryFlag-img {
+  padding-left: 3px;
+  width: 21px;
+}

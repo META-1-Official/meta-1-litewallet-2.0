@@ -2,11 +2,11 @@ import Meta1 from "meta1-vision-dex";
 import { generateKeyFromPassword } from "../lib/createAccountWithPassword";
 const { Login, PrivateKey, Signature } = require("meta1-vision-js");
 
-
-export async function buildSignature(accountName, password, isForMigration = false) {
+export async function buildSignature(accountName, password, is4Migration=false) {
     let publicKey, signature;
 
-    if (isForMigration) {
+    // Migration
+    if (is4Migration) {
         const signerPkey = PrivateKey.fromWif(password);
         publicKey = signerPkey.toPublicKey().toString();
         signature = Signature.sign(accountName, signerPkey).toHex();

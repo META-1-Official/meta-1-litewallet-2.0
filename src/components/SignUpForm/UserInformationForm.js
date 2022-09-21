@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import { key, ChainValidation } from "meta1-vision-js";
 import AccountApi from "../../lib/AccountApi";
 import "./SignUpForm.css";
-import 'react-phone-number-input/style.css';
-import PhoneInput from 'react-phone-number-input';
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
+import countryCodes from '../../utils/countryCode.json'
+import { MenuItem, Select } from "@mui/material";
 
 const useDebounce = (value, timeout) => {
   const [state, setState] = useState(value);
@@ -32,11 +32,43 @@ const UserInformationForm = (props) => {
   const [firstName, setFirstName] = useState(props.firstName || "");
   const [lastName, setLastName] = useState(props.lastName || "");
   const [phone, setPhone] = useState(props.phone || "");
+  const [phoneFormat, setPhoneFormat] = useState('');
   const [searchAccount, setSearchAccount] = useState([["PM", ""]]);
   const [touchedAccountName, setTouchedAccountName] = useState(false);
   const [phoneError, setPhoneError] = useState(null);
   const [firstNameError, setFirstNameError] = useState(null);
   const [lastNameError, setLastNameError] = useState(null);
+  const [country, setCountry] = useState("227");
+  const [selectedCountryObj, setSelectedCountryObj] = useState({
+      "id": 227,
+      "iso2": "US",
+      "defaultName": "USA",
+      "countryCode": "1",
+      "patterns": [
+          "XXX XXX XXXX"
+      ]
+  });
+  
+  useEffect(() => {
+    setPhone(`+${selectedCountryObj.countryCode}${phoneFormat.replaceAll(' ','')}`)
+  }, [selectedCountryObj, phoneFormat]);
+
+  const phoneNumberSpacingHandler = () => {
+    let pattern = '';
+    if (Array.isArray(selectedCountryObj.patterns)) {
+      pattern = selectedCountryObj.patterns[0]
+    }
+    let spaceArr = [];
+    let count = 0;
+    for(let data of pattern) {
+        if (data === " ") {
+            spaceArr.push(count);
+        }
+        count++;
+    }
+    return spaceArr;
+  }
+
   useEffect(() => {
     if (accountName) {
       AccountApi.lookupAccounts(accountName, 1)
@@ -57,6 +89,33 @@ const UserInformationForm = (props) => {
       return false;
     }
   }
+
+  const phoneNumberChangeHandler = (event) => {
+    if (!isNaN(event.target.value.replaceAll(' ',''))) {
+      if (event.target.value === "0") {
+        setPhoneError(`Phone number can't start with 0`);
+      } else if (event.target.value !== "0" && !event.target.value.includes('.')) {
+        setPhoneError('');
+        if (event.target.value === "") {
+          setPhoneError(`Phone number can't be empty`);
+        }
+        if (!selectedCountryObj?.patterns)  {
+          setPhoneFormat(event.target.value);
+        } else {
+          const spacingArr = phoneNumberSpacingHandler();
+          if (event.nativeEvent.inputType !== "deleteContentBackward" && spacingArr.includes(event.target.value.length)) {
+            setPhoneFormat(event.target.value + " ");
+          } else {
+            setPhoneFormat(event.target.value);
+          }
+          if (event.target.value.length !== selectedCountryObj?.patterns[0].length) {
+            setPhoneError(`Phone number should be ${selectedCountryObj.patterns[0].replaceAll(' ','').length} digits long`);
+          }
+        }
+      }
+    }
+  }
+
   useEffect(() => {
     const error = ChainValidation.is_account_name_error(debouncedAccountName);
     const error1 = isVowelsNotExistAndHasNumber(debouncedAccountName);
@@ -109,6 +168,9 @@ const UserInformationForm = (props) => {
 
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
+
+  const MobileNumberError = phoneFormat.replaceAll(' ','');
+
   return (
     <>
       <h2 className="head-title">Create META Wallet</h2>
@@ -141,15 +203,47 @@ const UserInformationForm = (props) => {
                   </Form.Field>                  
                   <Form.Field>
                     <label>Phone Number</label>
-                    <PhoneInput
-                      placeholder="Enter phone number"
-                      value={phone}
-                      defaultCountry="US"
-                      maxlength="15"
-                      required
-                      onChange={setPhone} />
-                    {phone === undefined && (
-                      <p style={{ color: "red" }}>Phone number can't be empty</p>
+                    <div className="phone-number-div">
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={country}
+                        className="country-code"
+                        MenuProps={{ classes: { paper: 'options-height' } }}
+                        label="Select"
+                        onChange={(e)=>{
+                          const obj = countryCodes.find(data => data.id === Number(e.target.value));
+                          setCountry(e.target.value);
+                          setSelectedCountryObj(obj);
+                          setPhoneFormat('');
+                          setPhoneError('');
+                        }}
+                      >
+                        {countryCodes?.map((data, index) => {
+                          return <MenuItem key={index} value={data?.id}>{data?.iso2} <img className="countryFlag-img" src={`https://flagcdn.com/24x18/${data?.iso2.toLowerCase()}.png`} alt='flag' /></MenuItem>
+                        })}
+                      </Select>
+                      <span className="phone-number-code">+{selectedCountryObj?.countryCode ? selectedCountryObj?.countryCode : ''}</span>
+                      <input
+                        value={phoneFormat}
+                        type='tel'
+                        className="phone-number-input"
+                        onChange={(e) => phoneNumberChangeHandler(e)}
+                        onKeyDown={(event)=> {
+                          if ( event.key !=="Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
+                            event.preventDefault();
+                          } else if ( event.key !=="Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
+                            event.preventDefault();
+                          } else if (event.key === " ") {
+                            event.preventDefault();
+                          }
+                        }}
+                        placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 &&  selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
+                        required
+                      />
+                    </div>
+                    {phoneError && (
+                      <p style={{ color: "red" }}>{phoneError}</p>
                     )}
                   </Form.Field>
                 </Grid.Column>
@@ -206,6 +300,7 @@ const UserInformationForm = (props) => {
                   lastName === "" ||
                   phone === "" ||
                   phone === undefined ||
+                  MobileNumberError === "" ||
                   accountNameErrors ||
                   (searchAccount.length > 0 ? searchAccount[0][0] === accountName : false) ||
                   phoneError ||
