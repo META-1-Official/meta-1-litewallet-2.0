@@ -18,6 +18,14 @@ export default function DepositForm(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [address, setAddress] = useState(props.address);
   const [refreshData, setRefreshData] = useState(false);
+  const [minAmountObj] = useState({
+    usdt: 1,
+    btc: 0.001,
+    bnb: 0.01,
+    xlm: 0.01,
+    ltc: 0.01,
+    eth: 0.01
+  });
   const canDeposit = address.length > 0;
   useEffect(() => {
     async function fetchAddress(asset) {
@@ -44,6 +52,13 @@ export default function DepositForm(props) {
 
     if (asset !== undefined) fetchAddress(asset);
   }, [asset, refreshData]);
+
+  const getMinAmount = (key) => {
+    if (typeof key === 'string') {
+      key = key.toLowerCase();
+    }
+    return minAmountObj[key] ? minAmountObj[key] : 0.001;
+  }
 
   return (
     <>
@@ -111,7 +126,7 @@ export default function DepositForm(props) {
               fontSize: ".8rem",
             }}
           >
-            Minimum deposit: 0.001 {asset} {asset.toLowerCase()==='usdt'?'(ERC20)':''}
+            Minimum deposit: {getMinAmount(asset)} {asset} {asset.toLowerCase()==='usdt'?'(ERC20)':''}
           </p>
           <div>
             {!isLoading && canDeposit && (
@@ -136,7 +151,7 @@ export default function DepositForm(props) {
             className={"messageRed"}
             icon="attention"
             header="Important information"
-            content={`Send only ${asset} ${asset.toLowerCase()==='usdt'?'ERC20':''} to this address. Sending less than 0.001 ${asset} or any other currency to this address may result in the loss of your deposit`}
+            content={`Send only ${asset} ${asset.toLowerCase()==='usdt'?'ERC20':''} to this address. Sending less than ${getMinAmount(asset)} ${asset} or any other currency to this address may result in the loss of your deposit`}
           />
         </div>
       </div>
