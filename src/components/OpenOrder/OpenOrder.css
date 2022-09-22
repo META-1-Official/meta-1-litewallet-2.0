@@ -39,6 +39,10 @@
     padding-left: 8px;
 }
 
+.order-table-column-padding {
+    padding-left: 7px;
+}
+
 .danger-title {
     color: #f04124 !important;
     font-weight: 700;

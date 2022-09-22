@@ -142,13 +142,13 @@ const OpenOrder = (props) => {
 									</span>
 								</StyledTableCell>}
 								{CustomColumnsState["From / To"] && <StyledTableCell align="left">
-									<h6 style={{ margin: "0" }}>{el.fromTo}</h6>
+									<h6 className="order-table-column-padding" style={{ margin: "0" }}>{el.fromTo}</h6>
 								</StyledTableCell>}
 								{CustomColumnsState["Price"] && <StyledTableCell align="left">
 								<PopupState variant="popover" popupId="demo-popup-popover">
 									{(popupState) => (
 										<div>
-											<h6 {...bindTrigger(popupState)} style={{ margin: "0" }}>{el.price}<span className="price_symbol">{el.priceSymbol}</span></h6>
+											<h6 className="order-table-column-padding" {...bindTrigger(popupState)} style={{ margin: "0" }}>{el.price}<span className="price_symbol">{el.priceSymbol}</span></h6>
 											<Popover
 												className="price_symbol_model"
 												{...bindPopover(popupState)}
@@ -170,13 +170,13 @@ const OpenOrder = (props) => {
 								</PopupState>
 								</StyledTableCell>}
 								{CustomColumnsState["Market Price"] && <StyledTableCell align="left">
-									<h6 style={{ margin: "0" }}>{el.marketPrice}</h6>
+									<h6 className="order-table-column-padding" style={{ margin: "0" }}>{el.marketPrice}</h6>
 								</StyledTableCell>}
 								{CustomColumnsState["Orders Date"] && <StyledTableCell align="left">
-									<h6 style={{ margin: "0" }}>{el.creationDate}</h6>
+									<h6 className="order-table-column-padding" style={{ margin: "0" }}>{el.creationDate}</h6>
 								</StyledTableCell>}
 								{CustomColumnsState["Expiry Date"] && <StyledTableCell align="left">
-									<h6 style={{ margin: "0" }}>{el.expiration}</h6>
+									<h6 className="order-table-column-padding" style={{ margin: "0" }}>{el.expiration}</h6>
 								</StyledTableCell>}
 							</StyledTableRow>
 						))}
