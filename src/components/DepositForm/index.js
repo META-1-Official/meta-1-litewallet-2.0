@@ -21,10 +21,10 @@ export default function DepositForm(props) {
   const [minAmountObj] = useState({
     usdt: 1,
     btc: 0.001,
-    bnb: 0.01,
-    xlm: 0.01,
+    bnb: 0.001,
+    xlm: 0.001,
     ltc: 0.01,
-    eth: 0.01
+    eth: 0.001
   });
   const canDeposit = address.length > 0;
   useEffect(() => {
