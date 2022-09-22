@@ -158,6 +158,11 @@ span.css-llftvd {
 .claim_model_content{
   text-align: center !important;
 }
+.orderOrderMainFlex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 /*.modal {*/
 /*  height: 20rem!important;*/
 /*  margin: auto!important;*/

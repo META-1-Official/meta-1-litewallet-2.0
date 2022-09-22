@@ -21,7 +21,15 @@ const initialState = {
     isSignatureValid: false,
     isValidPasswordKey: false,
     passwordKeyError: false,
-    loginErrorMsg: ''
+    loginErrorMsg: '',
+    openOrderCustomColumns: {
+        "Buy/sell": true,
+        "From / To": true,
+        "Price": true, 
+        "Market Price": true,
+        "Orders Date": true,
+        "Expiry Date": true,
+    }
 };
 const loginDetail = getLoginDetail();
 if(loginDetail){
@@ -89,6 +97,8 @@ const accountsReducer = (state = initialState, action) => {
             return {...state, isValidPasswordKey: false , passwordKeyError: true};
         case types.PASS_KEY_RESET:
             return {...state, isValidPasswordKey: false, passwordKeyError: false };
+        case types.CUSTOMIZED_COLUMNS_OPEN_ORDER:
+            return {...state, openOrderCustomColumns: {...state.openOrderCustomColumns, [action.payload.key]: action.payload.value}};
         default:
             return state;
     }

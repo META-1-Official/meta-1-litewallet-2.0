@@ -18,5 +18,6 @@ export const isSignatureValidSelector = (state) => get(state, ['accounts', 'isSi
 export const isValidPasswordKeySelector = (state) => get(state, ['accounts', 'isValidPasswordKey']);
 export const passwordKeyErrorSelector = (state) => get(state, ['accounts', 'passwordKeyError']);
 export const loginErrorMsgSelector = (state) => get(state, ['accounts', 'loginErrorMsg']);
+export const openOrderCustomColumnsSelector = (state) => get(state, ['accounts', 'openOrderCustomColumns']);
 
 export const demoSelector = (state) => get(state, ['accounts']);

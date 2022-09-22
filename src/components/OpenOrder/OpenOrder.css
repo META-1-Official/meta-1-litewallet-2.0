@@ -30,8 +30,94 @@
 }
 
 .openOrder-table {
-    padding-left: 5px;
     overflow: auto;
+}
+
+.success-title {
+    color: #43ac6a !important;
+    font-weight: 700;
+    padding-left: 8px;
+}
+
+.danger-title {
+    color: #f04124 !important;
+    font-weight: 700;
+    padding-left: 8px;
+}
+
+.price_symbol {
+    color: #ffc000;
+    cursor: pointer;
+}
+
+.price_symbol_model button {
+    border: none;
+    border-radius: 3px;
+    margin: 0 0.2rem;
+    font-weight: bold;
+    color: var(--textBrown);
+    background: var(--gold);
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.price_symbol_model button:hover {
+    background: var(--gold);
+    color: #fff;
+}
+
+.span_customize {
+    background-color: #ffc000;
+    font-size: 18px;
+    line-height: 50px;
+    font-weight: 500;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    margin-top: -8px;
+}
+
+.main-custom-open-order ul {
+    background-color: #330000 !important;
+    border-radius: 5px !important;
+}
+
+.customized-open-order-span-text {
+    color: #fff !important;
+}
+
+.customized-open-order-span-text-active {
+    color: #ffc000 !important;
+}
+
+.customized-open-order-main.MuiMenuItem-gutters {
+    color: #ffc000 !important;
+}
+
+.icon_customize {
+    margin-left: 10px;
+    font-size: 22px;
+    color: black;
+}
+
+.icon_customize_1 {
+    margin-left: 10px;
+    font-size: 22px;
+    margin-top: -8px;
+    color: black;
+}
+
+.check_customize-active svg:not(:root) {
+    fill: #ffc000 !important;
+}
+
+.check_customize svg:not(:root) {
+    fill: #fff !important;
+}
+
+.checkbox-menu-item-open-order {
+    padding: 0px 0 !important;
+    line-height: 10px;
 }
 @media screen and (max-width: 769px) {
     .openOrder-table {

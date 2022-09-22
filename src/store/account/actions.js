@@ -187,3 +187,10 @@ export const passKeyResetService = () => {
         type: types.PASS_KEY_RESET,
     }
 }
+
+export const customizedColumnOpenOrderRequest = (payload) => {
+    return {
+        type: types.CUSTOMIZED_COLUMNS_OPEN_ORDER,
+        payload
+    }
+}
