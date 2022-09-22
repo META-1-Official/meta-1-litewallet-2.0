@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import './OpenOrder.css';
 import { Button, FormControl, Grid, MenuItem, Pagination, Popover, Select, Stack, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector } from "../../store/account/selector";
+import { accountsSelector, openOrderCustomColumnsSelector } from "../../store/account/selector";
 import getOpenOrder from "../../lib/fetchOpenOrder";
 import { ChainStore } from "meta1-vision-js";
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
@@ -21,6 +21,7 @@ import { checkTokenRequest } from "../../store/account/actions";
 
 const OpenOrder = (props) => {
 	const accountNameState = useSelector(accountsSelector);
+	const CustomColumnsState = useSelector(openOrderCustomColumnsSelector);
 	const { column, direction } = props;
 	const [filterCollection, setFilterCollection] = useState([]);
 	const [rowCollection, setRowCollection] = useState([]);
@@ -117,34 +118,33 @@ const OpenOrder = (props) => {
 				<Table sx={{ minWidth: 700 }} aria-label="customized table">
 					<TableHead>
 						<TableRow style={{ display: "table-row" }}>
-							<StyledTableCell
+							{CustomColumnsState["Buy/sell"] && <StyledTableCell
 								sorted={column === "id" ? direction : null}
-								onClick={() => { }}
 								align="left"
 							>
 								Buy / Sell
-							</StyledTableCell>
-							<StyledTableCell align="left">
+							</StyledTableCell>}
+							{CustomColumnsState["From / To"] && <StyledTableCell align="left">
 								From / To
-							</StyledTableCell>
-							<StyledTableCell align="left">Price</StyledTableCell>
-							<StyledTableCell align="left">Market Price</StyledTableCell>
-							<StyledTableCell align="left">Order Date</StyledTableCell>
-							<StyledTableCell align="left">Expiry Date</StyledTableCell>
+							</StyledTableCell>}
+							{CustomColumnsState["Price"] && <StyledTableCell align="left">Price</StyledTableCell>}
+							{CustomColumnsState["Market Price"] && <StyledTableCell align="left">Market Price</StyledTableCell>}
+							{CustomColumnsState["Orders Date"] && <StyledTableCell align="left">Order Date</StyledTableCell>}
+							{CustomColumnsState["Expiry Date"] && <StyledTableCell align="left">Expiry Date</StyledTableCell>}
 						</TableRow>
 					</TableHead>
 					<TableBody>
 						{filterCollection && filterCollection.map((el, index) => (
 							<StyledTableRow key={index}>
-								<StyledTableCell align="left">
+								{CustomColumnsState["Buy/sell"] && <StyledTableCell align="left">
 									<span className={`${el.isInverted ? 'danger-title' : 'success-title'}`}>
 										{el.isInverted ? 'Sell' : 'Buy'}
 									</span>
-								</StyledTableCell>
-								<StyledTableCell align="left">
+								</StyledTableCell>}
+								{CustomColumnsState["From / To"] && <StyledTableCell align="left">
 									<h6 style={{ margin: "0" }}>{el.fromTo}</h6>
-								</StyledTableCell>
-								<StyledTableCell align="left">
+								</StyledTableCell>}
+								{CustomColumnsState["Price"] && <StyledTableCell align="left">
 								<PopupState variant="popover" popupId="demo-popup-popover">
 									{(popupState) => (
 										<div>
@@ -168,16 +168,16 @@ const OpenOrder = (props) => {
 										</div>
 									)}
 								</PopupState>
-								</StyledTableCell>
-								<StyledTableCell align="left">
+								</StyledTableCell>}
+								{CustomColumnsState["Market Price"] && <StyledTableCell align="left">
 									<h6 style={{ margin: "0" }}>{el.marketPrice}</h6>
-								</StyledTableCell>
-								<StyledTableCell align="left">
+								</StyledTableCell>}
+								{CustomColumnsState["Orders Date"] && <StyledTableCell align="left">
 									<h6 style={{ margin: "0" }}>{el.creationDate}</h6>
-								</StyledTableCell>
-								<StyledTableCell align="left">
+								</StyledTableCell>}
+								{CustomColumnsState["Expiry Date"] && <StyledTableCell align="left">
 									<h6 style={{ margin: "0" }}>{el.expiration}</h6>
-								</StyledTableCell>
+								</StyledTableCell>}
 							</StyledTableRow>
 						))}
 						{filterCollection && filterCollection.length === 0 && <StyledTableRow>

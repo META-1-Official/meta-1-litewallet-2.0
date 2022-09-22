@@ -36,6 +36,7 @@ import { checkAccountSignatureReset, checkTransferableModelAction, checkTransfer
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder  from "./components/OpenOrder";
+import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -836,10 +837,15 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
-                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
-                        <strong>Open Order</strong>
-                      </h5>
+                    <div className="orderOrderMainFlex" style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                      <div>
+                        <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                          <strong>Open Order</strong>
+                        </h5>
+                      </div>
+                      <div>
+                        <CustomizeColumns/>
+                      </div>
                     </div>
                     <div className="justFlexAndDirect justFlexAndDirectMobile">
                       <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
