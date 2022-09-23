@@ -19,7 +19,8 @@ export default function SignUpForm(props) {
     onClickExchangeUSDTHandler,
     portfolio,
     isSignatureProcessing,
-    signatureResult
+    signatureResult,
+    onBackClick
   } = props;
   const [accountName, setAccountName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -226,6 +227,7 @@ export default function SignUpForm(props) {
               <Button
                 style={{ color: "#fdc000", fontSize: ".9rem" }}
                 labelPosition="left"
+                onClick={onBackClick}
               >
                 <i
                   className="fal fa-arrow-left"
