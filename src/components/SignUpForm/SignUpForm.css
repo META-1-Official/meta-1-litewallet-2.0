@@ -229,8 +229,9 @@ video {
 }
 
 .phone-number-div {
-  margin-top: 10px;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .phone-number-input {
@@ -255,7 +256,8 @@ video {
 }
 
 .country-code {
-  width: 500px;
+  width: 200px;
+  margin-top: 6px;
 }
 
 .country-code legend {
@@ -286,4 +288,7 @@ video {
 
 .countryCode-span {
   font-weight: 700;
+}
+.hide-element {
+  display: none;
 }
