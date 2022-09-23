@@ -225,7 +225,14 @@ video {
 }
 
 .options-height {
-  max-height: 150px !important;
+  max-height: 250px !important;
+  margin-left: 115px !important;
+}
+
+@media screen and (max-width: 600px) {
+  .options-height {
+    margin-left: 0 !important;
+  }
 }
 
 .phone-number-div {
