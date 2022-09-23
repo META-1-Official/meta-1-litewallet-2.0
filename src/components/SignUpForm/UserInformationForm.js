@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { key, ChainValidation } from "meta1-vision-js";
 import AccountApi from "../../lib/AccountApi";
 import "./SignUpForm.css";
@@ -19,7 +19,10 @@ const useDebounce = (value, timeout) => {
 };
 
 const UserInformationForm = (props) => {
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const [isTouchedCountry, setIsTouchedCountry] = useState(false)
   const [generatedPassword, setGeneratedPassword] = useState("");
+  const phoneRef = useRef();
   useEffect(() => {
     if (generatedPassword === "") {
       setGeneratedPassword(`P${key.get_random_key().toWif().toString()}`);
@@ -170,6 +173,14 @@ const UserInformationForm = (props) => {
   const isMobile = width <= 600;
 
   const MobileNumberError = phoneFormat.replaceAll(' ','');
+  
+  useEffect(()=>{
+    if (!isSelectorOpen && isTouchedCountry) {
+      if (phoneRef && phoneRef.current) {
+        phoneRef.current.focus();
+      }
+    }
+  },[isSelectorOpen]);
 
   return (
     <>
@@ -202,14 +213,20 @@ const UserInformationForm = (props) => {
                     )}
                   </Form.Field>                
                   <Form.Field>
-                    <label>Select Country</label>
+                    <label >Phone Number</label>
                     <div className="phone-number-div">
                       <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
+                        open={isSelectorOpen}
+                        onOpen={()=> setIsSelectorOpen(true)}
+                        onClose={ ()=> {
+                          setIsSelectorOpen(false);
+                          setIsTouchedCountry(true);
+                        }}
                         value={country}
                         className="country-code"
-                        MenuProps={{ classes: { paper: 'options-height' } }}
+                        MenuProps={{ classes: { paper: 'options-height' }}}
                         label="Select"
                         onChange={(e)=>{
                           const obj = countryCodes.find(data => data.id === Number(e.target.value));
@@ -225,18 +242,38 @@ const UserInformationForm = (props) => {
                             <div className="country-select-data">
                               <div>
                                 <img className="countryFlag-img" src={`https://flagcdn.com/24x18/${data?.iso2.toLowerCase()}.png`} alt='flag' /> 
-                                <span className="countryName-span">{data.defaultName}</span>
+                                <span className={`countryName-span ${!isSelectorOpen ? 'hide-element' : ''}`} >{data.defaultName}</span>
                               </div>
                               <div className="countryCode-span">+{data?.countryCode}</div>
                             </div>
                           </MenuItem>
                         })}
                       </Select>
+                      <input
+                          ref={phoneRef}
+                          value={phoneFormat}
+                          type='tel'
+                          className="phone-number-input"
+                          onChange={(e) => phoneNumberChangeHandler(e)}
+                          onKeyDown={(event)=> {
+                            if ( event.key !=="Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
+                              event.preventDefault();
+                            } else if ( event.key !=="Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
+                              event.preventDefault();
+                            } else if (event.key === " ") {
+                              event.preventDefault();
+                            }
+                          }}
+                          placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 &&  selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
+                          required
+                        />
                     </div>
+                    {phoneError && (
+                          <p style={{ color: "red" }}>{phoneError}</p>
+                        )}
                   </Form.Field>
                 </Grid.Column>
                 <Grid.Column width={isMobile ? 16 : 8}>
-                  {!isMobile && <>
                     <Form.Field>  
                       <label>Last Name</label>
                       <input
@@ -257,77 +294,7 @@ const UserInformationForm = (props) => {
                       {lastNameError && (
                         <p style={{ color: "red" }}> {lastNameError}</p>
                       )}
-                    </Form.Field>
-                    <Form.Field>
-                      <label>Phone Number</label>
-                      <input
-                          value={phoneFormat}
-                          type='tel'
-                          className="phone-number-input"
-                          onChange={(e) => phoneNumberChangeHandler(e)}
-                          onKeyDown={(event)=> {
-                            if ( event.key !=="Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
-                              event.preventDefault();
-                            } else if ( event.key !=="Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
-                              event.preventDefault();
-                            } else if (event.key === " ") {
-                              event.preventDefault();
-                            }
-                          }}
-                          placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 &&  selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
-                          required
-                        />
-                        {phoneError && (
-                          <p style={{ color: "red" }}>{phoneError}</p>
-                        )}
-                    </Form.Field>
-                  </>}
-                  {isMobile && <>
-                    <Form.Field>
-                      <label>Phone Number</label>
-                      <input
-                          value={phoneFormat}
-                          type='tel'
-                          className="phone-number-input"
-                          onChange={(e) => phoneNumberChangeHandler(e)}
-                          onKeyDown={(event)=> {
-                            if ( event.key !=="Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
-                              event.preventDefault();
-                            } else if ( event.key !=="Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
-                              event.preventDefault();
-                            } else if (event.key === " ") {
-                              event.preventDefault();
-                            }
-                          }}
-                          placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 &&  selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
-                          required
-                        />
-                        {phoneError && (
-                          <p style={{ color: "red" }}>{phoneError}</p>
-                        )}
-                    </Form.Field>
-                    <Form.Field>  
-                      <label>Last Name</label>
-                      <input
-                        value={lastName}
-                        onChange={(event) => {
-                          setLastName(event.target.value);
-                          if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
-                            setLastNameError(
-                              "Your Last Name must not contain special characters"
-                            );
-                          } else {
-                            setLastNameError(null);
-                          }
-                        }}
-                        placeholder="Last Name"
-                        required
-                      />
-                      {lastNameError && (
-                        <p style={{ color: "red" }}> {lastNameError}</p>
-                      )}
-                    </Form.Field>
-                  </>}            
+                    </Form.Field>         
                 </Grid.Column>
               </Grid>
             </div>
