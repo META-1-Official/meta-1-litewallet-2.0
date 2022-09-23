@@ -138,6 +138,7 @@ export default function SignUpForm(props) {
           password={password}
           email={email}
           privKey={privKey}
+          phone={phone}
         />
       case 'migration':
         return <MigrationForm
@@ -149,6 +150,7 @@ export default function SignUpForm(props) {
           password={password}
           email={email}
           privKey={privKey}
+          phone={phone}
         />
       case 'submit':
         return <SubmitForm

@@ -176,7 +176,8 @@ export async function sendEmail(emailType, emailData) {
 
 export async function loginRequest(accountName, password) {
   try {
-    const payload = await buildSignature(accountName, password);
+    const payload = await buildSignature(accountName, password, false);
+    console.log('Payload', payload)
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
       payload
@@ -307,7 +308,7 @@ export async function checkOldUser(accountName) {
 
 export async function validateSignature(accountName, password) {
     try {
-        const payload = buildSignature(accountName, password, true);
+        const payload = await buildSignature(accountName, password, true);
         console.log(payload);
         const { data } = await axios.post(
             `${process.env.REACT_APP_BACK_URL_DEV1}/validateSignature`,
@@ -332,7 +333,7 @@ export async function checkMigrationable(accountName) {
 
 export async function migrate(accountName, password) {
   try {
-      const payload = buildSignature(accountName, password);
+      const payload = await buildSignature(accountName, password, true);
       const { data } = await axios.post(
           `${process.env.REACT_APP_BACK_URL_DEV1}/migrate`,
           payload

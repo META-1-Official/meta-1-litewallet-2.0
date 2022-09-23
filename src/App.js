@@ -294,8 +294,7 @@ function Application(props) {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
-    await onLogin(acc, true, pass, true);
-    setActiveScreen("wallet");
+    await onLogin(acc, true, pass, false);
     window.location.replace('http://localhost:3000');
   };
 
