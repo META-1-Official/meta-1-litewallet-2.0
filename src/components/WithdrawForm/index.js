@@ -2,7 +2,7 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { useState, useEffect } from "react";
 import Meta1 from "meta1-vision-dex";
-import { PrivateKey } from "meta1-vision-js";
+import { ChainStore, PrivateKey } from "meta1-vision-js";
 import {
   Image, Modal, Button, Grid, Icon, Label, Popup
 } from "semantic-ui-react";
@@ -21,6 +21,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { sendEmailSelector } from "../../store/account/selector";
 import { sendMailRequest, sendMailReset } from "../../store/account/actions";
 import { userCurrencySelector } from "../../store/meta1/selector";
+import {availableGateways} from '../../utils/gateways';
+import { getMETA1Simple } from "../../utils/gateway/getMETA1Simple";
+import Immutable from "immutable";
+import { getAssetAndGateway, getIntermediateAccount } from "../../utils/common/gatewayUtils";
+import { getCryptosChange } from "../../API/API";
+import { WithdrawAddresses } from "../../utils/gateway/gatewayMethods";
 
 const WITHDRAW_ASSETS = ['ETH', 'USDT']
 
@@ -34,6 +40,28 @@ const MIN_WITHDRAW_AMOUNT = {
   "USDT": 50,
 };
 
+const getChainStore = (accountNameState) => {
+  return new Promise( async (resolve,fail)=>{
+      await ChainStore.clearCache()
+      
+      let newObj = ChainStore.getAccount(
+          accountNameState,
+          undefined
+      );
+      await getCryptosChange();
+      newObj = ChainStore.getAccount(
+          accountNameState,
+          undefined
+      );
+      console.log("newObj",newObj)
+      if (newObj) {
+          resolve(newObj);
+      }
+      if (!newObj) {
+          fail("fail");
+      }
+  })
+}
 const WithdrawForm = (props) => {
   const {onBackClick, asset } = props;
   const userCurrencyState = useSelector(userCurrencySelector);
@@ -57,6 +85,9 @@ const WithdrawForm = (props) => {
   const sendEmailState = useSelector(sendEmailSelector);
   const dispatch = useDispatch();
   const ariaLabel = { "aria-label": "description" };
+  const [gatewayStatus, setGatewayStatus] = useState(availableGateways);
+  const [backedCoins] = useState(Immutable.Map({ META1: getMETA1Simple() }));
+
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
     setAssets(props.assets);
@@ -193,8 +224,101 @@ const WithdrawForm = (props) => {
     }
   };
 
-  const onClickWithdraw = (e) => {
+  const selectedData = () => {
+    let assets = [];
+    let idMap = {};
+    let include = ["META1", "USDT", "BTC", "ETH", "EOS", "XLM", "BNB"];
+    backedCoins.forEach((coin) => {
+			assets = assets
+				.concat(
+					coin.map((item) => {
+						/* Gateway Specific Settings */
+						let split = getAssetAndGateway(item.symbol);
+						let gateway = split.selectedGateway;
+						let backedCoin = split.selectedAsset;
+
+						// Return null if backedCoin is already stored
+						if (!idMap[backedCoin] && backedCoin && gateway) {
+							idMap[backedCoin] = true;
+
+							return {
+								id: backedCoin,
+								label: backedCoin,
+								gateway: gateway,
+								gateFee: item.gateFee,
+								issuer: item.issuerId,
+							};
+						} else {
+							return null;
+						}
+					})
+				)
+				.filter((item) => {
+					return item;
+				})
+				.filter((item) => {
+					if (item.id == 'META1') {
+						return true;
+					}
+					if (include) {
+						return include.includes(item.id);
+					}
+					return true;
+				});
+		});
+    return assets;
+    console.log("assetsassetsassets",assets)
+		// if (!(includeBTS === false)) {
+		// 	assets.push({id: 'META1', label: 'META1', gateway: ''});
+		// }
+  }
+
+  const onClickWithdraw = async (e) => {
     e.preventDefault();
+    
+    console.log("availableGateways",availableGateways)
+    console.log("availableGateways",availableGateways["META1"])
+    console.log("availableGateways selectedFrom",selectedFrom.value)
+    let assetName = !!gatewayStatus.assetWithdrawlAlias
+		  ? gatewayStatus.assetWithdrawlAlias[selectedFrom.value.toLowerCase()] ||
+		  selectedFrom.value.toLowerCase() : selectedFrom.value.toLowerCase();
+      
+    console.log("availableGateways assetName",assetName)
+    console.log("availableGateways getMETA1Simple",getMETA1Simple())
+    
+    console.log("availableGateways backedCoins",backedCoins)
+    const intermediateAccountNameOrId = getIntermediateAccount(
+			selectedFrom.value,
+			backedCoins
+			);
+    console.log("availableGateways intermediateAccountNameOrId",intermediateAccountNameOrId);
+    const intermediateAccounts = await getChainStore("abc-test")
+    console.log("availableGateways availableGateways intermediateAccounts",intermediateAccounts)
+    
+    console.log("WithdrawAddresses",WithdrawAddresses)
+    if (!WithdrawAddresses.has(assetName)) {
+			let withdrawals = [];
+			withdrawals.push(trim(toAddress));
+			console.log("availableGateways intermediateAccount address1",trim(toAddress))
+			WithdrawAddresses.set({wallet: assetName, addresses: withdrawals});
+		} else {
+			let withdrawals = WithdrawAddresses.get(assetName);
+			if (withdrawals.indexOf(trim(toAddress)) == -1) {
+				withdrawals.push(trim(toAddress));
+				console.log("availableGateways intermediateAccount address2",trim(toAddress))
+				WithdrawAddresses.set({
+					wallet: assetName,
+					addresses: withdrawals,
+				});
+			}
+		}
+    console.log("availableGateways WithdrawAddresses",WithdrawAddresses)
+
+    WithdrawAddresses.setLast({wallet: assetName, address:trim(toAddress)});
+
+    const assetData = selectedData();
+    const assetObj = assetData.find(data => data.id === selectedFrom.value)
+    console.log("assetData",assetData,assetObj)
 
     const emailType = "withdraw";
     const emailData = {
@@ -205,7 +329,7 @@ const WithdrawForm = (props) => {
       amount: selectedFromAmount,
       toAddress: trim(toAddress)
     };
-    dispatch(sendMailRequest({emailType,emailData}))
+    // dispatch(sendMailRequest({emailType,emailData}))
   }
 
   useEffect(()=>{
@@ -223,9 +347,12 @@ const WithdrawForm = (props) => {
 
   if (selectedFrom == null) return null;
 
-  const getAssets = (except) => options
+  const getAssets = (except) => {
+    console.log("optionsoptionsoptions",options)
+    return options
     .filter((asset) => WITHDRAW_ASSETS.indexOf(asset.value) > -1)
     .filter((el) => el.value !== except);
+  }
 
   const canWithdraw = name && isValidName &&
     isValidEmailAddress &&
@@ -445,7 +572,7 @@ const WithdrawForm = (props) => {
               className="btn-primary withdraw"
               onClick={(e) => onClickWithdraw(e)}
               floated="left"
-              disabled={canWithdraw ? '' : 'disabled'}
+              // disabled={canWithdraw ? '' : 'disabled'}
             >
               Withdraw
             </Button>

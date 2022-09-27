@@ -25,7 +25,7 @@ const getChainStore = (accountNameState) => {
             accountNameState,
             undefined
         );
-
+        console.log("newObj",newObj)
         if (newObj) {
             resolve(newObj);
         }
