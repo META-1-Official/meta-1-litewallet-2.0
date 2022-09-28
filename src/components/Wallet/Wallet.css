@@ -422,3 +422,12 @@
 .dashboard .image {
   mask-image: none !important;
 }
+.select_currency .MuiOutlinedInput-notchedOutline {
+  border-style: none;
+}
+.select-label {
+  color: rgba(0,0,0, .85) !important;
+}
+.options-height-wallet {
+  max-height: 250px !important;
+}
