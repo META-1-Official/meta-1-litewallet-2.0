@@ -12,6 +12,7 @@ import { useQuery } from "react-query";
 import PortfolioTable from "./PortfolioTable";
 import { userCurrencySelector } from "../../store/meta1/selector";
 import { useSelector } from "react-redux";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 // Трансферы между мета1 аккаунтами
 // вместо BitShares ставь Meta1
@@ -78,12 +79,6 @@ function Wallet(props) {
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
 
-  const openDrop = () => {
-    document.getElementById("switchContainer").style.display === "none"
-      ? (document.getElementById("switchContainer").style.display = "block")
-      : (document.getElementById("switchContainer").style.display = "none");
-  };
-
   function currencyValue(datas) {
     let assetValue = data[datas.name].latest;
     if (datas.name === "META1") {
@@ -118,32 +113,11 @@ function Wallet(props) {
       }
     }
   }, [portfolio, data]);
-  const changeCurrencyToFiat = async () => {
-    document.getElementById("switchContainer").style.display = "none";
-    setCurrentCurrency(currentCurrency + 1);
-    document.getElementById("forCheck").innerText = userCurrencyState.split(" ")[1];
-  };
 
   const changeCryptoCurrency = async (e) => {
-    let chosen = document.getElementById("forCheck").innerText;
-    document.getElementById("switchContainer").style.display = "none";
-    let crypto = null;
-    switch (e.target.nodeName) {
-      case "LI":
-        crypto = e.target.outerText;
-        break;
-      case "SPAN":
-        crypto = e.target.outerText;
-        break;
-      case "IMG":
-        crypto = e.target.nextSibling.outerText;
-        break;
-      default:
-        break;
-    }
+    let crypto = e.target.value;
     if (crypto !== "META1") {
-      if (document.getElementById("forCheck").innerText === "META1") {
-        chosen = userCurrencyState.split(" ")[1];
+      if (userCurrencyState.split(' ')[1] === "META1") {
         let data = await getAllByOne('USDT', crypto);
         sessionStorage.setItem('currencyResult', JSON.stringify(data))
         setCurrentCurrency(currentCurrency + 1);
@@ -153,7 +127,7 @@ function Wallet(props) {
       }
     } else {
       setCurrentCurrency(currentCurrency + 1);
-      let crypto = "META1";
+      crypto = "META1";
     }
     setIsCurrencySelected(crypto)
   };
@@ -238,51 +212,47 @@ function Wallet(props) {
             </h5>
           </div>
           <div className="rightSideBlock">
-            <div className={"blockChoose"}>
-              <noscript id={"forCheck"}>{userCurrencyState.split(" ")[1]}</noscript>
-              <div className={"blockChoosen"} onClick={openDrop}>
-                <span style={{ textAlign: "center", paddingRight: '2px' }}>
-                  Select currency to display
-                </span>
-                <i
-                  className="fas fa-chevron-down"
-                  style={{ marginTop: ".2rem" }}
-                />
-              </div>
-              <div
-                id={"switchContainer"}
-                style={{ position: "relative", display: "none" }}
-              >
-                <ul className={"chooseContainer"}>
-                  <li
-                    className={"choosenContainerItem"}
-                    onClick={changeCurrencyToFiat}
+          <div className="select_currency">
+              <div className={"blockChoose"}>
+                <FormControl sx={{ m: 1, minWidth: 230 }}>
+                  <InputLabel className="select-label" id="demo-simple-select-autowidth-label">Select currency to display</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-autowidth-label"
+                    id="demo-simple-select-autowidth"
+                    value={isCurrencySelected}
+                    onChange={changeCryptoCurrency}
+                    autoWidth
+                    label="Select currency to display"
+                    MenuProps={{ classes: { paper: 'options-height-wallet' }}}
                   >
-                    <img
-                      src={fiatIcon}
-                      alt="cryptoImage"
-                      className="imgContainer"
-                    />
-                    <span className="spanDrop">
-                      Fiat ({userCurrencyState.split(" ")[0]})
-                    </span>
-                  </li>
-                  {assets.map((el, index) => (
-                    <li
-                      onClick={changeCryptoCurrency}
-                      className={"choosenContainerItem"}
-                      key={index}
-                    >
+                    <MenuItem>
                       <img
-                        src={el.image}
-                        style={{ width: "35px" }}
+                        src={fiatIcon}
                         alt="cryptoImage"
                         className="imgContainer"
                       />
-                      <span className="spanDrop">{el.symbol}</span>
-                    </li>
-                  ))}
-                </ul>
+                      <span className="spanDrop">
+                        Fiat ({userCurrencyState.split(" ")[0]})
+                      </span>
+                    </MenuItem>
+                    {assets.map((el, index) => (
+                      <MenuItem
+                        className={"choosenContainerItem"}
+                        key={index}
+                        value={el.symbol}
+                      >
+                        <img
+                          src={el.image}
+                          style={{ width: "35px" }}
+                          alt="cryptoImage"
+                          className="imgContainer"
+                        />
+                        <span className="spanDrop">{el.symbol}</span>
+                      </MenuItem>
+                    ))}
+
+                  </Select>
+                </FormControl>
               </div>
             </div>
             <hr
