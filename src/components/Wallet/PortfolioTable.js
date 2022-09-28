@@ -19,6 +19,8 @@ import { useSelector } from "react-redux";
 const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [withdrawBtnShow] = useState(["bnb", "usdt", "btc", "ltc", "xlm", "eth"]);
+
   const {
     filteredPortfolio,
     onAssetSelect,
@@ -244,7 +246,7 @@ const PortfolioTable = React.memo((props) => {
                 )}
               </StyledTableCell>
               <StyledTableCell align="left">
-                {(datas.name == "ETH" || datas.name === "USDT") && (
+                {withdrawBtnShow.includes(datas.name.toLowerCase()) && (
                   <button
                     onClick={() => {
                       onWithdrawClick(datas.name);

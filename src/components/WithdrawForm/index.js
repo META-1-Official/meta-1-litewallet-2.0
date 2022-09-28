@@ -22,7 +22,7 @@ import { sendEmailSelector } from "../../store/account/selector";
 import { sendMailRequest, sendMailReset } from "../../store/account/actions";
 import { userCurrencySelector } from "../../store/meta1/selector";
 
-const WITHDRAW_ASSETS = ['ETH', 'USDT']
+const WITHDRAW_ASSETS = ["ETH", "BTC", "BNB", "XLM", "LTC", "USDT"];
 
 const MIN_WITHDRAW_AMOUNT = {
   "BTC": 0.0005,
