@@ -25,6 +25,7 @@ export default function LoginScreen(props) {
   const [password, setPassword] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [openVideoModal, setOpenVideoModal] = useState(false);
+  const [migratable, setMigratable] = useState(false);
   const [errorAttr, setErrorAttr] = useState({
     login: false,
     password: false
@@ -54,6 +55,18 @@ export default function LoginScreen(props) {
       checkTransferStateHandler('reset');
     }
   },[signatureErrorState, isSignatureValidState])
+
+  useEffect(async() => {
+    await checkTransferableAccount();
+  }, [])
+
+  const checkTransferableAccount = async () => {
+    const response = await checkMigrationable(accountState);
+
+    if (response.snapshot.transfer_status === 'PENDING' || response.snapshot.transfer_status === 'PARTIALLY_DONE') {
+      setMigratable(true);
+    }
+  }
 
   const handleSignUpClick = (e) => {
     e.preventDefault();
@@ -244,7 +257,7 @@ export default function LoginScreen(props) {
             </div>
           )}
 
-          {isLoginState && oldUserState && <div className={styles.linkMeta}>
+          {isLoginState && oldUserState && migratable && <div className={styles.linkMeta}>
               <h5>
                 <strong>To Claim Meta1 Wallet, click here</strong>
               </h5>
