@@ -1,6 +1,6 @@
 import MetaLoader from "../../UI/loader/Loader";
 // import ReactTooltip from 'react-tooltip'
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import getAllByOne from "../requests/compareCrypto";
 import Switch from "@mui/material/Switch";
 import fiatIcon from "../../images/4292332.png";
@@ -46,6 +46,8 @@ function Wallet(props) {
   const [loader, setLoader] = useState(true);
   const [check, setCheck] = useState(false);
   const [isCurrencySelected, setIsCurrencySelected] = useState('')
+  const [isCurrencySelectedEmpty, setIsCurrencySelectedEmpty] = useState(true);
+  const [selectBoxOpen, setSelectBoxOpen] = useState(false);
   const { data, isLoading, error } = useQuery("cryptos", getDatas);
 
   async function getDatas() {
@@ -60,6 +62,15 @@ function Wallet(props) {
     fetchedCryptos["USDT"] = { latest: 1, percent_change: 0 };
     return fetchedCryptos;
   }
+
+  useEffect(() => {
+    if (isCurrencySelected === '' && !isCurrencySelectedEmpty && !selectBoxOpen) {
+      setIsCurrencySelectedEmpty(true);
+    }
+    if (isCurrencySelected !== '' && isCurrencySelectedEmpty) {
+      setIsCurrencySelectedEmpty(false);
+    }
+  },[isCurrencySelected, selectBoxOpen]);
 
   useEffect(() => {
     function check() {
@@ -114,8 +125,13 @@ function Wallet(props) {
     }
   }, [portfolio, data]);
 
-  const changeCryptoCurrency = async (e) => {
-    let crypto = e.target.value;
+  const changeCryptoCurrency = async (e, firstRenderFlag = false) => {
+    let crypto;
+    if (firstRenderFlag) {
+      crypto = sessionStorage.getItem('selectedCurrency') || 'USDT';
+    } else {
+      crypto = e.target.value;
+    }
     if (crypto !== "META1") {
       if (userCurrencyState.split(' ')[1] === "META1") {
         let data = await getAllByOne('USDT', crypto);
@@ -129,7 +145,8 @@ function Wallet(props) {
       setCurrentCurrency(currentCurrency + 1);
       crypto = "META1";
     }
-    setIsCurrencySelected(crypto)
+    sessionStorage.setItem('selectedCurrency', crypto);
+    setIsCurrencySelected(crypto);
   };
 
   function Portfolio(props) {
@@ -169,11 +186,13 @@ function Wallet(props) {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: '-21px'
           }}
         >
           <div
             className={"blockSumAndPercentage"}
-            style={{ display: "flex", flexDirection: "row" }}
+            style={{ display: "flex", flexDirection: "row", alignItems:'center' }}
           >
             <h2 style={{ color: "#FFC000", fontSize: "2rem", margin: "0" }}>
               <strong className={"adaptAmountMain"} style={!isMobile ? { fontSize: '25px' } : { fontSize: '16px !important' }}>
@@ -190,7 +209,7 @@ function Wallet(props) {
               style={{
                 margin: ".3rem 0 .5rem 1rem",
                 fontSize: ".8rem",
-                height: "55%",
+                height: "28%",
                 padding: ".3rem",
                 borderRadius: "3px",
                 boxShadow: "0 4px 9px 5px rgba(0,0,0,.11)",
@@ -211,19 +230,32 @@ function Wallet(props) {
               {loader && isLoading ? null : totalChange.replace("-", "")} %
             </h5>
           </div>
-          <div className="rightSideBlock">
+          <div className="rightSideBlock" style={{ lineHeight: '14px !important'}} >
           <div className="select_currency">
               <div className={"blockChoose"}>
-                <FormControl sx={{ m: 1, minWidth: 230 }}>
+                {isCurrencySelectedEmpty && <div onClick={() => {
+                  setIsCurrencySelectedEmpty(false);
+                  setSelectBoxOpen(true);
+                }}>
+                  Select currency to display <i class="fas fa-caret-down"></i>
+                </div>}
+                {!isCurrencySelectedEmpty && <FormControl sx={{ m: 1, minWidth: 230 }}>
                   <InputLabel className="select-label" id="demo-simple-select-autowidth-label">Select currency to display</InputLabel>
                   <Select
+                    open={selectBoxOpen}
                     labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
                     value={isCurrencySelected}
-                    onChange={changeCryptoCurrency}
+                    onOpen={() => {
+                      setSelectBoxOpen(true);
+                    }}
+                    onChange={(e) => changeCryptoCurrency(e, false)}
                     autoWidth
                     label="Select currency to display"
                     MenuProps={{ classes: { paper: 'options-height-wallet' }}}
+                    onClose={()=>{
+                      setSelectBoxOpen(false);
+                    }}
                   >
                     <MenuItem>
                       <img
@@ -252,7 +284,7 @@ function Wallet(props) {
                     ))}
 
                   </Select>
-                </FormControl>
+                </FormControl>}
               </div>
             </div>
             <hr
