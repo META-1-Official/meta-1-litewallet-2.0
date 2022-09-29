@@ -431,3 +431,6 @@
 .options-height-wallet {
   max-height: 250px !important;
 }
+.select_currency.MuiSelect-select {
+  padding: 8px !important;
+}
