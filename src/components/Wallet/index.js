@@ -307,7 +307,7 @@ function Wallet(props) {
               }
             />
             <div className={"switcher"} style={{ paddingTop: "1.4rem" }}>
-              <span>Hide Zero Balances</span>
+              <span className='hide-zero-span'>Hide Zero Balances</span>
               <Switch
                 className={"switch"}
                 checked={hideZero}

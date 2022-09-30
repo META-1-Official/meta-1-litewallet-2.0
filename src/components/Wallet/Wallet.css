@@ -316,6 +316,7 @@
 
 .spanDrop {
   margin-left: 3rem;
+  font-size: 14px !important;
 }
 .grid-css {
   margin-top: 1.6rem;
@@ -463,7 +464,7 @@
   color: rgba(0, 0, 0, .85) !important;
   font-size: 14px !important;
   font-weight: 400 !important;
-  margin-top: 5px !important;
+  margin-top: 6px !important;
   position: absolute !important;
   left: 30px !important;
   top: 0px !important;
@@ -476,4 +477,7 @@
   left: 45px !important;
   top: 32px !important;
   cursor: pointer;
+}
+.hide-zero-span {
+  font-size: 12px !important;
 }
