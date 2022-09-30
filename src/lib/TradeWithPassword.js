@@ -1,3 +1,5 @@
+import { MIN_TRADE_LOWER, MIN_TRADE_UPPER, PERCENT_OK, PERCENT_MAX, PERCENT_MIN, UPPER_TRADE_MIN } from "../utils/constant";
+
 export default class TradeWithPassword {
   constructor(props) {
     this.metaApi = props.metaApi;
@@ -28,19 +30,19 @@ export default class TradeWithPassword {
       
       amount = pairAmtFrom*selectedFromAmount;
       
-      if (from === 'META1' && to === 'USDT' && blockPrice > amount && blockPrice >= 0.01 && blockPrice < 0.3) {
+      if (from === 'META1' && to === 'USDT' && blockPrice > amount && blockPrice >= MIN_TRADE_LOWER && blockPrice < UPPER_TRADE_MIN) {
         amount = amount + (blockPrice - amount);
       }
 
       let percent = ((pairAmt*amount)/selectedFromAmount)*100;
       
-      if (Number(blockPrice) >= 0.01 && Number(blockPrice) <= 0.3 && percent>99.98 && percent<100) {
+      if (Number(blockPrice) >= MIN_TRADE_LOWER && Number(blockPrice) <= UPPER_TRADE_MIN && percent > PERCENT_MIN && percent < PERCENT_OK) {
         percent = ((pairAmt*amount)/selectedFromAmount)*100;
-        if (percent>99.98 && percent<100) {
+        if (percent > PERCENT_MIN && percent < PERCENT_OK) {
           amount = (selectedFromAmount - (amount*pairAmt)) + amount;
         }
-      }else if (percent === 100 && Number(blockPrice) >= 0.01 &&  Number(blockPrice) <= 0.07) {
-        amount = amount * (100.00002/100);
+      } else if (percent === PERCENT_OK && Number(blockPrice) >= MIN_TRADE_LOWER &&  Number(blockPrice) <= MIN_TRADE_UPPER) {
+        amount = amount * (PERCENT_MAX/PERCENT_OK);
       }
 
       const account = await this.metaApi.login(this.login, password);
