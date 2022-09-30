@@ -233,14 +233,26 @@ function Wallet(props) {
           <div className="rightSideBlock" style={{ lineHeight: '14px !important'}} >
           <div className="select_currency">
               <div className={"blockChoose"}>
-                {isCurrencySelectedEmpty && <div onClick={() => {
-                  setIsCurrencySelectedEmpty(false);
-                  setSelectBoxOpen(true);
-                }}>
+                {isCurrencySelectedEmpty && <div 
+                  onClick={() => {
+                    setIsCurrencySelectedEmpty(false);
+                    setSelectBoxOpen(true);
+                  }}
+                  className='selectbox_div'
+                > 
                   Select currency to display <i class="fas fa-caret-down"></i>
                 </div>}
-                {!isCurrencySelectedEmpty && <FormControl sx={{ m: 1, minWidth: 230 }}>
-                  <InputLabel className="select-label" id="demo-simple-select-autowidth-label">Select currency to display</InputLabel>
+                {!isCurrencySelectedEmpty && <FormControl className="mw-400 width-selectBox" sx={{ m: 1, minWidth: "270" }}>
+                  <InputLabel 
+                    onClick={() => {
+                      if (isCurrencySelected !== '') {
+                        setSelectBoxOpen(true);
+                      }
+                    }} 
+                    className={`select-label ${isCurrencySelected !== '' ? 'select-label-selected' : ''}`} id="demo-simple-select-autowidth-label"
+                  >
+                    Select currency to display
+                  </InputLabel>
                   <Select
                     open={selectBoxOpen}
                     labelId="demo-simple-select-autowidth-label"
@@ -263,7 +275,7 @@ function Wallet(props) {
                         alt="cryptoImage"
                         className="imgContainer"
                       />
-                      <span className="spanDrop">
+                      <span className="spanDrop newSpanDropClass">
                         Fiat ({userCurrencyState.split(" ")[0]})
                       </span>
                     </MenuItem>
@@ -279,7 +291,7 @@ function Wallet(props) {
                           alt="cryptoImage"
                           className="imgContainer"
                         />
-                        <span className="spanDrop">{el.symbol}</span>
+                        <span className="spanDrop newSpanDropClass">{el.symbol}</span>
                       </MenuItem>
                     ))}
 

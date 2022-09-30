@@ -434,3 +434,46 @@
 .select_currency.MuiSelect-select {
   padding: 8px !important;
 }
+.selectbox_div {
+  padding: 25px !important;
+  margin-left: -20px !important;
+  font-family: sans-serif;
+  color: rgba(0, 0, 0, .85) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding-left: -10px !important;
+  margin-top: 2px !important;
+}
+.selectbox_div {
+  padding: 25px !important;
+  margin-left: -20px !important;
+  font-family: sans-serif;
+  color: rgba(0, 0, 0, .85) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding-left: -10px !important;
+  margin-top: 2px !important;
+}
+.newSpanDropClass {
+  margin-left: 152px !important;
+  position: relative !important;
+  top: 3px !important;
+}
+.select-label {
+  color: rgba(0, 0, 0, .85) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  margin-top: 5px !important;
+  position: absolute !important;
+  left: 30px !important;
+  top: 0px !important;
+  font-family: "Poppins", sans-serif !important;
+}
+.width-selectBox {
+  min-width: 270px !important;
+}
+.select-label-selected {
+  left: 45px !important;
+  top: 32px !important;
+  cursor: pointer;
+}
