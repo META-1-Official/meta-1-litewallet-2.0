@@ -45,6 +45,7 @@ export default function ExchangeForm(props) {
   const [selectedFrom, setSelectedFrom] = useState(props.selectedFrom);
   const [selectedTo, setSelectedTo] = useState(props.selectedTo);
   const [selectedFromAmount, setSelectedFromAmount] = useState("");
+  const [selectedFromAmount1, setSelectedFromAmount1] = useState("");
   const [selectedToAmount, setSelectedToAmount] = useState(0);
   const [pair, setPair] = useState(null);
   const [invalidEx, setInvalidEx] = useState(false);
@@ -83,6 +84,9 @@ export default function ExchangeForm(props) {
       to: selectedTo.value.trim(),
       amount: selectedToAmount,
       password: password,
+      selectedFromAmount,
+      blockPrice,
+      currentCurrency: userCurrencyState.split(' ')[2]
     });
     
     if (buyResult.error) {
@@ -175,6 +179,7 @@ export default function ExchangeForm(props) {
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
       setInvalidEx(true);
       setSelectedFromAmount(0);
+      setSelectedFromAmount1(0);
       setBlockPrice("");
       return;
     }
@@ -200,8 +205,9 @@ export default function ExchangeForm(props) {
       Number(e.target.value) /
       priceForAsset /
       Number(userCurrencyState.split(" ")[2])
-    ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
-    setSelectedFromAmount(priceForOne);
+    )
+    setSelectedFromAmount(String(priceForOne));
+    setSelectedFromAmount1(priceForOne.toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre));
   };
 
   const handleCalculateSelectedTo = (currentValue='') => {
@@ -210,6 +216,7 @@ export default function ExchangeForm(props) {
       setInvalidEx(true);
       setSelectedToAmount(NaN);
       setSelectedFromAmount(NaN);
+      setSelectedFromAmount1(NaN);
       setBlockPrice(NaN);
       return;
     }
@@ -234,12 +241,14 @@ export default function ExchangeForm(props) {
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
       setInvalidEx(true);
       setSelectedFromAmount(0);
+      setSelectedFromAmount1(0);
       setBlockPrice("");
       return;
     }
     setInvalidEx(false);
     const amount = selectedToAmount * pair.lowest_ask;
     setSelectedFromAmount(amount);
+    setSelectedFromAmount1(amount);
   };
 
   useEffect(() => {
@@ -254,6 +263,7 @@ export default function ExchangeForm(props) {
     }
     if (selectedToAmount === "") {
       setSelectedFromAmount("");
+      setSelectedFromAmount1("");
     }
   }, [selectedFromAmount, selectedToAmount]);
 
@@ -343,6 +353,7 @@ export default function ExchangeForm(props) {
   const setAssetMax = (e) => {
     e.preventDefault();
     setSelectedFromAmount(selectedFrom.balance);
+    setSelectedFromAmount1(selectedFrom.balance);
     handleCalculateSelectedTo();
     setTimeout(() => {
       let priceForOne = (
@@ -367,6 +378,9 @@ export default function ExchangeForm(props) {
   const inputChangeHandler = async (val,e)=>{
     const currentInput = e.target.value
     setSelectedFromAmount(prev=>{
+      return currentInput
+    });
+    setSelectedFromAmount1(prev=>{
       return currentInput
     });
     if (val !== "META1" && val !== "USDT") {
@@ -557,6 +571,7 @@ export default function ExchangeForm(props) {
                             setSelectedFrom(val);
                             changeAssetHandler(val.value);
                             setSelectedFromAmount(NaN);
+                            setSelectedFromAmount1(NaN);
                             setSelectedToAmount(NaN);
                             setBlockPrice(NaN);
                             setInvalidEx(false);
@@ -582,7 +597,7 @@ export default function ExchangeForm(props) {
                               <div className={styles.inputForAmount}>
                                 <Input
                                   placeholder="Amount crypto"
-                                  value={selectedFromAmount}
+                                  value={selectedFromAmount1}
                                   type={"number"}
                                   onChange={(e) => {
                                     if (
@@ -687,6 +702,7 @@ export default function ExchangeForm(props) {
                         changeAssetHandlerSwap(selectedTo);
                         setSelectedToAmount(NaN);
                         setSelectedFromAmount(NaN);
+                        setSelectedFromAmount1(NaN);
                         setBlockPrice(NaN);
                         swapAssets(e);
                       }}
@@ -717,6 +733,7 @@ export default function ExchangeForm(props) {
                           onChange={(val) => {
                             setSelectedTo(val);
                             setSelectedFromAmount(NaN);
+                            setSelectedFromAmount1(NaN);
                             setSelectedToAmount(NaN);
                             setBlockPrice(NaN);
                             setInvalidEx(false);
