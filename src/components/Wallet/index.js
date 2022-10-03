@@ -177,7 +177,7 @@ function Wallet(props) {
     <>
       <div style={{ marginLeft: "3rem" }} className={"totalSumBlock"}>
         <h4
-          style={{ color: "#505361", fontSize: ".9rem", marginBottom: ".3rem" }}
+          style={{ color: "#505361", fontSize: ".9rem", marginBottom: "0rem" }}
         >
           Portfolio Balance
         </h4>
@@ -187,7 +187,7 @@ function Wallet(props) {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            marginTop: '-21px'
+            marginTop: '-23px'
           }}
         >
           <div
