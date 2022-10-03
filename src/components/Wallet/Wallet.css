@@ -456,9 +456,9 @@
   margin-top: 2px !important;
 }
 .newSpanDropClass {
-  margin-left: 152px !important;
+  margin-left: 182px !important;
   position: relative !important;
-  top: 3px !important;
+  top: 2px !important;
 }
 .select-label {
   color: rgba(0, 0, 0, .85) !important;
@@ -474,10 +474,22 @@
   min-width: 270px !important;
 }
 .select-label-selected {
+  font-size: 17px !important;
   left: 45px !important;
-  top: 32px !important;
+  top: 29px !important;
   cursor: pointer;
 }
 .hide-zero-span {
   font-size: 12px !important;
+}
+.blockSumAndPercentage {
+  min-width: 200px;
+}
+
+.rightSideBlock {
+  width: 100%;
+}
+
+.totalSumBlock {
+  padding: 20px 15px;
 }
