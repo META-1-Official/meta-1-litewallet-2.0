@@ -171,7 +171,7 @@ const LeftPanelAdapt = (props) => {
             <i style={{ margin: ".6rem .54rem" }} className="fas fa-history" />
           </div>
           <div className={styles.textSpan}>
-            <span>Transfer History</span>
+            <span>Transaction History</span>
           </div>
         </div>
       </li>
