@@ -61,7 +61,7 @@ export default function LoginScreen(props) {
   }, [])
 
   const checkTransferableAccount = async () => {
-    if (accountState) {
+    if (accountState && oldUserState) {
       const response = await checkMigrationable(accountState);
       console.log('', response)
 
