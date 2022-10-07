@@ -195,7 +195,7 @@ function Wallet(props) {
             style={{ display: "flex", flexDirection: "row", alignItems:'center' }}
           >
             <h2 style={{ color: "#FFC000", fontSize: "2rem", margin: "0" }}>
-              <strong className={"adaptAmountMain"} style={!isMobile ? { fontSize: '20px' } : { fontSize: '16px !important' }}>
+              <strong className={`adaptAmountMain ${!isMobile ? 'balanceFontSize' : 'balanceFontSizeMobile' }`}>
                 {loader && isLoading ? (
                   <Loader size="mini" active inline="centered" />
                 ) : (
