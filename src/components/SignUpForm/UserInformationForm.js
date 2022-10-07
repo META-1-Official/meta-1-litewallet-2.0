@@ -17,6 +17,7 @@ const useDebounce = (value, timeout) => {
 
   return state;
 };
+const ALLOW_PHONE_NUMBER_KEY = ["Backspace" , "Tab", "ArrowRight", "ArrowLeft"];
 
 const UserInformationForm = (props) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -256,9 +257,9 @@ const UserInformationForm = (props) => {
                           className="phone-number-input"
                           onChange={(e) => phoneNumberChangeHandler(e)}
                           onKeyDown={(event)=> {
-                            if ( event.key !=="Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
+                            if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
                               event.preventDefault();
-                            } else if ( event.key !=="Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
+                            } else if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
                               event.preventDefault();
                             } else if (event.key === " ") {
                               event.preventDefault();
