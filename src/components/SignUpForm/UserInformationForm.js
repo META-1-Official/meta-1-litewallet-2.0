@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { key, ChainValidation } from "meta1-vision-js";
 import AccountApi from "../../lib/AccountApi";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import "./SignUpForm.css";
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
 import countryCodes from '../../utils/countryCode.json'
@@ -33,13 +34,16 @@ const UserInformationForm = (props) => {
   const [accountName, setAccountName] = useState(props.accountName || "");
   const debouncedAccountName = useDebounce(accountName, 100);
   const [accountNameErrors, setAccountNameErrors] = useState(null);
+  const [email, setEmail] = useState(props.email || "");
   const [firstName, setFirstName] = useState(props.firstName || "");
   const [lastName, setLastName] = useState(props.lastName || "");
   const [phone, setPhone] = useState(props.phone || "");
   const [phoneFormat, setPhoneFormat] = useState('');
+  const [password, setPassword] = useState("");
   const [searchAccount, setSearchAccount] = useState([["PM", ""]]);
   const [touchedAccountName, setTouchedAccountName] = useState(false);
   const [phoneError, setPhoneError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
   const [firstNameError, setFirstNameError] = useState(null);
   const [lastNameError, setLastNameError] = useState(null);
   const [country, setCountry] = useState("227");
@@ -154,6 +158,7 @@ const UserInformationForm = (props) => {
       props.onSubmit(
         accountName,
         generatedPassword,
+        email,
         phone,
         lastName,
         firstName
@@ -166,6 +171,7 @@ const UserInformationForm = (props) => {
     accountName,
     generatedPassword,
     props,
+    email,
     lastName,
     phone,
   ]);
@@ -212,8 +218,56 @@ const UserInformationForm = (props) => {
                     {firstNameError && (
                       <p style={{ color: "red" }}> {firstNameError}</p>
                     )}
-                  </Form.Field>                
+                  </Form.Field>
                   <Form.Field>
+                    <label>Email</label>
+                    <input
+                      onChange={(event) => {
+                        setEmail(event.target.value);
+                        if (
+                          !/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(
+                            event.target.value
+                          )
+                        ) {
+                          setEmailError("Invalid Email");
+                        } else {
+                          setEmailError(null);
+                        }
+                      }}
+                      value={email}
+                      type="email"
+                      placeholder="Email"
+                      required
+                    />
+                    {emailError && (
+                      <p style={{ color: "red" }}> {emailError}</p>
+                    )}
+                  </Form.Field>                
+                  
+                </Grid.Column>
+                <Grid.Column width={isMobile ? 16 : 8}>
+                    <Form.Field>  
+                      <label>Last Name</label>
+                      <input
+                        value={lastName}
+                        onChange={(event) => {
+                          setLastName(event.target.value);
+                          if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
+                            setLastNameError(
+                              "Your Last Name must not contain special characters"
+                            );
+                          } else {
+                            setLastNameError(null);
+                          }
+                        }}
+                        placeholder="Last Name"
+                        required
+                      />
+                      {lastNameError && (
+                        <p style={{ color: "red" }}> {lastNameError}</p>
+                      )}
+                    </Form.Field>
+                    <Form.Field>
                     <label >Phone Number</label>
                     <div className="phone-number-div">
                       <Select
@@ -272,30 +326,7 @@ const UserInformationForm = (props) => {
                     {phoneError && (
                           <p style={{ color: "red" }}>{phoneError}</p>
                         )}
-                  </Form.Field>
-                </Grid.Column>
-                <Grid.Column width={isMobile ? 16 : 8}>
-                    <Form.Field>  
-                      <label>Last Name</label>
-                      <input
-                        value={lastName}
-                        onChange={(event) => {
-                          setLastName(event.target.value);
-                          if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
-                            setLastNameError(
-                              "Your Last Name must not contain special characters"
-                            );
-                          } else {
-                            setLastNameError(null);
-                          }
-                        }}
-                        placeholder="Last Name"
-                        required
-                      />
-                      {lastNameError && (
-                        <p style={{ color: "red" }}> {lastNameError}</p>
-                      )}
-                    </Form.Field>         
+                  </Form.Field>         
                 </Grid.Column>
               </Grid>
             </div>
@@ -318,6 +349,36 @@ const UserInformationForm = (props) => {
               ) : null}
             </Form.Field>
             <Form.Field>
+              <label>Copy Wallet Passkey</label>
+              <div className="ui action input">
+                <input value={generatedPassword} type="text" disabled className="dark-wallet-key" />
+                <CopyToClipboard text={generatedPassword} onCopy={() => {}}>
+                  <div
+                    name="copyToken"
+                    className="ui yellow right icon button brown show_text"
+                  >
+                    <i className="fal fa-copy" />
+                  </div>
+                </CopyToClipboard>
+                <span className="copy_text">Copy</span>
+              </div>
+            </Form.Field>
+
+            <Form.Field>
+              <label>Passkey Confirmation</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Form.Field>
+            {searchAccount.length > 0 && searchAccount[0][0] === accountName && (
+              <p style={{ color: "red" }}>Account is already used </p>
+            )}
+            <div>
+                <span style={{ fontFamily: 'inherit', color: 'red' }}>Please make sure you have copied and SAVED your Passkey in another location (such as a word document or to your note pad) before clicking on the Submit Button. If you have not saved this Passkey, it can NOT be recovered.</span>
+            </div>
+            <Form.Field>
               <Button
                 className="yellow"
                 style={{ color: "#240000", marginTop:'1em' }}
@@ -325,11 +386,14 @@ const UserInformationForm = (props) => {
                 disabled={
                   firstName === "" ||
                   lastName === "" ||
+                  email === "" ||
                   phone === "" ||
                   phone === undefined ||
                   MobileNumberError === "" ||
                   accountNameErrors ||
+                  password !== generatedPassword ||
                   (searchAccount.length > 0 ? searchAccount[0][0] === accountName : false) ||
+                  emailError ||
                   phoneError ||
                   firstNameError ||
                   lastNameError
