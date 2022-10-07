@@ -44,7 +44,7 @@ export default function LoginScreen(props) {
   const loginErrorMsgState = useSelector(loginErrorMsgSelector);
   const dispatch = useDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (signatureErrorState) {
       checkTransferStateHandler('error', true);
       checkTransferStateHandler('errorMsg', "Invalid Signature ");
@@ -54,17 +54,20 @@ export default function LoginScreen(props) {
       dispatch(checkTransferableModelAction(true));
       checkTransferStateHandler('reset');
     }
-  },[signatureErrorState, isSignatureValidState])
+  }, [signatureErrorState, isSignatureValidState])
 
-  useEffect(async() => {
+  useEffect(async () => {
     await checkTransferableAccount();
   }, [])
 
   const checkTransferableAccount = async () => {
-    const response = await checkMigrationable(accountState);
+    if (accountState) {
+      const response = await checkMigrationable(accountState);
+      console.log('', response)
 
-    if (response.snapshot.transfer_status === 'PENDING' || response.snapshot.transfer_status === 'PARTIALLY_DONE') {
-      setMigratable(true);
+      if (response.snapshot.transfer_status === 'PENDING' || response.snapshot.transfer_status === 'PARTIALLY_DONE') {
+        setMigratable(true);
+      }
     }
   }
 
@@ -96,7 +99,7 @@ export default function LoginScreen(props) {
     return isValid;
   }
   const checkTransferStateHandler = (attr, value) => {
-    if(attr === 'reset') {
+    if (attr === 'reset') {
       setCheckTransfer({
         password: '',
         showPasswordColumn: false,
@@ -106,14 +109,14 @@ export default function LoginScreen(props) {
       return;
     }
     setCheckTransfer(prev => {
-      return { ...prev, [attr]:value }
+      return { ...prev, [attr]: value }
     })
-    if(attr === 'errorMsg') {
+    if (attr === 'errorMsg') {
       setTimeout(() => {
         setCheckTransfer(prev => {
           return { ...prev, errorMsg: '', error: false }
         })
-      },3000)
+      }, 3000)
     }
   }
   const checkTransferSubmitHandler = async () => {
@@ -258,46 +261,46 @@ export default function LoginScreen(props) {
           )}
 
           {isLoginState && oldUserState && migratable && <div className={styles.linkMeta}>
-              <h5>
-                <strong>To Claim Meta1 Wallet, click here</strong>
-              </h5>
-              <br />
+            <h5>
+              <strong>To Claim Meta1 Wallet, click here</strong>
+            </h5>
+            <br />
+            <button
+              className={`${styles.Button} ${styles.checkTransferButtonDisplay}`}
+              onClick={() => checkTransferStateHandler('showPasswordColumn', true)}
+              type={"button"}
+              style={{ marginTop: "0" }}
+            >
+              Claim Meta1 Wallet
+            </button>
+            {checkTransfer.showPasswordColumn && <>
+              <input
+                className={styles.input}
+                onChange={(e) => {
+                  checkTransferStateHandler(e.target.name, e.target.value);
+                }}
+                name="password"
+                placeholder={"Owner Private Key"}
+                value={checkTransfer.password}
+                type="password"
+              />
               <button
-                className={`${styles.Button} ${styles.checkTransferButtonDisplay}`}
-                onClick={() => checkTransferStateHandler('showPasswordColumn', true) }
+                className={`${styles.Button} ${styles.checkTransferPassword}`}
+                onClick={() => checkTransferSubmitHandler()}
                 type={"button"}
                 style={{ marginTop: "0" }}
               >
-                Claim Meta1 Wallet
+                Submit
               </button>
-              {checkTransfer.showPasswordColumn && <>
-                <input
-                  className={styles.input}
-                  onChange={(e) => {
-                    checkTransferStateHandler(e.target.name, e.target.value);
-                  }}
-                  name="password"
-                  placeholder={"Owner Private Key"}
-                  value={checkTransfer.password}
-                  type="password"
-                />
-                <button
-                  className={`${styles.Button} ${styles.checkTransferPassword}`}
-                  onClick={() => checkTransferSubmitHandler() }
-                  type={"button"}
-                  style={{ marginTop: "0" }}
-                >
-                  Submit
-                </button>
-              </>
-              }
-              <span
-                  className={styles.checkTransferError}
-                  style={checkTransfer.error ? null : { display: "none" }}
-                >
-                 {checkTransfer.errorMsg}
-              </span>
-            </div>}
+            </>
+            }
+            <span
+              className={styles.checkTransferError}
+              style={checkTransfer.error ? null : { display: "none" }}
+            >
+              {checkTransfer.errorMsg}
+            </span>
+          </div>}
         </div>
         <div className={styles.rightBlockContent}>
           <RightSideHelpMenuFirstType
