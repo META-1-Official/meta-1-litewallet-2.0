@@ -1,6 +1,6 @@
 import {Apis} from 'meta1-vision-ws';
 import chainIds from './chainIds';
-console.log("process.env.REACT_APP_CURRENT_NET",process.env.REACT_APP_CURRENT_NET)
+
 const CHAINID_SHORT = chainIds[process.env.REACT_APP_CURRENT_NET].substr(0, 8);
 
 /** This file centralized customization and branding efforts throughout the whole wallet and is meant to facilitate

@@ -85,6 +85,6 @@ export const assetsObj = [
         "symbol": "BNB",
         "precision": 8,
         "issuer": "1.2.29",
-        "dynamic_asset_data_id": "2.3.7"
+        "dynamic_asset_data_id": "2.3.7",
     }
 ]

@@ -94,7 +94,6 @@ export function getBackedCoin(symbol, backedCoins) {
 }
 
 export function getAssetAndGateway(symbol) {
-	console.log("availableGateways inside getAssetAndGateway",symbol)
 	if (symbol) {
 		let [selectedGateway, selectedAsset] = symbol.split('.');
 		if (

@@ -209,7 +209,6 @@ function Application(props) {
       if (accountNameState === null || accountNameState.length === 0) return;
       try {
         const fetched = await portfolioReceiverState.fetch();
-        console.log("fetchedfetchedfetched",fetched)
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);

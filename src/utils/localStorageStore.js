@@ -252,7 +252,7 @@ export class DynamicLocalStorage extends AbstractLocalStorage {
 	useInRam() {
 		let copy = {};
 		if (this.isPersistant()) {
-			console.log('Switching to InRam storage for private session');
+			// Switching to InRam storage for private session
 			for (
 				var i = 0, len = this._impl._getLocalStorage().length;
 				i < len;

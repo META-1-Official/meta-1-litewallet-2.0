@@ -598,7 +598,6 @@ export function nudgeWithdrawal(asset_id, block, trx, op, currentAccount) {
 			trx_in_block: trx_in_block,
 			op_in_trx: op_in_trx,
 		};
-		console.log('request: ', payload);
 		fetch(url, {
 			method: 'POST',
 			headers: {
@@ -612,7 +611,6 @@ export function nudgeWithdrawal(asset_id, block, trx, op, currentAccount) {
 				return res.json();
 			})
 			.then((data) => {
-				console.log('response:', data);
 				if (data.txid === undefined)
 					swal(
 						data.error || 'Error validating withdrawal!',
