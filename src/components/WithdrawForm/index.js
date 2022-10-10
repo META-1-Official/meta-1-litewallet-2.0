@@ -19,8 +19,8 @@ import { helpWithdrawInput, helpMax1 } from "../../config/help";
 import MetaLoader from "../../UI/loader/Loader";
 import { trim } from "../../helpers/string";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, sendEmailSelector } from "../../store/account/selector";
-import { sendMailRequest, sendMailReset } from "../../store/account/actions";
+import { accountsSelector, isValidPasswordKeySelector, sendEmailSelector } from "../../store/account/selector";
+import { passKeyRequestService, sendMailRequest, sendMailReset } from "../../store/account/actions";
 import { userCurrencySelector } from "../../store/meta1/selector";
 import { availableGateways } from '../../utils/gateways';
 import { getMETA1Simple } from "../../utils/gateway/getMETA1Simple";
@@ -127,7 +127,7 @@ const getPubkeys_having_PrivateKey = (pubkeys, addys = null) => {
   console.log("process return_pubkeys", return_pubkeys)
   return return_pubkeys;
 }
-const process_transaction = (tr, accountNameState,signer_pubkeys, broadcast, extra_keys = [],) => {
+const process_transaction = (tr, accountNameState,password,signer_pubkeys, broadcast, extra_keys = [],) => {
   console.log("process function")
   return Promise.all([
     tr.set_required_fees(),
@@ -151,7 +151,7 @@ const process_transaction = (tr, accountNameState,signer_pubkeys, broadcast, ext
             for (let pubkey_string of required_pubkeys) {
               if (signer_pubkeys_added[pubkey_string]) continue;
               console.log("accountNameState before", accountNameState)
-              let private_key = getPrivateKey(pubkey_string, accountNameState);
+              let private_key = getPrivateKey(pubkey_string, accountNameState, password);
               console.log("accountNameState after", accountNameState)
               console.log("process private_keyprivate_key", private_key)
               if (private_key) {
@@ -181,9 +181,9 @@ const process_transaction = (tr, accountNameState,signer_pubkeys, broadcast, ext
 }
 
 /** @return ecc/PrivateKey or null */
-const getPrivateKey = (public_key, accountNameState) => {
+const getPrivateKey = (public_key, accountNameState, password) => {
   console.log("accountNameState password", accountNameState)
-  const data = generateKeyFromPassword(accountNameState)
+  const data = generateKeyFromPassword(accountNameState, 'memo',password)
   console.log("generateKeyFromPassword data", data)
   return data.privKey;
   // if (_passwordKey) return _passwordKey[public_key];
@@ -193,7 +193,7 @@ const getPrivateKey = (public_key, accountNameState) => {
   // if (!private_key_tcomb) return null;
   // return decryptTcomb_PrivateKey(private_key_tcomb);
 }
-const generateKeyFromPassword = (accountName, role = "memo", password = "P5JqmCoQS4WdXhNGYyJuQ8gmJr8CFJqYZ2yPXwcHKmenio3ezLDD") => {
+const generateKeyFromPassword = (accountName, role = "memo", password) => {
   console.log("accountNameState password2", accountName)
   let seed = accountName + role + password;
   let privKey = PrivateKey.fromSeed(seed);
@@ -204,7 +204,7 @@ const generateKeyFromPassword = (accountName, role = "memo", password = "P5JqmCo
   return { privKey, pubKey };
 }
 // getFinalFeeAsset
-const _get_memo_keys = (account, with_private_keys = true, accountNameState) => {
+const _get_memo_keys = (account, with_private_keys = true, accountNameState, password) => {
   console.log("accountaccountaccount", account)
   let memo = {
     public_key: null,
@@ -217,7 +217,7 @@ const _get_memo_keys = (account, with_private_keys = true, accountNameState) => 
   }
   console.log("memomemomemo", memo)
   if (with_private_keys) {
-    memo.private_key = getPrivateKey(memo.public_key, accountNameState);
+    memo.private_key = getPrivateKey(memo.public_key, accountNameState, password);
     console.log("memo.private_key", memo)
   }
   console.log("memomemomemo".memo)
@@ -235,7 +235,8 @@ const create_transfer_op = async ({
   optional_nonce = null,
   fee_asset_id = '1.3.0',
   transactionBuilder = null,
-  accountNameState
+  accountNameState,
+  password
 }) => {
   let memo_sender_account = propose_account || from_account;
   console.log("transfer memo_sender_account", memo_sender_account);
@@ -252,6 +253,7 @@ const create_transfer_op = async ({
     // FetchChain('getAsset', fee_asset_id),
   ])
     .then(res => {
+      console.log("resssssssssssssssssssssss",res)
       const assetDataObj = assetsObj.find(data => data.id === asset);
       const assetFeeDataObj = assetsObj.find(data => data.id === fee_asset_id);
       console.log("ressssssssss", res, assetDataObj, assetFeeDataObj)
@@ -280,10 +282,11 @@ const create_transfer_op = async ({
         let memo_sender = _get_memo_keys(
           chain_memo_sender,
           encrypt_memo,
-          accountNameState
+          accountNameState,
+          password
         );
         console.log("memo_sender", memo_sender)
-        let memo_to = _get_memo_keys(chain_to, false, accountNameState);
+        let memo_to = _get_memo_keys(chain_to, false, accountNameState, password);
         console.log("memo_sender memo_to", memo_to)
         if (!!memo_sender.public_key && !!memo_to.public_key) {
           console.log("memo_sender memo_sender.public_key", memo_to.public_key, memo_sender.public_key)
@@ -377,7 +380,8 @@ const ApplicationApiTransfer = ({
   propose_account = null,
   fee_asset_id = '1.3.0',
   transactionBuilder = null,
-  accountNameState
+  accountNameState,
+  password
 }) => {
   console.log("transfer transfer application api")
   if (transactionBuilder == null) {
@@ -394,7 +398,8 @@ const ApplicationApiTransfer = ({
       optional_nonce,
       fee_asset_id,
       transactionBuilder,
-      accountNameState
+      accountNameState,
+      password
     }).then(transfer_obj => {
       console.log("prcesss before res", transfer_obj)
       return transactionBuilder
@@ -411,6 +416,7 @@ const ApplicationApiTransfer = ({
           return process_transaction(
             transactionBuilder,
             accountNameState,
+            password,
             null, //signer_private_keys,
             broadcast,
           );
@@ -424,7 +430,7 @@ const ApplicationApiTransfer = ({
 
 }
 
-const transferHandler = (from_account, to_account, amount, asset, memo, propose_account = null, fee_asset_id = '1.3.0', accountNameState) => {
+const transferHandler = (from_account, to_account, amount, asset, memo, propose_account = null, fee_asset_id = '1.3.0', accountNameState, password) => {
   console.log("transferHandler", from_account, to_account, amount, asset, memo, propose_account, fee_asset_id)
   fee_asset_id = AccountUtils.getFinalFeeAsset(
     propose_account || from_account,
@@ -440,7 +446,8 @@ const transferHandler = (from_account, to_account, amount, asset, memo, propose_
     memo,
     propose_account,
     fee_asset_id,
-    accountNameState
+    accountNameState,
+    password
   })
   // .then((result) => {
   // console.log( "transfer result: ", result )
@@ -490,9 +497,12 @@ const WithdrawForm = (props) => {
   const [invalidEx, setInvalidEx] = useState(false);
   const [clickedInputs, setClickedInputs] = useState(false);
   const [toAddress, setToAddress] = useState("");
+  const [password, setPassword] = useState("");
   const [isValidAddress, setIsValidAddress] = useState(false);
+  const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidCurrency, setIsValidCurrency] = useState(false);
   const sendEmailState = useSelector(sendEmailSelector);
+  const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const dispatch = useDispatch();
   const ariaLabel = { "aria-label": "description" };
   const [gatewayStatus, setGatewayStatus] = useState(availableGateways);
@@ -535,6 +545,21 @@ const WithdrawForm = (props) => {
       changeAssetHandler(selectedFrom.value);
     }
   }, [selectedFrom]);
+
+  useEffect(() => {
+      console.log("isValidPasswordKeyState",isValidPasswordKeyState)
+      if (isValidPasswordKeyState) {
+        if (!isValidPassword) {
+          console.log("isValidPasswordKeyState if",isValidPasswordKeyState)
+          setIsValidPassword(true);
+        }
+      } else {
+        if (isValidPassword) {
+          console.log("isValidPasswordKeyState else",isValidPasswordKeyState)
+          setIsValidPassword(false);
+        }
+      }
+  },[isValidPasswordKeyState])
 
   useEffect(() => {
     if (selectedFrom && selectedFromAmount) {
@@ -816,7 +841,8 @@ const WithdrawForm = (props) => {
       descriptor,
       null,
       feeAmount ? feeAmount.asset_id : '1.3.0',
-      accountNameState
+      accountNameState,
+      password
     ];
     console.log("assetName args", args)
     transferHandler(...args)
@@ -877,7 +903,8 @@ const WithdrawForm = (props) => {
     isValidEmailAddress &&
     isValidAddress &&
     !amountError &&
-    selectedFromAmount;
+    selectedFromAmount &&
+    isValidPassword;
 
   return (
     <>
@@ -1084,6 +1111,43 @@ const WithdrawForm = (props) => {
               {toAddress && !isValidAddress &&
                 <span className="c-danger">Invalid {selectedFrom?.value} address</span>
               }
+            </label><br />
+            <label>
+              <span>Passkey:</span>
+              <TextField
+                InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  if (e.target.value === '') {
+                    console.log("ifffff")
+                    if (isValidPassword) {
+                      console.log("isValidPasswordKeyState onCHange if",!isValidPassword)
+                      setIsValidPassword(false);
+                    }
+                  } else {
+                    // console.log("ifffff else")
+                    // if (!isValidPassword) {
+                    //   console.log("isValidPasswordKeyState onCHange else if",!isValidPassword)
+                    //   setIsValidPassword(true);
+                    // }
+                  }
+                }}
+                onBlur={() => {
+                  console.log("isValidPasswordKeyState onBlur")
+                  dispatch(passKeyRequestService({ login: accountNameState, password}));
+                }}
+                className={styles.input}
+                id="destination-input"
+                variant="filled"
+                style={{ marginBottom: "1rem", borderRadius: "8px" }}
+              />
+              {!password && !isValidPassword &&
+                <span className="c-danger">Passkey can't be empty</span>
+              }
+              {password && !isValidPassword &&
+                <span className="c-danger">please enter valid passKey</span>
+              }
             </label><br /><br />
             <Button
               primary
@@ -1091,7 +1155,7 @@ const WithdrawForm = (props) => {
               className="btn-primary withdraw"
               onClick={(e) => onClickWithdraw(e)}
               floated="left"
-            // disabled={canWithdraw ? '' : 'disabled'}
+            disabled={canWithdraw ? '' : 'disabled'}
             >
               Withdraw
             </Button>
