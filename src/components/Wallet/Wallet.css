@@ -493,3 +493,11 @@
 .totalSumBlock {
   padding: 20px 15px;
 }
+
+.balanceFontSize {
+  font-size: 18px !important;
+}
+
+.balanceFontSizeMobile {
+  font-size: 16px !important;
+}
