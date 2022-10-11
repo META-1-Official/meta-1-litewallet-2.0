@@ -48,7 +48,7 @@ export function getWalletURL() {
  */
 export function getFaucet() {
 	return {
-		url: process.env.REACT_APP_DEFAULT_FAUCET_URL,
+		url: process.env.REACT_APP_FAUCET,
 		// url: "https://faucet.meta1.io/faucet",
 		show: true,
 		editable: true,
