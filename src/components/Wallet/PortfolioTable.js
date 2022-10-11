@@ -19,6 +19,8 @@ import { useSelector } from "react-redux";
 const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [withdrawBtnShow] = useState(["bnb", "usdt", "btc", "ltc", "xlm", "eth"]);
+
   const {
     filteredPortfolio,
     onAssetSelect,
@@ -30,7 +32,12 @@ const PortfolioTable = React.memo((props) => {
     isCurrencySelected
   } = props;
   const userCurrencyState = useSelector(userCurrencySelector);
-  const { data, isLoading, error } = useQuery("cryptosTable", getDatas);
+  const  cryptosTable = useQuery("cryptosTable", getDatas);
+  const data = cryptosTable?.data
+  const isLoading = cryptosTable?.isLoading
+
+  const newDataPercent = useQuery(['getPercent', isCurrencySelected],getPercentChange)
+  const dataPercent = newDataPercent?.data;
 
   async function getDatas() {
     const cryptoArray = ["META1", "ETH", "BTC", "BNB", "EOS", "XLM", "LTC"];
@@ -45,6 +52,28 @@ const PortfolioTable = React.memo((props) => {
     setLoading(false);
     return fetchedCryptos;
   }
+
+  async function getPercentChange(event) {
+    const currency = event.queryKey[1] || "USDT";
+    const cryptoArray = ["META1", "ETH", "BTC", "BNB", "EOS", "XLM", "LTC", 'USDT'];
+    let percentFetchedCryptos = {};
+    for (let i = 0; i < cryptoArray.length; i++) {
+      percentFetchedCryptos[cryptoArray[i]] = await Meta1.ticker(
+        currency,
+        cryptoArray[i]
+      );
+    }
+    if (currency === 'USDT') {
+      percentFetchedCryptos["USDT"] = { latest: 1, percent_change: 0 }
+    } else {
+      if (!percentFetchedCryptos["USDT"]){
+        percentFetchedCryptos["USDT"] = { latest: 1, percent_change: 0 }
+      }
+    }
+    setLoading(false);
+    return percentFetchedCryptos;
+  }
+ 
 
   useEffect(() => {
     filteredPortfolio.forEach((d, i) => {
@@ -163,7 +192,7 @@ const PortfolioTable = React.memo((props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data && lists?.map((datas) => (
+          {data && dataPercent && lists?.map((datas) => (
             <StyledTableRow key={datas?.name}>
               <StyledTableCell component="th" scope="row">
                 {
@@ -185,20 +214,18 @@ const PortfolioTable = React.memo((props) => {
                 )) : removeExponent(0)}
               </StyledTableCell>
               <StyledTableCell align="left">
-                {
                   <div
                     className={
-                      Number(data[datas.name].percent_change) >= 0
+                      Number(dataPercent[datas.name]?.percent_change) >= 0
                         ? "plus"
                         : "minus"
                     }
                   >
-                    {data[datas.name].percent_change >= 0
-                      ? "+" + data[datas.name].percent_change
-                      : data[datas.name].percent_change}
+                    {dataPercent[datas.name]?.percent_change >= 0
+                      ? "+" + dataPercent[datas.name]?.percent_change
+                      : dataPercent[datas.name]?.percent_change}
                     %
                   </div>
-                }
               </StyledTableCell>
               <StyledTableCell align="right" className={"currencyPrices"}>
                 {removeExponent(Number(
@@ -244,7 +271,7 @@ const PortfolioTable = React.memo((props) => {
                 )}
               </StyledTableCell>
               <StyledTableCell align="left">
-                {(datas.name == "ETH" || datas.name === "USDT") && (
+                {withdrawBtnShow.includes(datas.name.toLowerCase()) && (
                   <button
                     onClick={() => {
                       onWithdrawClick(datas.name);

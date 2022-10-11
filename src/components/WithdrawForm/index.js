@@ -34,7 +34,7 @@ import AccountUtils from "../../utils/account_utils";
 import { Axios } from "axios";
 import { transferHandler } from "./withdrawalFunction";
 
-const WITHDRAW_ASSETS = ['ETH', 'USDT']
+const WITHDRAW_ASSETS = ["ETH", "BTC", "BNB", "XLM", "LTC", "USDT"];
 
 const MIN_WITHDRAW_AMOUNT = {
   "BTC": 0.0005,

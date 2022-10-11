@@ -17,6 +17,7 @@ async function getHistory(event) {
     let timestamp;
     let witness;
     const op = operationType(value.operation_type);
+    const transactionHash = value?.block_data?.trx_id || '';
     const op_type = op[0];
     const op_color = op[1];
     const time = new Date(value.block_data.block_time);
@@ -31,8 +32,8 @@ async function getHistory(event) {
       witness: witness,
       op_type: value.operation_type,
       op_color: op_color,
-      count: response.count
-
+      count: response.count,
+      transactionHash: transactionHash
     };
     const {op_text, symbol, amount} = await opText(value.operation_type, parsed_op);
     operation.operation_text = op_text;
