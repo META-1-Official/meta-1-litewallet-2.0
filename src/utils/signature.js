@@ -4,32 +4,35 @@ const { Login, PrivateKey, Signature } = require("meta1-vision-js");
 
 export async function buildSignature(accountName, password, is4Migration=false) {
     let publicKey, signature;
-
-    // Migration
-    if (is4Migration) {
-        const signerPkey = PrivateKey.fromWif(password);
-        publicKey = signerPkey.toPublicKey().toString();
-        signature = Signature.sign(accountName, signerPkey).toHex();
-        return { accountName, publicKey, signature };
-    }
-
-    // Connect & Login
-    await Meta1.connect(process.env.REACT_APP_MAIA);
-    const loginResult = await Meta1.login(accountName, password);
-
-    if (loginResult) {
-        try {
+    try {
+        // Migration
+        if (is4Migration) {
             const signerPkey = PrivateKey.fromWif(password);
             publicKey = signerPkey.toPublicKey().toString();
             signature = Signature.sign(accountName, signerPkey).toHex();
-        } catch (err) {
-            const account = await Login.generateKeys(accountName, password, ['owner'], 'DEV11');
-            const ownerPrivateKey = account.privKeys.owner.toWif();
-            publicKey = account.pubKeys.owner;
-            const signerPkey = PrivateKey.fromWif(ownerPrivateKey);
-            signature = Signature.sign(accountName, signerPkey).toHex();
+            return { accountName, publicKey, signature };
         }
-    }
 
-    return { accountName, publicKey, signature };
+        // Connect & Login
+        await Meta1.connect(process.env.REACT_APP_MAIA);
+        const loginResult = await Meta1.login(accountName, password);
+
+        if (loginResult) {
+            try {
+                const signerPkey = PrivateKey.fromWif(password);
+                publicKey = signerPkey.toPublicKey().toString();
+                signature = Signature.sign(accountName, signerPkey).toHex();
+            } catch (err) {
+                const account = await Login.generateKeys(accountName, password, ['owner'], 'DEV11');
+                const ownerPrivateKey = account.privKeys.owner.toWif();
+                publicKey = account.pubKeys.owner;
+                const signerPkey = PrivateKey.fromWif(ownerPrivateKey);
+                signature = Signature.sign(accountName, signerPkey).toHex();
+            }
+        }
+
+        return { accountName, publicKey, signature };
+    } catch (err) {
+        return null;
+    } 
 }
