@@ -138,6 +138,12 @@ const WithdrawForm = (props) => {
     }
   }, [selectedFrom]);
 
+  useEffect(()=>{
+    if (sendEmailState) {
+      dispatch(sendMailReset());
+    }
+  }, [sendEmailState]);
+
   useEffect(() => {
       if (isValidPasswordKeyState) {
         if (!isValidPassword) {
@@ -404,17 +410,6 @@ const WithdrawForm = (props) => {
       setIsSuccessHandler
     ];
     transferHandler(...args)
-
-    // const emailType = "withdraw";
-    // const emailData = {
-    //   accountName: props.accountName,
-    //   name: trim(name),
-    //   emailAddress: trim(emailAddress),
-    //   asset: selectedFrom.value,
-    //   amount: selectedFromAmount,
-    //   toAddress: trim(toAddress)
-    // };
-    // dispatch(sendMailRequest({emailType,emailData}))
   }
 
   const resetState = () => {
@@ -428,6 +423,16 @@ const WithdrawForm = (props) => {
       setIsValidPassword(false);
       setIsSuccessHandler(false, '');
       props.onSuccessWithDrawal();
+      const emailType = "withdraw";
+      const emailData = {
+        accountName: props.accountName,
+        name: trim(name),
+        emailAddress: trim(emailAddress),
+        asset: selectedFrom.value,
+        amount: selectedFromAmount,
+        toAddress: trim(toAddress)
+      };
+      dispatch(sendMailRequest({emailType,emailData}))
   };
 
   if (selectedFrom == null) return null;
