@@ -103,9 +103,6 @@ function Application(props) {
   const [signatureResult, setSignatureResult] = useState(null);
   const dispatch = useDispatch();
 
-  const urlParams = window.location.search.replace('?', '').split('&');
-  const signatureParam = urlParams[0].split('=');
-
   useEffect(() => {
     if (login !== null) {
       onLogin(login);
@@ -115,7 +112,7 @@ function Application(props) {
   const onLogin = async (login, clicked = false, password = '', fromSignUpFlag = false) => {
     setIsLoading(true);
     if (clicked) {
-      dispatch(loginRequestService({login ,password, setLoginDataError, fromSignUpFlag}));
+      dispatch(loginRequestService({login ,password, setLoginDataError}));
     }
     if (getAccessToken()) {
       dispatch(checkTransferableRequest({ login }))
@@ -137,14 +134,6 @@ function Application(props) {
   };
 
   useEffect(() => {
-    if (signatureParam[0] === 'signature') {
-      setIsSignatureProcessing(true);
-      setSignatureResult(signatureParam[1]);
-      setActiveScreen('registration');
-    }
-  },[signatureParam]);
-
-  useEffect(() => {
     if (loginErrorState) {
       setIsLoading(false);
       setLoginDataError(true);
@@ -157,9 +146,6 @@ function Application(props) {
         setRefreshData(prev=>!prev);
         dispatch(resetMetaStore());
         setFromSignUp(false);
-        if (accountNameState) {
-          setActiveScreen("wallet");
-        }
       }
     }
     if (accountNameState === null) {
@@ -290,12 +276,12 @@ function Application(props) {
     }, 2000);
   }
 
-  const onRegistration = async (acc, pass, regEmail) => {
+  const onRegistration = (acc, pass, regEmail) => {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
-    await onLogin(acc, true, pass, false);
-    window.location.replace('http://localhost:3000');
+    onLogin(acc, true, pass, true);
+    setActiveScreen("wallet");
   };
 
   async function chngLastLocation(location) {
@@ -425,8 +411,6 @@ function Application(props) {
                     setActiveScreen("exchange");
                   }}
                   portfolio={portfolio}
-                  isSignatureProcessing={isSignatureProcessing}
-                  signatureResult={signatureResult}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
