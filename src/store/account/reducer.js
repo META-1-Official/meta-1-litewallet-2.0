@@ -64,11 +64,11 @@ const accountsReducer = (state = initialState, action) => {
         case types.DELETE_AVATAR_SUCCESS:
             return {...state, loading: false, profileImage: logoDefault, navbarProfileImage: logoNavbar };
         case types.SEND_MAIL_REQUEST:
-            return {...state, loading: true, sentMailSuccess: null };
+            return {...state, sentMailSuccess: null };
         case types.SEND_MAIL_SUCCESS:
-                return {...state, loading: false, sentMailSuccess: true };
+                return {...state, sentMailSuccess: true };
         case types.SEND_MAIL_ERROR:
-            return {...state, loading: false, sentMailSuccess: false };
+            return {...state, sentMailSuccess: false };
         case types.SEND_MAIL_RESET:
             return {...state, loading: false, sentMailSuccess: null };
         case types.CHECK_TRANSFERABLE_WALLET_MODAL:
