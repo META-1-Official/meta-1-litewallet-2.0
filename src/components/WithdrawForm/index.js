@@ -427,6 +427,7 @@ const WithdrawForm = (props) => {
       setPassword('')
       setIsValidPassword(false);
       setIsSuccessHandler(false, '');
+      props.onSuccessWithDrawal();
   };
 
   if (selectedFrom == null) return null;

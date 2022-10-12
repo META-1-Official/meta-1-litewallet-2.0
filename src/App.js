@@ -630,6 +630,10 @@ function Application(props) {
                     e.preventDefault();
                     setActiveScreen("wallet");
                   }}
+                  onSuccessWithDrawal={()=> {
+                    setPortfolio(null);
+                    refetchPortfolio();
+                  }}
                   setTokenModalOpen={setTokenModalOpen}
                   setTokenModalMsg={setTokenModalMsg}
                 />
