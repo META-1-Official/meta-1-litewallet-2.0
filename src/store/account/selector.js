@@ -19,5 +19,6 @@ export const isValidPasswordKeySelector = (state) => get(state, ['accounts', 'is
 export const passwordKeyErrorSelector = (state) => get(state, ['accounts', 'passwordKeyError']);
 export const loginErrorMsgSelector = (state) => get(state, ['accounts', 'loginErrorMsg']);
 export const openOrderCustomColumnsSelector = (state) => get(state, ['accounts', 'openOrderCustomColumns']);
+export const passwordRequestFlagSelector = (state) => get(state, ['accounts', 'passwordRequestFlag']);
 
 export const demoSelector = (state) => get(state, ['accounts']);

@@ -29,7 +29,8 @@ const initialState = {
         "Market Price": true,
         "Orders Date": true,
         "Expiry Date": true,
-    }
+    },
+    passwordRequestFlag: false
 };
 const loginDetail = getLoginDetail();
 if(loginDetail){
@@ -92,9 +93,9 @@ const accountsReducer = (state = initialState, action) => {
         case types.PASS_KEY_REQUEST:
             return {...state, isValidPasswordKey: false, passwordKeyError: false };
         case types.PASS_KEY_SUCCESS:
-            return {...state, isValidPasswordKey: true, passwordKeyError: false };
+            return {...state, isValidPasswordKey: true, passwordKeyError: false, passwordRequestFlag: !state.passwordRequestFlag };
         case types.PASS_KEY_ERROR:
-            return {...state, isValidPasswordKey: false , passwordKeyError: true};
+            return {...state, isValidPasswordKey: false , passwordKeyError: true, passwordRequestFlag: !state.passwordRequestFlag };
         case types.PASS_KEY_RESET:
             return {...state, isValidPasswordKey: false, passwordKeyError: false };
         case types.CUSTOMIZED_COLUMNS_OPEN_ORDER:
