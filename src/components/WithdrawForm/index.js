@@ -19,7 +19,7 @@ import { helpWithdrawInput, helpMax1 } from "../../config/help";
 import MetaLoader from "../../UI/loader/Loader";
 import { trim } from "../../helpers/string";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, isValidPasswordKeySelector, sendEmailSelector } from "../../store/account/selector";
+import { accountsSelector, isValidPasswordKeySelector, passwordRequestFlagSelector, sendEmailSelector } from "../../store/account/selector";
 import { passKeyRequestService, sendMailRequest, sendMailReset } from "../../store/account/actions";
 import { userCurrencySelector } from "../../store/meta1/selector";
 import { availableGateways } from '../../utils/gateways';
@@ -31,7 +31,6 @@ import { WithdrawAddresses } from "../../utils/gateway/gatewayMethods";
 import { assetsObj } from "../../utils/common";
 import { Asset } from "../../utils/MarketClasses";
 import AccountUtils from "../../utils/account_utils";
-import { Axios } from "axios";
 import { transferHandler } from "./withdrawalFunction";
 
 const WITHDRAW_ASSETS = ["ETH", "BTC", "BNB", "XLM", "LTC", "USDT"];
@@ -87,6 +86,7 @@ const WithdrawForm = (props) => {
   const [clickedInputs, setClickedInputs] = useState(false);
   const [toAddress, setToAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordTouched, setIsPasswordTouched] = useState(false);
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidCurrency, setIsValidCurrency] = useState(false);
@@ -95,6 +95,7 @@ const WithdrawForm = (props) => {
     text: ''
   });
   const sendEmailState = useSelector(sendEmailSelector);
+  const passwordRequestFlagState = useSelector(passwordRequestFlagSelector);
   const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const dispatch = useDispatch();
   const ariaLabel = { "aria-label": "description" };
@@ -150,11 +151,11 @@ const WithdrawForm = (props) => {
           setIsValidPassword(true);
         }
       } else {
-        if (isValidPassword) {
+        if (isPasswordTouched) {
           setIsValidPassword(false);
         }
       }
-  },[isValidPasswordKeyState])
+  },[isValidPasswordKeyState, passwordRequestFlagState])
 
   useEffect(() => {
     if (selectedFrom && selectedFromAmount) {
@@ -421,6 +422,7 @@ const WithdrawForm = (props) => {
       setToAddress('');
       setPassword('')
       setIsValidPassword(false);
+      setIsPasswordTouched(false);
       setIsSuccessHandler(false, '');
       props.onSuccessWithDrawal();
       const emailType = "withdraw";
@@ -448,7 +450,8 @@ const WithdrawForm = (props) => {
     isValidAddress &&
     !amountError &&
     selectedFromAmount &&
-    isValidPassword;
+    isValidPassword
+    && isValidPasswordKeyState;
 
   return (
     <>
@@ -664,6 +667,12 @@ const WithdrawForm = (props) => {
                 type="password"
                 onChange={(e) => {
                   setPassword(e.target.value)
+                  if (!isPasswordTouched) {
+                    setIsPasswordTouched(true);
+                  }
+                  if (!isValidPassword) {
+                    setIsValidPassword(true);
+                  }
                   if (e.target.value === '') {
                     if (isValidPassword) {
                       setIsValidPassword(false);
@@ -678,10 +687,10 @@ const WithdrawForm = (props) => {
                 variant="filled"
                 style={{ marginBottom: "1rem", borderRadius: "8px" }}
               />
-              {!password && !isValidPassword &&
+              {!password && isPasswordTouched &&
                 <span className="c-danger">Passkey can't be empty</span>
               }
-              {password && !isValidPassword &&
+              {password && !isValidPassword && isPasswordTouched &&
                 <span className="c-danger">please enter valid passKey</span>
               }
             </label><br /><br />
@@ -689,7 +698,11 @@ const WithdrawForm = (props) => {
               primary
               type="submit"
               className="btn-primary withdraw"
-              onClick={(e) => onClickWithdraw(e)}
+              onClick={(e) => {
+                if (isValidPasswordKeyState) {
+                  onClickWithdraw(e)
+                }
+              }}
               floated="left"
             disabled={canWithdraw ? '' : 'disabled'}
             >
