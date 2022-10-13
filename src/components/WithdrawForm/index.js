@@ -2,7 +2,8 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { useState, useEffect } from "react";
 import Meta1 from "meta1-vision-dex";
-import { PrivateKey } from "meta1-vision-js";
+import { Aes, ChainStore, FetchChain, PrivateKey, TransactionBuilder, TransactionHelper } from "meta1-vision-js";
+import { ChainConfig } from 'meta1-vision-ws';
 import {
   Image, Modal, Button, Grid, Icon, Label, Popup
 } from "semantic-ui-react";
@@ -18,9 +19,20 @@ import { helpWithdrawInput, helpMax1 } from "../../config/help";
 import MetaLoader from "../../UI/loader/Loader";
 import { trim } from "../../helpers/string";
 import { useDispatch, useSelector } from "react-redux";
-import { sendEmailSelector } from "../../store/account/selector";
-import { sendMailRequest, sendMailReset } from "../../store/account/actions";
+import { accountsSelector, isValidPasswordKeySelector, sendEmailSelector } from "../../store/account/selector";
+import { passKeyRequestService, sendMailRequest, sendMailReset } from "../../store/account/actions";
 import { userCurrencySelector } from "../../store/meta1/selector";
+import { availableGateways } from '../../utils/gateways';
+import { getMETA1Simple } from "../../utils/gateway/getMETA1Simple";
+import Immutable from "immutable";
+import { getAssetAndGateway, getIntermediateAccount } from "../../utils/common/gatewayUtils";
+import { getCryptosChange } from "../../API/API";
+import { WithdrawAddresses } from "../../utils/gateway/gatewayMethods";
+import { assetsObj } from "../../utils/common";
+import { Asset } from "../../utils/MarketClasses";
+import AccountUtils from "../../utils/account_utils";
+import { Axios } from "axios";
+import { transferHandler } from "./withdrawalFunction";
 
 const WITHDRAW_ASSETS = ["ETH", "BTC", "BNB", "XLM", "LTC", "USDT"];
 
@@ -34,8 +46,30 @@ const MIN_WITHDRAW_AMOUNT = {
   "USDT": 50,
 };
 
+const getChainStore = (accountName) => {
+  return new Promise(async (resolve, fail) => {
+    await ChainStore.clearCache()
+
+    let newObj = ChainStore.getAccount(
+      accountName,
+      undefined
+    );
+    await getCryptosChange();
+    newObj = ChainStore.getAccount(
+      accountName,
+      undefined
+    );
+    if (newObj) {
+      resolve(newObj);
+    }
+    if (!newObj) {
+      fail("fail");
+    }
+  })
+}
 const WithdrawForm = (props) => {
-  const {onBackClick, asset } = props;
+  const { onBackClick, asset } = props;
+  const accountNameState = useSelector(accountsSelector);
   const userCurrencyState = useSelector(userCurrencySelector);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFrom, setSelectedFrom] = useState(props.selectedFrom);
@@ -52,11 +86,21 @@ const WithdrawForm = (props) => {
   const [invalidEx, setInvalidEx] = useState(false);
   const [clickedInputs, setClickedInputs] = useState(false);
   const [toAddress, setToAddress] = useState("");
+  const [password, setPassword] = useState("");
   const [isValidAddress, setIsValidAddress] = useState(false);
+  const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidCurrency, setIsValidCurrency] = useState(false);
+  const [isSuccess, setIsSuccess] = useState({
+    status: false,
+    text: ''
+  });
   const sendEmailState = useSelector(sendEmailSelector);
+  const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const dispatch = useDispatch();
   const ariaLabel = { "aria-label": "description" };
+  const [gatewayStatus, setGatewayStatus] = useState(availableGateways);
+  const [backedCoins] = useState(Immutable.Map({ META1: getMETA1Simple() }));
+
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
     setAssets(props.assets);
@@ -66,7 +110,6 @@ const WithdrawForm = (props) => {
 
       return assetInWallet ? assetInWallet.qty : 0;
     };
-
     const newOptions = assets.map((asset) => {
       return {
         image: asset.image,
@@ -95,12 +138,30 @@ const WithdrawForm = (props) => {
     }
   }, [selectedFrom]);
 
+  useEffect(()=>{
+    if (sendEmailState) {
+      dispatch(sendMailReset());
+    }
+  }, [sendEmailState]);
+
+  useEffect(() => {
+      if (isValidPasswordKeyState) {
+        if (!isValidPassword) {
+          setIsValidPassword(true);
+        }
+      } else {
+        if (isValidPassword) {
+          setIsValidPassword(false);
+        }
+      }
+  },[isValidPasswordKeyState])
+
   useEffect(() => {
     if (selectedFrom && selectedFromAmount) {
       console.log("@1 - ", selectedFromAmount === 0)
       if (parseFloat(selectedFrom.balance) < parseFloat(selectedFromAmount)) {
         setAmountError('Amount exceeded the balance.');
-      } else if (parseFloat(MIN_WITHDRAW_AMOUNT['USDT']) > parseFloat(blockPrice)/userCurrencyState.split(' ')[2]) {
+      } else if (parseFloat(MIN_WITHDRAW_AMOUNT['USDT']) > parseFloat(blockPrice) / userCurrencyState.split(' ')[2]) {
         setAmountError('Amount is too small.');
       } else {
         setAmountError('');
@@ -143,6 +204,22 @@ const WithdrawForm = (props) => {
       }
     }
   }, [toAddress, selectedFrom]);
+
+  const setIsSuccessHandler = (status,text) => {
+    setIsSuccess({
+      status,
+      text
+    });
+  }
+
+  const getAssetsObject = async (obj) => {
+    const balances = obj.get('balances');
+    let assets = Immutable.Map({})
+    const newData = balances.map((data, index) => {
+      return assets.set(index, assetsObj.find(data => data.id === index));
+    })
+    return newData;
+  }
   const changeAssetHandler = async (val) => {
     if (val !== "META1" && val !== "USDT") {
       const response = await fetch(
@@ -193,45 +270,185 @@ const WithdrawForm = (props) => {
     }
   };
 
-  const onClickWithdraw = (e) => {
-    e.preventDefault();
+  const selectedData = () => {
+    let assets = [];
+    let idMap = {};
+    let include = ["META1", "USDT", "BTC", "ETH", "EOS", "XLM", "BNB"];
+    backedCoins.forEach((coin) => {
+      assets = assets
+        .concat(
+          coin.map((item) => {
+            /* Gateway Specific Settings */
+            let split = getAssetAndGateway(item.symbol);
+            let gateway = split.selectedGateway;
+            let backedCoin = split.selectedAsset;
 
-    const emailType = "withdraw";
-    const emailData = {
-      accountName: props.accountName,
-      name: trim(name),
-      emailAddress: trim(emailAddress),
-      asset: selectedFrom.value,
-      amount: selectedFromAmount,
-      toAddress: trim(toAddress)
-    };
-    dispatch(sendMailRequest({emailType,emailData}))
+            // Return null if backedCoin is already stored
+            if (!idMap[backedCoin] && backedCoin && gateway) {
+              idMap[backedCoin] = true;
+
+              return {
+                id: backedCoin,
+                label: backedCoin,
+                gateway: gateway,
+                gateFee: item.gateFee,
+                issuer: item.issuerId,
+                issuerId: item.issuerToId
+              };
+            } else {
+              return null;
+            }
+          })
+        )
+        .filter((item) => {
+          return item;
+        })
+        .filter((item) => {
+          if (item.id == 'META1') {
+            return true;
+          }
+          if (include) {
+            return include.includes(item.id);
+          }
+          return true;
+        });
+    });
+    return assets;
+  }
+  useEffect(() => {
+    if (!isSuccess.status && isSuccess.text === 'loading') {
+      setIsLoading(true)
+    } else if (isSuccess.status && isSuccess.text === 'ok') {
+      setIsLoading(false);
+    } else if(!isSuccess.status && isSuccess.text === 'fail') {
+      setIsLoading(false);
+    }
+  },[isSuccess])
+  const onClickWithdraw = async (e) => {
+    e.preventDefault();
+    setIsSuccessHandler(false, 'loading');
+    let assetName = !!gatewayStatus.assetWithdrawlAlias
+      ? gatewayStatus.assetWithdrawlAlias[selectedFrom.value.toLowerCase()] ||
+      selectedFrom.value.toLowerCase() : selectedFrom.value.toLowerCase();
+
+    const intermediateAccountNameOrId = getIntermediateAccount(
+      selectedFrom.value,
+      backedCoins
+    );
+
+    const intermediateAccounts = await getChainStore(accountNameState);
+
+    if (!WithdrawAddresses.has(assetName)) {
+      let withdrawals = [];
+      withdrawals.push(trim(toAddress));
+      WithdrawAddresses.set({ wallet: assetName, addresses: withdrawals });
+    } else {
+      let withdrawals = WithdrawAddresses.get(assetName);
+      if (withdrawals.indexOf(trim(toAddress)) == -1) {
+        withdrawals.push(trim(toAddress));
+        WithdrawAddresses.set({
+          wallet: assetName,
+          addresses: withdrawals,
+        });
+      }
+    }
+
+    WithdrawAddresses.setLast({ wallet: assetName, address: trim(toAddress) });
+
+    const assetData = selectedData();
+    // fee
+    const assetObj = assetData.find(data => data.id === selectedFrom.value)
+    const assets = await getAssetsObject(intermediateAccounts);
+    let withdrawalCurrencyObj;
+    let withdrawalCurrency = assets.find((item, index) => {
+      if (item.get(index).symbol === selectedFrom.value) {
+        withdrawalCurrencyObj = { ...item.get(index) };
+        return item;
+      }
+    });
+    let sendAmount = new Asset({
+      asset_id: withdrawalCurrencyObj.id,
+      precision: withdrawalCurrencyObj.precision,
+      real: selectedFromAmount,
+    });
+
+    let balanceAmount = new Asset({
+      asset_id: withdrawalCurrencyObj.id,
+      precision: withdrawalCurrencyObj.precision,
+      real: 0,
+    });
+
+    if (Number(selectedFrom.balance) > 0) {
+      const precisionAmount = Number(1 + "0".repeat(selectedFrom.pre))
+      balanceAmount = sendAmount.clone(Number(selectedFrom.balance) * precisionAmount);
+    } else {
+      setIsSuccessHandler(false, "Not enough balance");
+      return;
+    }
+    
+    const gateFeeAmount = new Asset({
+      asset_id: withdrawalCurrencyObj.id,
+      precision: withdrawalCurrencyObj.precision,
+      real: assetObj.gateFee,
+    });
+
+    sendAmount.plus(gateFeeAmount);
+    let descriptor = `${assetName}:${trim(toAddress)}`;
+    let feeAmount = new Asset({ amount: 0 })
+
+    let fromData = intermediateAccounts.get("id");
+    let args = [
+      fromData,
+      assetObj.issuerId,
+      sendAmount.getAmount(),
+      withdrawalCurrencyObj.id,
+      descriptor,
+      null,
+      feeAmount ? feeAmount.asset_id : '1.3.0',
+      accountNameState,
+      password,
+      setIsSuccessHandler
+    ];
+    transferHandler(...args)
   }
 
-  useEffect(()=>{
-    if (sendEmailState) {
-      alert("Email sent, awesome!");
+  const resetState = () => {
       // Reset form inputs
       setName('');
       setEmailAddress('');
       setSelectedFromAmount(NaN);
       setBlockPrice(NaN);
       setToAddress('');
-      dispatch(sendMailReset());
-    }
-  }, [sendEmailState]);
+      setPassword('')
+      setIsValidPassword(false);
+      setIsSuccessHandler(false, '');
+      props.onSuccessWithDrawal();
+      const emailType = "withdraw";
+      const emailData = {
+        accountName: props.accountName,
+        name: trim(name),
+        emailAddress: trim(emailAddress),
+        asset: selectedFrom.value,
+        amount: selectedFromAmount,
+        toAddress: trim(toAddress)
+      };
+      dispatch(sendMailRequest({emailType,emailData}))
+  };
 
   if (selectedFrom == null) return null;
 
-  const getAssets = (except) => options
-    .filter((asset) => WITHDRAW_ASSETS.indexOf(asset.value) > -1)
-    .filter((el) => el.value !== except);
+  const getAssets = (except) => {
+    return options
+      .filter((asset) => WITHDRAW_ASSETS.indexOf(asset.value) > -1)
+      .filter((el) => el.value !== except);
+  }
 
   const canWithdraw = name && isValidName &&
     isValidEmailAddress &&
     isValidAddress &&
     !amountError &&
-    selectedFromAmount;
+    selectedFromAmount &&
+    isValidPassword;
 
   return (
     <>
@@ -438,6 +655,35 @@ const WithdrawForm = (props) => {
               {toAddress && !isValidAddress &&
                 <span className="c-danger">Invalid {selectedFrom?.value} address</span>
               }
+            </label><br />
+            <label>
+              <span>Passkey:</span>
+              <TextField
+                InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
+                value={password}
+                type="password"
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  if (e.target.value === '') {
+                    if (isValidPassword) {
+                      setIsValidPassword(false);
+                    }
+                  }
+                }}
+                onBlur={() => {
+                  dispatch(passKeyRequestService({ login: accountNameState, password}));
+                }}
+                className={styles.input}
+                id="destination-input"
+                variant="filled"
+                style={{ marginBottom: "1rem", borderRadius: "8px" }}
+              />
+              {!password && !isValidPassword &&
+                <span className="c-danger">Passkey can't be empty</span>
+              }
+              {password && !isValidPassword &&
+                <span className="c-danger">please enter valid passKey</span>
+              }
             </label><br /><br />
             <Button
               primary
@@ -445,13 +691,43 @@ const WithdrawForm = (props) => {
               className="btn-primary withdraw"
               onClick={(e) => onClickWithdraw(e)}
               floated="left"
-              disabled={canWithdraw ? '' : 'disabled'}
+            disabled={canWithdraw ? '' : 'disabled'}
             >
               Withdraw
             </Button>
           </form>
         }
       </div>
+      <Modal
+        size="mini"
+        className="claim_wallet_modal"
+        onClose={() => {
+          resetState();
+        }}
+        open={(isSuccess.status && isSuccess.text === 'ok') ||  (!isSuccess.status && isSuccess.text === 'fail')}
+        id={"modalExch"}
+      >
+
+        <Modal.Content >
+          <div
+            className="claim_wallet_btn_div "
+          >
+            <h3 className="claim_model_content">
+              Hello {accountNameState}<br />
+            </h3>
+          </div>
+            <h6 className={`${isSuccess.status && isSuccess.text === 'ok' ? 'modal_withdrawal_status_success' : 'modal_withdrawal_status_danger'}`}>Withdrawal {isSuccess.status && isSuccess.text === 'ok' ? 'Successfully Done' : 'Failed'}</h6>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              resetState();
+            }}
+          >
+            Close</Button>
+        </Modal.Actions>
+      </Modal>
     </>
   );
 }
