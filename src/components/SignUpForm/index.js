@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { UserInformationForm } from "./UserInformationForm.js";
 import SubmitForm from "./SubmitForm.js";
 import createAccountWithPassword from "../../lib/createAccountWithPassword.js";
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
-
-import { checkOldUser } from "../../API/API";
 import OpenLogin from '@toruslabs/openlogin';
-
 import "./SignUpForm.css";
 import FaceKiForm from "./FaceKiForm.js";
 import MigrationForm from "./MigrationForm.js";
+import { checkOldUser } from "../../API/API.js";
 
 export default function SignUpForm(props) {
   const {
@@ -18,9 +16,7 @@ export default function SignUpForm(props) {
     onClickExchangeEOSHandler,
     onClickExchangeUSDTHandler,
     portfolio,
-    isSignatureProcessing,
-    signatureResult,
-    onBackClick
+    signatureResult
   } = props;
   const [accountName, setAccountName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -31,31 +27,10 @@ export default function SignUpForm(props) {
   const [step, setStep] = useState('userform');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
-
-  useEffect(() => {
-    if (isSignatureProcessing) {
-      setAccountName(localStorage.getItem('login'));
-      setPassword(localStorage.getItem('password'));
-      setFirstName(localStorage.getItem('firstname'));
-      setLastName(localStorage.getItem('lastname'));
-      setPhone(localStorage.getItem('phone'));
-      setEmail(localStorage.getItem('email'));
-      setStep('signature');
-    }
-  }, [])
-
-  const openLogin = new OpenLogin({
-    clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
-    network: process.env.REACT_APP_TORUS_NETWORK,
-    uxMode: 'popup',
-    whiteLabel: {
-      name: 'META1'
-    },
-  });
-
-  const stepUserInfoSubmit = async (
+  const stepFirstSubmit = (
     accName,
     pass,
+    newEmail,
     newPhone,
     newLastName,
     newFirstName
@@ -63,38 +38,13 @@ export default function SignUpForm(props) {
     setAccountName(accName);
     setFirstName(newFirstName);
     setPassword(pass);
+    setEmail(newEmail);
     setLastName(newLastName);
     setPhone(newPhone);
-
-    const response = await checkOldUser(accName);
-    
-    if (response?.found === true) {
-      setStep('migration');
-    }
-    else renderTorusStep();
+    setStep(2);
   };
 
-  const stepGoToTorus = (
-    accName,
-    pass,
-    newPhone,
-    newLastName,
-    newFirstName
-  ) => {
-    setAccountName(accName);
-    setFirstName(newFirstName);
-    setPassword(pass);
-    setLastName(newLastName);
-    setPhone(newPhone);
-    renderTorusStep();
-  };
-
-  const stepGoToEsignature = () => {
-    setStep('submit');
-  };
-
-  const stepLastSubmit = async () => {
-
+  const stepSecondSubmit = async () => {
     try {
       await createAccountWithPassword(
         accountName,
@@ -108,13 +58,9 @@ export default function SignUpForm(props) {
         lastName,
         firstName
       );
-      localStorage.removeItem('password');
-      localStorage.removeItem('firstname');
-      localStorage.removeItem('lastname');
-      localStorage.removeItem('phone');
-      localStorage.removeItem('email');
+      localStorage.setItem("login", accountName);
       onRegistration(accountName, password, email);
-    } catch (e) { }
+    } catch (e) {}
   };
 
   const renderStep = () => {
@@ -181,6 +127,15 @@ export default function SignUpForm(props) {
     }
   }
 
+  const openLogin = new OpenLogin({
+    clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
+    network: process.env.REACT_APP_TORUS_NETWORK,
+    uxMode: 'popup',
+    whiteLabel: {
+      name: 'META1'
+    },
+  });
+
   const renderTorusStep = async () => {
     if (
       !openLogin
@@ -207,6 +162,70 @@ export default function SignUpForm(props) {
     }
   }
 
+  const stepGoToEsignature = () => {
+    setStep('submit');
+  };
+
+  const stepGoToTorus = (
+    accName,
+    pass,
+    newPhone,
+    newLastName,
+    newFirstName
+  ) => {
+    setAccountName(accName);
+    setFirstName(newFirstName);
+    setPassword(pass);
+    setLastName(newLastName);
+    setPhone(newPhone);
+    renderTorusStep();
+  };
+
+  const stepLastSubmit = async () => {
+
+    try {
+      await createAccountWithPassword(
+        accountName,
+        password,
+        false,
+        "",
+        1,
+        "",
+        phone,
+        email,
+        lastName,
+        firstName
+      );
+      localStorage.removeItem('password');
+      localStorage.removeItem('firstname');
+      localStorage.removeItem('lastname');
+      localStorage.removeItem('phone');
+      localStorage.removeItem('email');
+      onRegistration(accountName, password, email);
+    } catch (e) { }
+  };
+
+  const stepUserInfoSubmit = async (
+    accName,
+    pass,
+    newPhone,
+    newLastName,
+    newFirstName
+  ) => {
+    setAccountName(accName);
+    setFirstName(newFirstName);
+    setPassword(pass);
+    setLastName(newLastName);
+    setPhone(newPhone);
+
+    const response = await checkOldUser(accName);
+    
+    if (response?.found === true) {
+      setStep('migration');
+    }
+    else renderTorusStep();
+  };
+
   return (
     <>
       <div>
@@ -227,9 +246,9 @@ export default function SignUpForm(props) {
           <div className={"justFlexAndDirect"}>
             <div className={"regForm"}>
               <Button
+                onClick={step === 1 ? props.onBackClick : () => setStep(1)}
                 style={{ color: "#fdc000", fontSize: ".9rem" }}
                 labelPosition="left"
-                onClick={onBackClick}
               >
                 <i
                   className="fal fa-arrow-left"

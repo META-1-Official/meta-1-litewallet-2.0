@@ -41,3 +41,15 @@ button.withdraw {
 .custom-input-bg{
 	background-color: #fff !important;
 }
+.modal_withdrawal_status_success {
+	display: flex !important;
+    justify-content: center !important;
+    padding-top: 15px !important;
+    color: green !important;
+}
+.modal_withdrawal_status_danger {
+	display: flex !important;
+    justify-content: center !important;
+    padding-top: 15px !important;
+    color: red !important;
+}

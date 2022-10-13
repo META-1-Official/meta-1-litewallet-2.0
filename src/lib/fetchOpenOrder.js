@@ -12,7 +12,7 @@ function makeISODateString(date_str) {
     return date_str;
 }
 
-const getChainStore = (accountNameState) => {
+export const getChainStore = (accountNameState) => {
     return new Promise( async (resolve,fail)=>{
         await ChainStore.clearCache()
         
@@ -25,7 +25,6 @@ const getChainStore = (accountNameState) => {
             accountNameState,
             undefined
         );
-
         if (newObj) {
             resolve(newObj);
         }
