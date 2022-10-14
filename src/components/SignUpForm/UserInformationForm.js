@@ -198,9 +198,19 @@ const UserInformationForm = (props) => {
                       onChange={(event) => {
                         setFirstName(event.target.value);
                         if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
-                          setFirstNameError(
-                            "Your First Name must not contain special characters"
-                          );
+                          if (event.target.value.includes(' ')) {
+                            setFirstNameError(
+                              "Whitespace character is not allowed."
+                            );
+                          } else if (/\d/.test(event.target.value)) {
+                            setFirstNameError(
+                              "Numbers are not allowed."
+                            );
+                          } else {
+                            setFirstNameError(
+                              "Your First Name must not contain special characters."
+                            );
+                          }
                         } else {
                           setFirstNameError(null);
                         }
@@ -281,9 +291,19 @@ const UserInformationForm = (props) => {
                         onChange={(event) => {
                           setLastName(event.target.value);
                           if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
-                            setLastNameError(
-                              "Your Last Name must not contain special characters"
-                            );
+                            if (event.target.value.includes(' ')) {
+                              setLastNameError(
+                                "Whitespace character is not allowed."
+                              );
+                            } else if (/\d/.test(event.target.value)) {
+                              setLastNameError(
+                                "Numbers are not allowed."
+                              );
+                            } else {
+                              setLastNameError(
+                                "Your Last Name must not contain special characters."
+                              );
+                            }
                           } else {
                             setLastNameError(null);
                           }
