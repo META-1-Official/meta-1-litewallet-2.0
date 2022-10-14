@@ -25,8 +25,12 @@ export async function getUserData(login) {
     if (err?.response?.data?.error?.toLowerCase() === 'unauthorized') {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
+    } else if (err?.response?.data?.message) {
+      tokenFail();
+      return { message: null, tokenExpired: false, responseMsg: err?.response?.data?.message };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    tokenFail();
+    return { message: null, tokenExpired: false, responseMsg: "something went wrong" }; 
   }
 }
 
