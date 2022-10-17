@@ -44,25 +44,6 @@ export default function SignUpForm(props) {
     setStep(2);
   };
 
-  const stepSecondSubmit = async () => {
-    try {
-      await createAccountWithPassword(
-        accountName,
-        password,
-        false,
-        "",
-        1,
-        "",
-        phone,
-        email,
-        lastName,
-        firstName
-      );
-      localStorage.setItem("login", accountName);
-      onRegistration(accountName, password, email);
-    } catch (e) {}
-  };
-
   const renderStep = () => {
     switch (step) {
       case 'userform':
@@ -182,7 +163,6 @@ export default function SignUpForm(props) {
   };
 
   const stepLastSubmit = async () => {
-
     try {
       await createAccountWithPassword(
         accountName,
