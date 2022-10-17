@@ -93,6 +93,7 @@ export default function SignUpForm(props) {
     setStep('submit');
   };
 
+<<<<<<< HEAD
   const stepLastSubmit = async () => {
 
     try {
@@ -117,6 +118,8 @@ export default function SignUpForm(props) {
     } catch (e) { }
   };
 
+=======
+>>>>>>> 9deb0ce (package.json changed for new npms)
   const renderStep = () => {
     switch (step) {
       case 'userform':
@@ -205,6 +208,72 @@ export default function SignUpForm(props) {
     }
   }
 
+<<<<<<< HEAD
+=======
+  const stepGoToEsignature = () => {
+    setStep('submit');
+  };
+
+  const stepGoToTorus = (
+    accName,
+    pass,
+    newPhone,
+    newLastName,
+    newFirstName
+  ) => {
+    setAccountName(accName);
+    setFirstName(newFirstName);
+    setPassword(pass);
+    setLastName(newLastName);
+    setPhone(newPhone);
+    renderTorusStep();
+  };
+
+  const stepLastSubmit = async () => {
+    try {
+      await createAccountWithPassword(
+        accountName,
+        password,
+        false,
+        "",
+        1,
+        "",
+        phone,
+        email,
+        lastName,
+        firstName
+      );
+      localStorage.removeItem('password');
+      localStorage.removeItem('firstname');
+      localStorage.removeItem('lastname');
+      localStorage.removeItem('phone');
+      localStorage.removeItem('email');
+      onRegistration(accountName, password, email);
+    } catch (e) { }
+  };
+
+  const stepUserInfoSubmit = async (
+    accName,
+    pass,
+    newPhone,
+    newLastName,
+    newFirstName
+  ) => {
+    setAccountName(accName);
+    setFirstName(newFirstName);
+    setPassword(pass);
+    setLastName(newLastName);
+    setPhone(newPhone);
+
+    const response = await checkOldUser(accName);
+    
+    if (response?.found === true) {
+      setStep('migration');
+    }
+    else renderTorusStep();
+  };
+
+>>>>>>> 9deb0ce (package.json changed for new npms)
   return (
     <>
       <div>
