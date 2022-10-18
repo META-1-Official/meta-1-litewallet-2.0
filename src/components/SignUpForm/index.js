@@ -226,7 +226,7 @@ export default function SignUpForm(props) {
           <div className={"justFlexAndDirect"}>
             <div className={"regForm"}>
               <Button
-                onClick={step === 1 ? props.onBackClick : () => setStep(1)}
+                onClick={props.onBackClick}
                 style={{ color: "#fdc000", fontSize: ".9rem" }}
                 labelPosition="left"
               >
