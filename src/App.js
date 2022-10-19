@@ -296,6 +296,7 @@ function Application(props) {
     setCredentials(acc, pass);
     await onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
+    window.location.replace('https://wallet.dev2.meta1coin.vision/');
   };
 
   async function chngLastLocation(location) {
