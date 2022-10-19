@@ -98,3 +98,18 @@ button.withdraw {
 .new-max-withdrawal {
 	margin-top: 8rem !important;
 }
+.new_claim_wallet_modal__privatekey {
+	margin: 13rem auto !important;
+    max-height: 16rem !important;
+}
+.new_claim_wallet_modal {
+	margin: 13rem auto !important;
+    max-height: 12rem !important;
+}
+.modal_withdrawal_status_danger_link {
+	text-decoration: underline;
+	color: inherit;
+}
+.modal_withdrawal_status_danger_link:hover {
+	color: #c61111 !important;
+}
