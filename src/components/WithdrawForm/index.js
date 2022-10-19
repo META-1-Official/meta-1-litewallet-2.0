@@ -740,7 +740,9 @@ const WithdrawForm = (props) => {
             </h3>
           </div>
           {!isSuccess.privateKeyError && <h6 className={`${isSuccess.status && isSuccess.text === 'ok' ? 'modal_withdrawal_status_success' : 'modal_withdrawal_status_danger'}`}>Withdrawal {isSuccess.status && isSuccess.text === 'ok' ? 'Successfully Done' : isSuccess.text}</h6>}
-          {isSuccess.privateKeyError && <h6 className='modal_withdrawal_status_danger'>You do not have control of the memo key for this wallet. In order to use a memo, please set the wallet memo key to a key you control using the Permissions page.</h6>}
+          {isSuccess.privateKeyError && <div className='modal_withdrawal_status_danger'>
+            <h6>You do not have control of the memo key for this wallet. In order to use a memo, please set the wallet memo key to a key you control using the Permissions page on <a className="modal_withdrawal_status_danger_link" href={`${process.env.REACT_APP_DEFAULT_WALLET_URL}home/`} target="__blank" >exchange</a>.</h6>
+          </div>}
         </Modal.Content>
         <Modal.Actions className="claim_modal-action">
           <Button

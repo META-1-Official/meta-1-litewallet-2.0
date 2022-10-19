@@ -106,3 +106,10 @@ button.withdraw {
 	margin: 13rem auto !important;
     max-height: 12rem !important;
 }
+.modal_withdrawal_status_danger_link {
+	text-decoration: underline;
+	color: inherit;
+}
+.modal_withdrawal_status_danger_link:hover {
+	color: #c61111 !important;
+}
