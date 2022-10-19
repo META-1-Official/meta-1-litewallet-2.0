@@ -19,7 +19,7 @@ import { helpWithdrawInput, helpMax1 } from "../../config/help";
 import MetaLoader from "../../UI/loader/Loader";
 import { trim } from "../../helpers/string";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, isValidPasswordKeySelector, sendEmailSelector } from "../../store/account/selector";
+import { accountsSelector, isValidPasswordKeySelector, passwordRequestFlagSelector, sendEmailSelector } from "../../store/account/selector";
 import { passKeyRequestService, sendMailRequest, sendMailReset } from "../../store/account/actions";
 import { userCurrencySelector } from "../../store/meta1/selector";
 import { availableGateways } from '../../utils/gateways';
@@ -31,10 +31,9 @@ import { WithdrawAddresses } from "../../utils/gateway/gatewayMethods";
 import { assetsObj } from "../../utils/common";
 import { Asset } from "../../utils/MarketClasses";
 import AccountUtils from "../../utils/account_utils";
-import { Axios } from "axios";
 import { transferHandler } from "./withdrawalFunction";
 
-const WITHDRAW_ASSETS = ['ETH', 'USDT']
+const WITHDRAW_ASSETS = ["ETH", "BTC", "BNB", "XLM", "LTC", "USDT"];
 
 const MIN_WITHDRAW_AMOUNT = {
   "BTC": 0.0005,
@@ -87,6 +86,7 @@ const WithdrawForm = (props) => {
   const [clickedInputs, setClickedInputs] = useState(false);
   const [toAddress, setToAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordTouched, setIsPasswordTouched] = useState(false);
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidCurrency, setIsValidCurrency] = useState(false);
@@ -95,6 +95,7 @@ const WithdrawForm = (props) => {
     text: ''
   });
   const sendEmailState = useSelector(sendEmailSelector);
+  const passwordRequestFlagState = useSelector(passwordRequestFlagSelector);
   const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const dispatch = useDispatch();
   const ariaLabel = { "aria-label": "description" };
@@ -138,23 +139,23 @@ const WithdrawForm = (props) => {
     }
   }, [selectedFrom]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (sendEmailState) {
       dispatch(sendMailReset());
     }
   }, [sendEmailState]);
 
   useEffect(() => {
-      if (isValidPasswordKeyState) {
-        if (!isValidPassword) {
-          setIsValidPassword(true);
-        }
-      } else {
-        if (isValidPassword) {
-          setIsValidPassword(false);
-        }
+    if (isValidPasswordKeyState) {
+      if (!isValidPassword) {
+        setIsValidPassword(true);
       }
-  },[isValidPasswordKeyState])
+    } else {
+      if (isPasswordTouched) {
+        setIsValidPassword(false);
+      }
+    }
+  }, [isValidPasswordKeyState, passwordRequestFlagState])
 
   useEffect(() => {
     if (selectedFrom && selectedFromAmount) {
@@ -205,7 +206,7 @@ const WithdrawForm = (props) => {
     }
   }, [toAddress, selectedFrom]);
 
-  const setIsSuccessHandler = (status,text) => {
+  const setIsSuccessHandler = (status, text) => {
     setIsSuccess({
       status,
       text
@@ -320,10 +321,10 @@ const WithdrawForm = (props) => {
       setIsLoading(true)
     } else if (isSuccess.status && isSuccess.text === 'ok') {
       setIsLoading(false);
-    } else if(!isSuccess.status && isSuccess.text === 'fail') {
+    } else if (!isSuccess.status && isSuccess.text === 'fail') {
       setIsLoading(false);
     }
-  },[isSuccess])
+  }, [isSuccess])
   const onClickWithdraw = async (e) => {
     e.preventDefault();
     setIsSuccessHandler(false, 'loading');
@@ -385,7 +386,7 @@ const WithdrawForm = (props) => {
       setIsSuccessHandler(false, "Not enough balance");
       return;
     }
-    
+
     const gateFeeAmount = new Asset({
       asset_id: withdrawalCurrencyObj.id,
       precision: withdrawalCurrencyObj.precision,
@@ -413,26 +414,27 @@ const WithdrawForm = (props) => {
   }
 
   const resetState = () => {
-      // Reset form inputs
-      setName('');
-      setEmailAddress('');
-      setSelectedFromAmount(NaN);
-      setBlockPrice(NaN);
-      setToAddress('');
-      setPassword('')
-      setIsValidPassword(false);
-      setIsSuccessHandler(false, '');
-      props.onSuccessWithDrawal();
-      const emailType = "withdraw";
-      const emailData = {
-        accountName: props.accountName,
-        name: trim(name),
-        emailAddress: trim(emailAddress),
-        asset: selectedFrom.value,
-        amount: selectedFromAmount,
-        toAddress: trim(toAddress)
-      };
-      dispatch(sendMailRequest({emailType,emailData}))
+    // Reset form inputs
+    setName('');
+    setEmailAddress('');
+    setSelectedFromAmount(NaN);
+    setBlockPrice(NaN);
+    setToAddress('');
+    setPassword('')
+    setIsValidPassword(false);
+    setIsPasswordTouched(false);
+    setIsSuccessHandler(false, '');
+    props.onSuccessWithDrawal();
+    const emailType = "withdraw";
+    const emailData = {
+      accountName: props.accountName,
+      name: trim(name),
+      emailAddress: trim(emailAddress),
+      asset: selectedFrom.value,
+      amount: selectedFromAmount,
+      toAddress: trim(toAddress)
+    };
+    dispatch(sendMailRequest({ emailType, emailData }))
   };
 
   if (selectedFrom == null) return null;
@@ -448,7 +450,8 @@ const WithdrawForm = (props) => {
     isValidAddress &&
     !amountError &&
     selectedFromAmount &&
-    isValidPassword;
+    isValidPassword
+    && isValidPasswordKeyState;
 
   return (
     <>
@@ -481,115 +484,81 @@ const WithdrawForm = (props) => {
           </div>
         </div>
 
-        {isLoading ?
-          <MetaLoader size={"small"} />
-          :
-          <form>
-            <label>
-              <span>Name:</span><br />
-              <TextField
-                InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
-                value={name}
-                onChange={(e) => { setName(e.target.value) }}
-                className={styles.input}
-                id="name-input"
-                variant="filled"
-                style={{ marginBottom: "1rem", borderRadius: "8px" }}
-              />
-              {name && !isValidName &&
-                <span className="c-danger">Invalid first name</span>
-              }
-            </label><br />
-            <label>
-              <span>Email Address:</span><br />
-              <TextField
-                InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
-                value={emailAddress}
-                onChange={(e) => { setEmailAddress(e.target.value) }}
-                className={styles.input}
-                id="emailaddress-input"
-                variant="filled"
-                style={{ marginBottom: "1rem", borderRadius: "8px" }}
-              />
-              {emailAddress && !isValidEmailAddress &&
-                <span className="c-danger">Invalid email address</span>
-              }
-            </label><br />
-            <label>
-              <span>META1 Wallet Name:</span>
-              <TextField
-                InputProps={{ disableUnderline: true }}
-                value={props.accountName}
-                disabled={true}
-                className={styles.input}
-                id="wallet-name-input"
-                variant="filled"
-                style={{ marginBottom: "1rem", borderRadius: "8px" }}
-              />
-            </label><br />
-            <label>
-              <span>From Currency:</span>
-              <ExchangeSelect
-                onChange={(val) => {
-                  setSelectedFrom(val);
-                  changeAssetHandler(val.value);
-                  setSelectedFromAmount(NaN);
-                  setBlockPrice(NaN);
-                  setInvalidEx(false);
-                }}
-                options={getAssets(selectedFrom.value)}
-                selectedValue={selectedFrom}
-              />
-            </label><br />
-            <label>
-              <span>From Amount:</span>
-              <div className="wallet-input">
-                <Popup
-                  content={helpWithdrawInput(selectedFrom?.value)}
-                  position="bottom center"
-                  trigger={
-                    <div className={styles.inputForAmount}>
-                      <Input
-                        placeholder="Amount crypto"
-                        value={selectedFromAmount}
-                        type={"number"}
-                        onChange={(e) => {
-                          if (
-                            e.target.value.length < 11 &&
-                            /[-+]?[0-9]*\.?[0-9]*/.test(
-                              e.target.value
-                            ) &&
-                            Number(e.target.value) >= 0
-                          ) {
-                            setSelectedFromAmount(e.target.value);
-                            calculateUsdPriceHandler(e);
-                            setClickedInputs(true);
-                          }
-                        }}
-                        endAdornment={
-                          <InputAdornment position="end">
-                            {selectedFrom.label}
-                          </InputAdornment>
-                        }
-                        inputProps={ariaLabel}
-                        id={"inputAmount"}
-                        disabled={invalidEx}
-                        min="0"
-                        inputMode="numeric"
-                        pattern="\d*"
-                      />
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          marginTop: ".1rem",
-                          fontSize: "1rem",
-                          color: "#505361",
-                        }}
-                      >
-                        <input
-                          className={styles.inputDollars}
+        <div className="withdrawal-form-div">
+          {isLoading ?
+            <MetaLoader size={"small"} />
+            :
+            <form>
+              <label>
+                <span>Name:</span><br />
+                <TextField
+                  InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
+                  value={name}
+                  onChange={(e) => { setName(e.target.value) }}
+                  className={styles.input}
+                  id="name-input"
+                  variant="filled"
+                  style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                />
+                {name && !isValidName &&
+                  <span className="c-danger">Invalid first name</span>
+                }
+              </label><br />
+              <label>
+                <span>Email Address:</span><br />
+                <TextField
+                  InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
+                  value={emailAddress}
+                  onChange={(e) => { setEmailAddress(e.target.value) }}
+                  className={styles.input}
+                  id="emailaddress-input"
+                  variant="filled"
+                  style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                />
+                {emailAddress && !isValidEmailAddress &&
+                  <span className="c-danger">Invalid email address</span>
+                }
+              </label><br />
+              <label>
+                <span>META1 Wallet Name:</span>
+                <TextField
+                  InputProps={{ disableUnderline: true }}
+                  value={props.accountName}
+                  disabled={true}
+                  className={styles.input}
+                  id="wallet-name-input"
+                  variant="filled"
+                  style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                />
+              </label><br />
+              <label>
+                <span>From Currency:</span>
+                <ExchangeSelect
+                  onChange={(val) => {
+                    setSelectedFrom(val);
+                    changeAssetHandler(val.value);
+                    setSelectedFromAmount(NaN);
+                    setBlockPrice(NaN);
+                    setInvalidEx(false);
+                  }}
+                  options={getAssets(selectedFrom.value)}
+                  selectedValue={selectedFrom}
+                  from='withdrawal'
+                />
+              </label><br />
+              <label>
+                <span>From Amount:</span>
+                <div className="wallet-input new-wallet_input">
+                  <Popup
+                    content={helpWithdrawInput(selectedFrom?.value)}
+                    position="bottom center"
+                    style={{ padding: '0' }}
+                    trigger={
+                      <div className={styles.inputForAmount}>
+                        <Input
+                          placeholder="Amount crypto"
+                          value={selectedFromAmount}
+                          type={"number"}
                           onChange={(e) => {
                             if (
                               e.target.value.length < 11 &&
@@ -598,105 +567,154 @@ const WithdrawForm = (props) => {
                               ) &&
                               Number(e.target.value) >= 0
                             ) {
-                              calculateCryptoPriceHandler(e);
+                              setSelectedFromAmount(e.target.value);
+                              calculateUsdPriceHandler(e);
                               setClickedInputs(true);
                             }
                           }}
+                          endAdornment={
+                            <InputAdornment position="end" className="currency-letters">
+                              {selectedFrom.label}
+                            </InputAdornment>
+                          }
+                          inputProps={ariaLabel}
+                          id={"inputAmount"}
+                          disabled={invalidEx}
                           min="0"
                           inputMode="numeric"
                           pattern="\d*"
-                          type={"number"}
-                          placeholder={`Amount ${userCurrencyState.split(" ")[1]
-                            }`}
-                          disabled={invalidEx}
-                          style={
-                            invalidEx ? { opacity: "0.5" } : null
-                          }
-                          value={blockPrice}
                         />
-                        <span>{userCurrencyState.split(" ")[0]}</span>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginTop: ".1rem",
+                            fontSize: "1rem",
+                            color: "#505361",
+                            background: "#f0f1f4"
+                          }}
+                        >
+                          <input
+                            className={styles.inputDollars}
+                            onChange={(e) => {
+                              if (
+                                e.target.value.length < 11 &&
+                                /[-+]?[0-9]*\.?[0-9]*/.test(
+                                  e.target.value
+                                ) &&
+                                Number(e.target.value) >= 0
+                              ) {
+                                calculateCryptoPriceHandler(e);
+                                setClickedInputs(true);
+                              }
+                            }}
+                            min="0"
+                            inputMode="numeric"
+                            pattern="\d*"
+                            type={"number"}
+                            placeholder={`Amount ${userCurrencyState.split(" ")[1]
+                              }`}
+                            disabled={invalidEx}
+                            style={
+                              invalidEx ? { opacity: "0.5" } : null
+                            }
+                            value={blockPrice}
+                          />
+                          <span className="currency-span">{userCurrencyState.split(" ")[0]}</span>
+                        </div>
                       </div>
-                    </div>
-                  }
-                />
-                <div className="max-button">
-                  <Popup
-                    content={helpMax1(selectedFrom?.value)}
-                    position="bottom center"
-                    trigger={
-                      <Button
-                        secondary
-                        className={"btn"}
-                        onClick={setAssetMax}
-                        floated="right"
-                        size="mini"
-                      >
-                        MAX
-                      </Button>
                     }
                   />
+                  <div className="max-button new-max-withdrawal">
+                    <Popup
+                      content={helpMax1(selectedFrom?.value)}
+                      position="bottom center"
+                      trigger={
+                        <Button
+                          secondary
+                          className={"btn"}
+                          onClick={setAssetMax}
+                          floated="right"
+                          size="mini"
+                        >
+                          MAX
+                        </Button>
+                      }
+                    />
+                  </div>
                 </div>
-              </div>
-              {(selectedFromAmount && amountError) ?
-                <span className="c-danger">{amountError}</span> : null
-              }
-            </label><br />
-            <label>
-              <span>Destination Address:</span>
-              <TextField
-                InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
-                value={toAddress}
-                onChange={(e) => { setToAddress(e.target.value) }}
-                className={styles.input}
-                id="destination-input"
-                variant="filled"
-                style={{ marginBottom: "1rem", borderRadius: "8px" }}
-              />
-              {toAddress && !isValidAddress &&
-                <span className="c-danger">Invalid {selectedFrom?.value} address</span>
-              }
-            </label><br />
-            <label>
-              <span>Passkey:</span>
-              <TextField
-                InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
-                value={password}
-                type="password"
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  if (e.target.value === '') {
-                    if (isValidPassword) {
-                      setIsValidPassword(false);
+                {(selectedFromAmount && amountError) ?
+                  <span className="c-danger">{amountError}</span> : null
+                }
+              </label><br /><br />
+              <label>
+                <span>Destination Address:</span>
+                <TextField
+                  InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
+                  value={toAddress}
+                  onChange={(e) => { setToAddress(e.target.value) }}
+                  className={styles.input}
+                  id="destination-input"
+                  variant="filled"
+                  style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                />
+                {toAddress && !isValidAddress &&
+                  <span className="c-danger">Invalid {selectedFrom?.value} address</span>
+                }
+              </label><br />
+              <label>
+                <span>Passkey:</span>
+                <TextField
+                  InputProps={{ disableUnderline: true, className: 'custom-input-bg' }}
+                  value={password}
+                  type="password"
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    if (!isPasswordTouched) {
+                      setIsPasswordTouched(true);
                     }
+                    if (!isValidPassword) {
+                      setIsValidPassword(true);
+                    }
+                    if (e.target.value === '') {
+                      if (isValidPassword) {
+                        setIsValidPassword(false);
+                      }
+                    }
+                  }}
+                  onBlur={() => {
+                    dispatch(passKeyRequestService({ login: accountNameState, password }));
+                  }}
+                  className={styles.input}
+                  id="destination-input"
+                  variant="filled"
+                  style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                />
+                {!password && isPasswordTouched &&
+                  <span className="c-danger">Passkey can't be empty</span>
+                }
+                {password && !isValidPassword && isPasswordTouched &&
+                  <span className="c-danger">please enter valid passKey</span>
+                }
+              </label>
+              <Button
+                primary
+                type="submit"
+                className="btn-primary withdraw"
+                onClick={(e) => {
+                  if (isValidPasswordKeyState) {
+                    onClickWithdraw(e)
                   }
                 }}
-                onBlur={() => {
-                  dispatch(passKeyRequestService({ login: accountNameState, password}));
-                }}
-                className={styles.input}
-                id="destination-input"
-                variant="filled"
-                style={{ marginBottom: "1rem", borderRadius: "8px" }}
-              />
-              {!password && !isValidPassword &&
-                <span className="c-danger">Passkey can't be empty</span>
-              }
-              {password && !isValidPassword &&
-                <span className="c-danger">please enter valid passKey</span>
-              }
-            </label><br /><br />
-            <Button
-              primary
-              type="submit"
-              className="btn-primary withdraw"
-              onClick={(e) => onClickWithdraw(e)}
-              floated="left"
-            disabled={canWithdraw ? '' : 'disabled'}
-            >
-              Withdraw
-            </Button>
-          </form>
-        }
+                floated="none"
+                disabled={canWithdraw ? '' : 'disabled'}
+              >
+                Withdraw
+              </Button>
+            </form>
+          }
+        </div>
       </div>
       <Modal
         size="mini"
@@ -704,7 +722,7 @@ const WithdrawForm = (props) => {
         onClose={() => {
           resetState();
         }}
-        open={(isSuccess.status && isSuccess.text === 'ok') ||  (!isSuccess.status && isSuccess.text === 'fail')}
+        open={(isSuccess.status && isSuccess.text === 'ok') || (!isSuccess.status && isSuccess.text === 'fail')}
         id={"modalExch"}
       >
 
@@ -716,7 +734,7 @@ const WithdrawForm = (props) => {
               Hello {accountNameState}<br />
             </h3>
           </div>
-            <h6 className={`${isSuccess.status && isSuccess.text === 'ok' ? 'modal_withdrawal_status_success' : 'modal_withdrawal_status_danger'}`}>Withdrawal {isSuccess.status && isSuccess.text === 'ok' ? 'Successfully Done' : 'Failed'}</h6>
+          <h6 className={`${isSuccess.status && isSuccess.text === 'ok' ? 'modal_withdrawal_status_success' : 'modal_withdrawal_status_danger'}`}>Withdrawal {isSuccess.status && isSuccess.text === 'ok' ? 'Successfully Done' : 'Failed'}</h6>
         </Modal.Content>
         <Modal.Actions className="claim_modal-action">
           <Button

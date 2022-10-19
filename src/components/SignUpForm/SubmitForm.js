@@ -64,7 +64,7 @@ export default function SubmitForm(props) {
           window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL
             }/e-sign?email=${encodeURIComponent(
               email
-            )}&firstName=${firstName}&lastName=${lastName}&phoneNumber=${phone}&token=${token}&redirectUrl=${window.location.origin
+            )}&firstName=${firstName}&lastName=${lastName}&phoneNumber=${phone}&walletName=${accountName}&token=${token}&redirectUrl=${window.location.origin
             }`;
         } else {
           return;

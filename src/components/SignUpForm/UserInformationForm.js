@@ -335,6 +335,9 @@ const UserInformationForm = (props) => {
               {accountName && accountNameErrors?.content && touchedAccountName ? (
                 <p style={{ color: "red" }}> {accountNameErrors?.content}</p>
               ) : null}
+              {searchAccount.length > 0 && searchAccount[0][0] === accountName && (
+                <p style={{ color: "red" }}>Account is already used </p>
+              )}
             </Form.Field>
             <Form.Field>
               <Button

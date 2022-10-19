@@ -1,55 +1,122 @@
-div.withdraw {
-	padding: 20px;
-}
 div.withdraw label {
-	width: 50%;
+	width: 100%;
 	margin-top: 20px;
 }
+
 .headerTitle {
 	background: #fff;
 	box-shadow: var(--boxShadowIndex);
 	padding: 1rem 0 .2rem 2rem;
 	color: var(--textGold)
 }
+
 .headTl {
 	font-size: 1.2rem;
 	color: var(--textBrown);
 	font-weight: 600;
 }
+
 .input {
 	padding-top: 5px;
 }
-.custom-input-bg{
-	background-color: #fff!important;
+
+.custom-input-bg {
+	background-color: #fff !important;
 }
+
 @media only screen and (max-width: 768px) {
 	div.withdraw label {
 		width: 100%;
 	}
 }
-.c-danger, .c-red {
+
+.c-danger,
+.c-red {
 	color: red;
 }
+
 button.withdraw {
 	margin-top: 20px;
+	background-color: #330000 !important;
+	color: #ffc000 !important;
 }
 
-#from .ui.pointing.label, #to .ui.pointing.label {
-    position: absolute;
-    z-index: 99;
+.ui.disabled.withdraw {
+	opacity: 0.9 !important;
+
 }
-.custom-input-bg{
+
+#from .ui.pointing.label,
+#to .ui.pointing.label {
+	position: absolute;
+	z-index: 99;
+}
+
+.custom-input-bg {
 	background-color: #fff !important;
 }
+
 .modal_withdrawal_status_success {
 	display: flex !important;
-    justify-content: center !important;
-    padding-top: 15px !important;
-    color: green !important;
+	justify-content: center !important;
+	padding-top: 15px !important;
+	color: green !important;
 }
+
 .modal_withdrawal_status_danger {
 	display: flex !important;
-    justify-content: center !important;
-    padding-top: 15px !important;
-    color: red !important;
+	justify-content: center !important;
+	padding-top: 15px !important;
+	color: red !important;
+}
+
+.withdrawal-form-div {
+	background: rgb(255, 255, 255) !important;
+	padding: 10px 25px 20px !important;
+	margin-top: 10px !important;
+	width: 50% !important;
+	border-radius: 5px !important;
+	margin-left: 10px;
+	margin-bottom: 20px;
+}
+
+@media only screen and (max-width: 680px) {
+	.withdrawal-form-div {
+		width: 100% !important;
+	}
+
+	.withdrawal-form-div {
+		background: rgb(255, 255, 255) !important;
+		padding: 10px 25px 20px !important;
+		margin-top: 10px !important;
+		width: 100% !important;
+		border-radius: 5px !important;
+		margin-left: 0 !important;
+		margin-bottom: 20px;
+	}
+}
+
+.withdrawal-form-div input {
+	padding-top: 10px !important;
+}
+
+.new-wallet_input div:first-child {
+	padding: 0 !important;
+}
+
+.withdrawal-form-div .new-wallet_input input {
+	padding: 10px !important;
+}
+
+.withdrawal-form-div .currency-span {
+	padding: 10px !important;
+	margin-left: -7rem;
+}
+
+.withdrawal-form-div .currency-letters p {
+	padding: 10px !important;
+}
+
+.new-max-withdrawal {
+	margin-top: 8rem !important;
 }
