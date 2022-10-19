@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkAccountSignatureRequest, checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
 import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
 import { checkPasswordObjSelector } from "../../store/meta1/selector";
-import { validateSignature } from "../../API/API";
+import { validateSignature, checkMigrationable, migrate } from "../../API/API";
 
 export default function LoginScreen(props) {
   const {
@@ -59,6 +59,7 @@ export default function LoginScreen(props) {
     e.preventDefault();
     onSignUpClick();
   };
+
   const validationHandler = () => {
     let isValid = true;
     const data = { login: false, password: false };
@@ -103,12 +104,18 @@ export default function LoginScreen(props) {
     }
   }
   const checkTransferSubmitHandler = async () => {
-    if(!checkTransfer.password.trim()){
-      checkTransferStateHandler('error',true);
-      checkTransferStateHandler('errorMsg',"Passkey can't be empty");
-      return;
+    // if(!checkTransfer.password.trim()){
+    //   checkTransferStateHandler('error',true);
+    //   checkTransferStateHandler('errorMsg',"Passkey can't be empty");
+    //   return;
+    // }
+    // dispatch(checkAccountSignatureRequest({ login: accountState, password: checkTransfer.password }));
+    const response = await migrate(accountState, checkTransfer.password);
+    if (response.error === false) {
+      alert(response.msg);
+    } else {
+      alert('Something went wrong');
     }
-    dispatch(checkAccountSignatureRequest({ login: accountState, password: checkTransfer.password }));
   }
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -257,7 +264,7 @@ export default function LoginScreen(props) {
                     checkTransferStateHandler(e.target.name, e.target.value);
                   }}
                   name="password"
-                  placeholder={"Passkey"}
+                  placeholder={"Owner Private Key"}
                   value={checkTransfer.password}
                   type="password"
                 />

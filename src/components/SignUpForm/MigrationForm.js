@@ -11,7 +11,13 @@ export default function MigrationForm(props) {
   const handleClick = async () => {
     const response = await validateSignature(props.accountName, passkey);
     if (response?.isValid === true) {
-      props.onClick();
+      props.onClick(
+        props.accountName,
+        props.password,
+        props.phone,
+        props.lastName,
+        props.firstName
+      );
     }
     else {
       alert("Private Key is invalid");
