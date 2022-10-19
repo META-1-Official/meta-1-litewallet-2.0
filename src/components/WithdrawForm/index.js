@@ -92,7 +92,8 @@ const WithdrawForm = (props) => {
   const [isValidCurrency, setIsValidCurrency] = useState(false);
   const [isSuccess, setIsSuccess] = useState({
     status: false,
-    text: ''
+    text: '',
+    privateKeyError: false
   });
   const sendEmailState = useSelector(sendEmailSelector);
   const passwordRequestFlagState = useSelector(passwordRequestFlagSelector);
@@ -206,10 +207,11 @@ const WithdrawForm = (props) => {
     }
   }, [toAddress, selectedFrom]);
 
-  const setIsSuccessHandler = (status,text) => {
+  const setIsSuccessHandler = (status, text, privateKeyError = false) => {
     setIsSuccess({
       status,
-      text
+      text,
+      privateKeyError
     });
   }
 
@@ -415,26 +417,29 @@ const WithdrawForm = (props) => {
 
   const resetState = () => {
       // Reset form inputs
-      setName('');
-      setEmailAddress('');
-      setSelectedFromAmount(NaN);
-      setBlockPrice(NaN);
-      setToAddress('');
-      setPassword('')
-      setIsValidPassword(false);
-      setIsPasswordTouched(false);
       setIsSuccessHandler(false, '');
-      props.onSuccessWithDrawal();
-      const emailType = "withdraw";
-      const emailData = {
-        accountName: props.accountName,
-        name: trim(name),
-        emailAddress: trim(emailAddress),
-        asset: selectedFrom.value,
-        amount: selectedFromAmount,
-        toAddress: trim(toAddress)
-      };
-      dispatch(sendMailRequest({emailType,emailData}))
+
+      if (isSuccess.status && isSuccess.text === 'ok') {
+        setName('');
+        setEmailAddress('');
+        setSelectedFromAmount(NaN);
+        setBlockPrice(NaN);
+        setToAddress('');
+        setPassword('')
+        setIsValidPassword(false);
+        setIsPasswordTouched(false);
+        props.onSuccessWithDrawal();
+        const emailType = "withdraw";
+        const emailData = {
+          accountName: props.accountName,
+          name: trim(name),
+          emailAddress: trim(emailAddress),
+          asset: selectedFrom.value,
+          amount: selectedFromAmount,
+          toAddress: trim(toAddress)
+        };
+        dispatch(sendMailRequest({emailType,emailData}));
+      }
   };
 
   if (selectedFrom == null) return null;
@@ -484,10 +489,10 @@ const WithdrawForm = (props) => {
           </div>
         </div>
 
+      {isLoading ?
+        <MetaLoader size={"small"} />
+        :
         <div className="withdrawal-form-div">
-          {isLoading ?
-            <MetaLoader size={"small"} />
-            :
             <form>
               <label>
                 <span>Name:</span><br />
@@ -713,12 +718,12 @@ const WithdrawForm = (props) => {
                 Withdraw
               </Button>
             </form>
-          }
         </div>
+      }
       </div>
       <Modal
         size="mini"
-        className="claim_wallet_modal"
+        className={`${isSuccess.privateKeyError ? "new_claim_wallet_modal__privatekey" : "new_claim_wallet_modal"}`}
         onClose={() => {
           resetState();
         }}
@@ -734,7 +739,8 @@ const WithdrawForm = (props) => {
               Hello {accountNameState}<br />
             </h3>
           </div>
-            <h6 className={`${isSuccess.status && isSuccess.text === 'ok' ? 'modal_withdrawal_status_success' : 'modal_withdrawal_status_danger'}`}>Withdrawal {isSuccess.status && isSuccess.text === 'ok' ? 'Successfully Done' : 'Failed'}</h6>
+          {!isSuccess.privateKeyError && <h6 className={`${isSuccess.status && isSuccess.text === 'ok' ? 'modal_withdrawal_status_success' : 'modal_withdrawal_status_danger'}`}>Withdrawal {isSuccess.status && isSuccess.text === 'ok' ? 'Successfully Done' : isSuccess.text}</h6>}
+          {isSuccess.privateKeyError && <h6 className='modal_withdrawal_status_danger'>You do not have control of the memo key for this wallet. In order to use a memo, please set the wallet memo key to a key you control using the Permissions page.</h6>}
         </Modal.Content>
         <Modal.Actions className="claim_modal-action">
           <Button
