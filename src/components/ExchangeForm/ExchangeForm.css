@@ -66,6 +66,16 @@
   padding-top: 10px;
   text-align: left;
 }
+
+.select-withdrawal .wallet-option-content {
+  padding-top: 10px;
+  text-align: left;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .wallet-option-content__currency {
   display: flex;
   align-items: center;
@@ -98,6 +108,16 @@
   box-shadow: var(--boxShadowIndex);
 }
 
+.select-withdrawal.css-yk16xz-control {
+  height: 4rem !important;
+  width: 22rem !important;
+  border: 1px solid rgba(34, 36, 38, 0.15) !important;
+  box-shadow: var(--boxShadowIndex);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .yellow {
   color: var(--textBrown) !important;
 }
@@ -106,6 +126,14 @@
   height: 100%;
   border-radius: 8px !important;
 }
+
+.select-withdrawal .css-g1d714-ValueContainer {
+  height: 100%;
+  border-right: 1px solid hsl(0,0%,80%);
+  overflow: visible !important;
+  border-radius: 0px !important;
+}
+
 .wallet-option {
   margin-top: 0;
 }
@@ -135,6 +163,9 @@
 .wallet-option-content__balance {
   color: var(--textBrown) !important;
 }
+.select-withdrawal.wallet-option-content__balance {
+  color: darkgrey !important;
+}
 .css-tlfecz-indicatorContainer {
   color: var(--textBrown) !important;
 }
@@ -156,6 +187,18 @@
 }
 .wallet-option {
   margin-top: 0 !important;
+}
+
+.select-withdrawal .wallet-option {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 10px !important;
+  min-height: 60px;
+}
+
+.select-withdrawal .wallet-option-picture {
+  display: flex;
+  align-items: center;
 }
 .btn {
   background-color: var(--gold) !important;
