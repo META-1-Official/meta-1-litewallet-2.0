@@ -234,7 +234,7 @@ const LeftPanel = (props) => {
             className={styles.textSpan}
             style={activeScreen === "orderTable" ? { color: "#FFC000" } : null}
           >
-            <span>Transfer History</span>
+            <span>Transaction History</span>
           </div>
         </div>
       </li>
