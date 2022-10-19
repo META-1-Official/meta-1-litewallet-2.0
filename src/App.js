@@ -296,7 +296,6 @@ function Application(props) {
     setCredentials(acc, pass);
     await onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
-    window.location.replace('http://localhost:3000');
   };
 
   async function chngLastLocation(location) {
