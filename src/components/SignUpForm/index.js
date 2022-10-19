@@ -22,6 +22,7 @@ export default function SignUpForm(props) {
     signatureResult,
     onBackClick
   } = props;
+
   const [accountName, setAccountName] = useState("");
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -206,6 +207,15 @@ export default function SignUpForm(props) {
       console.log('Error in Torus Render', error);
     }
   }
+
+  const handleBackBtn = (e) => {
+    console.log('Back Button', step);
+    if (step == "userform"){
+      onBackClick(e);
+    } else if (step == "migration") {
+      setStep("userform");
+    }
+  }
   
   return (
     <>
@@ -229,7 +239,7 @@ export default function SignUpForm(props) {
               <Button
                 style={{ color: "#fdc000", fontSize: ".9rem" }}
                 labelPosition="left"
-                onClick={onBackClick}
+                onClick={handleBackBtn}
               >
                 <i
                   className="fal fa-arrow-left"

@@ -1,43 +1,53 @@
 @media (max-width: 767px) {
+
   .singup-grid,
-  .singup-grid .column {
-  }
+  .singup-grid .column {}
 }
+
 .signup-form {
   width: 100% !important;
 }
+
 .messageRed {
   background: #ff8e8e66 !important;
   border: 1px solid rgba(255, 100, 106, 0.51) !important;
 }
+
 button {
   color: var(--textBrown);
 }
+
 .brown {
   color: var(--textBrown) !important;
 }
+
 .input_cont,
 .ui .form .field .prompt.label {
   font-weight: 400 !important;
   color: red !important;
 }
+
 label {
   font-size: 0.8rem;
   color: var(--textBrown);
   font-weight: 700;
 }
+
 input {
   box-shadow: var(--boxShadowIndex);
 }
+
 .head-title {
   font-size: 1.2rem;
   margin: 1.1rem 0 !important;
   padding: 0 !important;
   color: var(--textBrown);
 }
+
 .createWalletForm {
   margin: 1rem;
 }
+
 .regForm {
   padding: 1rem 2rem;
   border-radius: 4px;
@@ -47,44 +57,53 @@ input {
   position: relative;
   margin-right: 1rem;
 }
+
 .adaptThing {
   display: flex;
   flex-direction: column;
   width: 30%;
   position: relative;
 }
+
 .justFlexAndDirect {
   display: flex;
   flex-direction: row;
 }
+
 @media screen and (max-width: 450px) {
   .adaptThing {
     flex-direction: column;
     width: 100%;
   }
+
   .justFlexAndDirect {
     flex-direction: column;
   }
 }
+
 @media (max-width: 600px) {
   .regForm {
     width: 100%;
   }
 }
+
 .dark-wallet-key {
   opacity: 1 !important;
   font-weight: 800;
 }
-.show_text{
+
+.show_text {
   position: relative;
 
 }
-.copy_text{
+
+.copy_text {
   position: absolute;
   right: 4px;
   bottom: -21px;
   font-size: 12px;
 }
+
 .copy_text_passkey {
   margin: 3px;
 }
@@ -124,7 +143,7 @@ input {
   width: 150px;
   height: 40px;
   background: #00AD6A;
-  border-radius: 6px; 
+  border-radius: 6px;
   color: white;
   border: none;
 }
@@ -199,7 +218,7 @@ input {
 .position-head {
   display: flex;
   justify-content: center;
-  color:#fff;
+  color: #fff;
   width: 100%;
   align-items: center;
 }
@@ -248,6 +267,7 @@ video {
 .phone-number-div .country-code ::before {
   border: none !important;
 }
+
 .phone-number-div .country-code ::after {
   border: none !important;
 }
@@ -288,6 +308,7 @@ video {
   align-items: center !important;
   width: 100% !important;
 }
+
 .countryName-span {
   padding-left: 5px;
   font-weight: 600;
@@ -296,6 +317,11 @@ video {
 .countryCode-span {
   font-weight: 700;
 }
+
 .hide-element {
   display: none;
+}
+
+.migration-page {
+  margin-top: 15px !important;
 }

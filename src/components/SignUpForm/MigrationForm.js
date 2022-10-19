@@ -26,7 +26,7 @@ export default function MigrationForm(props) {
   }
 
   return (
-    <Grid>
+    <Grid className="migration-page">
       <Grid.Column width={16} className="singup-grid">
         <Form autoComplete="off">
           <div className="field">
