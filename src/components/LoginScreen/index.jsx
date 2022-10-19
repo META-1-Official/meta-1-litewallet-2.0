@@ -58,13 +58,13 @@ export default function LoginScreen(props) {
 
   useEffect(async () => {
     await checkTransferableAccount();
-  }, [])
+  }, []);
 
   const checkTransferableAccount = async () => {
     if (accountState) {
       const response = await checkMigrationable(accountState);
 
-      if (response.snapshot.transfer_status === 'PENDING' || response.snapshot.transfer_status === 'PARTIALLY_DONE') {
+      if (response?.snapshot?.transfer_status === 'PENDING' || response?.snapshot?.transfer_status === 'PARTIALLY_DONE') {
         setMigratable(true);
       }
     }
