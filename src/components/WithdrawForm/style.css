@@ -113,3 +113,6 @@ button.withdraw {
 .modal_withdrawal_status_danger_link:hover {
 	color: #c61111 !important;
 }
+.from-amount-tooltip {
+	padding: 10px !important;
+}

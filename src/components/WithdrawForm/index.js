@@ -557,7 +557,7 @@ const WithdrawForm = (props) => {
                   <Popup
                     content={helpWithdrawInput(selectedFrom?.value)}
                     position="bottom center"
-                    style={{padding: '0'}}
+                    className="from-amount-tooltip"
                     trigger={
                       <div className={styles.inputForAmount}>
                         <Input
