@@ -488,7 +488,7 @@ const WithdrawForm = (props) => {
           {isLoading ?
             <MetaLoader size={"small"} />
             :
-            <form>
+            <form autoComplete="off" >
               <label>
                 <span>Name:</span><br />
                 <TextField
@@ -514,6 +514,8 @@ const WithdrawForm = (props) => {
                   id="emailaddress-input"
                   variant="filled"
                   style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                  type="email"
+                  autoComplete='off'
                 />
                 {emailAddress && !isValidEmailAddress &&
                   <span className="c-danger">Invalid email address</span>
