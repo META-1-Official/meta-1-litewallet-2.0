@@ -27,6 +27,9 @@ export default function SignUpForm(props) {
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneFormat, setPhoneFormat] = useState('');
+  const [country, setCountry] = useState("");
+  const [selectedCountryObj, setSelectedCountryObj] = useState(null);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [step, setStep] = useState('userform');
@@ -59,14 +62,19 @@ export default function SignUpForm(props) {
     pass,
     newPhone,
     newLastName,
-    newFirstName
+    newFirstName,
+    newPhoneFormat,
+    newCountry,
+    newSelectedCountryObj
   ) => {
     setAccountName(accName);
     setFirstName(newFirstName);
     setPassword(pass);
     setLastName(newLastName);
     setPhone(newPhone);
-
+    setPhoneFormat(newPhoneFormat);
+    setCountry(newCountry);
+    setSelectedCountryObj(newSelectedCountryObj);
     const response = await checkOldUser(accName);
     
     if (response?.found === true) {
@@ -129,6 +137,9 @@ export default function SignUpForm(props) {
           firstName={firstName}
           password={password}
           phone={phone}
+          phoneFormat={phoneFormat}
+          country={country}
+          selectedCountryObj={selectedCountryObj}
         />
       case 'faceki':
         return <FaceKiForm
