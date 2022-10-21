@@ -3,7 +3,7 @@ import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
 import { liveLinessCheck, verify, enroll, getUserKycProfile, postUserKycProfile } from "../../API/API";
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
-
+import OvalImage from '../../images/oval/oval9.png';
 import "./SignUpForm.css";
 
 export default function FaceKiForm(props) {
@@ -72,10 +72,11 @@ export default function FaceKiForm(props) {
               <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
             </div>
             <div className='child-div'>
-              <div style={{ width: '100%', display: 'flex', height: '30px' }}>
+              <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head">Position your face in the oval</div>
                 <button className='btn_x'>X</button>
               </div>
+              <img src={OvalImage} alt='oval-image' className='oval-image' />
               <Webcam
                 audio={false}
                 ref={webcamRef}
