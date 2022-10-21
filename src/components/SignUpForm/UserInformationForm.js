@@ -35,14 +35,14 @@ const UserInformationForm = (props) => {
   const [firstName, setFirstName] = useState(props.firstName || "");
   const [lastName, setLastName] = useState(props.lastName || "");
   const [phone, setPhone] = useState(props.phone || "");
-  const [phoneFormat, setPhoneFormat] = useState('');
+  const [phoneFormat, setPhoneFormat] = useState(props.phoneFormat || "");
   const [searchAccount, setSearchAccount] = useState([["PM", ""]]);
   const [touchedAccountName, setTouchedAccountName] = useState(false);
   const [phoneError, setPhoneError] = useState(null);
   const [firstNameError, setFirstNameError] = useState(null);
   const [lastNameError, setLastNameError] = useState(null);
-  const [country, setCountry] = useState("227");
-  const [selectedCountryObj, setSelectedCountryObj] = useState({
+  const [country, setCountry] = useState(props.country || "227");
+  const [selectedCountryObj, setSelectedCountryObj] = useState(props.selectedCountryObj || {
       "id": 227,
       "iso2": "US",
       "defaultName": "USA",
@@ -51,7 +51,7 @@ const UserInformationForm = (props) => {
           "XXX XXX XXXX"
       ]
   });
-  
+
   useEffect(() => {
     setPhone(`+${selectedCountryObj.countryCode}${phoneFormat.replaceAll(' ','')}`)
   }, [selectedCountryObj, phoneFormat]);
@@ -155,7 +155,10 @@ const UserInformationForm = (props) => {
         generatedPassword,
         phone,
         lastName,
-        firstName
+        firstName,
+        phoneFormat,
+        country,
+        selectedCountryObj
       );
     }
     return () => setIsSubmitted(false);
