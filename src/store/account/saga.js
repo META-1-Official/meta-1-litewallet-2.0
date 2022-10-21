@@ -31,6 +31,8 @@ function* getUserHandler(data) {
     const response = yield call(getUserData,data.payload);
     if (response['tokenExpired']) {
         yield put(getUserError({msg: response.responseMsg}));
+    } else if (response['error']) {
+        yield put(getUserError({msg: "userFail"}));
     } else {
         if (response?.message?.userAvatar != null) {
             let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message.userAvatar}`;
@@ -98,6 +100,8 @@ function* checkTokenHandler(data) {
     const response = yield call(getUserData,data.payload);
     if (response['tokenExpired']) {
         yield put(getUserError({msg: response.responseMsg}));
+    } else if (response['error']) {
+        yield put(getUserError({msg: "userFail"}));
     }
 }
 

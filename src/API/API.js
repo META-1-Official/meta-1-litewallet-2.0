@@ -20,13 +20,20 @@ export async function getUserData(login) {
     const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getUserData`, {
       login: login,
     }, config);
-    return data;
+    if (data && !data.message) {
+      tokenFail();
+      return { message: null, tokenExpired: false, responseMsg: 'user not found', error: true };
+    }
+    return {...data, error: false};
   } catch (err) {
     if (err?.response?.data?.error?.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
+    } else if (err?.response?.status === 500 || err?.response?.status === 400) {
+      tokenFail();
+      return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error: true };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error: true };
   }
 }
 
