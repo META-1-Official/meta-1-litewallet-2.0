@@ -91,7 +91,7 @@ const accountsReducer = (state = initialState, action) => {
         case types.CHECK_TOKEN_REQUEST:
             return state;
         case types.PASS_KEY_REQUEST:
-            return {...state, isValidPasswordKey: false, passwordKeyError: false };
+            return {...state, passwordKeyError: false };
         case types.PASS_KEY_SUCCESS:
             return {...state, isValidPasswordKey: true, passwordKeyError: false, passwordRequestFlag: !state.passwordRequestFlag };
         case types.PASS_KEY_ERROR:

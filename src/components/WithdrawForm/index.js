@@ -72,6 +72,7 @@ const WithdrawForm = (props) => {
   const userCurrencyState = useSelector(userCurrencySelector);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFrom, setSelectedFrom] = useState(props.selectedFrom);
+  const [isCurrencySelected, setIsCurrencySelected] = useState(false);
   const [selectedFromAmount, setSelectedFromAmount] = useState("");
   const [amountError, setAmountError] = useState("");
   const [name, setName] = useState("");
@@ -128,8 +129,9 @@ const WithdrawForm = (props) => {
       const from = asset
         ? newOptions.find((el) => el.value === asset)
         : newOptions[0];
-
-      setSelectedFrom(from);
+      if (!isCurrencySelected)  {
+        setSelectedFrom(from);
+      }
     } else {
       setSelectedFrom(newOptions.find((o) => o.value === selectedFrom.value));
     }
@@ -155,6 +157,9 @@ const WithdrawForm = (props) => {
         if (isPasswordTouched) {
           setIsValidPassword(false);
         }
+      }
+      if (isValidPasswordKeyState) {
+        onClickWithdraw()
       }
   },[isValidPasswordKeyState, passwordRequestFlagState])
 
@@ -327,8 +332,7 @@ const WithdrawForm = (props) => {
       setIsLoading(false);
     }
   },[isSuccess])
-  const onClickWithdraw = async (e) => {
-    e.preventDefault();
+  const onClickWithdraw = async () => {
     setIsSuccessHandler(false, 'loading');
     let assetName = !!gatewayStatus.assetWithdrawlAlias
       ? gatewayStatus.assetWithdrawlAlias[selectedFrom.value.toLowerCase()] ||
@@ -428,6 +432,7 @@ const WithdrawForm = (props) => {
         setPassword('')
         setIsValidPassword(false);
         setIsPasswordTouched(false);
+        setIsCurrencySelected(false);
         props.onSuccessWithDrawal();
         const emailType = "withdraw";
         const emailData = {
@@ -455,8 +460,7 @@ const WithdrawForm = (props) => {
     isValidAddress &&
     !amountError &&
     selectedFromAmount &&
-    isValidPassword
-    && isValidPasswordKeyState;
+    isValidPassword;
 
   return (
     <>
@@ -540,6 +544,7 @@ const WithdrawForm = (props) => {
                 <span>From Currency:</span>
                 <ExchangeSelect
                   onChange={(val) => {
+                    setIsCurrencySelected(true);
                     setSelectedFrom(val);
                     changeAssetHandler(val.value);
                     setSelectedFromAmount(NaN);
@@ -688,9 +693,6 @@ const WithdrawForm = (props) => {
                       }
                     }
                   }}
-                  onBlur={() => {
-                    dispatch(passKeyRequestService({ login: accountNameState, password}));
-                  }}
                   className={styles.input}
                   id="destination-input"
                   variant="filled"
@@ -699,7 +701,7 @@ const WithdrawForm = (props) => {
                 {!password && isPasswordTouched &&
                   <span className="c-danger">Passkey can't be empty</span>
                 }
-                {password && !isValidPassword && isPasswordTouched &&
+                {password && !isValidPassword && isPasswordTouched && !isValidPasswordKeyState &&
                   <span className="c-danger">please enter valid passKey</span>
                 }
               </label>
@@ -708,9 +710,8 @@ const WithdrawForm = (props) => {
                 type="submit"
                 className="btn-primary withdraw"
                 onClick={(e) => {
-                  if (isValidPasswordKeyState) {
-                    onClickWithdraw(e)
-                  }
+                  e.preventDefault();
+                  dispatch(passKeyRequestService({ login: accountNameState, password}));
                 }}
                 floated="none"
               disabled={canWithdraw ? '' : 'disabled'}
