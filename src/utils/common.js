@@ -4,19 +4,24 @@ export const sleepHandler = (ms) =>  {
 }
 const isUserExistHandler = async (login, password, checkCount, status) => {
     try {
+        console.log("signup log after regiser check user register innn 2")
         await Meta1.connect(process.env.REACT_APP_MAIA);
+        console.log("signup log after regiser check user register innn3")
         await Meta1.login(login, password);
+        console.log("signup log after regiser check user register innn4")
         if (!status) {
             status = true;
         }
         return { status };
     } catch(err) {
         if (checkCount === 10 ){
+            console.log("signup log after regiser check user register innn loop end")
             status = false;
             return { status };
         }
         await sleepHandler(300);
         checkCount = checkCount + 1;
+        console.log("signup log after regiser check user register innn 5")
         const response = await isUserExistHandler(login, password, checkCount);
         if (response.status) {
             return { status: true };
@@ -29,7 +34,9 @@ export const signUpHandler = async (login, password) => {
     let checkCount = 0;
     let status = false;
     await sleepHandler(3000);
+    console.log("signup log after regiser check user register innn")
     const result = await isUserExistHandler(login, password, checkCount, status);
+    console.log("signup log after regiser check user register innn result")
     if (result && result.status) {
         return { status: true };
     }

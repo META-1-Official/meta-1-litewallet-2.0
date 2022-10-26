@@ -8,13 +8,18 @@ import { signUpHandler } from '../../utils/common';
 function* loginHandler(data) {
     try {
         if (data?.payload?.fromSignUpFlag) {
+            console.log("signup log after regiser check user register")
             const result = yield signUpHandler(data.payload.login, data.payload.password);
+            console.log("signup log after regiser check user register status",result)
             if (result && !result.status) {
+                console.log("signup log after regiser check user register status fail")
                 yield put(loginError({accountName: null, token: '', msg: 'Account Creation is under process. Please try after sometime' }));
                 return;
             }
         }
+        console.log("signup log after regiser check user login before")
         const response = yield call(loginRequest,data.payload.login, data.payload.password);
+        console.log("signup log after regiser check user login status",response)
         if(!response.error){
             setAccessToken(response.token);
             setLoginDetail(response.accountName)
@@ -29,8 +34,11 @@ function* loginHandler(data) {
 }
 function* getUserHandler(data) {
     const response = yield call(getUserData,data.payload);
+    console.log("signup log response",response)
     if (response['tokenExpired']) {
         yield put(getUserError({msg: response.responseMsg}));
+    } else if (response['error']) {
+        yield put(getUserError({msg: "userFail"}));
     } else {
         if (response?.message?.userAvatar != null) {
             let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message.userAvatar}`;
@@ -98,7 +106,9 @@ function* checkTokenHandler(data) {
     const response = yield call(getUserData,data.payload);
     if (response['tokenExpired']) {
         yield put(getUserError({msg: response.responseMsg}));
-    }
+    } else if (response['error']) {
+        yield put(getUserError({msg: "userFail"}));
+    } 
 }
 
 function* passKeyHandler(data) {

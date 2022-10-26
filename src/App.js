@@ -189,7 +189,10 @@ function Application(props) {
       }
   },[cryptoDataState]);
   useEffect(() => {
-    if (!isTokenValidState) {
+    if (errorMsgState === 'userFail') {
+      console.log("signup log userfail")
+      dispatch(logoutRequest());
+    } else if (!isTokenValidState) {
       setTokenModalOpen(true);
       setTokenModalMsg(errorMsgState);
     } else {
@@ -291,8 +294,8 @@ function Application(props) {
   }
 
   const onRegistration = async (acc, pass, regEmail) => {
-    localStorage.setItem("account", acc);
-    localStorage.setItem("login", acc);
+    localStorage.removeItem("account", acc);
+    localStorage.removeItem("login", acc);
     setCredentials(acc, pass);
     await onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
