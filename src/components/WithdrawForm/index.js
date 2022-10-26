@@ -368,11 +368,14 @@ const WithdrawForm = (props) => {
     const assets = await getAssetsObject(intermediateAccounts);
     let withdrawalCurrencyObj;
     let withdrawalCurrency = assets.find((item, index) => {
-      if (item.get(index).symbol === selectedFrom.value) {
+      if (item.get(index) && item.get(index).symbol === selectedFrom.value) {
         withdrawalCurrencyObj = { ...item.get(index) };
         return item;
       }
     });
+    if (!withdrawalCurrencyObj) {
+      setIsSuccessHandler(false, "fail");
+    }
     let sendAmount = new Asset({
       asset_id: withdrawalCurrencyObj.id,
       precision: withdrawalCurrencyObj.precision,
