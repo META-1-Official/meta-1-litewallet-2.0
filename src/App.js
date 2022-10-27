@@ -148,7 +148,7 @@ function Application(props) {
         setSignatureResult(signatureParam[1]);
         setActiveScreen('registration');
       } else {
-        if (window.location.search.includes('?signature=true')) {
+        if (window.location.search.includes('?signature=success')) {
             setActiveScreen('wallet');
             window.location.href =  window.location.href.split('?')[0];
         }
