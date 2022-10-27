@@ -36,16 +36,21 @@ function* loginHandler(data) {
 }
 function* getUserHandler(data) {
     const response = yield call(getUserData,data.payload);
-    console.log("signup log response",response)
+    console.log("signup log getUserHandler response",response)
     if (response['tokenExpired']) {
+        console.log("signup log getUserHandler response 1",response)
         yield put(getUserError({msg: response.responseMsg}));
     } else if (response['error']) {
+        console.log("signup log getUserHandler response 2",response)
         yield put(getUserError({msg: "userFail"}));
     } else {
+        console.log("signup log getUserHandler response 3 ok")
         if (response?.message?.userAvatar != null) {
+            console.log("signup log getUserHandler response 4 ok success")
             let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message.userAvatar}`;
             yield put(getUserSuccess({user: response,avatarImage }));
         } else {
+            console.log("signup log getUserHandler response 5 ok error")
             yield put(getUserSuccess({user: response,avatarImage: null }));
         }
     }
@@ -82,14 +87,20 @@ function* sendMailHandler(data) {
 }
 
 function* checkTransferableHandler(data) {
+    console.log("signup log submit 105 checkTransferableHandler");
     const response = yield call(checkOldUser, data.payload.login);
+    console.log("signup log submit 106 checkTransferableHandler response",response);
     if (!response.error) {
+        console.log("signup log submit 107 checkTransferableHandler no error");
         if (response.found) {
+            console.log("signup log submit 108 checkTransferableHandler no error found");
             yield put(checkTransferableSuccess({ oldUser: response.found }));
         } else {
+            console.log("signup log submit 109 checkTransferableHandler error");
             yield put(checkTransferableError());
         }
     } else {
+        console.log("signup log submit 110 checkTransferableHandler error");
         yield put(checkTransferableError());
     }
 }

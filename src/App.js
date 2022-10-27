@@ -119,10 +119,12 @@ function Application(props) {
       dispatch(loginRequestService({login ,password, setLoginDataError, fromSignUpFlag}));
     }
     if (getAccessToken()) {
+      console.log("signup log submit 103 accountNameState",accountNameState);
       dispatch(checkTransferableRequest({ login }))
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
+      console.log("signup log submit 104 accountNameState",accountNameState);
       localStorage.setItem("login", login);
       setLogin(login);
       if (clicked) {
@@ -151,14 +153,17 @@ function Application(props) {
       setLoginDataError(true);
     }
     if (accountNameState) {
+      console.log("signup log submit 100 accountNameState",accountNameState);
       setLoginDataError(false);
       onLogin(accountNameState,false)
       if (fromSignUp) {
+        console.log("signup log submit 101 accountNameState",accountNameState);
         setPortfolio(null);
         setRefreshData(prev=>!prev);
         dispatch(resetMetaStore());
         setFromSignUp(false);
         if (accountNameState) {
+          console.log("signup log submit 102 accountNameState",accountNameState);
           setActiveScreen("wallet");
         }
       }
@@ -182,8 +187,10 @@ function Application(props) {
     return true;
   }, [activeScreen]);
   useEffect(()=>{
+    console.log("signup log submit 120 userDataState",userDataState);
       if (userDataState?.message?.currency === "USD") {
       } else if (userDataState?.message?.currency) {
+        console.log("signup log submit 121 userDataState",userDataState);
           const userCurrencyData = `${crypt[userDataState?.message?.currency][1]} ${userDataState?.message?.currency} ${cryptoDataState.ExchangeRate[crypt[userDataState?.message?.currency][0]].rate
           }`
           dispatch(setUserCurrencyAction(userCurrencyData))
@@ -208,20 +215,28 @@ function Application(props) {
 
   useEffect(() => {
     async function fetchPortfolio() {
+      console.log("signup log submit 142 fetchPortfolio");
       if (portfolioReceiverState === null) return;
+      console.log("signup log submit 143 fetchPortfolio");
       if (portfolio !== null) return;
+      console.log("signup log submit 144 fetchPortfolio");
       if (accountNameState === null || accountNameState.length === 0) return;
+      console.log("signup log submit 145 fetchPortfolio");
       try {
+        console.log("signup log submit 146 fetchPortfolio");
         const fetched = await portfolioReceiverState.fetch();
+        console.log("signup log submit 147 fetchPortfolio");
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
+        console.log("signup log submit 148 fetchPortfolio");
         localStorage.setItem("account", accountNameState);
         setActiveScreen(
           sessionStorage.getItem("location") != null
             ? sessionStorage.getItem("location")
             : "wallet"
         );
+        console.log("signup log submit 149 fetchPortfolio end");
       } catch (e) {
         setActiveScreen("login");
       }
@@ -230,54 +245,65 @@ function Application(props) {
   }, [portfolioReceiverState, portfolio, accountName, refreshData ]);
 
   useEffect(() => {
+    console.log("signup log submit 130 connect before");
     async function connect() {
+      console.log("signup log submit 131 connect before");
       setIsLoading(true);
       Meta1.connect(metaUrl || process.env.REACT_APP_MAIA).then(
         () => {
+          console.log("signup log submit 132 connect success");
           setIsLoading(false);
           if (
             accountNameState == null ||
             accountNameState.length === 0 ||
             !localStorage.getItem("login")
           ) {
+            console.log("signup log submit 133 connect fail");
             setActiveScreen("login");
           } else {
+            console.log("signup log submit 134 connect ok");
             setActiveScreen(
               sessionStorage.getItem("location") != null
                 ? sessionStorage.getItem("location")
                 : "wallet"
             );
+            console.log("signup log submit 135 connect ok");
             setFetchDepositFn((asset) => (asset) => {
               return fetchDepositAddress({ accountName: accountNameState, asset });
             });
+            console.log("signup log submit 135 connect ok");
             const portfolioObj = new Portfolio({
               metaApi: Meta1,
               accountName: accountNameState,
             });
+            console.log("signup log submit 136 connect ok");
             const tradeWithPasswordObj = new TradeWithPassword({
               metaApi: Meta1,
               login: accountNameState,
             });
-
+            console.log("signup log submit 137 connect ok");
             const checkPasswordObj = new CheckPassword({
               metaApi: Meta1,
               login: accountNameState,
             });
-          
+            console.log("signup log submit 138 connect ok");
             const sendWithPasswordObj = new SendWithPassword({
               metaApi: Meta1,
               login: accountNameState,
             });
+            console.log("signup log submit 139 connect ok");
             const obj = { 
                 portfolioReceiver: portfolioObj,
                 trader: tradeWithPasswordObj,
                 checkPasswordObj,
                 senderApi: sendWithPasswordObj
             };
+            console.log("signup log submit 140 connect ok",obj);
             dispatch(meta1ConnectSuccess(obj))
           }
         },
         () => {
+          console.log("signup log submit 141 connect error");
           setActiveScreen("login");
           setLoginError("Error occured");
         }
@@ -301,7 +327,7 @@ function Application(props) {
     setCredentials(acc, pass);
     console.log("signup log submit 7 stepLastSubmit function");
     await onLogin(acc, true, pass, true);
-    setActiveScreen("wallet");
+    // setActiveScreen("wallet");
     // window.location.replace('https://wallet.dev2.meta1coin.vision/');
   };
 

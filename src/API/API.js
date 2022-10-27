@@ -10,29 +10,35 @@ export async function getCryptosChange() {
 
 export async function getUserData(login) {
   if (login === null || login === 'null' || login === undefined || login === 'undefined') return null;
-
+  console.log("signup log getUserData 1")
   const config = {
     headers: {
       'Authorization': 'Bearer ' + getAccessToken()
     }
   }
+  console.log("signup log getUserData 2")
   try {
     const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getUserData`, {
       login: login,
     }, config);
+    console.log("signup log getUserData 3 data",data)
     if (data && !data.message) {
       tokenFail();
+      console.log("signup log getUserData 4 error true")
       return { message: null, tokenExpired: false, responseMsg: 'user not found', error: true };
     }
     return {...data, error: false};
   } catch (err) {
     if (err?.response?.data?.error?.toLowerCase() === 'unauthorized') {
       tokenFail();
+      console.log("signup log getUserData 5 error true unauthorized")
       return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
     } else if (err?.response?.status === 500 || err?.response?.status === 400) {
       tokenFail();
+      console.log("signup log getUserData 6 error true")
       return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error: true };
     }
+    console.log("signup log getUserData 7 error catch end")
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error: true };
   }
 }

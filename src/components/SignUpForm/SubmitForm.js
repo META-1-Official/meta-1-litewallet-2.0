@@ -170,7 +170,9 @@ export default function SubmitForm(props) {
               <Button
                 className="sbBtn"
                 onClick={() => {
+                  console.log("signup log submit");
                   setIsSubmitted(true);
+                  console.log("signup log submit 2");
                   props.onSubmit();
                 }}
                 disabled={!isAllChecked}
