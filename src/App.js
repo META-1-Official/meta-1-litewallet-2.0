@@ -111,7 +111,7 @@ function Application(props) {
       onLogin(login);
     }
   }, []);
-
+  console.log("signup log accountNameState",accountNameState)
   const onLogin = async (login, clicked = false, password = '', fromSignUpFlag = false) => {
     setIsLoading(true);
     if (clicked) {
@@ -141,6 +141,7 @@ function Application(props) {
 
   useEffect(() => {
     if (signatureParam[0] === 'signature') {
+      console.log("signup log working 1")
       setIsSignatureProcessing(true);
       setSignatureResult(signatureParam[1]);
       setActiveScreen('registration');
@@ -323,7 +324,7 @@ function Application(props) {
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
     console.log("signup log submit 7 stepLastSubmit function");
-    await onLogin(acc, true, pass, true);
+    onLogin(acc, true, pass, true);
     // setActiveScreen("wallet");
     // window.location.replace('https://wallet.dev2.meta1coin.vision/');
   };
