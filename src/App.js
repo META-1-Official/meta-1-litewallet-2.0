@@ -115,6 +115,7 @@ function Application(props) {
   const onLogin = async (login, clicked = false, password = '', fromSignUpFlag = false) => {
     setIsLoading(true);
     if (clicked) {
+      console.log("signup log submit 8 onLogin function");
       dispatch(loginRequestService({login ,password, setLoginDataError, fromSignUpFlag}));
     }
     if (getAccessToken()) {
@@ -294,12 +295,14 @@ function Application(props) {
   }
 
   const onRegistration = async (acc, pass, regEmail) => {
+    console.log("signup log submit 6 stepLastSubmit function");
     localStorage.removeItem("account", acc);
     localStorage.removeItem("login", acc);
     setCredentials(acc, pass);
+    console.log("signup log submit 7 stepLastSubmit function");
     await onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
-    window.location.replace('https://wallet.dev2.meta1coin.vision/');
+    // window.location.replace('https://wallet.dev2.meta1coin.vision/');
   };
 
   async function chngLastLocation(location) {

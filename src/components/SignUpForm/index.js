@@ -103,7 +103,7 @@ export default function SignUpForm(props) {
   };
 
   const stepLastSubmit = async () => {
-
+    console.log("signup log submit 3 stepLastSubmit function");
     try {
       await createAccountWithPassword(
         accountName,
@@ -117,11 +117,13 @@ export default function SignUpForm(props) {
         lastName,
         firstName
       );
+      console.log("signup log submit 4 stepLastSubmit function");
       localStorage.removeItem('password');
       localStorage.removeItem('firstname');
       localStorage.removeItem('lastname');
       localStorage.removeItem('phone');
       localStorage.removeItem('email');
+      console.log("signup log submit 5 stepLastSubmit function");
       onRegistration(accountName, password, email);
     } catch (e) { }
   };

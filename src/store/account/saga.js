@@ -8,23 +8,25 @@ import { signUpHandler } from '../../utils/common';
 function* loginHandler(data) {
     try {
         if (data?.payload?.fromSignUpFlag) {
-            console.log("signup log after regiser check user register")
+            console.log("signup log 9 after regiser check user register")
             const result = yield signUpHandler(data.payload.login, data.payload.password);
-            console.log("signup log after regiser check user register status",result)
+            console.log("signup log 10 after regiser check user register status",result)
             if (result && !result.status) {
-                console.log("signup log after regiser check user register status fail")
+                console.log("signup log 11 after regiser check user register status fail")
                 yield put(loginError({accountName: null, token: '', msg: 'Account Creation is under process. Please try after sometime' }));
                 return;
             }
         }
-        console.log("signup log after regiser check user login before")
+        console.log("signup log 12 after regiser check user login before")
         const response = yield call(loginRequest,data.payload.login, data.payload.password);
         console.log("signup log after regiser check user login status",response)
         if(!response.error){
             setAccessToken(response.token);
             setLoginDetail(response.accountName)
+            console.log("signup log after regiser check user login status success")
             yield put(loginSuccess({accountName: response.accountName, token: response.token}));
         } else {
+            console.log("signup log after regiser check user login status error")
             yield put(loginError({accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
         }
     } catch(e){

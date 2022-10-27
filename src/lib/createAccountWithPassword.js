@@ -75,22 +75,25 @@ export default function createAccountWithPassword(
   lastName,
   firstName
 ) {
+  console.log("signup log submit 3.1 createAccountWithPassword function");
   let { privKey: owner_private } = generateKeyFromPassword(
     account_name,
     "owner",
     password
   );
+  console.log("signup log submit 3.2 createAccountWithPassword function");
   let { privKey: active_private } = generateKeyFromPassword(
     account_name,
     "active",
     password
   );
+  console.log("signup log submit 3.3 createAccountWithPassword function");
   let { privKey: memo_private } = generateKeyFromPassword(
     account_name,
     "memo",
     password
   );
-
+  console.log("signup log submit 3.4 createAccountWithPassword function");
   return new Promise((resolve, reject) => {
     let create_account = () => {
       return createAccFunc(
@@ -109,10 +112,11 @@ export default function createAccountWithPassword(
 
     if (registrar) {
       // using another user's account as registrar
+      console.log("signup log submit 3.5 createAccountWithPassword function");
       return create_account();
     } else {
       // using faucet
-
+      console.log("signup log submit 3.6 createAccountWithPassword function");
       let create_account_promise = fetch(process.env.REACT_APP_FAUCET + "/api/v1/accounts", {
         method: "post",
         mode: "cors",
@@ -153,6 +157,7 @@ export default function createAccountWithPassword(
 
       return create_account_promise
         .then((result) => {
+          console.log("signup log submit 3.7 createAccountWithPassword function result",result);
           if (result && result.error) {
             reject(result.error);
           } else {
