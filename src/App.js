@@ -325,7 +325,7 @@ function Application(props) {
     setCredentials(acc, pass);
     console.log("signup log submit 7 stepLastSubmit function");
     onLogin(acc, true, pass, true);
-    // setActiveScreen("wallet");
+    setActiveScreen("wallet");
     // window.location.replace('https://wallet.dev2.meta1coin.vision/');
   };
 
