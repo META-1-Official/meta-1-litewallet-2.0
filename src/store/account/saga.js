@@ -24,7 +24,7 @@ function* loginHandler(data) {
             setAccessToken(response.token);
             setLoginDetail(response.accountName)
             console.log("signup log after regiser check user login status success")
-            yield put(loginSuccess({accountName: response.accountName, token: response.token}));
+            yield put(loginSuccess({accountName: response.accountName, token: response.token, fromSignUp: data?.payload?.fromSignUpFlag}));
         } else {
             console.log("signup log after regiser check user login status error")
             yield put(loginError({accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));

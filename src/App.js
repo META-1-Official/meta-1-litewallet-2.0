@@ -31,7 +31,7 @@ import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector } from "./store/account/selector";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
@@ -56,7 +56,8 @@ function Application(props) {
   const checkPasswordObjState = useSelector(checkPasswordObjSelector);
   const senderApiState = useSelector(senderApiSelector);
   const checkTransferableModelState = useSelector(checkTransferableModelSelector);
-
+  const fromSignUpState = useSelector(fromSignUpSelector);
+  console.log("fromSignUpState",fromSignUpState)
   const { metaUrl } = props;
   const domAccount =
     props.account !== null &&
@@ -105,7 +106,7 @@ function Application(props) {
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
-
+  console.log("signatureParam",signatureParam)
   useEffect(() => {
     if (login !== null) {
       onLogin(login);
@@ -142,11 +143,18 @@ function Application(props) {
   useEffect(() => {
     if (signatureParam[0] === 'signature') {
       console.log("signup log working 1")
-      setIsSignatureProcessing(true);
-      setSignatureResult(signatureParam[1]);
-      setActiveScreen('registration');
+      if (!fromSignUpState) {
+        setIsSignatureProcessing(true);
+        setSignatureResult(signatureParam[1]);
+        setActiveScreen('registration');
+      } else {
+        if (window.location.search.includes('?signature=true')) {
+            setActiveScreen('wallet');
+            window.location.href =  window.location.href.split('?')[0];
+        }
+      }
     }
-  },[signatureParam]);
+  },[signatureParam, fromSignUpState]);
 
   useEffect(() => {
     if (loginErrorState) {
@@ -259,6 +267,10 @@ function Application(props) {
             console.log("signup log submit 133 connect fail");
             setActiveScreen("login");
           } else {
+            // if (window.location.search.includes('?signature=true')) {
+            //   sessionStorage.setItem("location",'wallet');
+            //   window.location.href =  window.location.href.split('?')[0];
+            // }
             console.log("signup log submit 134 connect ok");
             setActiveScreen(
               sessionStorage.getItem("location") != null
