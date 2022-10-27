@@ -42,7 +42,7 @@ if(loginDetail){
 const accountsReducer = (state = initialState, action) => {
     switch (action.type) {
         case types.LOGIN_REQUEST:
-            return {...state, loading: true, loginError: false, loginErrorMsg: '' };
+            return {...state, loading: true, loginError: false, loginErrorMsg: '', account: null };
         case types.LOGIN_SUCCESS:
             console.log("signup log LOGIN_SUCCESS")
             return {...initialState, loading: false, account: action.payload.accountName, token: action.payload.token, isLogin:true,loginError: false, msg: null };
