@@ -22,24 +22,21 @@ export async function getUserData(login) {
       login: login,
     }, config);
     console.log("signup log getUserData 3 data",data)
-    if (data && !data.message) {
-      tokenFail();
-      console.log("signup log getUserData 4 error true")
-      return { message: null, tokenExpired: false, responseMsg: 'user not found', error: true };
-    }
-    return {...data, error: false};
+    return data;
   } catch (err) {
+    console.log("signup log getUserData 4")
     if (err?.response?.data?.error?.toLowerCase() === 'unauthorized') {
+      console.log("signup log getUserData 5")
       tokenFail();
-      console.log("signup log getUserData 5 error true unauthorized")
-      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
-    } else if (err?.response?.status === 500 || err?.response?.status === 400) {
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
+    } else if (err?.response?.data?.message) {
+      console.log("signup log getUserData 6")
       tokenFail();
-      console.log("signup log getUserData 6 error true")
-      return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error: true };
+      return { message: null, tokenExpired: false, responseMsg: err?.response?.data?.message };
     }
-    console.log("signup log getUserData 7 error catch end")
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error: true };
+    console.log("signup log getUserData 7")
+    tokenFail();
+    return { message: null, tokenExpired: false, responseMsg: "something went wrong" }; 
   }
 }
 

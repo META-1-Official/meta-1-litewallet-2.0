@@ -40,9 +40,6 @@ function* getUserHandler(data) {
     if (response['tokenExpired']) {
         console.log("signup log getUserHandler response 1",response)
         yield put(getUserError({msg: response.responseMsg}));
-    } else if (response['error']) {
-        console.log("signup log getUserHandler response 2",response)
-        yield put(getUserError({msg: "userFail"}));
     } else {
         console.log("signup log getUserHandler response 3 ok")
         if (response?.message?.userAvatar != null) {
@@ -119,9 +116,7 @@ function* checkTokenHandler(data) {
     const response = yield call(getUserData,data.payload);
     if (response['tokenExpired']) {
         yield put(getUserError({msg: response.responseMsg}));
-    } else if (response['error']) {
-        yield put(getUserError({msg: "userFail"}));
-    } 
+    }
 }
 
 function* passKeyHandler(data) {
