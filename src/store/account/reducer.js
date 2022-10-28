@@ -30,7 +30,8 @@ const initialState = {
         "Orders Date": true,
         "Expiry Date": true,
     },
-    passwordRequestFlag: false
+    passwordRequestFlag: false,
+    fromSignUp: false,
 };
 const loginDetail = getLoginDetail();
 if(loginDetail){
@@ -42,9 +43,9 @@ if(loginDetail){
 const accountsReducer = (state = initialState, action) => {
     switch (action.type) {
         case types.LOGIN_REQUEST:
-            return {...state, loading: true, loginError: false, loginErrorMsg: '' };
+            return {...state, loading: true, loginError: false, loginErrorMsg: '', account: null };
         case types.LOGIN_SUCCESS:
-            return {...initialState, loading: false, account: action.payload.accountName, token: action.payload.token, isLogin:true,loginError: false, msg: null };
+            return {...initialState, loading: false, account: action.payload.accountName, token: action.payload.token, isLogin:true,loginError: false, msg: null, fromSignUp: action.payload.fromSignUp };
         case types.LOGIN_ERROR:
             return {...state, loading: false, account: null, token: '', isLogin:false, loginError:true, loginErrorMsg: action.payload.msg  };
         case types.LOGOUT_REQUEST:
