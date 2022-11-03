@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [withdrawBtnShow] = useState(["bnb", "usdt", "btc", "ltc", "xlm", "eth"]);
+  const [withdrawBtnShow] = useState(["bnb", "usdt", "btc", "ltc", "xlm", "eth", 'eos']);
 
   const {
     filteredPortfolio,
@@ -259,7 +259,7 @@ const PortfolioTable = React.memo((props) => {
                 </button>
               </StyledTableCell>
               <StyledTableCell align="left">
-                {datas.name !== "EOS" && datas.name !== "META1" && (
+                {datas.name !== "META1" && (
                   <button
                     onClick={() => {
                       onDepositClick(datas.name);
