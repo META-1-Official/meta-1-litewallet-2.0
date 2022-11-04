@@ -49,9 +49,9 @@ export async function saveUserCurrency(login, currency) {
   } catch (err) {
     if (err.response.data.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error:true };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error:true };
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error: true };
   }
 }
 
@@ -125,7 +125,7 @@ export async function saveBalance(login) {
       accountName: login,
     }, config);
     return data;
-  } catch (err) {}
+  } catch (err) { }
 }
 
 export async function getLastLocation(login) {
@@ -174,26 +174,24 @@ export async function sendEmail(emailType, emailData) {
   }
 }
 
-export async function loginRequest(accountName, password) {
+export async function loginRequest(accountName, email) {
   try {
-    const payload = await buildSignature(accountName, password, false);
-    
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
-      payload
+      { accountName, email }
     );
     return { ...data, error: false };
   } catch (e) {
-    return { message: "Wallet name or passkey is wrong", error: true };
+    return { message: "Wallet name or email is wrong", error: true };
   }
 }
 
-export async function getHistoryData(accountName,from, size, searchFilterValues = '') {
+export async function getHistoryData(accountName, from, size, searchFilterValues = '') {
   let url = `${process.env.REACT_APP_EXPLORER_META1_URL}/api/v1/es/account_history?account_id=${accountName}&from=${from}&size=${size}&type=data&sort_by=-account_history.sequence`;
   if (searchFilterValues) {
-    url+=`&object_ids=${searchFilterValues}`;
+    url += `&object_ids=${searchFilterValues}`;
   } else if (searchFilterValues === 0) {
-    url+=`&object_ids=${searchFilterValues}`;
+    url += `&object_ids=${searchFilterValues}`;
   }
   try {
     const { data } = await axios.get(url);
@@ -235,7 +233,7 @@ export async function getESigToken(email) {
     const response = await axios.get(
       `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/sign/token?email=${email}`
     );
-    
+
     if (response.headers.authorization) {
       return response.headers.authorization;
     } else return undefined;
@@ -307,16 +305,16 @@ export async function checkOldUser(accountName) {
 }
 
 export async function validateSignature(accountName, password) {
-    try {
-        const payload = await buildSignature(accountName, password, true);
-        const { data } = await axios.post(
-            `${process.env.REACT_APP_BACK_URL_DEV1}/validateSignature`,
-            payload
-        );
-        return data;
-    } catch (e) {
-        return { message: "Invalid Signature", error: true };
-    }
+  try {
+    const payload = await buildSignature(accountName, password, true);
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_BACK_URL_DEV1}/validateSignature`,
+      payload
+    );
+    return data;
+  } catch (e) {
+    return { message: "Invalid Signature", error: true };
+  }
 }
 
 export async function checkMigrationable(accountName) {
@@ -332,13 +330,13 @@ export async function checkMigrationable(accountName) {
 
 export async function migrate(accountName, password) {
   try {
-      const payload = await buildSignature(accountName, password, true);
-      const { data } = await axios.post(
-          `${process.env.REACT_APP_BACK_URL_DEV1}/migrate`,
-          payload
-      );
-      return data;
+    const payload = await buildSignature(accountName, password, true);
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_BACK_URL_DEV1}/migrate`,
+      payload
+    );
+    return data;
   } catch (e) {
-      return { message: "Something is wrong", error: true };
+    return { message: "Something is wrong", error: true };
   }
 }

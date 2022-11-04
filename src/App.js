@@ -112,10 +112,10 @@ function Application(props) {
     }
   }, []);
 
-  const onLogin = async (login, clicked = false, password = '', fromSignUpFlag = false) => {
+  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false) => {
     setIsLoading(true);
     if (clicked) {
-      dispatch(loginRequestService({login ,password, setLoginDataError, fromSignUpFlag}));
+      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag }));
     }
     if (getAccessToken()) {
       dispatch(checkTransferableRequest({ login }))

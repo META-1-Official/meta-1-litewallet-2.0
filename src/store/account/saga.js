@@ -8,51 +8,51 @@ import { signUpHandler } from '../../utils/common';
 function* loginHandler(data) {
     try {
         if (data?.payload?.fromSignUpFlag) {
-            const result = yield signUpHandler(data.payload.login, data.payload.password);
+            const result = yield signUpHandler(data.payload.login, data.payload.emailOrPassword);
             if (result && !result.status) {
-                yield put(loginError({accountName: null, token: '', msg: 'Account Creation is under process. Please try after sometime' }));
+                yield put(loginError({ accountName: null, token: '', msg: 'Account Creation is under process. Please try after sometime' }));
                 return;
             }
         }
-        const response = yield call(loginRequest,data.payload.login, data.payload.password);
-        if(!response.error){
+        const response = yield call(loginRequest, data.payload.login, data.payload.emailOrPassword);
+        if (!response.error) {
             setAccessToken(response.token);
             setLoginDetail(response.accountName)
-            yield put(loginSuccess({accountName: response.accountName, token: response.token}));
+            yield put(loginSuccess({ accountName: response.accountName, token: response.token }));
         } else {
-            yield put(loginError({accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
+            yield put(loginError({ accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
         }
-    } catch(e){
+    } catch (e) {
         data.payload.setLoginDataError(true);
-        yield put(loginError({accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
+        yield put(loginError({ accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
     }
 }
 function* getUserHandler(data) {
-    const response = yield call(getUserData,data.payload);
+    const response = yield call(getUserData, data.payload);
     if (response['tokenExpired']) {
-        yield put(getUserError({msg: response.responseMsg}));
+        yield put(getUserError({ msg: response.responseMsg }));
     } else {
         if (response?.message?.userAvatar != null) {
             let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message.userAvatar}`;
-            yield put(getUserSuccess({user: response,avatarImage }));
+            yield put(getUserSuccess({ user: response, avatarImage }));
         } else {
-            yield put(getUserSuccess({user: response,avatarImage: null }));
+            yield put(getUserSuccess({ user: response, avatarImage: null }));
         }
     }
 }
 function* uploadAvatarHandler(data) {
     const response = yield call(uploadAvatar, data.payload);
     if (response['tokenExpired']) {
-        yield put(getUserError({msg: response.responseMsg}));
+        yield put(getUserError({ msg: response.responseMsg }));
     } else {
         let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message}`;
-        yield put(uploadAvatarSuccess({avatarImage }));
+        yield put(uploadAvatarSuccess({ avatarImage }));
     }
 }
 function* deleteAvatarHandler(data) {
     const response = yield call(deleteAvatar, data.payload);
     if (response['tokenExpired']) {
-        yield put(getUserError({msg: response.responseMsg}));
+        yield put(getUserError({ msg: response.responseMsg }));
     } else {
         yield put(deleteAvatarSuccess());
     }
@@ -63,7 +63,7 @@ function* sendMailHandler(data) {
         yield put(sendMailSuccess());
     } else {
         if (response['tokenExpired']) {
-            yield put(getUserError({msg: response.responseMsg}));
+            yield put(getUserError({ msg: response.responseMsg }));
         } else {
             alert("Oops, something went wrong. Try again");
             yield put(sendMailError());
@@ -95,9 +95,9 @@ function* CheckAccountSignatureHandler(data) {
 
 
 function* checkTokenHandler(data) {
-    const response = yield call(getUserData,data.payload);
+    const response = yield call(getUserData, data.payload);
     if (response['tokenExpired']) {
-        yield put(getUserError({msg: response.responseMsg}));
+        yield put(getUserError({ msg: response.responseMsg }));
     }
 }
 
@@ -122,7 +122,7 @@ export function* waitForAccount() {
     yield takeEvery(types.DELETE_AVATAR_REQUEST, deleteAvatarHandler);
     yield takeEvery(types.SEND_MAIL_REQUEST, sendMailHandler);
     yield takeEvery(types.CHECK_TRANSFERABLE_REQUEST, checkTransferableHandler);
-    yield takeEvery(types.CHECK_ACCOUNT_SIGNATURE_REQUEST, CheckAccountSignatureHandler );
+    yield takeEvery(types.CHECK_ACCOUNT_SIGNATURE_REQUEST, CheckAccountSignatureHandler);
     yield takeEvery(types.CHECK_TOKEN_REQUEST, checkTokenHandler);
     yield takeEvery(types.PASS_KEY_REQUEST, passKeyHandler);
 }
