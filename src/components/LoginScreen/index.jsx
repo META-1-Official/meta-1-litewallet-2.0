@@ -151,7 +151,7 @@ export default function LoginScreen(props) {
             </button>
           </div>
 
-          {portfolio === null ? (
+          {portfolio === null || !isLoginState ? (
             <div className={styles.linkMeta}>
               <span>
                 For those already having a META Wallet, to enable functionality,

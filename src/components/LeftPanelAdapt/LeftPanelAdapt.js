@@ -2,11 +2,12 @@ import * as React from "react";
 import styles from "./LeftPanelAdapt.module.scss";
 import "./LeftPanelAdapt.css";
 import user from "../../images/default-pic1.png";
-import { profileImageSelector } from "../../store/account/selector";
+import { isLoginSelector, profileImageSelector } from "../../store/account/selector";
 import { useSelector } from "react-redux";
 
 const LeftPanelAdapt = (props) => {
   const profileImageState =  useSelector(profileImageSelector);
+  const isLoginState = useSelector(isLoginSelector);
   const {
     onClickHomeHandler,
     onClickPortfolioHandler,
@@ -46,7 +47,7 @@ const LeftPanelAdapt = (props) => {
       </li>
       <li
         style={{ marginTop: "1rem" }}
-        onClick={portfolio ? onClickHomeHandler : null}
+        onClick={portfolio && isLoginState ? onClickHomeHandler : null}
         className={styles.Li + " nav-item"}
         data-bs-toggle="collapse"
         data-bs-target="#navbarSupportedContent"
@@ -116,7 +117,7 @@ const LeftPanelAdapt = (props) => {
           </h1>
           <li
             className={"event dropdown-item"}
-            onClick={portfolio ? onClickPortfolioHandler : null}
+            onClick={portfolio && isLoginState ? onClickPortfolioHandler : null}
             style={{ cursor: "pointer", textAlign: "center", color: "#fff" }}
             data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent"
@@ -126,7 +127,7 @@ const LeftPanelAdapt = (props) => {
           <hr />
           <li
             className={"event dropdown-item"}
-            onClick={portfolio ? onClickOpenOrderHandler : null}
+            onClick={portfolio && isLoginState ? onClickOpenOrderHandler : null}
             style={{ cursor: "pointer", textAlign: "center", color: "#fff" }}
             data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent"
@@ -147,7 +148,7 @@ const LeftPanelAdapt = (props) => {
       </li>
       <li
         className={styles.Li + " nav-item"}
-        onClick={portfolio ? onClickExchangeHandler : null}
+        onClick={portfolio && isLoginState ? onClickExchangeHandler : null}
         data-bs-toggle="collapse"
         data-bs-target="#navbarSupportedContent"
       >
@@ -162,7 +163,7 @@ const LeftPanelAdapt = (props) => {
       </li>
       <li
         className={styles.Li + " nav-item"}
-        onClick={portfolio ? onClickHistoryHandler : null}
+        onClick={portfolio && isLoginState ? onClickHistoryHandler : null}
         data-bs-toggle="collapse"
         data-bs-target="#navbarSupportedContent"
       >
@@ -177,7 +178,7 @@ const LeftPanelAdapt = (props) => {
       </li>
       <li
         className={styles.Li + " nav-item"}
-        onClick={portfolio ? onClickSettingsHandler : null}
+        onClick={portfolio && isLoginState ? onClickSettingsHandler : null}
         data-bs-toggle="collapse"
         data-bs-target="#navbarSupportedContent"
       >
