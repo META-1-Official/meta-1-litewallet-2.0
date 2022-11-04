@@ -296,7 +296,7 @@ export async function verify(image) {
 export async function checkOldUser(accountName) {
   try {
     const { data } = await axios.get(
-      `${process.env.REACT_APP_BACK_URL_DEV1}/checkTransferable?accountName=${accountName}`
+      `${process.env.REACT_APP_BACK_URL}/checkTransferable?accountName=${accountName}`
     );
     return { ...data, error: false };
   } catch (e) {
@@ -308,7 +308,7 @@ export async function validateSignature(accountName, password) {
   try {
     const payload = await buildSignature(accountName, password, true);
     const { data } = await axios.post(
-      `${process.env.REACT_APP_BACK_URL_DEV1}/validateSignature`,
+      `${process.env.REACT_APP_BACK_URL}/validateSignature`,
       payload
     );
     return data;
@@ -320,7 +320,7 @@ export async function validateSignature(accountName, password) {
 export async function checkMigrationable(accountName) {
   try {
     const { data } = await axios.get(
-      `${process.env.REACT_APP_BACK_URL_DEV1}/migration-status?identifier=${accountName}`
+      `${process.env.REACT_APP_BACK_URL}/migration-status?identifier=${accountName}`
     );
     return { ...data, error: false };
   } catch (e) {
@@ -332,7 +332,7 @@ export async function migrate(accountName, password) {
   try {
     const payload = await buildSignature(accountName, password, true);
     const { data } = await axios.post(
-      `${process.env.REACT_APP_BACK_URL_DEV1}/migrate`,
+      `${process.env.REACT_APP_BACK_URL}/migrate`,
       payload
     );
     return data;
