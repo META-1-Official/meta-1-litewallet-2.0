@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Input, Button } from "semantic-ui-react";
 import "./login.css";
 import styles from "./login.module.scss";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
-import { removeAccessToken, removeLoginDetail, setLocation } from "../../utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { checkAccountSignatureRequest, checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
+import { checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
 import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
-import { checkPasswordObjSelector } from "../../store/meta1/selector";
-import { validateSignature, checkMigrationable, migrate } from "../../API/API";
+import { checkMigrationable, migrate } from "../../API/API";
 import OpenLogin from '@toruslabs/openlogin';
 import FaceKiForm from "./FaceKiForm";
 
@@ -180,8 +177,7 @@ export default function LoginScreen(props) {
         setPrivKey(privKey);
         setEmail(data?.email);
 
-        console.log('User logged in');
-        setStep('faceki');
+        setStep('faceki');       
       }
     } catch (error) {
       console.log('Error in Torus Render', error);

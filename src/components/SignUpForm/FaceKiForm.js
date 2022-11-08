@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
-import { liveLinessCheck, verify, enroll, getUserKycProfile, postUserKycProfile } from "../../API/API";
-import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
+import { liveLinessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
+import { Button } from "semantic-ui-react";
 import OvalImage from '../../images/oval/oval9.png';
 import "./SignUpForm.css";
 
@@ -28,31 +28,61 @@ export default function FaceKiForm(props) {
 
     if (!imageSrc) {
       alert('Check your camera');
-      return; 
+      return;
     };
 
     var file = dataURLtoFile(imageSrc, 'a.jpg');
 
     const response = await liveLinessCheck(file);
 
-    if (response.data.liveness === 'Spoof') alert('try again!');
-    else {
+    if (response.data.liveness === 'Spoof') {
+      alert('Please place proper distance and codition on the camera and try again.')
+    } else {
       const response_verify = await verify(file);
       if (
-        response_verify.status === 'Verify OK' &&
-        response_verify.name === `${email}${privKey}`
+        response_verify.status === 'Verify OK'
       ) {
-        alert('You already enrolled');
-        setFaceKISuccess(true);
+        const response_user = await getUserKycProfile(email);
+        if (response_user) {
+          alert('This email already has been used for another wallet. Please use different email for new wallet creation.');
+        } else {
+          const newName = response_verify.name + "," + email;
+          console.log("USE", newName);
+          const response_remove = await remove(response_verify.name);
+
+          if (!response_remove) {
+            alert('Something went wrong.')
+          } else {
+            const response_enroll = await enroll(file, newName);
+            if (response_enroll.status === 'Enroll OK') {
+              const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
+              if (add_response.result) {
+                alert('Successfully enrolled.');
+                setFaceKISuccess(true);
+              }
+              else {
+                alert('Something went wrong.');
+              }
+            }
+          }
+        }
       } else {
-        const response_enroll = await enroll(
-          file,
-          `${email}${privKey}`
-        );
-        if (response_enroll.status === 'Enroll OK') {
-          alert('Successfully enrolled');
-          const add_response = await postUserKycProfile(email, `usr_${privKey}`);
-          setFaceKISuccess(true);
+        const response_user = await getUserKycProfile(email);
+        if (response_user) {
+          alert('This email already has been used under the other person. Please check you lost your email.');
+        } else {
+          const response_enroll = await enroll(file, email);
+          if (response_enroll.status === 'Enroll OK') {
+            const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
+            if (add_response.result) {
+              alert('Successfully enrolled.');
+              setFaceKISuccess(true);
+            }
+            else {
+              await remove(email);
+              alert('Something went wrong.');
+            }
+          }
         }
       }
     }
@@ -95,7 +125,7 @@ export default function FaceKiForm(props) {
                 <div className="btn-grp">
                   <button className='btn-1' onClick={videoEnroll}>Verify</button>
                   <Button
-                    onClick={()=>props.onClick()}
+                    onClick={() => props.onClick()}
                     className="btn-2"
                     disabled={faceKISuccess === false}
                   >
