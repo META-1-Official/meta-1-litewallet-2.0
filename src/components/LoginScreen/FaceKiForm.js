@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
-import { liveLinessCheck, verify, enroll, getUserKycProfile, postUserKycProfile } from "../../API/API";
-import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
-import OvalImage from '../../images/oval/oval9.png';
+import { liveLinessCheck, verify, getUserKycProfile } from "../../API/API";
+import { Button } from "semantic-ui-react";
+import OvalImage from '../../images/oval/oval10.png';
 import "./login.css";
 
 export default function FaceKiForm(props) {
@@ -23,28 +23,41 @@ export default function FaceKiForm(props) {
   }
 
   const videoVerify = async () => {
-    const { privKey, email } = props;
+    const { email, accountName } = props;
     const imageSrc = webcamRef.current.getScreenshot();
+
+    const response_user = await getUserKycProfile(email);
+
+    if (response_user?.member1Name !== accountName) {
+      if (!response_user?.member1Name) {
+        alert('Wallet not found on the network');
+      } else alert('Email and wallet name are not matched.');
+      return;
+    };
 
     if (!imageSrc) {
       alert('Check your camera');
-      return; 
+      return;
     };
 
     var file = dataURLtoFile(imageSrc, 'a.jpg');
-
     const response = await liveLinessCheck(file);
 
-    if (response.data.liveness === 'Spoof') alert('try again!');
-    else {
+    if (response.data.liveness === 'Spoof') {
+      alert('Please place proper distance and codition on the camera and try again.');
+    } else {
       const response_verify = await verify(file);
       if (response_verify.status === 'Verify OK') {
-        if (response_verify.name === `${email}${privKey}`) {
+        const nameArry = response_verify.name.split(',');
+
+        if (nameArry.includes(email)) {
           alert('Successfully Verified');
           setFaceKISuccess(true);
         } else {
-          alert('FaceKi verification passed but you are using different email. Please use right email.')
+          alert('FaceKi verification passed but you are using different email. Please use right email.');
         }
+      } else {
+        alert('We can not verify you because you never enrolled with your face yet.');
       }
     }
   }
@@ -86,7 +99,7 @@ export default function FaceKiForm(props) {
                 <div className="btn-grp">
                   <button className='btn-1' onClick={videoVerify}>Verify</button>
                   <Button
-                    onClick={()=>props.onClick()}
+                    onClick={() => props.onClick()}
                     className="btn-2"
                     disabled={faceKISuccess === false}
                   >

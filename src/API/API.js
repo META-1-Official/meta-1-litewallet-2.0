@@ -292,6 +292,22 @@ export async function verify(image) {
   }
 };
 
+export async function remove(name) {
+  try {
+    let form_data = new FormData();
+    form_data.append('name', name);
+
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_FACEKI_URL}/remove_user`,
+      form_data,
+      { headers: { 'content-type': 'multipart/form-data' } },
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+};
+
 // MIGRATION
 export async function checkOldUser(accountName) {
   try {

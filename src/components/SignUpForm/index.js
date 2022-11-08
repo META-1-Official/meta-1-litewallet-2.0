@@ -220,7 +220,6 @@ export default function SignUpForm(props) {
   }
 
   const handleBackBtn = (e) => {
-    console.log('Back Button', step);
     if (step == "userform"){
       onBackClick(e);
     } else if (step == "migration") {
