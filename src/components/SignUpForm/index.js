@@ -224,6 +224,8 @@ export default function SignUpForm(props) {
       onBackClick(e);
     } else if (step == "migration") {
       setStep("userform");
+    } else {
+      setStep("userform");
     }
   }
   
