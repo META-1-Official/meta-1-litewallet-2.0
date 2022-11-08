@@ -3,7 +3,7 @@ import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
 import { liveLinessCheck, verify, enroll, getUserKycProfile, postUserKycProfile } from "../../API/API";
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
-import OvalImage from '../../images/oval/oval9.png';
+import OvalImage from '../../images/oval/oval10.png';
 import "./SignUpForm.css";
 
 export default function FaceKiForm(props) {
