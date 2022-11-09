@@ -1,6 +1,6 @@
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Meta1 from "meta1-vision-dex";
 import { Aes, ChainStore, FetchChain, PrivateKey, TransactionBuilder, TransactionHelper } from "meta1-vision-js";
 import { ChainConfig } from 'meta1-vision-ws';
@@ -101,6 +101,17 @@ const WithdrawForm = (props) => {
   const ariaLabel = { "aria-label": "description" };
   const [gatewayStatus, setGatewayStatus] = useState(availableGateways);
   const [backedCoins] = useState(Immutable.Map({ META1: getMETA1Simple() }));
+  const [emailRefresh, setEmailRefresh] = useState(false);
+  const emailRef = useRef();
+
+  useEffect(() => {
+    if (emailRef && emailRef.current) {
+      emailRef.current.value = "";
+      setEmailAddress('');
+    } else {
+      setEmailRefresh(prev => !prev);
+    }
+  },[emailRefresh]);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
@@ -516,6 +527,7 @@ const WithdrawForm = (props) => {
                   style={{ marginBottom: "1rem", borderRadius: "8px" }}
                   type="email"
                   autoComplete='off'
+                  inputRef={emailRef}
                 />
                 {emailAddress && !isValidEmailAddress &&
                   <span className="c-danger">Invalid email address</span>
