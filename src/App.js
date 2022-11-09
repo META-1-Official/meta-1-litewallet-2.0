@@ -31,7 +31,7 @@ import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector } from "./store/account/selector";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
@@ -50,7 +50,7 @@ function Application(props) {
   const demoState = useSelector(demoSelector);
   const meta1State = useSelector(meta1Selector);
   const cryptoDataState = useSelector(cryptoDataSelector);
-
+  const fromSignUpState = useSelector(fromSignUpSelector);
   const portfolioReceiverState = useSelector(portfolioReceiverSelector);
   const traderState = useSelector(traderSelector);
   const checkPasswordObjState = useSelector(checkPasswordObjSelector);
@@ -138,11 +138,18 @@ function Application(props) {
 
   useEffect(() => {
     if (signatureParam[0] === 'signature') {
-      setIsSignatureProcessing(true);
-      setSignatureResult(signatureParam[1]);
-      setActiveScreen('registration');
+      if (!fromSignUpState) {
+        setIsSignatureProcessing(true);
+        setSignatureResult(signatureParam[1]);
+        setActiveScreen('registration');
+      } else {
+        if (window.location.search.includes('?signature=success')) {
+          setActiveScreen("wallet");
+          window.location.href = window.location.href.split('?')[0];
+        }
+      }
     }
-  },[signatureParam]);
+  },[signatureParam, fromSignUpState]);
 
   useEffect(() => {
     if (loginErrorState) {
@@ -296,7 +303,6 @@ function Application(props) {
     setCredentials(acc, pass);
     await onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
-    window.location.replace('https://wallet.dev2.meta1coin.vision/');
   };
 
   async function chngLastLocation(location) {
