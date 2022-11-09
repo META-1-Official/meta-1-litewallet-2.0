@@ -5,6 +5,7 @@ import "./SignUpForm.css";
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
 import countryCodes from '../../utils/countryCode.json'
 import { MenuItem, Select } from "@mui/material";
+import { checkOldUser } from "../../API/API";
 
 const useDebounce = (value, timeout) => {
   const [state, setState] = useState(value);
@@ -43,17 +44,17 @@ const UserInformationForm = (props) => {
   const [lastNameError, setLastNameError] = useState(null);
   const [country, setCountry] = useState(props.country || "227");
   const [selectedCountryObj, setSelectedCountryObj] = useState(props.selectedCountryObj || {
-      "id": 227,
-      "iso2": "US",
-      "defaultName": "USA",
-      "countryCode": "1",
-      "patterns": [
-          "XXX XXX XXXX"
-      ]
+    "id": 227,
+    "iso2": "US",
+    "defaultName": "USA",
+    "countryCode": "1",
+    "patterns": [
+      "XXX XXX XXXX"
+    ]
   });
 
   useEffect(() => {
-    setPhone(`+${selectedCountryObj.countryCode}${phoneFormat.replaceAll(' ','')}`)
+    setPhone(`+${selectedCountryObj.countryCode}${phoneFormat.replaceAll(' ', '')}`)
   }, [selectedCountryObj, phoneFormat]);
 
   const phoneNumberSpacingHandler = () => {
@@ -63,11 +64,11 @@ const UserInformationForm = (props) => {
     }
     let spaceArr = [];
     let count = 0;
-    for(let data of pattern) {
-        if (data === " ") {
-            spaceArr.push(count);
-        }
-        count++;
+    for (let data of pattern) {
+      if (data === " ") {
+        spaceArr.push(count);
+      }
+      count++;
     }
     return spaceArr;
   }
@@ -94,7 +95,7 @@ const UserInformationForm = (props) => {
   }
 
   const phoneNumberChangeHandler = (event) => {
-    if (!isNaN(event.target.value.replaceAll(' ',''))) {
+    if (!isNaN(event.target.value.replaceAll(' ', ''))) {
       if (event.target.value === "0") {
         setPhoneError(`Phone number can't start with 0`);
       } else if (event.target.value !== "0" && !event.target.value.includes('.')) {
@@ -102,7 +103,7 @@ const UserInformationForm = (props) => {
         if (event.target.value === "") {
           setPhoneError(`Phone number can't be empty`);
         }
-        if (!selectedCountryObj?.patterns)  {
+        if (!selectedCountryObj?.patterns) {
           setPhoneFormat(event.target.value);
         } else {
           const spacingArr = phoneNumberSpacingHandler();
@@ -112,18 +113,20 @@ const UserInformationForm = (props) => {
             setPhoneFormat(event.target.value);
           }
           if (event.target.value.length !== selectedCountryObj?.patterns[0].length) {
-            setPhoneError(`Phone number should be ${selectedCountryObj.patterns[0].replaceAll(' ','').length} digits long`);
+            setPhoneError(`Phone number should be ${selectedCountryObj.patterns[0].replaceAll(' ', '').length} digits long`);
           }
         }
       }
     }
   }
 
-  useEffect(() => {
+  useEffect(async () => {
     const error = ChainValidation.is_account_name_error(debouncedAccountName);
     const error1 = isVowelsNotExistAndHasNumber(debouncedAccountName);
+    const res_old = await checkOldUser(debouncedAccountName);
+
     if (error) {
-      if (!error1) {
+      if (res_old?.found !== true && !error1) {
         setAccountNameErrors({
           content:
             "Please enter a wallet nickname (not your personal name) containing at least one dash, a number",
@@ -135,7 +138,7 @@ const UserInformationForm = (props) => {
           pointing: "below",
         });
       }
-    } else if (!error1) {
+    } else if (res_old?.found !== true && !error1) {
       setAccountNameErrors({
         content:
           "Please enter a wallet nickname (not your personal name) containing at least one dash, a number",
@@ -175,15 +178,15 @@ const UserInformationForm = (props) => {
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
 
-  const MobileNumberError = phoneFormat.replaceAll(' ','');
-  
-  useEffect(()=>{
+  const MobileNumberError = phoneFormat.replaceAll(' ', '');
+
+  useEffect(() => {
     if (!isSelectorOpen && isTouchedCountry) {
       if (phoneRef && phoneRef.current) {
         phoneRef.current.focus();
       }
     }
-  },[isSelectorOpen]);
+  }, [isSelectorOpen]);
 
   return (
     <>
@@ -224,7 +227,7 @@ const UserInformationForm = (props) => {
                     {firstNameError && (
                       <p style={{ color: "red" }}> {firstNameError}</p>
                     )}
-                  </Form.Field>                
+                  </Form.Field>
                   <Form.Field>
                     <label >Phone Number</label>
                     <div className="phone-number-div">
@@ -232,29 +235,29 @@ const UserInformationForm = (props) => {
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         open={isSelectorOpen}
-                        onOpen={()=> setIsSelectorOpen(true)}
-                        onClose={ ()=> {
+                        onOpen={() => setIsSelectorOpen(true)}
+                        onClose={() => {
                           setIsSelectorOpen(false);
                           setIsTouchedCountry(true);
                         }}
                         value={country}
                         className="country-code"
-                        MenuProps={{ classes: { paper: 'options-height' }}}
+                        MenuProps={{ classes: { paper: 'options-height' } }}
                         label="Select"
-                        onChange={(e)=>{
+                        onChange={(e) => {
                           const obj = countryCodes.find(data => data.id === Number(e.target.value));
                           setCountry(e.target.value);
                           setSelectedCountryObj(obj);
                           setPhoneFormat('');
                           setPhoneError('');
                         }}
-                        style={{maxHeight:'37px'}}
+                        style={{ maxHeight: '37px' }}
                       >
                         {countryCodes?.map((data, index) => {
                           return <MenuItem key={index} value={data?.id}>
                             <div className="country-select-data">
                               <div>
-                                <img className="countryFlag-img" src={`https://flagcdn.com/24x18/${data?.iso2.toLowerCase()}.png`} alt='flag' /> 
+                                <img className="countryFlag-img" src={`https://flagcdn.com/24x18/${data?.iso2.toLowerCase()}.png`} alt='flag' />
                                 <span className={`countryName-span ${!isSelectorOpen ? 'hide-element' : ''}`} >{data.defaultName}</span>
                               </div>
                               <div className="countryCode-span">+{data?.countryCode}</div>
@@ -263,61 +266,61 @@ const UserInformationForm = (props) => {
                         })}
                       </Select>
                       <input
-                          ref={phoneRef}
-                          value={phoneFormat}
-                          type='tel'
-                          className="phone-number-input"
-                          onChange={(e) => phoneNumberChangeHandler(e)}
-                          onKeyDown={(event)=> {
-                            if ( event.key !=="Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
-                              event.preventDefault();
-                            } else if ( event.key !=="Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
-                              event.preventDefault();
-                            } else if (event.key === " ") {
-                              event.preventDefault();
-                            }
-                          }}
-                          placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 &&  selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
-                          required
-                        />
+                        ref={phoneRef}
+                        value={phoneFormat}
+                        type='tel'
+                        className="phone-number-input"
+                        onChange={(e) => phoneNumberChangeHandler(e)}
+                        onKeyDown={(event) => {
+                          if (event.key !== "Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15) {
+                            event.preventDefault();
+                          } else if (event.key !== "Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length) {
+                            event.preventDefault();
+                          } else if (event.key === " ") {
+                            event.preventDefault();
+                          }
+                        }}
+                        placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 && selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
+                        required
+                      />
                     </div>
                     {phoneError && (
-                          <p style={{ color: "red" }}>{phoneError}</p>
-                        )}
+                      <p style={{ color: "red" }}>{phoneError}</p>
+                    )}
                   </Form.Field>
                 </Grid.Column>
                 <Grid.Column width={isMobile ? 16 : 8}>
-                    <Form.Field>  
-                      <label>Last Name</label>
-                      <input
-                        value={lastName}
-                        onChange={(event) => {
-                          setLastName(event.target.value);
-                          if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
-                            if (event.target.value.includes(' ')) {
-                              setLastNameError(
-                                "Whitespace character is not allowed."
-                              );
-                            } else if (/\d/.test(event.target.value)) {
-                              setLastNameError(
-                                "Numbers are not allowed."
-                              );
-                            } else {
-                              setLastNameError(
-                                "Your Last Name must not contain special characters."
-                              );
-                            }
+                  <Form.Field>
+                    <label>Last Name</label>
+                    <input
+                      value={lastName}
+                      onChange={(event) => {
+                        setLastName(event.target.value);
+                        if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
+                          if (event.target.value.includes(' ')) {
+                            setLastNameError(
+                              "Whitespace character is not allowed."
+                            );
+                          } else if (/\d/.test(event.target.value)) {
+                            setLastNameError(
+                              "Numbers are not allowed."
+                            );
                           } else {
-                            setLastNameError(null);
+                            setLastNameError(
+                              "Your Last Name must not contain special characters."
+                            );
                           }
-                        }}
-                        placeholder="Last Name"
-                        required
-                      />
-                      {lastNameError && (
-                        <p style={{ color: "red" }}> {lastNameError}</p>
-                      )}
-                    </Form.Field>         
+                        } else {
+                          setLastNameError(null);
+                        }
+                      }}
+                      placeholder="Last Name"
+                      required
+                    />
+                    {lastNameError && (
+                      <p style={{ color: "red" }}> {lastNameError}</p>
+                    )}
+                  </Form.Field>
                 </Grid.Column>
               </Grid>
             </div>
@@ -345,7 +348,7 @@ const UserInformationForm = (props) => {
             <Form.Field>
               <Button
                 className="yellow"
-                style={{ color: "#240000", marginTop:'1em' }}
+                style={{ color: "#240000", marginTop: '1em' }}
                 type="submit"
                 disabled={
                   firstName === "" ||
