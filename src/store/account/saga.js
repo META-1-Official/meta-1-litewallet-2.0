@@ -18,8 +18,8 @@ function* loginHandler(data) {
                 return;
             }
         }
-        console.log("accountName password8");
-        const response = yield call(loginRequest, data.payload.login, data.payload.emailOrPassword);
+        console.log("accountName password email3 before login",data.payload.signUpEmail);
+        const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail : data.payload.emailOrPassword);
         console.log("accountName password9 after login req",response);
         if (!response.error) {
             console.log("accountName password9 after login req done",response);

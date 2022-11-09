@@ -176,7 +176,7 @@ export async function sendEmail(emailType, emailData) {
 
 export async function loginRequest(accountName, email) {
   try {
-    console.log("accountName password8.1 loginReq",accountName, email);
+    console.log("accountName password email3 login request",accountName, email);
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
       { accountName, email }

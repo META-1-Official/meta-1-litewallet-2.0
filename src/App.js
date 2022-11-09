@@ -112,11 +112,11 @@ function Application(props) {
     }
   }, []);
 
-  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false) => {
+  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = '') => {
     setIsLoading(true);
     if (clicked) {
       console.log("accountName password3", login, emailOrPassword)
-      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag }));
+      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail }));
     }
     if (getAccessToken()) {
       dispatch(checkTransferableRequest({ login }))
@@ -302,8 +302,8 @@ function Application(props) {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
-    console.log("accountName password2", acc, pass)
-    onLogin(acc, true, pass, true);
+    console.log("accountName password email2", acc, pass)
+    onLogin(acc, true, pass, true, regEmail);
     setActiveScreen("wallet");
   };
 

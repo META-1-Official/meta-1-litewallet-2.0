@@ -122,7 +122,7 @@ export default function SignUpForm(props) {
       localStorage.removeItem('lastname');
       localStorage.removeItem('phone');
       localStorage.removeItem('email');
-      console.log("accountName password", accountName, password, email)
+      console.log("accountName password email", accountName, password, email)
       onRegistration(accountName, password, email);
     } catch (e) { }
   };
