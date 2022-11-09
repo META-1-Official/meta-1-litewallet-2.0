@@ -176,12 +176,15 @@ export async function sendEmail(emailType, emailData) {
 
 export async function loginRequest(accountName, email) {
   try {
+    console.log("accountName password8.1 loginReq",accountName, email);
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
       { accountName, email }
     );
+    console.log("accountName password8.2 loginReq ok",data);
     return { ...data, error: false };
   } catch (e) {
+    console.log("accountName password8.3 loginReq error",e);
     return { message: "Wallet name or email is wrong", error: true };
   }
 }

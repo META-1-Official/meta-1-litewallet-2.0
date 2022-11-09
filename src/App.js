@@ -115,6 +115,7 @@ function Application(props) {
   const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false) => {
     setIsLoading(true);
     if (clicked) {
+      console.log("accountName password3", login, emailOrPassword)
       dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag }));
     }
     if (getAccessToken()) {
@@ -301,7 +302,8 @@ function Application(props) {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
-    await onLogin(acc, true, pass, true);
+    console.log("accountName password2", acc, pass)
+    onLogin(acc, true, pass, true);
     setActiveScreen("wallet");
   };
 

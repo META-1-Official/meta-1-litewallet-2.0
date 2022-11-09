@@ -6,20 +6,28 @@ import * as types from './types';
 import Meta1 from "meta1-vision-dex";
 import { signUpHandler } from '../../utils/common';
 function* loginHandler(data) {
+    console.log("accountName password4", data, data?.payload?.fromSignUpFlag)
     try {
         if (data?.payload?.fromSignUpFlag) {
+            console.log("accountName password5");
             const result = yield signUpHandler(data.payload.login, data.payload.emailOrPassword);
+            console.log("accountName password6");
             if (result && !result.status) {
+                console.log("accountName password7 error");
                 yield put(loginError({ accountName: null, token: '', msg: 'Account Creation is under process. Please try after sometime' }));
                 return;
             }
         }
+        console.log("accountName password8");
         const response = yield call(loginRequest, data.payload.login, data.payload.emailOrPassword);
+        console.log("accountName password9 after login req",response);
         if (!response.error) {
+            console.log("accountName password9 after login req done",response);
             setAccessToken(response.token);
             setLoginDetail(response.accountName)
             yield put(loginSuccess({ accountName: response.accountName, token: response.token, fromSignUp: data?.payload?.fromSignUpFlag }));
         } else {
+            console.log("accountName password9 after login req fail",response);
             yield put(loginError({ accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
         }
     } catch (e) {

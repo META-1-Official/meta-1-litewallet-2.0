@@ -4,8 +4,11 @@ export const sleepHandler = (ms) =>  {
 }
 const isUserExistHandler = async (login, password, checkCount, status) => {
     try {
+        console.log("accountName password5.4 isUserExistHandler",login, password, checkCount, status);
         await Meta1.connect(process.env.REACT_APP_MAIA);
+        console.log("accountName password5.5 isUserExistHandler",login, password);
         await Meta1.login(login, password);
+        console.log("accountName password5.6 isUserExistHandler");
         if (!status) {
             status = true;
         }
@@ -17,7 +20,9 @@ const isUserExistHandler = async (login, password, checkCount, status) => {
         }
         await sleepHandler(300);
         checkCount = checkCount + 1;
+        console.log("accountName password5.7 isUserExistHandler");
         const response = await isUserExistHandler(login, password, checkCount);
+        console.log("accountName password5.8 isUserExistHandler",response);
         if (response.status) {
             return { status: true };
         } else {
@@ -26,13 +31,19 @@ const isUserExistHandler = async (login, password, checkCount, status) => {
     }
 }
 export const signUpHandler = async (login, password) => {
+    console.log("accountName password5.1",login, password);
     let checkCount = 0;
     let status = false;
+    console.log("accountName password5.2");
     await sleepHandler(3000);
+    console.log("accountName password5.3");
     const result = await isUserExistHandler(login, password, checkCount, status);
+    console.log("accountName password5.4 result",result);
     if (result && result.status) {
+        console.log("accountName password5.5 result",result);
         return { status: true };
     }
+    console.log("accountName password5.6 result",result);
     return { status: false };
 }
 
