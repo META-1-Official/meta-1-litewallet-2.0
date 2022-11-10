@@ -37,6 +37,7 @@ import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioR
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder  from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
+import { useQuery } from "react-query";
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -105,6 +106,16 @@ function Application(props) {
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
+
+  const updateBalances = () => {
+    if (portfolioReceiverState && accountName) {
+      refetchPortfolio();
+    }
+  }
+
+  const newUpdatedBalance = useQuery(['updateBalance'], updateBalances, {
+    refetchInterval: 20000
+  });
 
   useEffect(() => {
     if (login !== null) {
