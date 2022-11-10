@@ -125,7 +125,9 @@ export async function saveBalance(login) {
       accountName: login,
     }, config);
     return data;
-  } catch (err) { }
+  } catch (err) { 
+    return { message: 'fail' };
+  }
 }
 
 export async function getLastLocation(login) {
