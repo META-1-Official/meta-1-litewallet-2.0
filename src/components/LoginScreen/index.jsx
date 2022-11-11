@@ -8,6 +8,7 @@ import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginError
 import { checkMigrationable, migrate } from "../../API/API";
 import OpenLogin from '@toruslabs/openlogin';
 import FaceKiForm from "./FaceKiForm";
+import { Button, Modal } from "semantic-ui-react";
 
 export default function LoginScreen(props) {
   const {
@@ -18,11 +19,13 @@ export default function LoginScreen(props) {
     portfolio,
     onClickExchangeEOSHandler,
     onClickExchangeUSDTHandler,
-    setLoginDataError
+    setLoginDataError,
+    onClickRedirectToPortfolio,
   } = props;
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [migrationMsg, setMigrationMsg] = useState('');
   const [openVideoModal, setOpenVideoModal] = useState(false);
   const [migratable, setMigratable] = useState(false);
   const [errorAttr, setErrorAttr] = useState({login: false});
@@ -126,9 +129,11 @@ export default function LoginScreen(props) {
   const checkTransferSubmitHandler = async () => {
     const response = await migrate(accountState, checkTransfer.password);
     if (response.error === false) {
-      alert(response.msg);
+      setMigrationMsg(response.msg);
+      setOpenModal(true);
     } else {
-      alert('Something went wrong');
+      setMigrationMsg('Something went wrong');
+      setOpenModal(true);
     }
   };
 
@@ -324,6 +329,39 @@ export default function LoginScreen(props) {
             portfolio={portfolio}
           />
         </div>
+        <Modal
+          size="mini"
+          className="claim_wallet_modal"
+          onClose={() => {
+            setMigrationMsg("");
+            setOpenModal(false);
+            onClickRedirectToPortfolio();
+          }}
+          open={openModal}
+          id={"modalExch"}
+        >
+          <Modal.Content >
+            <div
+              className="migration-modal-div"
+            >
+              <h3 className="claim_model_content" style={{color : '#330000', display: 'block'}}>
+                Hello {accountState}
+              </h3>
+              <h3 className="text2">{migrationMsg}</h3>
+            </div>
+          </Modal.Content>
+          <Modal.Actions className="claim_modal-action">
+            <Button
+              className="claim_wallet_btn"
+              onClick={() => {
+                setMigrationMsg("");
+                setOpenModal(false);
+                onClickRedirectToPortfolio();
+              }}
+            >
+              Ok</Button>
+          </Modal.Actions>
+        </Modal>
       </div>
     )
   }

@@ -564,6 +564,9 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
+                  onClickRedirectToPortfolio={(e) => {
+                    setActiveScreen("wallet");
+                  }}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
