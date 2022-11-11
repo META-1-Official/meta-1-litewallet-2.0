@@ -16,7 +16,7 @@ import {
 export default function SubmitForm(props) {
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
-
+  console.log("propspropspropssubmit",props.step)
   const [access, setAccess] = useState(true);
   const [recover, setRecover] = useState(true);
   const [stored, setStored] = useState(true);

@@ -176,7 +176,8 @@ export default function SignUpForm(props) {
           password={password}
           privKey={privKey}
           email={email}
-          phone={phone} />
+          phone={phone}
+          step={step} />
       case 'signature':
         return <SubmitForm
           {...props}
@@ -188,7 +189,8 @@ export default function SignUpForm(props) {
           privKey={privKey}
           email={email}
           signatureResult={signatureResult}
-          phone={phone} />
+          phone={phone}
+          step={step} />
       default:
         return null;
     }
