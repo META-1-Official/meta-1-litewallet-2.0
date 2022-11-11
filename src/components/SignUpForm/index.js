@@ -249,7 +249,7 @@ export default function SignUpForm(props) {
         <div className={"createWalletForm"}>
           <div className={"justFlexAndDirect"}>
             <div className={"regForm"}>
-              <Button
+              {step !== 'signature' && <Button
                 style={{ color: "#fdc000", fontSize: ".9rem" }}
                 labelPosition="left"
                 onClick={handleBackBtn}
@@ -266,7 +266,7 @@ export default function SignUpForm(props) {
                 >
                   Back
                 </span>
-              </Button>
+              </Button>}
               {renderStep()}
             </div>
             <div className={"adaptThing"}>
