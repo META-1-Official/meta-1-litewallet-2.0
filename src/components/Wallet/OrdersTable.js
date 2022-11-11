@@ -160,7 +160,7 @@ export const OrdersTable = (props) => {
                   <h6 style={{ margin: "0" }}>{el.operation_text}</h6>
                 </StyledTableCell>
                 <StyledTableCell align="left">
-                  <TrxHash trx={el.block_num} />
+                  <div>{el.transactionHash}</div>
                 </StyledTableCell>
                 <StyledTableCell align="left">
                   <h6 style={{ margin: "0" }}>{el.time}</h6>
