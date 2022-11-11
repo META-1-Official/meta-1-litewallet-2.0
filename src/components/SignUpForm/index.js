@@ -152,6 +152,7 @@ export default function SignUpForm(props) {
           email={email}
           privKey={privKey}
           phone={phone}
+          setStep={setStep}
         />
       case 'migration':
         return <MigrationForm
