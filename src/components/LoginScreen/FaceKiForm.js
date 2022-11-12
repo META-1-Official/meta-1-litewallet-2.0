@@ -78,7 +78,7 @@ export default function FaceKiForm(props) {
             <div className='child-div'>
               <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head">Position your face in the oval</div>
-                <button className='btn_x'>X</button>
+                <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
               </div>
               <img src={OvalImage} alt='oval-image' className='oval-image' />
               <Webcam

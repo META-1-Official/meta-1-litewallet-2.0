@@ -160,6 +160,7 @@ export default function LoginScreen(props) {
         accountName={login}
         email={email}
         privKey={privKey}
+        setStep={setStep}
       />
     )
   }
