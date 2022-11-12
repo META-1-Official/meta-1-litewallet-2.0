@@ -9,6 +9,7 @@ export async function getCryptosChange() {
 }
 
 export async function getUserData(login) {
+  console.log("getUserDatagetUserData",login)
   if (login === null || login === 'null' || login === undefined || login === 'undefined') return null;
 
   const config = {
@@ -17,15 +18,19 @@ export async function getUserData(login) {
     }
   }
   try {
+    console.log("getUserDatagetUserData try",login)
     const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getUserData`, {
       login: login,
     }, config);
+    console.log("getUserDatagetUserData data",data)
     return data;
   } catch (err) {
     if (err?.response?.data?.error?.toLowerCase() === 'unauthorized') {
       tokenFail();
+      console.log("getUserDatagetUserData catch token unauthorized")
       return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
+    console.log("getUserDatagetUserData catch err end",err)
     return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
   }
 }

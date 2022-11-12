@@ -28,14 +28,20 @@ function* loginHandler(data) {
     }
 }
 function* getUserHandler(data) {
+    console.log("getUserDatagetUserData start",data)
     const response = yield call(getUserData, data.payload);
+    console.log("getUserDatagetUserData saga response",response)
     if (response['tokenExpired']) {
         yield put(getUserError({ msg: response.responseMsg }));
+        console.log("getUserDatagetUserData saga response token expired")
     } else {
         if (response?.message?.userAvatar != null) {
+            console.log("getUserDatagetUserData saga response if")
             let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message.userAvatar}`;
+            console.log("getUserDatagetUserData saga response if avatarImage",avatarImage)
             yield put(getUserSuccess({ user: response, avatarImage }));
         } else {
+            console.log("getUserDatagetUserData saga response else no avatarImage")
             yield put(getUserSuccess({ user: response, avatarImage: null }));
         }
     }
