@@ -17,10 +17,10 @@ export default function SubmitForm(props) {
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
 
-  const [access, setAccess] = useState(true);
-  const [recover, setRecover] = useState(true);
-  const [stored, setStored] = useState(true);
-  const [living, setLiving] = useState(true);
+  const [access, setAccess] = useState(false);
+  const [recover, setRecover] = useState(false);
+  const [stored, setStored] = useState(false);
+  const [living, setLiving] = useState(false);
   const [signed, setSigned] = useState(props.signatureResult === 'success' ? true : false);
   const [paid, setPaid] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -79,15 +79,8 @@ export default function SubmitForm(props) {
   return (
     <>
       {signed && <div className="membership_head">
-        <p style={{ fontSize: '30px', fontWeight: 600 }}>
-          Pay $1 Lifetime Membership Fee
-        </p>
-        <p style={{ fontSize: '16px', color: '#607383', paddingLeft: '30px', paddingRight: '30px' }}>
-          META Association Lifetime membership is required to be a META 1 Member, this fee is paid once and provides lifetime membership
-        </p>
-        <div className="divider" />
         <p style={{ fontSize: '20px', color: '#00AD6A' }}>
-          Successfully paid $1 by Credit Card
+          Congratulations Payment Successful! You are now a META 1 Member! Click Submit to Continue
         </p>
       </div>
       }
