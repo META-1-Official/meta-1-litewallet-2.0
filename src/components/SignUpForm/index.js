@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { UserInformationForm } from "./UserInformationForm.js";
 import SubmitForm from "./SubmitForm.js";
-import createAccountWithPassword from "../../lib/createAccountWithPassword.js";
+import createAccountWithPassword, { generateKeyFromPassword } from "../../lib/createAccountWithPassword.js";
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 
@@ -11,6 +11,10 @@ import OpenLogin from '@toruslabs/openlogin';
 import "./SignUpForm.css";
 import FaceKiForm from "./FaceKiForm.js";
 import MigrationForm from "./MigrationForm.js";
+import { createPaperWalletAsPDF } from "../PaperWalletLogin/CreatePdfWallet.js";
+import { sleepHandler } from "../../utils/common.js";
+import PaperWalletModal from "./PaperWalletModal.jsx";
+import Meta1 from "meta1-vision-dex";
 
 export default function SignUpForm(props) {
   const {
@@ -35,7 +39,7 @@ export default function SignUpForm(props) {
   const [step, setStep] = useState('userform');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
-
+  const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false)
   useEffect(() => {
     if (isSignatureProcessing) {
       setAccountName(localStorage.getItem('login'));
@@ -122,9 +126,40 @@ export default function SignUpForm(props) {
       localStorage.removeItem('lastname');
       localStorage.removeItem('phone');
       localStorage.removeItem('email');
-      onRegistration(accountName, password, email);
+      setDownloadPaperWalletModal(true);
     } catch (e) { }
   };
+
+  const createPaperWalletHandler = async() => {
+    setDownloadPaperWalletModal(false);
+    // Generate owner, memo and active Key
+    let { privKey: owner_private } = generateKeyFromPassword(
+      accountName,
+      "owner",
+      password
+    );
+    let { privKey: active_private } = generateKeyFromPassword(
+      accountName,
+      "active",
+      password
+    );
+    let { privKey: memo_private } = generateKeyFromPassword(
+      accountName,
+      "memo",
+      password
+    );
+    console.log("accountName, password",accountName, password)
+    console.log("accountName, password owner_private",owner_private, active_private, memo_private);
+    await sleepHandler(5000);
+    await Meta1.login(accountName, password);
+      createPaperWalletAsPDF(
+        accountName,
+        owner_private,
+        active_private,
+        memo_private
+      );
+      onRegistration(accountName, password, email);
+  }
 
   const renderStep = () => {
     switch (step) {
@@ -278,6 +313,7 @@ export default function SignUpForm(props) {
             </div>
           </div>
         </div>
+        <PaperWalletModal downloadPaperWalletModal={downloadPaperWalletModal} onSubmit={() => createPaperWalletHandler()} accountName={accountName}/>
       </div>
     </>
   );
