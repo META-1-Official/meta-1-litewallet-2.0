@@ -151,16 +151,25 @@ input {
 }
 
 .btn-2 {
+  width: 150px;
+  margin-left: 50px !important;
+  height: 40px;
+  background: #00AD6A !important;
+  border-radius: 6px;
+  color: white !important;
+  border: none;
+}
+.btn-disabled {
   border: 1px solid #00AD6A !important;
   width: 150px;
   margin-left: 50px !important;
   height: 40px;
-  background: #FFC000;
+  background: #e0e1e2 none !important;
   border-radius: 6px;
-  color: black;
+  color: black !important;
+  opacity: .45 !important;
   border: none;
 }
-
 .under-div {
   height: 550px;
   width: 600px;
@@ -336,4 +345,7 @@ video {
   left: 0;
   z-index: 2;
   opacity: 0.8;
+}
+.color-black {
+  color: rgba(0,0,0,.87) !important;
 }
