@@ -178,12 +178,15 @@ export async function sendEmail(emailType, emailData) {
 
 export async function loginRequest(accountName, email) {
   try {
+    console.log("LoginApi Request 4.1",accountName, email)
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
       { accountName, email }
     );
+    console.log("LoginApi Request 4.2 response",data)
     return { ...data, error: false };
   } catch (e) {
+    console.log("LoginApi Request 4.2 api failed",e)
     return { message: "Wallet name or email is wrong", error: true };
   }
 }

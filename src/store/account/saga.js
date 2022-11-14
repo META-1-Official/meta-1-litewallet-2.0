@@ -7,14 +7,18 @@ import Meta1 from "meta1-vision-dex";
 import { signUpHandler } from '../../utils/common';
 function* loginHandler(data) {
     try {
+        console.log("LoginApi Request 2",data)
         if (data?.payload?.fromSignUpFlag) {
+            console.log("LoginApi Request 3",data?.payload?.fromSignUpFlag)
             const result = yield signUpHandler(data.payload.login, data.payload.emailOrPassword);
             if (result && !result.status) {
                 yield put(loginError({ accountName: null, token: '', msg: 'Account Creation is under process. Please try after sometime' }));
                 return;
             }
         }
+        console.log("LoginApi Request 4")
         const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail: data.payload.emailOrPassword);
+        console.log("LoginApi Request 5 response api in saga", response)
         if (!response.error) {
             setAccessToken(response.token);
             setLoginDetail(response.accountName)

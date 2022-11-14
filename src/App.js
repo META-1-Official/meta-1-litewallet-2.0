@@ -126,6 +126,7 @@ function Application(props) {
   const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "") => {
     setIsLoading(true);
     if (clicked) {
+      console.log("LoginApi Request1",{ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail })
       dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail }));
     }
     if (getAccessToken()) {
