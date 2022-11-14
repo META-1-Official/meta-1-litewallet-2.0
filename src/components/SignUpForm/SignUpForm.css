@@ -337,3 +337,13 @@ video {
   z-index: 2;
   opacity: 0.8;
 }
+
+.copy_passkey_modal {
+  margin: 13rem auto !important;
+  height: 20rem !important;
+}
+
+.paper_wallet_modal {
+  margin: 13rem auto !important;
+  height: 12rem !important;
+}

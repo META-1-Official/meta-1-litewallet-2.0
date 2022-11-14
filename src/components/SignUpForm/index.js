@@ -13,8 +13,8 @@ import FaceKiForm from "./FaceKiForm.js";
 import MigrationForm from "./MigrationForm.js";
 import { createPaperWalletAsPDF } from "../PaperWalletLogin/CreatePdfWallet.js";
 import { sleepHandler } from "../../utils/common.js";
-import PaperWalletModal from "./PaperWalletModal.jsx";
 import Meta1 from "meta1-vision-dex";
+import ModalTemplate from "./Modal.jsx";
 
 export default function SignUpForm(props) {
   const {
@@ -39,7 +39,9 @@ export default function SignUpForm(props) {
   const [step, setStep] = useState('userform');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
-  const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false)
+  const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false);
+  const [copyPasskeyModal, setCopyPasskeyModal] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   useEffect(() => {
     if (isSignatureProcessing) {
       setAccountName(localStorage.getItem('login'));
@@ -107,7 +109,7 @@ export default function SignUpForm(props) {
   };
 
   const stepLastSubmit = async () => {
-
+    setCopyPasskeyModal(false);
     try {
       await createAccountWithPassword(
         accountName,
@@ -148,8 +150,6 @@ export default function SignUpForm(props) {
       "memo",
       password
     );
-    console.log("accountName, password",accountName, password)
-    console.log("accountName, password owner_private",owner_private, active_private, memo_private);
     await sleepHandler(5000);
     await Meta1.login(accountName, password);
       createPaperWalletAsPDF(
@@ -211,11 +211,15 @@ export default function SignUpForm(props) {
           password={password}
           privKey={privKey}
           email={email}
-          phone={phone} />
+          phone={phone}
+          isSubmitted={isSubmitted}
+          setIsSubmitted={setIsSubmitted} />
       case 'signature':
         return <SubmitForm
           {...props}
-          onSubmit={stepLastSubmit}
+          onSubmit={() => {
+            setCopyPasskeyModal(true)
+          }}
           accountName={accountName}
           lastName={lastName}
           firstName={firstName}
@@ -223,7 +227,9 @@ export default function SignUpForm(props) {
           privKey={privKey}
           email={email}
           signatureResult={signatureResult}
-          phone={phone} />
+          phone={phone}
+          isSubmitted={isSubmitted}
+          setIsSubmitted={setIsSubmitted} />
       default:
         return null;
     }
@@ -313,7 +319,34 @@ export default function SignUpForm(props) {
             </div>
           </div>
         </div>
-        <PaperWalletModal downloadPaperWalletModal={downloadPaperWalletModal} onSubmit={() => createPaperWalletHandler()} accountName={accountName}/>
+        {/* paper wallet modal */}
+        <ModalTemplate
+          onOpen={downloadPaperWalletModal}
+          onClose={() => createPaperWalletHandler()}
+          onSubmit={() => createPaperWalletHandler()}
+          accountName={accountName}
+          continueBtnText=''
+          okBtnText='Download Paper Wallet'
+          className="paper_wallet_modal"
+        />
+        {/* Copy Passkey Msg Modal modal */}
+        <ModalTemplate
+          onOpen={copyPasskeyModal}
+          onClose={() => {
+            setIsSubmitted(false);
+            setCopyPasskeyModal(false);
+          }}
+          onSubmit={() => {
+            setIsSubmitted(false);
+            setCopyPasskeyModal(false);
+          }}
+          onContinue={()=> stepLastSubmit()}
+          continueBtnText='continue'
+          accountName={accountName}
+          text='If you forget your passkey phrase you will be unable to access your account and your funds. We cannot reset or restore your passkey! Memorize or write down your username and passkey!'
+          okBtnText="Close"
+          className="copy_passkey_modal"
+        />
       </div>
     </>
   );

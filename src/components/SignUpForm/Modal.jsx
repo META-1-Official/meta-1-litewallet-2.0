@@ -1,12 +1,12 @@
 import { Button, Modal } from "semantic-ui-react";
-const PaperWalletModal = (props) => {
+const ModalTemplate = (props) => {
     return <Modal
     size="mini"
-    className="claim_wallet_modal"
+    className={`${props.className}`}
     onClose={() => {
-        props.onSubmit();
+        props.onClose();
     }}
-    open={props.downloadPaperWalletModal}
+    open={props.onOpen}
     id={"modalExch"}
   >
     <Modal.Content >
@@ -15,7 +15,7 @@ const PaperWalletModal = (props) => {
       >
         <h3 className="claim_model_content">
           Hello {props.accountName}<br />
-          
+          {props.text && props.text}
         </h3>
       </div>
     </Modal.Content>
@@ -26,8 +26,17 @@ const PaperWalletModal = (props) => {
             props.onSubmit();
         }}
       >
-        Download Paper Wallet</Button>
+        {props.okBtnText}
+      </Button>
+      {props.continueBtnText && <Button
+        className="claim_wallet_btn"
+        onClick={() => {
+            props.onContinue();
+        }}
+      >
+        {props.continueBtnText}
+      </Button>}
     </Modal.Actions>
   </Modal>
 }
-export default PaperWalletModal;
+export default ModalTemplate;
