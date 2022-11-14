@@ -23,7 +23,7 @@ export default function SubmitForm(props) {
   const [living, setLiving] = useState(props.signatureResult !== 'success' ? false : true);
   const [signed, setSigned] = useState(props.signatureResult === 'success' ? true : false);
   const [paid, setPaid] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const {isSubmitted, setIsSubmitted} = props;
 
   const isAllChecked = access && recover && stored && living && signed;
 
