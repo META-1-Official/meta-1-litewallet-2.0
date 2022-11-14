@@ -22,7 +22,7 @@ export default function SubmitForm(props) {
   const [living, setLiving] = useState(props.signatureResult !== 'success' ? false : true);
   const [signed, setSigned] = useState(props.signatureResult !== 'success' ? false : true);
   const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
-  
+
   const {isSubmitted, setIsSubmitted, email} = props;
   const { phone, firstName, lastName, accountName, password } = props;
 
@@ -83,7 +83,7 @@ export default function SubmitForm(props) {
 
   return (
     <>
-      {signed && <div className="membership_head">
+      {signed && paid && <div className="membership_head">
         <p style={{ fontSize: '20px', color: '#00AD6A' }}>
           Congratulations Payment Successful! You are now a META 1 Member! Click Submit to Continue
         </p>

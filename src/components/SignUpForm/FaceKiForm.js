@@ -9,6 +9,22 @@ import "./SignUpForm.css";
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
+  const [device, setDevice] = React.useState({});
+
+  React.useEffect(
+    async () => {
+      let features = {
+        audio: false,
+        video: {
+          width: { ideal: 1800 },
+          height: { ideal: 900 }
+        }
+      };
+      let display = await navigator.mediaDevices.getUserMedia(features);
+      setDevice(display?.getVideoTracks()[0]?.getSettings());
+    },
+    []
+  );
 
   const dataURLtoFile = (dataurl, filename) => {
     var arr = dataurl.split(','),
@@ -36,7 +52,11 @@ export default function FaceKiForm(props) {
     const response = await liveLinessCheck(file);
 
     if (response.data.liveness !== 'Genuine') {
-      alert('Please place proper distance and codition on the camera and try again.')
+      if (response.data.box.h > 120)
+        alert('You are too close to the camera.')
+      else {
+        alert('Please check your background and try again.')
+      }
     } else {
       const response_verify = await verify(file);
       if (
@@ -52,7 +72,6 @@ export default function FaceKiForm(props) {
 
         const newName = response_verify.name + "," + email;
         const response_remove = await remove(response_verify.name);
-        
 
         if (!response_remove) {
           alert('Something went wrong.')
@@ -109,22 +128,18 @@ export default function FaceKiForm(props) {
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-                videoConstraints={{
-                  facingMode: 'user',
-                  width: 500,
-                  height: 400,
-                }}
+                videoConstraints={{ deviceId: device?.deviceId }}
                 width={500}
-                height={400}
+                height={device?.aspectRatio ? 500 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>
                 <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
                 <div className="btn-grp">
-                  <button className={!faceKISuccess ? 'btn-1': 'btn-1 btn-disabled'} disabled={faceKISuccess === true} onClick={videoEnroll}>Verify</button>
+                  <button className={!faceKISuccess ? 'btn-1' : 'btn-1 btn-disabled'} disabled={faceKISuccess === true} onClick={videoEnroll}>Verify</button>
                   <Button
                     onClick={() => props.onClick()}
-                    className={faceKISuccess ? 'btn-2': 'btn-disabled'}
+                    className={faceKISuccess ? 'btn-2' : 'btn-disabled'}
                     disabled={faceKISuccess === false}
                   >
                     Next
