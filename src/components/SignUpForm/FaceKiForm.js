@@ -42,8 +42,17 @@ export default function FaceKiForm(props) {
       if (
         response_verify.status === 'Verify OK'
       ) {
+        const nameArry = response_verify.name.split(',');
+
+        if (nameArry.includes(email)) {
+          alert('You already enrolled and verified successfully.');
+          setFaceKISuccess(true);
+          return;
+        }
+
         const newName = response_verify.name + "," + email;
         const response_remove = await remove(response_verify.name);
+        
 
         if (!response_remove) {
           alert('Something went wrong.')

@@ -31,13 +31,15 @@ export default function FaceKiForm(props) {
     if (!response_user?.member1Name) {
       alert('Wallet not found on the network');
       return;
-    } else {
-      const walletArry = response.member1Name.split(',');
-      if (!walletArry.includes(accountName)) {
-        alert('Email and wallet name are not matched.');
-        return;
-      }
-    };
+    } 
+    // else {
+    //   const walletArry = response_user.member1Name.split(',');
+
+    //   if (!walletArry.includes(accountName)) {
+    //     alert('Email and wallet name are not matched.');
+    //     return;
+    //   }
+    // };
 
     if (!imageSrc) {
       alert('Check your camera');
