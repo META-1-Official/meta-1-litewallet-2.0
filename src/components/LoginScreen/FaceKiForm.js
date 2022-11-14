@@ -77,7 +77,6 @@ export default function FaceKiForm(props) {
         const nameArry = response_verify.name.split(',');
 
         if (nameArry.includes(email)) {
-          alert('Successfully Verified');
           setFaceKISuccess(true);
         } else {
           alert('Bio-metric verification failed for this account. Please use an account that has been linked to your biometric verification / enrollment.');
@@ -103,7 +102,7 @@ export default function FaceKiForm(props) {
             </div>
             <div className='child-div'>
               <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
-                <div className="position-head">Position your face in the oval</div>
+                <div className="position-head color-black">Position your face in the oval</div>
                 <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
               </div>
               <img src={OvalImage} alt='oval-image' className='oval-image' />
@@ -117,12 +116,12 @@ export default function FaceKiForm(props) {
                 mirrored
               />
               <div className='btn-div'>
-                <p className='span-class'>Press record and follow the instructions</p>
+                <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
                 <div className="btn-grp">
-                  <button className='btn-1' onClick={videoVerify}>Verify</button>
+                  <button className={!faceKISuccess ? 'btn-1' : 'btn-disabled'} onClick={videoVerify} disabled={faceKISuccess === true}>Verify</button>
                   <Button
                     onClick={() => props.onClick()}
-                    className="btn-2"
+                    className={faceKISuccess ? 'btn-2' : 'btn-disabled'}
                     disabled={faceKISuccess === false}
                   >
                     Next
