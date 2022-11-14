@@ -11,12 +11,12 @@ const ModalTemplate = (props) => {
   >
     <Modal.Content >
       <div
-        className="claim_wallet_btn_div"
+        className="copy_passkey_paper_wallet_modal_div"
       >
         <h3 className="claim_model_content">
-          Hello {props.accountName}<br />
-          {props.text && props.text}
+          {props.accountName}<br />
         </h3>
+        {props.text && <span>{props.text}</span>}
       </div>
     </Modal.Content>
     <Modal.Actions className="claim_modal-action">

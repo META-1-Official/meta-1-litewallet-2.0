@@ -326,7 +326,8 @@ export default function SignUpForm(props) {
           onSubmit={() => createPaperWalletHandler()}
           accountName={accountName}
           continueBtnText=''
-          okBtnText='Download Paper Wallet'
+          okBtnText='Download'
+          text="Download paper wallet and proceed to dashboard."
           className="paper_wallet_modal"
         />
         {/* Copy Passkey Msg Modal modal */}
@@ -341,9 +342,9 @@ export default function SignUpForm(props) {
             setCopyPasskeyModal(false);
           }}
           onContinue={()=> stepLastSubmit()}
-          continueBtnText='continue'
+          continueBtnText='Continue'
           accountName={accountName}
-          text='If you forget your passkey phrase you will be unable to access your account and your funds. We cannot reset or restore your passkey! Memorize or write down your username and passkey!'
+          text='If you forget your passkey phrase you will be unable to access your account and your funds. Memorize or write down your username and passkey!'
           okBtnText="Close"
           className="copy_passkey_modal"
         />
