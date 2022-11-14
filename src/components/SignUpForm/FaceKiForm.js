@@ -35,51 +35,42 @@ export default function FaceKiForm(props) {
 
     const response = await liveLinessCheck(file);
 
-    if (response.data.liveness === 'Spoof') {
+    if (response.data.liveness !== 'Genuine') {
       alert('Please place proper distance and codition on the camera and try again.')
     } else {
       const response_verify = await verify(file);
       if (
         response_verify.status === 'Verify OK'
       ) {
-        const response_user = await getUserKycProfile(email);
-        if (response_user) {
-          alert('This email already has been used for another wallet. Please use different email for new wallet creation.');
-        } else {
-          const newName = response_verify.name + "," + email;
-          console.log("USE", newName);
-          const response_remove = await remove(response_verify.name);
+        const newName = response_verify.name + "," + email;
+        const response_remove = await remove(response_verify.name);
 
-          if (!response_remove) {
-            alert('Something went wrong.')
-          } else {
-            const response_enroll = await enroll(file, newName);
-            if (response_enroll.status === 'Enroll OK') {
-              const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
-              if (add_response.result) {
-                setFaceKISuccess(true);
-              }
-              else {
-                alert('Something went wrong.');
-              }
+        if (!response_remove) {
+          alert('Something went wrong.')
+        } else {
+          const response_enroll = await enroll(file, newName);
+          if (response_enroll.status === 'Enroll OK') {
+            const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
+            if (add_response.result) {
+              alert('Successfully enrolled.');
+              setFaceKISuccess(true);
+            }
+            else {
+              alert('Something went wrong.');
             }
           }
         }
       } else {
-        const response_user = await getUserKycProfile(email);
-        if (response_user) {
-          alert('This email already has been used under the other person. Please check you lost your email.');
-        } else {
-          const response_enroll = await enroll(file, email);
-          if (response_enroll.status === 'Enroll OK') {
-            const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
-            if (add_response.result) {
-              setFaceKISuccess(true);
-            }
-            else {
-              await remove(email);
-              alert('Something went wrong.');
-            }
+        const response_enroll = await enroll(file, email);
+        if (response_enroll.status === 'Enroll OK') {
+          const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
+          if (add_response.result) {
+            alert('Successfully enrolled.');
+            setFaceKISuccess(true);
+          }
+          else {
+            await remove(email);
+            alert('Something went wrong.');
           }
         }
       }
