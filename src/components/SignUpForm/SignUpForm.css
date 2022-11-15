@@ -349,12 +349,19 @@ video {
 
 .copy_passkey_modal {
   margin: 13rem auto !important;
-  height: 16rem !important;
+  height: 21rem !important;
+  width: 35rem !important;
+}
+
+.copy_passkey_mobile_modal {
+  margin: 13rem auto !important;
+  height: 29rem !important;
+  width: 20rem !important;
 }
 
 .paper_wallet_modal {
   margin: 13rem auto !important;
-  height: 13rem !important;
+  height: 14rem !important;
 }
 
 .copy_passkey_paper_wallet_modal_div {
@@ -366,4 +373,26 @@ video {
 
 .color-black {
   color: rgba(0,0,0,.87) !important;
+}
+
+.flex_title_close_icon {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  line-height: 0.4 !important;
+}
+
+.title_width {
+  width: 90% !important;
+  margin-top: 0 !important;
+}
+
+.close_icon_width {
+  width: 10% !important;
+  margin-top: 0 !important;
+  cursor: pointer;
+}
+
+.padding-bottom-class {
+  padding-bottom: 0.4rem  !important;
 }
