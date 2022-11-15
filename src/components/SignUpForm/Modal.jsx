@@ -1,4 +1,4 @@
-import { Button, Modal } from "semantic-ui-react";
+import { Button, Icon, Modal } from "semantic-ui-react";
 const ModalTemplate = (props) => {
     return <Modal
     size="mini"
@@ -10,24 +10,27 @@ const ModalTemplate = (props) => {
     id={"modalExch"}
   >
     <Modal.Content >
-      <div
-        className="copy_passkey_paper_wallet_modal_div"
-      >
-        <h3 className="claim_model_content">
-          {props.accountName}<br />
-        </h3>
-        {props.text && <span>{props.text}</span>}
+        <div
+          className="copy_passkey_paper_wallet_modal_div"
+        >
+        <div className={`padding-bottom-class ${props.isCloseIcon ? 'flex_title_close_icon' : ''}`}>
+          <h3 className={`claim_model_content ${props.isCloseIcon ? 'title_width' : ''}`} >
+            {props.accountName}
+          </h3>
+        {props.isCloseIcon && <Icon className="close close_icon_width" onClick={()=> props.onClose()} />}
+        </div>
+        {props.text && <div dangerouslySetInnerHTML={{__html: props.text}} />}
       </div>
     </Modal.Content>
     <Modal.Actions className="claim_modal-action">
-      <Button
+      {props.okBtnText && <Button
         className="claim_wallet_btn"
         onClick={() => {
             props.onSubmit();
         }}
       >
         {props.okBtnText}
-      </Button>
+      </Button>}
       {props.continueBtnText && <Button
         className="claim_wallet_btn"
         onClick={() => {

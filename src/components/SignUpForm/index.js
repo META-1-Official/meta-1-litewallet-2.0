@@ -42,6 +42,8 @@ export default function SignUpForm(props) {
   const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false);
   const [copyPasskeyModal, setCopyPasskeyModal] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { innerWidth: width } = window;
+  const isMobile = width <= 678;
   useEffect(() => {
     if (isSignatureProcessing) {
       setAccountName(localStorage.getItem('login'));
@@ -327,8 +329,9 @@ export default function SignUpForm(props) {
           accountName={accountName}
           continueBtnText=''
           okBtnText='Download'
-          text="Download paper wallet and proceed to dashboard."
+          text="Click Download to save your paper wallet and complete the wallet creation process."
           className="paper_wallet_modal"
+          isCloseIcon={false}
         />
         {/* Copy Passkey Msg Modal modal */}
         <ModalTemplate
@@ -337,16 +340,12 @@ export default function SignUpForm(props) {
             setIsSubmitted(false);
             setCopyPasskeyModal(false);
           }}
-          onSubmit={() => {
-            setIsSubmitted(false);
-            setCopyPasskeyModal(false);
-          }}
           onContinue={()=> stepLastSubmit()}
-          continueBtnText='Continue'
+          continueBtnText='Acknowledge and Continue'
           accountName={accountName}
-          text='If you forget your passkey phrase you will be unable to access your account and your funds. Memorize or write down your username and passkey!'
-          okBtnText="Close"
-          className="copy_passkey_modal"
+          text='If you forget your passkey you will NOT be able to access your wallet or your funds. We are NO LONGER able to restore, reset, or redistribute lost coins, or help with lost passkeys. Please MAKE SURE you copy your wallet name and passkey on to your computer and then transfer it to an offline storage location for easy access like a USB drive! Check our passkey storage tips knowledge article for more info <a target="__blank" href="https://support.meta1coin.vision/password-storage-tips">here</a>'
+          className={`${!isMobile ? 'copy_passkey_modal' : 'copy_passkey_mobile_modal'}`}
+          isCloseIcon={true}
         />
       </div>
     </>
