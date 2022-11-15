@@ -346,6 +346,50 @@ video {
   z-index: 2;
   opacity: 0.8;
 }
+.webcam_div {
+  height: 550px;
+  width: 550px;
+  background: #fff;
+}
+@media screen and (max-width: 767px) {
+  .webcam_div {
+    height: 100% !important;
+    width: 100% !important;
+  }
+  .under-div {
+    height: 100% !important;
+    width: 100% !important;
+  }
+  .header_tag {
+    height: 100% !important;
+    width: 100%!important;
+  }
+  .position-head {
+    font-size: 10px !important;
+  }
+  .span-class {
+    font-size: 10px !important;
+  }
+  .totalSumBlock {
+    padding: 0 !important;
+  }
+  .btn-1 {
+      width: auto !important;
+      min-width: 80px !important;
+  }
+  .btn-2 {
+      width: auto !important;
+  }
+  .btn-disabled {
+      width: auto !important;
+  }
+  .btn-grp button {
+      margin: 0 5px !important;
+  }
+  .position-head {
+    padding-left: 3rem !important;
+  }
+}
 .color-black {
   color: rgba(0,0,0,.87) !important;
 }

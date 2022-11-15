@@ -4,11 +4,14 @@ import Webcam from 'react-webcam';
 import { liveLinessCheck, verify, getUserKycProfile } from "../../API/API";
 import { Button } from "semantic-ui-react";
 import OvalImage from '../../images/oval/oval10.png';
+import MobileOvalImage from '../../images/oval/oval12.png';
 import "./login.css";
 
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
+  const { innerWidth: width } = window;
+  const isMobile = width <= 678;
 
   const dataURLtoFile = (dataurl, filename) => {
     var arr = dataurl.split(','),
@@ -66,11 +69,7 @@ export default function FaceKiForm(props) {
     <div style={{ height: "110%" }} className={"totalSumBlock"}>
       <div className='under-div'>
         <div className='header_tag'>
-          <div style={{
-            height: "550px",
-            width: "550px",
-            background: "#fff"
-          }}>
+          <div className="webcam_div">
             <div className='header_p'>
               <h6 style={{ fontSize: '24px' }}>Bio-Metric 2 Factor Authentication</h6>
               <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
@@ -80,7 +79,8 @@ export default function FaceKiForm(props) {
                 <div className="position-head">Position your face in the oval</div>
                 <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
               </div>
-              <img src={OvalImage} alt='oval-image' className='oval-image' />
+              {!isMobile && <img src={OvalImage} alt='oval-image' className='oval-image' />}
+              {isMobile && <img src={MobileOvalImage} alt='oval-image' className='oval-image' />}
               <Webcam
                 audio={false}
                 ref={webcamRef}
@@ -88,10 +88,10 @@ export default function FaceKiForm(props) {
                 videoConstraints={{
                   facingMode: 'user',
                   width: 500,
-                  height: 400,
+                  height: isMobile ? 300 : 400,
                 }}
                 width={500}
-                height={400}
+                height={isMobile ? 300 : 400}
                 mirrored
               />
               <div className='btn-div'>
