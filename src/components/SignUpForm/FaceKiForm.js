@@ -130,7 +130,7 @@ export default function FaceKiForm(props) {
                 screenshotFormat="image/jpeg"
                 videoConstraints={{ deviceId: device?.deviceId }}
                 width={500}
-                height={device?.aspectRatio ? 500 / device?.aspectRatio : 385}
+                height={isMobile ? 300 : device?.aspectRatio ? 500 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>

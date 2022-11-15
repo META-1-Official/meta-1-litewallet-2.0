@@ -96,8 +96,8 @@ export default function FaceKiForm(props) {
         <div className='header_tag'>
           <div className="webcam_div">
             <div className='header_p'>
-              <h6 style={{ fontSize: '24px' }}>Bio-Metric 2 Factor Authentication</h6>
-              <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
+              <h6 style={{ fontSize: '24px' }}>Authenticate Your Face</h6>
+              <p className='header_ptag'>To log into your wallet, please complete biometric authentication.</p>
             </div>
             <div className='child-div'>
               <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
@@ -112,11 +112,11 @@ export default function FaceKiForm(props) {
                 screenshotFormat="image/jpeg"
                 videoConstraints={{ deviceId: device?.deviceId }}
                 width={500}
-                height={device?.aspectRatio ? 500 / device?.aspectRatio : 385}
+                height={isMobile ? 300 : device?.aspectRatio ? 500 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>
-                <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
+                <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to log complete authentication' : 'Verification Successful!'}</p>
                 <div className="btn-grp">
                   <button className={!faceKISuccess ? 'btn-1' : 'btn-disabled'} onClick={videoVerify} disabled={faceKISuccess === true}>Verify</button>
                   <Button
