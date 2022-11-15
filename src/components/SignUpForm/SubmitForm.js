@@ -16,10 +16,10 @@ export default function SubmitForm(props) {
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
 
-  const [access, setAccess] = useState(props.signatureResult !== 'success' ? false : true);
-  const [recover, setRecover] = useState(props.signatureResult !== 'success' ? false : true);
-  const [stored, setStored] = useState(props.signatureResult !== 'success' ? false : true);
-  const [living, setLiving] = useState(props.signatureResult !== 'success' ? false : true);
+  const [access, setAccess] = useState(false);
+  const [recover, setRecover] = useState(false);
+  const [stored, setStored] = useState(false);
+  const [living, setLiving] = useState(false);
   const [signed, setSigned] = useState(props.signatureResult !== 'success' ? false : true);
   const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
 
