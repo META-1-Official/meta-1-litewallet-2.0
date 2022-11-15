@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import axios from "axios";
 import { getUserKycProfile, getESigToken } from "../../API/API";
 
 import {
@@ -21,27 +20,28 @@ export default function SubmitForm(props) {
   const [recover, setRecover] = useState(props.signatureResult !== 'success' ? false : true);
   const [stored, setStored] = useState(props.signatureResult !== 'success' ? false : true);
   const [living, setLiving] = useState(props.signatureResult !== 'success' ? false : true);
-  const [signed, setSigned] = useState(props.signatureResult === 'success' ? true : false);
-  const [paid, setPaid] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [signed, setSigned] = useState(props.signatureResult !== 'success' ? false : true);
+  const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
 
-  const isAllChecked = access && recover && stored && living && signed;
+  const {isSubmitted, setIsSubmitted, email} = props;
+  const { phone, firstName, lastName, accountName, password } = props;
+
+  const isAllChecked = access && recover && stored && living && signed && paid;
 
   useEffect(async () => {
-    const response = await getUserKycProfile(props.email);
-    if (response && response.status.isPaid === 1 && response.status.isSign === 1) {
-      setSigned(true);
-      setPaid(true);
-    }
+    const response = await getUserKycProfile(email);
+    if (response && response.status.isPayed === true ) setPaid(true);
+    if (response && response.status.isSign === true) setSigned(true);
   }, [])
 
   const handleSign = async (e) => {
-    if (!signed) {
-      const { email, phone, firstName, lastName, accountName, password } = props;
-
+    if (signed && paid) {
+      alert ('You already signed and paid with the current email');
+    }
+    else {
       try {
         const response = await getUserKycProfile(email);
-        if (response && response.status.isPaid === 1 && response.status.isSign === 1) {
+        if (response && response.status.isSign === 1) {
           alert('You already signed E-Signature');
           setSigned(true);
           return;
@@ -76,9 +76,14 @@ export default function SubmitForm(props) {
     }
   }
 
+  const handleClick = () => {
+    setIsSubmitted(true);
+    props.onSubmit();
+  }
+
   return (
     <>
-      {signed && <div className="membership_head">
+      {signed && paid && <div className="membership_head">
         <p style={{ fontSize: '20px', color: '#00AD6A' }}>
           Congratulations Payment Successful! You are now a META 1 Member! Click Submit to Continue
         </p>
@@ -146,15 +151,15 @@ export default function SubmitForm(props) {
               <Checkbox
                 onChange={(e) => setLiving(!living)}
                 checked={living}
-                label=" I am a living man or woman hence a living being"
+                label="I am a living man or woman hence a living being"
               />
             </Form.Field>
 
             <Form.Field>
               <Checkbox
                 onChange={(e) => handleSign(e)}
-                checked={signed}
-                label=" Sign META Association Membership Agreement"
+                checked={signed && paid}
+                label="Sign META Association Membership Agreement"
               />
             </Form.Field>
 
@@ -162,10 +167,7 @@ export default function SubmitForm(props) {
             {!isSubmitted && (
               <Button
                 className="sbBtn"
-                onClick={() => {
-                  setIsSubmitted(true);
-                  props.onSubmit();
-                }}
+                onClick={handleClick}
                 disabled={!isAllChecked}
                 type="submit"
               >

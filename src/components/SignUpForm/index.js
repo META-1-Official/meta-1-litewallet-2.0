@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { UserInformationForm } from "./UserInformationForm.js";
 import SubmitForm from "./SubmitForm.js";
-import createAccountWithPassword from "../../lib/createAccountWithPassword.js";
+import createAccountWithPassword, { generateKeyFromPassword } from "../../lib/createAccountWithPassword.js";
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 
@@ -11,6 +11,10 @@ import OpenLogin from '@toruslabs/openlogin';
 import "./SignUpForm.css";
 import FaceKiForm from "./FaceKiForm.js";
 import MigrationForm from "./MigrationForm.js";
+import { createPaperWalletAsPDF } from "../PaperWalletLogin/CreatePdfWallet.js";
+import { sleepHandler } from "../../utils/common.js";
+import Meta1 from "meta1-vision-dex";
+import ModalTemplate from "./Modal.jsx";
 
 export default function SignUpForm(props) {
   const {
@@ -35,7 +39,9 @@ export default function SignUpForm(props) {
   const [step, setStep] = useState('userform');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
-
+  const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false);
+  const [copyPasskeyModal, setCopyPasskeyModal] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   useEffect(() => {
     if (isSignatureProcessing) {
       setAccountName(localStorage.getItem('login'));
@@ -103,7 +109,7 @@ export default function SignUpForm(props) {
   };
 
   const stepLastSubmit = async () => {
-
+    setCopyPasskeyModal(false);
     try {
       await createAccountWithPassword(
         accountName,
@@ -122,9 +128,38 @@ export default function SignUpForm(props) {
       localStorage.removeItem('lastname');
       localStorage.removeItem('phone');
       localStorage.removeItem('email');
-      onRegistration(accountName, password, email);
+      setDownloadPaperWalletModal(true);
     } catch (e) { }
   };
+
+  const createPaperWalletHandler = async() => {
+    setDownloadPaperWalletModal(false);
+    // Generate owner, memo and active Key
+    let { privKey: owner_private } = generateKeyFromPassword(
+      accountName,
+      "owner",
+      password
+    );
+    let { privKey: active_private } = generateKeyFromPassword(
+      accountName,
+      "active",
+      password
+    );
+    let { privKey: memo_private } = generateKeyFromPassword(
+      accountName,
+      "memo",
+      password
+    );
+    await sleepHandler(5000);
+    await Meta1.login(accountName, password);
+      createPaperWalletAsPDF(
+        accountName,
+        owner_private,
+        active_private,
+        memo_private
+      );
+      onRegistration(accountName, password, email);
+  }
 
   const renderStep = () => {
     switch (step) {
@@ -176,11 +211,15 @@ export default function SignUpForm(props) {
           password={password}
           privKey={privKey}
           email={email}
-          phone={phone} />
+          phone={phone}
+          isSubmitted={isSubmitted}
+          setIsSubmitted={setIsSubmitted} />
       case 'signature':
         return <SubmitForm
           {...props}
-          onSubmit={stepLastSubmit}
+          onSubmit={() => {
+            setCopyPasskeyModal(true)
+          }}
           accountName={accountName}
           lastName={lastName}
           firstName={firstName}
@@ -188,7 +227,9 @@ export default function SignUpForm(props) {
           privKey={privKey}
           email={email}
           signatureResult={signatureResult}
-          phone={phone} />
+          phone={phone}
+          isSubmitted={isSubmitted}
+          setIsSubmitted={setIsSubmitted} />
       default:
         return null;
     }
@@ -278,6 +319,35 @@ export default function SignUpForm(props) {
             </div>
           </div>
         </div>
+        {/* paper wallet modal */}
+        <ModalTemplate
+          onOpen={downloadPaperWalletModal}
+          onClose={() => createPaperWalletHandler()}
+          onSubmit={() => createPaperWalletHandler()}
+          accountName={accountName}
+          continueBtnText=''
+          okBtnText='Download'
+          text="Download paper wallet and proceed to dashboard."
+          className="paper_wallet_modal"
+        />
+        {/* Copy Passkey Msg Modal modal */}
+        <ModalTemplate
+          onOpen={copyPasskeyModal}
+          onClose={() => {
+            setIsSubmitted(false);
+            setCopyPasskeyModal(false);
+          }}
+          onSubmit={() => {
+            setIsSubmitted(false);
+            setCopyPasskeyModal(false);
+          }}
+          onContinue={()=> stepLastSubmit()}
+          continueBtnText='Continue'
+          accountName={accountName}
+          text='If you forget your passkey phrase you will be unable to access your account and your funds. Memorize or write down your username and passkey!'
+          okBtnText="Close"
+          className="copy_passkey_modal"
+        />
       </div>
     </>
   );

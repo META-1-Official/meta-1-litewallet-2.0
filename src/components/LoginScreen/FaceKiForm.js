@@ -12,6 +12,22 @@ export default function FaceKiForm(props) {
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const { innerWidth: width } = window;
   const isMobile = width <= 678;
+  const [device, setDevice] = React.useState({});
+
+  React.useEffect(
+    async () => {
+      let features = {
+        audio: false,
+        video: {
+          width: { ideal: 1800 },
+          height: { ideal: 900 }
+        }
+      };
+      let display = await navigator.mediaDevices.getUserMedia(features);
+      setDevice(display?.getVideoTracks()[0]?.getSettings());
+    },
+    []
+  );
 
   const dataURLtoFile = (dataurl, filename) => {
     var arr = dataurl.split(','),
@@ -31,12 +47,18 @@ export default function FaceKiForm(props) {
 
     const response_user = await getUserKycProfile(email);
 
-    if (response_user?.member1Name !== accountName) {
-      if (!response_user?.member1Name) {
-        alert('Wallet not found on the network');
-      } else alert('Email and wallet name are not matched.');
+    if (!response_user?.member1Name) {
+      alert('Wallet not found on the network');
       return;
-    };
+    } 
+    // else {
+    //   const walletArry = response_user.member1Name.split(',');
+
+    //   if (!walletArry.includes(accountName)) {
+    //     alert('Email and wallet name are not matched.');
+    //     return;
+    //   }
+    // };
 
     if (!imageSrc) {
       alert('Check your camera');
@@ -46,18 +68,21 @@ export default function FaceKiForm(props) {
     var file = dataURLtoFile(imageSrc, 'a.jpg');
     const response = await liveLinessCheck(file);
 
-    if (response.data.liveness === 'Spoof') {
-      alert('Please place proper distance and codition on the camera and try again.');
+    if (response.data.liveness !== 'Genuine') {
+      if (response.data.box.h > 120)
+        alert('You are too close to the camera.')
+      else {
+        alert('Please check your background and try again.')
+      }
     } else {
       const response_verify = await verify(file);
       if (response_verify.status === 'Verify OK') {
         const nameArry = response_verify.name.split(',');
 
         if (nameArry.includes(email)) {
-          alert('Successfully Verified');
           setFaceKISuccess(true);
         } else {
-          alert('FaceKi verification passed but you are using different email. Please use right email.');
+          alert('Bio-metric verification failed for this account. Please use an account that has been linked to your biometric verification / enrollment.');
         }
       } else {
         alert('We can not verify you because you never enrolled with your face yet.');
@@ -76,7 +101,7 @@ export default function FaceKiForm(props) {
             </div>
             <div className='child-div'>
               <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
-                <div className="position-head">Position your face in the oval</div>
+                <div className="position-head color-black">Position your face in the oval</div>
                 <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
               </div>
               {!isMobile && <img src={OvalImage} alt='oval-image' className='oval-image' />}
@@ -85,22 +110,18 @@ export default function FaceKiForm(props) {
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-                videoConstraints={{
-                  facingMode: 'user',
-                  width: 500,
-                  height: isMobile ? 300 : 400,
-                }}
+                videoConstraints={{ deviceId: device?.deviceId }}
                 width={500}
-                height={isMobile ? 300 : 400}
+                height={device?.aspectRatio ? 500 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>
-                <p className='span-class'>Press record and follow the instructions</p>
+                <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
                 <div className="btn-grp">
-                  <button className='btn-1' onClick={videoVerify}>Verify</button>
+                  <button className={!faceKISuccess ? 'btn-1' : 'btn-disabled'} onClick={videoVerify} disabled={faceKISuccess === true}>Verify</button>
                   <Button
                     onClick={() => props.onClick()}
-                    className="btn-2"
+                    className={faceKISuccess ? 'btn-2' : 'btn-disabled'}
                     disabled={faceKISuccess === false}
                   >
                     Next

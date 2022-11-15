@@ -12,6 +12,22 @@ export default function FaceKiForm(props) {
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const { innerWidth: width } = window;
   const isMobile = width <= 678;
+  const [device, setDevice] = React.useState({});
+
+  React.useEffect(
+    async () => {
+      let features = {
+        audio: false,
+        video: {
+          width: { ideal: 1800 },
+          height: { ideal: 900 }
+        }
+      };
+      let display = await navigator.mediaDevices.getUserMedia(features);
+      setDevice(display?.getVideoTracks()[0]?.getSettings());
+    },
+    []
+  );
 
   const dataURLtoFile = (dataurl, filename) => {
     var arr = dataurl.split(','),
@@ -38,51 +54,54 @@ export default function FaceKiForm(props) {
 
     const response = await liveLinessCheck(file);
 
-    if (response.data.liveness === 'Spoof') {
-      alert('Please place proper distance and codition on the camera and try again.')
+    if (response.data.liveness !== 'Genuine') {
+      if (response.data.box.h > 120)
+        alert('You are too close to the camera.')
+      else {
+        alert('Please check your background and try again.')
+      }
     } else {
       const response_verify = await verify(file);
       if (
         response_verify.status === 'Verify OK'
       ) {
-        const response_user = await getUserKycProfile(email);
-        if (response_user) {
-          alert('This email already has been used for another wallet. Please use different email for new wallet creation.');
-        } else {
-          const newName = response_verify.name + "," + email;
-          console.log("USE", newName);
-          const response_remove = await remove(response_verify.name);
+        const nameArry = response_verify.name.split(',');
 
-          if (!response_remove) {
-            alert('Something went wrong.')
-          } else {
-            const response_enroll = await enroll(file, newName);
-            if (response_enroll.status === 'Enroll OK') {
-              const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
-              if (add_response.result) {
-                setFaceKISuccess(true);
-              }
-              else {
-                alert('Something went wrong.');
-              }
+        if (nameArry.includes(email)) {
+          alert('You already enrolled and verified successfully.');
+          setFaceKISuccess(true);
+          return;
+        }
+
+        const newName = response_verify.name + "," + email;
+        const response_remove = await remove(response_verify.name);
+
+        if (!response_remove) {
+          alert('Something went wrong.')
+        } else {
+          const response_enroll = await enroll(file, newName);
+          if (response_enroll.status === 'Enroll OK') {
+            const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
+            if (add_response.result) {
+              alert('Successfully enrolled.');
+              setFaceKISuccess(true);
+            }
+            else {
+              alert('Something went wrong.');
             }
           }
         }
       } else {
-        const response_user = await getUserKycProfile(email);
-        if (response_user) {
-          alert('This email already has been used under the other person. Please check you lost your email.');
-        } else {
-          const response_enroll = await enroll(file, email);
-          if (response_enroll.status === 'Enroll OK') {
-            const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
-            if (add_response.result) {
-              setFaceKISuccess(true);
-            }
-            else {
-              await remove(email);
-              alert('Something went wrong.');
-            }
+        const response_enroll = await enroll(file, email);
+        if (response_enroll.status === 'Enroll OK') {
+          const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
+          if (add_response.result) {
+            alert('Successfully enrolled.');
+            setFaceKISuccess(true);
+          }
+          else {
+            await remove(email);
+            alert('Something went wrong.');
           }
         }
       }
@@ -109,22 +128,18 @@ export default function FaceKiForm(props) {
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-                videoConstraints={{
-                  facingMode: 'user',
-                  width: 500,
-                  height: isMobile ? 300 : 400,
-                }}
+                videoConstraints={{ deviceId: device?.deviceId }}
                 width={500}
-                height={isMobile ? 300 : 400}
+                height={device?.aspectRatio ? 500 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>
                 <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
                 <div className="btn-grp">
-                  <button className={!faceKISuccess ? 'btn-1': 'btn-1 btn-disabled'} disabled={faceKISuccess === true} onClick={videoEnroll}>Verify</button>
+                  <button className={!faceKISuccess ? 'btn-1' : 'btn-1 btn-disabled'} disabled={faceKISuccess === true} onClick={videoEnroll}>Verify</button>
                   <Button
                     onClick={() => props.onClick()}
-                    className={faceKISuccess ? 'btn-2': 'btn-disabled'}
+                    className={faceKISuccess ? 'btn-2' : 'btn-disabled'}
                     disabled={faceKISuccess === false}
                   >
                     Next
