@@ -133,7 +133,7 @@ const LeftPanelAdapt = (props) => {
           >
             Open Orders
           </li>
-          {/* <hr />
+          <hr />
           <li
             className={"event dropdown-item"}
             onClick={portfolio ? onClickPaperWalletHandler : null}
@@ -142,7 +142,7 @@ const LeftPanelAdapt = (props) => {
             data-bs-target="#navbarSupportedContent"
           >
             Paper Wallet
-          </li> */}
+          </li>
         </ul>
       </li>
       <li

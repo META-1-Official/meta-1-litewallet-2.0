@@ -123,13 +123,13 @@ const LeftPanel = (props) => {
             >
               Open Orders
             </li>
-            {/* <li
+            <li
               className={"event"}
               onClick={portfolio ? onClickPaperWalletHandler : null}
               style={{ cursor: "pointer" }}
             >
               Paper Wallet
-            </li> */}
+            </li>
           </ul>
         </div>
       </div>
