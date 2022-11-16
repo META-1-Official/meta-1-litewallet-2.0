@@ -67,16 +67,37 @@ export default function FaceKiForm(props) {
         if (nameArry.includes(email)) {
           alert('You already enrolled and verified successfully.');
           setFaceKISuccess(true);
-          return;
-        }
-
-        const newName = response_verify.name + "," + email;
-        const response_remove = await remove(response_verify.name);
-
-        if (!response_remove) {
-          alert('Something went wrong.')
         } else {
-          const response_enroll = await enroll(file, newName);
+          const response_user = await getUserKycProfile(email);
+          if (response_user) {
+            alert('This email already has been used for another user.');
+          } else {
+            const newName = response_verify.name + "," + email;
+            const response_remove = await remove(response_verify.name);
+
+            if (!response_remove) {
+              alert('Something went wrong.');
+            } else {
+              const response_enroll = await enroll(file, newName);
+              if (response_enroll.status === 'Enroll OK') {
+                const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
+                if (add_response.result) {
+                  alert('Successfully enrolled.');
+                  setFaceKISuccess(true);
+                }
+                else {
+                  alert('Something went wrong.');
+                }
+              }
+            }
+          }
+        }
+      } else {
+        const response_user = await getUserKycProfile(email);
+        if (response_user) {
+          alert('This email already has been used for another user.');
+        } else {
+          const response_enroll = await enroll(file, email);
           if (response_enroll.status === 'Enroll OK') {
             const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
             if (add_response.result) {
@@ -84,21 +105,9 @@ export default function FaceKiForm(props) {
               setFaceKISuccess(true);
             }
             else {
+              await remove(email);
               alert('Something went wrong.');
             }
-          }
-        }
-      } else {
-        const response_enroll = await enroll(file, email);
-        if (response_enroll.status === 'Enroll OK') {
-          const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
-          if (add_response.result) {
-            alert('Successfully enrolled.');
-            setFaceKISuccess(true);
-          }
-          else {
-            await remove(email);
-            alert('Something went wrong.');
           }
         }
       }
