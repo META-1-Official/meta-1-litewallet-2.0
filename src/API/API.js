@@ -125,7 +125,7 @@ export async function saveBalance(login) {
       accountName: login,
     }, config);
     return data;
-  } catch (err) { 
+  } catch (err) {
     return { message: 'fail' };
   }
 }
@@ -208,6 +208,23 @@ export async function getUserKycProfile(email) {
   try {
     const { data } = await axios.get(
       `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/users?email=${email}`
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+
+export async function updateUserKycProfile(email, payload, token) {
+  try {
+    const { data } = await axios.patch(
+      `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/users/update?email=${email}`,
+      payload,
+      {
+        headers: {
+          authorization: token,
+        }
+      }
     );
     return data;
   } catch (e) {

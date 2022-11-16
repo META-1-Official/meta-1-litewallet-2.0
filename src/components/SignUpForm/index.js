@@ -5,7 +5,7 @@ import createAccountWithPassword, { generateKeyFromPassword } from "../../lib/cr
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 
-import { checkOldUser } from "../../API/API";
+import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken } from "../../API/API";
 import OpenLogin from '@toruslabs/openlogin';
 
 import "./SignUpForm.css";
@@ -28,6 +28,7 @@ export default function SignUpForm(props) {
   } = props;
 
   const [accountName, setAccountName] = useState("");
+  const [token, setToken] = useState(null);
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [password, setPassword] = useState("");
@@ -54,7 +55,14 @@ export default function SignUpForm(props) {
       setEmail(localStorage.getItem('email'));
       setStep('signature');
     }
-  }, [])
+  }, []);
+
+  useEffect(async () => {
+    if (email && !token) {
+      const e_token = await getESigToken(email);
+      setToken(e_token);
+    }
+  }, [email])
 
   const openLogin = new OpenLogin({
     clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
@@ -84,7 +92,7 @@ export default function SignUpForm(props) {
     setCountry(newCountry);
     setSelectedCountryObj(newSelectedCountryObj);
     const response = await checkOldUser(accName);
-    
+
     if (response?.found === true) {
       setStep('migration');
     }
@@ -112,6 +120,11 @@ export default function SignUpForm(props) {
 
   const stepLastSubmit = async () => {
     setCopyPasskeyModal(false);
+    const response_user = await getUserKycProfile(email);
+
+    if (!token) return;
+    if (!response_user) return;
+
     try {
       await createAccountWithPassword(
         accountName,
@@ -125,6 +138,10 @@ export default function SignUpForm(props) {
         lastName,
         firstName
       );
+
+      const member1Name = response_user.member1Name ? response_user.member1Name + "," + accountName : accountName;
+      const res_update = await updateUserKycProfile(email, { "member1Name": member1Name }, token);
+
       localStorage.removeItem('password');
       localStorage.removeItem('firstname');
       localStorage.removeItem('lastname');
@@ -134,7 +151,7 @@ export default function SignUpForm(props) {
     } catch (e) { }
   };
 
-  const createPaperWalletHandler = async() => {
+  const createPaperWalletHandler = async () => {
     setDownloadPaperWalletModal(false);
     // Generate owner, memo and active Key
     let { privKey: owner_private } = generateKeyFromPassword(
@@ -154,13 +171,13 @@ export default function SignUpForm(props) {
     );
     await sleepHandler(5000);
     await Meta1.login(accountName, password);
-      createPaperWalletAsPDF(
-        accountName,
-        owner_private,
-        active_private,
-        memo_private
-      );
-      onRegistration(accountName, password, email);
+    createPaperWalletAsPDF(
+      accountName,
+      owner_private,
+      active_private,
+      memo_private
+    );
+    onRegistration(accountName, password, email);
   }
 
   const renderStep = () => {
@@ -264,7 +281,7 @@ export default function SignUpForm(props) {
   }
 
   const handleBackBtn = (e) => {
-    if (step == "userform"){
+    if (step == "userform") {
       onBackClick(e);
     } else if (step == "migration") {
       setStep("userform");
@@ -272,7 +289,7 @@ export default function SignUpForm(props) {
       setStep("userform");
     }
   }
-  
+
   return (
     <>
       <div>
@@ -291,7 +308,7 @@ export default function SignUpForm(props) {
         </div>
         <div className={"createWalletForm"}>
           <div className={"justFlexAndDirect"}>
-            <div className={`regForm ${step === 'faceki' ? 'mobileRegForm'  : ''}`}>
+            <div className={`regForm ${step === 'faceki' ? 'mobileRegForm' : ''}`}>
               {step !== 'signature' && <Button
                 style={{ color: "#fdc000", fontSize: ".9rem" }}
                 labelPosition="left"
@@ -340,7 +357,7 @@ export default function SignUpForm(props) {
             setIsSubmitted(false);
             setCopyPasskeyModal(false);
           }}
-          onContinue={()=> stepLastSubmit()}
+          onContinue={() => stepLastSubmit()}
           continueBtnText='Acknowledge and Continue'
           accountName={accountName}
           text='If you forget your passkey you will NOT be able to access your wallet or your funds. We are NO LONGER able to restore, reset, or redistribute lost coins, or help with lost passkeys. Please MAKE SURE you copy your wallet name and passkey on to your computer and then transfer it to an offline storage location for easy access like a USB drive! Check our passkey storage tips knowledge article for more info <a target="__blank" href="https://support.meta1coin.vision/password-storage-tips">here</a>'

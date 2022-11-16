@@ -23,7 +23,7 @@ export default function SubmitForm(props) {
   const [signed, setSigned] = useState(props.signatureResult !== 'success' ? false : true);
   const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
 
-  const {isSubmitted, setIsSubmitted, email} = props;
+  const {isSubmitted, setIsSubmitted, email, token} = props;
   const { phone, firstName, lastName, accountName, password } = props;
 
   const isAllChecked = access && recover && stored && living && signed && paid;
@@ -52,7 +52,6 @@ export default function SubmitForm(props) {
       }
 
       try {
-        const token = await getESigToken(email);
         if (token) {
           localStorage.setItem('login', accountName);
           localStorage.setItem('password', password);

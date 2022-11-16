@@ -48,20 +48,20 @@ export default function FaceKiForm(props) {
     const response_user = await getUserKycProfile(email);
 
     if (!response_user?.member1Name) {
-      alert('Wallet not found on the network');
+      alert('Email and wallet name are not matched.');
       return;
     } 
-    // else {
-    //   const walletArry = response_user.member1Name.split(',');
+    else {
+      const walletArry = response_user.member1Name.split(',');
 
-    //   if (!walletArry.includes(accountName)) {
-    //     alert('Email and wallet name are not matched.');
-    //     return;
-    //   }
-    // };
+      if (!walletArry.includes(accountName)) {
+        alert('Email and wallet name are not matched.');
+        return;
+      }
+    };
 
     if (!imageSrc) {
-      alert('Check your camera');
+      alert('Check your camera.');
       return;
     };
 
@@ -82,7 +82,7 @@ export default function FaceKiForm(props) {
         if (nameArry.includes(email)) {
           setFaceKISuccess(true);
         } else {
-          alert('Bio-metric verification failed for this account. Please use an account that has been linked to your biometric verification / enrollment.');
+          alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
         }
       } else {
         alert('We can not verify you because you never enrolled with your face yet.');

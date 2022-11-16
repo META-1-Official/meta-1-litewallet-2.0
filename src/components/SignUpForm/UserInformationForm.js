@@ -80,6 +80,7 @@ const UserInformationForm = (props) => {
         .catch((err) => console.log(err));
     }
   }, [accountName]);
+  
   const hasNumber = (myString) => {
     return /\d/.test(myString);
   }
