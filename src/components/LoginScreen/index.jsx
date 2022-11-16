@@ -9,6 +9,7 @@ import { checkMigrationable, migrate } from "../../API/API";
 import OpenLogin from '@toruslabs/openlogin';
 import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
+import AccountApi from "../../lib/AccountApi";
 
 export default function LoginScreen(props) {
   const {
@@ -143,6 +144,22 @@ export default function LoginScreen(props) {
       setLoginDataError(false);
       return;
     }
+    if (login) {
+      AccountApi.lookupAccounts(login, 1)
+        .then((res) => {
+          if (Array.isArray(res) && res.length>0) {
+            if (res[0] && res[0].length > 0) {
+              if (res[0][0] === login) {
+                console.log("loginnnn okkkk",res[0][0])
+              } else {
+                console.log("loginnnn not okkkk",res[0][0])
+              }
+            }
+          }
+        })
+        .catch((err) => console.log("loginnnn err",err));
+    }
+    return;
     if (login.length !== 0) {
       renderTorusLogin();
     }
