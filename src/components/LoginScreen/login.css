@@ -197,3 +197,36 @@ video {
 .color-black {
   color: rgba(0,0,0,.87) !important;
 }
+
+.webcam_div {
+  width: 550px I !important;
+  height: 550px  !important;
+  background: #fff  !important;  
+}
+
+@media screen and (max-width: 678px) {
+  .webcam_div {
+    width: 100% !important;
+    height: 100%  !important;  
+  }
+  .under-div {
+    width: 100% !important;
+    height: 100%  !important;  
+  }
+  .header_tag {
+    width: 100% !important;
+    height: 100%  !important;  
+  }
+  .btn-1 {
+    width: 80px !important;
+  }
+  .btn-2 {
+    width: 80px !important;
+  }
+  .btn-disabled {
+    width: 80px !important;
+  }
+  .totalSumBlock {
+    padding: 0 !important;
+  }
+}

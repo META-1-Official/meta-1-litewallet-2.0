@@ -4,12 +4,15 @@ import Webcam from 'react-webcam';
 import { liveLinessCheck, verify, getUserKycProfile } from "../../API/API";
 import { Button } from "semantic-ui-react";
 import OvalImage from '../../images/oval/oval10.png';
+import MobileOvalImage from '../../images/oval/oval12.png';
 import "./login.css";
 
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const [device, setDevice] = React.useState({});
+  const { innerWidth: width } = window;
+  const isMobile = width <= 678;
 
   React.useEffect(
     async () => {
@@ -91,11 +94,7 @@ export default function FaceKiForm(props) {
     <div style={{ height: "110%" }} className={"totalSumBlock"}>
       <div className='under-div'>
         <div className='header_tag'>
-          <div style={{
-            height: "550px",
-            width: "550px",
-            background: "#fff"
-          }}>
+          <div className="webcam_div">
             <div className='header_p'>
               <h6 style={{ fontSize: '24px' }}>Authenticate Your Face</h6>
               <p className='header_ptag'>To log into your wallet, please complete biometric authentication.</p>
@@ -105,14 +104,17 @@ export default function FaceKiForm(props) {
                 <div className="position-head color-black">Position your face in the oval</div>
                 <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
               </div>
-              <img src={OvalImage} alt='oval-image' className='oval-image' />
+              <img src={isMobile ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
               <Webcam
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-                videoConstraints={{ deviceId: device?.deviceId }}
-                width={500}
-                height={device?.aspectRatio ? 500 / device?.aspectRatio : 385}
+                videoConstraints={isMobile ? {
+                  width: 310,
+                  height: 400,
+                } : { deviceId: device?.deviceId }}
+                width={isMobile ? 310 : 500}
+                height={isMobile ? 400 : device?.aspectRatio ? 500 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>

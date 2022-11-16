@@ -291,7 +291,7 @@ export default function SignUpForm(props) {
         </div>
         <div className={"createWalletForm"}>
           <div className={"justFlexAndDirect"}>
-            <div className={"regForm"}>
+            <div className={`regForm ${step === 'faceki' ? 'mobileRegForm'  : ''}`}>
               {step !== 'signature' && <Button
                 style={{ color: "#fdc000", fontSize: ".9rem" }}
                 labelPosition="left"
