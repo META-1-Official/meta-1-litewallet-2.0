@@ -29,7 +29,7 @@ export default function LoginScreen(props) {
   const [migrationMsg, setMigrationMsg] = useState('');
   const [openVideoModal, setOpenVideoModal] = useState(false);
   const [migratable, setMigratable] = useState(false);
-  const [errorAttr, setErrorAttr] = useState({login: false});
+  const [errorAttr, setErrorAttr] = useState({login: false, notFound: false});
   const [checkTransfer, setCheckTransfer] = useState({
     password: '',
     showPasswordColumn: false,
@@ -150,18 +150,18 @@ export default function LoginScreen(props) {
           if (Array.isArray(res) && res.length>0) {
             if (res[0] && res[0].length > 0) {
               if (res[0][0] === login) {
-                console.log("loginnnn okkkk",res[0][0])
+                if (login.length !== 0) {
+                  renderTorusLogin();
+                }
               } else {
-                console.log("loginnnn not okkkk",res[0][0])
+                setErrorAttr(prev => {
+                  return { ...prev, notFound: true };
+                });
               }
             }
           }
         })
-        .catch((err) => console.log("loginnnn err",err));
-    }
-    return;
-    if (login.length !== 0) {
-      renderTorusLogin();
+        .catch((err) => console.log("err",err));
     }
   };
 
@@ -247,7 +247,7 @@ export default function LoginScreen(props) {
                     e.preventDefault();
                     if (e.target.value.trim()) {
                       setErrorAttr(prev => {
-                        return { ...prev, login: false };
+                        return { ...prev, login: false, notFound: false };
                       })
                     }
                     setLogin(e.target.value);
@@ -269,6 +269,7 @@ export default function LoginScreen(props) {
                   {loginErrorMsgState}
                 </p>
                 { errorAttr.login ? <p className={styles.ErrorP}>Wallet Name can't be empty</p> : null }
+                { errorAttr.notFound && !errorAttr.login ? <p className={styles.ErrorP}>Invalid Wallet Name</p> : null }
                 <button
                   className={styles.Button}
                   style={{ fontSize: "100%", marginTop: "0" }}
