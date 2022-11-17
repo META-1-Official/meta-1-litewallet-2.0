@@ -232,7 +232,8 @@ export default function SignUpForm(props) {
           email={email}
           phone={phone}
           isSubmitted={isSubmitted}
-          setIsSubmitted={setIsSubmitted} />
+          setIsSubmitted={setIsSubmitted}
+          token={token} />
       case 'signature':
         return <SubmitForm
           {...props}
@@ -248,7 +249,8 @@ export default function SignUpForm(props) {
           signatureResult={signatureResult}
           phone={phone}
           isSubmitted={isSubmitted}
-          setIsSubmitted={setIsSubmitted} />
+          setIsSubmitted={setIsSubmitted}
+          token={token} />
       default:
         return null;
     }
