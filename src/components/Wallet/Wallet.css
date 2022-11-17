@@ -422,3 +422,78 @@
 .dashboard .image {
   mask-image: none !important;
 }
+.select_currency .MuiOutlinedInput-notchedOutline {
+  border-style: none;
+}
+.select-label {
+  color: rgba(0,0,0, .85) !important;
+}
+.options-height-wallet {
+  max-height: 250px !important;
+}
+.select_currency.MuiSelect-select {
+  padding: 8px !important;
+}
+.selectbox_div {
+  padding: 25px !important;
+  margin-left: -20px !important;
+  font-family: sans-serif;
+  color: rgba(0, 0, 0, .85) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding-left: -10px !important;
+  margin-top: 2px !important;
+}
+.selectbox_div {
+  padding: 25px !important;
+  margin-left: -20px !important;
+  font-family: sans-serif;
+  color: rgba(0, 0, 0, .85) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding-left: -10px !important;
+  margin-top: 2px !important;
+}
+.newSpanDropClass {
+  margin-left: 182px !important;
+  position: relative !important;
+  top: 2px !important;
+}
+.select-label {
+  color: rgba(0, 0, 0, .85) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  margin-top: 6px !important;
+  position: absolute !important;
+  left: 30px !important;
+  top: 0px !important;
+  font-family: "Poppins", sans-serif !important;
+}
+.width-selectBox {
+  min-width: 270px !important;
+}
+.select-label-selected {
+  font-size: 17px !important;
+  left: 45px !important;
+  top: 29px !important;
+  cursor: pointer;
+}
+.rightSideBlock {
+  width: 100%;
+}
+.totalSumBlock {
+  padding: 20px 15px;
+}
+.balanceFontSize {
+  font-size: 18px !important;
+}
+
+.balanceFontSizeMobile {
+  font-size: 16px !important;
+}
+.blockSumAndPercentage {
+  min-width: 200px;
+}
+.hide-zero-span {
+  font-size: 12px !important;
+}

@@ -155,6 +155,7 @@ function Application(props) {
         setActiveScreen('registration');
       } else {
         if (window.location.search.includes('?signature=success')) {
+          sessionStorage.setItem('location','wallet');
           setActiveScreen("wallet");
           window.location.href = window.location.href.split('?')[0];
         }
