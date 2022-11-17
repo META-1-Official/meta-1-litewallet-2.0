@@ -28,7 +28,6 @@ export default function SignUpForm(props) {
   } = props;
 
   const [accountName, setAccountName] = useState("");
-  const [token, setToken] = useState(null);
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [password, setPassword] = useState("");
@@ -56,13 +55,6 @@ export default function SignUpForm(props) {
       setStep('signature');
     }
   }, []);
-
-  useEffect(async () => {
-    if (email && !token) {
-      const e_token = await getESigToken(email);
-      setToken(e_token);
-    }
-  }, [email])
 
   const openLogin = new OpenLogin({
     clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
@@ -121,6 +113,7 @@ export default function SignUpForm(props) {
   const stepLastSubmit = async () => {
     setCopyPasskeyModal(false);
     const response_user = await getUserKycProfile(email);
+    const token = await getESigToken(email);
 
     if (!token) return;
     if (!response_user) return;
