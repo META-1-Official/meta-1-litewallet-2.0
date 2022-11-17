@@ -12,6 +12,7 @@ import { useQuery } from "react-query";
 import PortfolioTable from "./PortfolioTable";
 import { userCurrencySelector } from "../../store/meta1/selector";
 import { useSelector } from "react-redux";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 // Трансферы между мета1 аккаунтами
 // вместо BitShares ставь Meta1
@@ -45,6 +46,8 @@ function Wallet(props) {
   const [loader, setLoader] = useState(true);
   const [check, setCheck] = useState(false);
   const [isCurrencySelected, setIsCurrencySelected] = useState('')
+  const [isCurrencySelectedEmpty, setIsCurrencySelectedEmpty] = useState(true);
+  const [selectBoxOpen, setSelectBoxOpen] = useState(false);
   const { data, isLoading, error } = useQuery("cryptos", getDatas);
 
   async function getDatas() {
@@ -59,6 +62,15 @@ function Wallet(props) {
     fetchedCryptos["USDT"] = { latest: 1, percent_change: 0 };
     return fetchedCryptos;
   }
+
+  useEffect(() => {
+    if (isCurrencySelected === '' && !isCurrencySelectedEmpty && !selectBoxOpen) {
+      setIsCurrencySelectedEmpty(true);
+    }
+    if (isCurrencySelected !== '' && isCurrencySelectedEmpty) {
+      setIsCurrencySelectedEmpty(false);
+    }
+  },[isCurrencySelected, selectBoxOpen]);
 
   useEffect(() => {
     function check() {
@@ -124,26 +136,15 @@ function Wallet(props) {
     document.getElementById("forCheck").innerText = userCurrencyState.split(" ")[1];
   };
 
-  const changeCryptoCurrency = async (e) => {
-    let chosen = document.getElementById("forCheck").innerText;
-    document.getElementById("switchContainer").style.display = "none";
-    let crypto = null;
-    switch (e.target.nodeName) {
-      case "LI":
-        crypto = e.target.outerText;
-        break;
-      case "SPAN":
-        crypto = e.target.outerText;
-        break;
-      case "IMG":
-        crypto = e.target.nextSibling.outerText;
-        break;
-      default:
-        break;
+  const changeCryptoCurrency = async (e, firstRenderFlag = false) => {
+    let crypto;
+    if (firstRenderFlag) {
+      crypto = sessionStorage.getItem('selectedCurrency') || 'USDT';
+    } else {
+      crypto = e.target.value;
     }
     if (crypto !== "META1") {
-      if (document.getElementById("forCheck").innerText === "META1") {
-        chosen = userCurrencyState.split(" ")[1];
+      if (userCurrencyState.split(' ')[1] === "META1") {
         let data = await getAllByOne('USDT', crypto);
         sessionStorage.setItem('currencyResult', JSON.stringify(data))
         setCurrentCurrency(currentCurrency + 1);
@@ -153,9 +154,10 @@ function Wallet(props) {
       }
     } else {
       setCurrentCurrency(currentCurrency + 1);
-      let crypto = "META1";
+      crypto = "META1";
     }
-    setIsCurrencySelected(crypto)
+    sessionStorage.setItem('selectedCurrency', crypto);
+    setIsCurrencySelected(crypto);
   };
 
   function Portfolio(props) {
@@ -195,14 +197,16 @@ function Wallet(props) {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: '-23px'
           }}
         >
           <div
             className={"blockSumAndPercentage"}
-            style={{ display: "flex", flexDirection: "row" }}
+            style={{ display: "flex", flexDirection: "row", alignItems:'center' }}
           >
             <h2 style={{ color: "#FFC000", fontSize: "2rem", margin: "0" }}>
-              <strong className={"adaptAmountMain"} style={!isMobile ? { fontSize: '25px' } : { fontSize: '16px !important' }}>
+              <strong className={`adaptAmountMain ${!isMobile ? 'balanceFontSize' : 'balanceFontSizeMobile' }`} style={!isMobile ? { fontSize: '25px' } : { fontSize: '16px !important' }}>
                 {loader && isLoading ? (
                   <Loader size="mini" active inline="centered" />
                 ) : (
@@ -216,7 +220,7 @@ function Wallet(props) {
               style={{
                 margin: ".3rem 0 .5rem 1rem",
                 fontSize: ".8rem",
-                height: "55%",
+                height: "28%",
                 padding: ".3rem",
                 borderRadius: "3px",
                 boxShadow: "0 4px 9px 5px rgba(0,0,0,.11)",
@@ -238,51 +242,72 @@ function Wallet(props) {
             </h5>
           </div>
           <div className="rightSideBlock">
-            <div className={"blockChoose"}>
-              <noscript id={"forCheck"}>{userCurrencyState.split(" ")[1]}</noscript>
-              <div className={"blockChoosen"} onClick={openDrop}>
-                <span style={{ textAlign: "center", paddingRight: '2px' }}>
-                  Select currency to display
-                </span>
-                <i
-                  className="fas fa-chevron-down"
-                  style={{ marginTop: ".2rem" }}
-                />
-              </div>
-              <div
-                id={"switchContainer"}
-                style={{ position: "relative", display: "none" }}
-              >
-                <ul className={"chooseContainer"}>
-                  <li
-                    className={"choosenContainerItem"}
-                    onClick={changeCurrencyToFiat}
+          <div className="select_currency">
+              <div className={"blockChoose"}>
+                {isCurrencySelectedEmpty && <div 
+                  onClick={() => {
+                    setIsCurrencySelectedEmpty(false);
+                    setSelectBoxOpen(true);
+                  }}
+                  className='selectbox_div'
+                > 
+                  Select currency to display <i class="fas fa-caret-down"></i>
+                </div>}
+                {!isCurrencySelectedEmpty && <FormControl className="mw-400 width-selectBox" sx={{ m: 1, minWidth: "270" }}>
+                  <InputLabel 
+                    onClick={() => {
+                      if (isCurrencySelected !== '') {
+                        setSelectBoxOpen(true);
+                      }
+                    }} 
+                    className={`select-label ${isCurrencySelected !== '' ? 'select-label-selected' : ''}`} id="demo-simple-select-autowidth-label"
                   >
-                    <img
-                      src={fiatIcon}
-                      alt="cryptoImage"
-                      className="imgContainer"
-                    />
-                    <span className="spanDrop">
-                      Fiat ({userCurrencyState.split(" ")[0]})
-                    </span>
-                  </li>
-                  {assets.map((el, index) => (
-                    <li
-                      onClick={changeCryptoCurrency}
-                      className={"choosenContainerItem"}
-                      key={index}
-                    >
+                    Select currency to display
+                  </InputLabel>
+                  <Select
+                    open={selectBoxOpen}
+                    labelId="demo-simple-select-autowidth-label"
+                    id="demo-simple-select-autowidth"
+                    value={isCurrencySelected}
+                    onOpen={() => {
+                      setSelectBoxOpen(true);
+                    }}
+                    onChange={(e) => changeCryptoCurrency(e, false)}
+                    autoWidth
+                    label="Select currency to display"
+                    MenuProps={{ classes: { paper: 'options-height-wallet' }}}
+                    onClose={()=>{
+                      setSelectBoxOpen(false);
+                    }}
+                  >
+                    <MenuItem>
                       <img
-                        src={el.image}
-                        style={{ width: "35px" }}
+                        src={fiatIcon}
                         alt="cryptoImage"
                         className="imgContainer"
                       />
-                      <span className="spanDrop">{el.symbol}</span>
-                    </li>
-                  ))}
-                </ul>
+                      <span className="spanDrop newSpanDropClass">
+                        Fiat ({userCurrencyState.split(" ")[0]})
+                      </span>
+                    </MenuItem>
+                    {assets.map((el, index) => (
+                      <MenuItem
+                        className={"choosenContainerItem"}
+                        key={index}
+                        value={el.symbol}
+                      >
+                        <img
+                          src={el.image}
+                          style={{ width: "35px" }}
+                          alt="cryptoImage"
+                          className="imgContainer"
+                        />
+                        <span className="spanDrop newSpanDropClass">{el.symbol}</span>
+                      </MenuItem>
+                    ))}
+
+                  </Select>
+                </FormControl>}
               </div>
             </div>
             <hr
@@ -293,7 +318,7 @@ function Wallet(props) {
               }
             />
             <div className={"switcher"} style={{ paddingTop: "1.4rem" }}>
-              <span>Hide Zero Balances</span>
+              <span className='hide-zero-span'>Hide Zero Balances</span>
               <Switch
                 className={"switch"}
                 checked={hideZero}
