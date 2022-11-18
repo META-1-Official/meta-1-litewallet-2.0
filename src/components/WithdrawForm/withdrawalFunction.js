@@ -38,6 +38,11 @@ const broadcast = (transaction, resolve, reject, isSuccess) => {
             if (resolve) resolve();
         })
         .catch((error) => {
+            if (error && error?.message && error.message.includes('missing required active authority: Missing Active Authority')) {
+                isSuccess(false, 'fail', true);
+            } else {
+                isSuccess(false, 'fail');
+            }
             clearTimeout(broadcast_timeout);
             // messages of length 1 are local exceptions (use the 1st line)
             // longer messages are remote API exceptions (use the 1st line)
