@@ -1,6 +1,6 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
 import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar, validateSignature } from '../../API/API';
-import { setAccessToken, setLoginDetail } from '../../utils/localstorage';
+import { setAccessToken, setLocation, setLoginDetail } from '../../utils/localstorage';
 import { checkTokenRequest, checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService } from './actions';
 import * as types from './types';
 import Meta1 from "meta1-vision-dex";
@@ -18,6 +18,7 @@ function* loginHandler(data) {
         if (!response.error) {
             setAccessToken(response.token);
             setLoginDetail(response.accountName)
+            setLocation('wallet');
             yield put(loginSuccess({ accountName: response.accountName, token: response.token, fromSignUp: data?.payload?.fromSignUpFlag }));
         } else {
             yield put(loginError({ accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
