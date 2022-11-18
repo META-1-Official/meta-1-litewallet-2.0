@@ -157,6 +157,7 @@ function Application(props) {
         if (window.location.search.includes('?signature=success')) {
           sessionStorage.setItem('location','wallet');
           setActiveScreen("wallet");
+          console.log("enddddddddd",sessionStorage.getItem("location"));
           window.location.href = window.location.href.split('?')[0];
         }
       }
@@ -310,10 +311,12 @@ function Application(props) {
   }
 
   const onRegistration = async (acc, pass, regEmail) => {
+    sessionStorage.removeItem('location');
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
     onLogin(acc, true, pass, true, regEmail);
+    sessionStorage.setItem('location','wallet');
     setActiveScreen("wallet");
   };
 

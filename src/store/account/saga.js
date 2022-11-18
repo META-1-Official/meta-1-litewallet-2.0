@@ -13,6 +13,7 @@ function* loginHandler(data) {
                 yield put(loginError({ accountName: null, token: '', msg: 'Account Creation is under process. Please try after sometime' }));
                 return;
             }
+            sessionStorage.setItem('location','wallet');
         }
         const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail: data.payload.emailOrPassword);
         if (!response.error) {
