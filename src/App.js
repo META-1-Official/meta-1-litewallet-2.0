@@ -171,7 +171,6 @@ function Application(props) {
     if (accountNameState) {
       setLoginDataError(false);
       onLogin(accountNameState,false)
-      console.log("accountNameState",accountNameState)
       if (fromSignUp) {
         setPortfolio(null);
         setRefreshData(prev=>!prev);
@@ -258,7 +257,6 @@ function Application(props) {
           ) {
             setActiveScreen("login");
           } else {
-            console.log("accountNameState connect",sessionStorage.getItem("location"))
             setActiveScreen(
               sessionStorage.getItem("location") != null
                 ? sessionStorage.getItem("location")
