@@ -120,3 +120,8 @@ button.withdraw {
 .new-max-withdrawal {
 	margin-top: 8rem !important;
 }
+
+.new_claim_wallet_modal__msg {
+	margin: 13rem auto !important;
+    max-height: 16rem !important;
+}

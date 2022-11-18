@@ -67,7 +67,7 @@ const getChainStore = (accountName) => {
   })
 }
 const WithdrawForm = (props) => {
-  const { onBackClick, asset } = props;
+  const { onBackClick, asset, redirectToPortfolio } = props;
   const accountNameState = useSelector(accountsSelector);
   const userCurrencyState = useSelector(userCurrencySelector);
   const [isLoading, setIsLoading] = useState(false);
@@ -92,7 +92,8 @@ const WithdrawForm = (props) => {
   const [isValidCurrency, setIsValidCurrency] = useState(false);
   const [isSuccess, setIsSuccess] = useState({
     status: false,
-    text: ''
+    text: '',
+    errorMsg: '' 
   });
   const sendEmailState = useSelector(sendEmailSelector);
   const passwordRequestFlagState = useSelector(passwordRequestFlagSelector);
@@ -206,10 +207,11 @@ const WithdrawForm = (props) => {
     }
   }, [toAddress, selectedFrom]);
 
-  const setIsSuccessHandler = (status, text) => {
+  const setIsSuccessHandler = (status, text, errorMsg = "") => {
     setIsSuccess({
       status,
-      text
+      text,
+      errorMsg
     });
   }
 
@@ -440,6 +442,8 @@ const WithdrawForm = (props) => {
         toAddress: trim(toAddress)
       };
       dispatch(sendMailRequest({ emailType, emailData }))
+      // redirect to wallet
+      redirectToPortfolio();
     }
   };
 
@@ -725,7 +729,7 @@ const WithdrawForm = (props) => {
       </div>
       <Modal
         size="mini"
-        className="claim_wallet_modal"
+        className={`${isSuccess.errorMsg ? 'new_claim_wallet_modal__msg' : 'claim_wallet_modal' }`}
         onClose={() => {
           resetState();
         }}
@@ -741,7 +745,8 @@ const WithdrawForm = (props) => {
               Hello {accountNameState}<br />
             </h3>
           </div>
-          <h6 className={`${isSuccess.status && isSuccess.text === 'ok' ? 'modal_withdrawal_status_success' : 'modal_withdrawal_status_danger'}`}>Withdrawal {isSuccess.status && isSuccess.text === 'ok' ? 'Successfully Done' : 'Failed'}</h6>
+          {!isSuccess.errorMsg && <h6 className={`${isSuccess.status && isSuccess.text === 'ok' ? 'modal_withdrawal_status_success' : 'modal_withdrawal_status_danger'}`}>Withdrawal {isSuccess.status && isSuccess.text === 'ok' ? 'Successfully Done' : 'Failed'}</h6>}
+          {!isSuccess.status && isSuccess.text === 'fail' && isSuccess.errorMsg && <div className="modal_withdrawal_status_danger">{isSuccess.errorMsg}</div>}
         </Modal.Content>
         <Modal.Actions className="claim_modal-action">
           <Button

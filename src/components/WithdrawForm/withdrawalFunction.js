@@ -38,8 +38,8 @@ const broadcast = (transaction, resolve, reject, isSuccess) => {
             if (resolve) resolve();
         })
         .catch((error) => {
-            if (error && error?.message && error.message.includes('missing required active authority: Missing Active Authority')) {
-                isSuccess(false, 'fail', true);
+            if (error && error?.message) {
+                isSuccess(false, "fail", error.message);
             } else {
                 isSuccess(false, 'fail');
             }

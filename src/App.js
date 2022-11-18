@@ -668,6 +668,7 @@ function Application(props) {
                     e.preventDefault();
                     setActiveScreen("wallet");
                   }}
+                  redirectToPortfolio={() => setActiveScreen("wallet")}
                   onSuccessWithDrawal={()=> {
                     setPortfolio(null);
                     refetchPortfolio();
