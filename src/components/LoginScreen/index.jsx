@@ -301,7 +301,7 @@ export default function LoginScreen(props) {
 
           {isLoginState && oldUserState && migratable && <div className={styles.linkMeta}>
             <h5>
-              <strong>To Claim Meta1 Wallet, click here</strong>
+              <strong>To complete the transfer of your funds from your original LEGACY Wallet, click the button below and enter your passkey from your LEGACY wallet.</strong>
             </h5>
             <br />
             <button
@@ -310,7 +310,7 @@ export default function LoginScreen(props) {
               type={"button"}
               style={{ marginTop: "0" }}
             >
-              Claim Meta1 Wallet
+              Claim Legacy Wallet
             </button>
             {checkTransfer.showPasswordColumn && <>
               <input
@@ -319,7 +319,7 @@ export default function LoginScreen(props) {
                   checkTransferStateHandler(e.target.name, e.target.value);
                 }}
                 name="password"
-                placeholder={"Owner Private Key"}
+                placeholder={"original passkey"}
                 value={checkTransfer.password}
                 type="password"
               />
