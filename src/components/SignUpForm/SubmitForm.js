@@ -10,6 +10,7 @@ import {
   Form,
   Popup,
   Grid,
+  Icon,
 } from "semantic-ui-react";
 
 export default function SubmitForm(props) {
@@ -119,9 +120,14 @@ export default function SubmitForm(props) {
             <Message
               className={"messageRed"}
               icon="attention"
-              header="Important information"
-              content="If you forget your passkey phrase you will be unable to access your account and your funds. We cannot reset or restore your passkey! Memorize or write down your username and passkey!"
-            />
+            >
+              <Icon name='attention' />
+              <div>
+                <Message.Header className="important_msg_header">Important information</Message.Header>
+                If you forget your passkey you will NOT be able to access your wallet or your funds. We are NO LONGER able to restore, reset, or redistribute lost coins, or help with lost passkeys. Please MAKE SURE you  copy your wallet name and passkey on to your computer and then transfer it to an offline storage location for easy access like a USB drive! Check our passkey storage tips knowledge article for more info
+                <a target="__blank" href={`${process.env.REACT_APP_WALLET_FOOTER_SUPPORT_HREF}/password-storage-tips`}> here</a>
+              </div>
+            </Message>
 
             <Form.Field>
               <Checkbox
