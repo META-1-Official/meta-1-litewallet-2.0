@@ -17,10 +17,10 @@ export default function SubmitForm(props) {
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
 
-  const [access, setAccess] = useState(props.signatureResult !== 'success' ? false : true);
-  const [recover, setRecover] = useState(props.signatureResult !== 'success' ? false : true);
-  const [stored, setStored] = useState(props.signatureResult !== 'success' ? false : true);
-  const [living, setLiving] = useState(props.signatureResult !== 'success' ? false : true);
+  const [access, setAccess] = useState(localStorage.getItem('access') === 'true' ? true : false);
+  const [recover, setRecover] = useState(localStorage.getItem('recover') === 'true' ? true : false);
+  const [stored, setStored] = useState(localStorage.getItem('stored') === 'true' ? true : false);
+  const [living, setLiving] = useState(localStorage.getItem('living') === 'true' ? true : false);
   const [signed, setSigned] = useState(props.signatureResult !== 'success' ? false : true);
   const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
 
@@ -61,6 +61,10 @@ export default function SubmitForm(props) {
           localStorage.setItem('lastname', lastName);
           localStorage.setItem('phone', phone);
           localStorage.setItem('email', email);
+          localStorage.setItem('access', access);
+          localStorage.setItem('recover', recover);
+          localStorage.setItem('stored', stored);
+          localStorage.setItem('living', living);
 
           window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL
             }/e-sign?email=${encodeURIComponent(
