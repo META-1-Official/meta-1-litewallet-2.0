@@ -216,7 +216,9 @@ export default function SignUpForm(props) {
       case 'submit':
         return <SubmitForm
           {...props}
-          onSubmit={stepLastSubmit}
+          onSubmit={() => {
+            setCopyPasskeyModal(true)
+          }}
           accountName={accountName}
           lastName={lastName}
           firstName={firstName}
