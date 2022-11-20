@@ -30,7 +30,12 @@ export default class Portfolio {
             [accName],
             false
         )
-        const fetchedBalances = fetchedAccounts[0][1].balances
+        let fetchedBalances = [];
+        if (Array.isArray(fetchedAccounts)) {
+            if (Array.isArray(fetchedAccounts[0]) && fetchedAccounts[0].length > 1) {
+                fetchedBalances = fetchedAccounts[0][1]?.balances;
+            }
+        }
         fetchedAssets.map((a) => (a.image = assetImages[a.symbol]))
         fetchedBalances.forEach((balance) => {
             balance.asset = fetchedAssets.find(

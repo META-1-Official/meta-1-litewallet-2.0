@@ -303,9 +303,11 @@ function Application(props) {
 
   function refetchPortfolio() {
     setTimeout(async () => {
-      const fetched = await portfolioReceiverState.fetch();
-      setPortfolio(fetched.portfolio);
-      setFullPortfolio(fetched.full);
+      if (accountNameState) {
+        const fetched = await portfolioReceiverState.fetch();
+        setPortfolio(fetched.portfolio);
+        setFullPortfolio(fetched.full);
+      }
     }, 2000);
   }
 
