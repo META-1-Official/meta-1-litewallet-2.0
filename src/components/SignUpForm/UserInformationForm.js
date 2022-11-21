@@ -18,6 +18,7 @@ const useDebounce = (value, timeout) => {
 
   return state;
 };
+const ALLOW_PHONE_NUMBER_KEY = ["Backspace" , "Tab", "ArrowRight", "ArrowLeft"];
 
 const UserInformationForm = (props) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -178,6 +179,7 @@ const UserInformationForm = (props) => {
 
   const { innerWidth: width } = window;
   const isMobile = width <= 600;
+  const isMobileTabIndex = width <= 767;
 
   const MobileNumberError = phoneFormat.replaceAll(' ', '');
 
@@ -201,6 +203,7 @@ const UserInformationForm = (props) => {
                   <Form.Field>
                     <label>First Name</label>
                     <input
+                      tabIndex={1}
                       value={firstName}
                       onChange={(event) => {
                         setFirstName(event.target.value);
@@ -233,6 +236,7 @@ const UserInformationForm = (props) => {
                     <label >Phone Number</label>
                     <div className="phone-number-div">
                       <Select
+                        tabIndex={isMobileTabIndex ? 2 : 3}
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         open={isSelectorOpen}
@@ -267,15 +271,16 @@ const UserInformationForm = (props) => {
                         })}
                       </Select>
                       <input
+                        tabIndex={isMobileTabIndex ? 3 : 4}
                         ref={phoneRef}
                         value={phoneFormat}
                         type='tel'
                         className="phone-number-input"
                         onChange={(e) => phoneNumberChangeHandler(e)}
                         onKeyDown={(event) => {
-                          if (event.key !== "Backspace" && !selectedCountryObj.patterns && phoneFormat.length === 15) {
+                          if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
                             event.preventDefault();
-                          } else if (event.key !== "Backspace" && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length) {
+                          } else if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
                             event.preventDefault();
                           } else if (event.key === " ") {
                             event.preventDefault();
@@ -294,6 +299,7 @@ const UserInformationForm = (props) => {
                   <Form.Field>
                     <label>Last Name</label>
                     <input
+                      tabIndex={isMobileTabIndex ? 4 : 2}
                       value={lastName}
                       onChange={(event) => {
                         setLastName(event.target.value);
@@ -329,6 +335,7 @@ const UserInformationForm = (props) => {
             <Form.Field>
               <label>Wallet Name</label>
               <input
+                tabIndex={5}
                 control={Input}
                 value={accountName}
                 type="text"
@@ -348,6 +355,7 @@ const UserInformationForm = (props) => {
             </Form.Field>
             <Form.Field>
               <Button
+                tabIndex={6}
                 className="yellow"
                 style={{ color: "#240000", marginTop: '1em' }}
                 type="submit"
