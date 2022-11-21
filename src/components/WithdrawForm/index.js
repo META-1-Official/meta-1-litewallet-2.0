@@ -20,7 +20,7 @@ import MetaLoader from "../../UI/loader/Loader";
 import { trim } from "../../helpers/string";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, isValidPasswordKeySelector, passwordRequestFlagSelector, sendEmailSelector } from "../../store/account/selector";
-import { passKeyRequestService, sendMailRequest, sendMailReset } from "../../store/account/actions";
+import { passKeyRequestService, passKeyResetService, sendMailRequest, sendMailReset } from "../../store/account/actions";
 import { userCurrencySelector } from "../../store/meta1/selector";
 import { availableGateways } from '../../utils/gateways';
 import { getMETA1Simple } from "../../utils/gateway/getMETA1Simple";
@@ -420,6 +420,7 @@ const WithdrawForm = (props) => {
 
   const resetState = () => {
     setIsSuccessHandler(false, '');
+    dispatch(passKeyResetService());
     if (isSuccess.status && isSuccess.text === 'ok') {
       // Reset form inputs
       setName('');
