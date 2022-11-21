@@ -440,3 +440,11 @@ video {
   margin-bottom: 7px !important;
   font-weight: 700 !important;
 }
+
+.phone-number-div .MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.country-code.css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:focus-visible {
+  outline: 0px solid #ab7513 !important;
+}
+
+.phone-number-div .MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.country-code.css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:focus .css-1d3z3hw-MuiOutlinedInput-notchedOutline{
+  border: 1px solid #ab7513 !important;
+}
