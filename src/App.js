@@ -29,7 +29,7 @@ import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
-import { getAccessToken, setAccessToken } from "./utils/localstorage";
+import { getAccessToken, getLoginDetail, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
@@ -42,6 +42,7 @@ import { useQuery } from "react-query";
 window.Meta1 = Meta1;
 function Application(props) {
   const accountNameState = useSelector(accountsSelector);
+  const isLoginState = useSelector(isLoginSelector);
   const tokenState = useSelector(tokenSelector);
   const loaderState = useSelector(loaderSelector);
   const loginErrorState = useSelector(loginErrorSelector);
@@ -303,9 +304,11 @@ function Application(props) {
 
   function refetchPortfolio() {
     setTimeout(async () => {
-      const fetched = await portfolioReceiverState.fetch();
-      setPortfolio(fetched.portfolio);
-      setFullPortfolio(fetched.full);
+      if (isLoginState && getLoginDetail()) {
+        const fetched = await portfolioReceiverState.fetch();
+        setPortfolio(fetched.portfolio);
+        setFullPortfolio(fetched.full);
+      }
     }, 2000);
   }
 

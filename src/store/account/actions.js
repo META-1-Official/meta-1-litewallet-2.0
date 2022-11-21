@@ -1,4 +1,4 @@
-import { removeAccessToken, removeLoginDetail } from '../../utils/localstorage';
+import { removeAccessToken, removeLocation, removeLoginDetail } from '../../utils/localstorage';
 import * as types from './types';
 
 export const loginRequestService = (payload) => {
@@ -25,6 +25,7 @@ export const loginError = (payload) => {
 export const logoutRequest = () => {
     removeLoginDetail();
     removeAccessToken();
+    removeLocation();
     return {
         type: types.LOGOUT_REQUEST
     }
