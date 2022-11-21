@@ -140,6 +140,10 @@ export default function SignUpForm(props) {
       localStorage.removeItem('lastname');
       localStorage.removeItem('phone');
       localStorage.removeItem('email');
+      localStorage.removeItem('access');
+      localStorage.removeItem('recover');
+      localStorage.removeItem('stored');
+      localStorage.removeItem('living');
       setDownloadPaperWalletModal(true);
     } catch (e) { }
   };
