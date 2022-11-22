@@ -83,6 +83,10 @@ export default function SignUpForm(props) {
     setPhoneFormat(newPhoneFormat);
     setCountry(newCountry);
     setSelectedCountryObj(newSelectedCountryObj);
+    localStorage.removeItem('access');
+    localStorage.removeItem('recover');
+    localStorage.removeItem('stored');
+    localStorage.removeItem('living');
     const response = await checkOldUser(accName);
 
     if (response?.found === true) {
@@ -107,6 +111,10 @@ export default function SignUpForm(props) {
   };
 
   const stepGoToEsignature = () => {
+    localStorage.removeItem('access');
+    localStorage.removeItem('recover');
+    localStorage.removeItem('stored');
+    localStorage.removeItem('living');
     setStep('submit');
   };
 
