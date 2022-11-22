@@ -130,7 +130,7 @@ export default function FaceKiForm(props) {
                 <div className="position-head color-black">Position your face in the oval</div>
                 <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
               </div>
-              <img src={isMobile ? MobileOvalImage :  OvalImage} alt='oval-image' className='oval-image' />
+              {!isMobile && <img src={OvalImage} alt='oval-image' className='oval-image' />}
               <Webcam
                 audio={false}
                 ref={webcamRef}
@@ -139,8 +139,8 @@ export default function FaceKiForm(props) {
                   width: 290,
                   height: 390,
                 } : { deviceId: device?.deviceId }}
-                width={isMobile ? 290 : 500}
-                height={isMobile ? 390 : device?.aspectRatio ? 500 / device?.aspectRatio : 385}
+                width={500}
+                height={device?.aspectRatio ? 500 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>
