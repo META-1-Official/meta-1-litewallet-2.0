@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
 import { liveLinessCheck, verify, getUserKycProfile } from "../../API/API";
@@ -14,7 +14,7 @@ export default function FaceKiForm(props) {
   const { innerWidth: width } = window;
   const isMobile = width <= 678;
 
-  React.useEffect(
+  useEffect(
     async () => {
       let features = {
         audio: false,
@@ -42,7 +42,7 @@ export default function FaceKiForm(props) {
   }
 
   const videoVerify = async () => {
-    const { email, accountName } = props;
+    const { email, accountName, onSubmit } = props;
     const imageSrc = webcamRef.current.getScreenshot();
 
     const response_user = await getUserKycProfile(email);
@@ -69,11 +69,7 @@ export default function FaceKiForm(props) {
     const response = await liveLinessCheck(file);
 
     if (response.data.liveness !== 'Genuine') {
-      if (response.data.box.h > 120)
-        alert('You are too close to the camera.')
-      else {
-        alert('Please check your background and try again.')
-      }
+        alert('Try again by changing position or background.');
     } else {
       const response_verify = await verify(file);
       if (response_verify.status === 'Verify OK') {
@@ -81,6 +77,7 @@ export default function FaceKiForm(props) {
 
         if (nameArry.includes(email)) {
           setFaceKISuccess(true);
+          onSubmit();
         } else {
           alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
         }
@@ -121,13 +118,6 @@ export default function FaceKiForm(props) {
                 <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to log complete authentication' : 'Verification Successful!'}</p>
                 <div className="btn-grp">
                   <button className={!faceKISuccess ? 'btn-1' : 'btn-disabled'} onClick={videoVerify} disabled={faceKISuccess === true}>Verify</button>
-                  <Button
-                    onClick={() => props.onClick()}
-                    className={faceKISuccess ? 'btn-2' : 'btn-disabled'}
-                    disabled={faceKISuccess === false}
-                  >
-                    Next
-                  </Button>
                 </div>
               </div>
             </div>
