@@ -54,11 +54,7 @@ export default function FaceKiForm(props) {
     const response = await liveLinessCheck(file);
 
     if (response.data.liveness !== 'Genuine') {
-      if (response.data.box.h > 120)
-        alert('You are too close to the camera.')
-      else {
-        alert('Please check your background and try again.')
-      }
+      alert('Try again by changing position or background.');
     } else {
       const response_verify = await verify(file);
       if (

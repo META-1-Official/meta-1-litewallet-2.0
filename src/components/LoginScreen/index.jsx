@@ -165,7 +165,7 @@ export default function LoginScreen(props) {
     }
   };
 
-  const handleFaceKiClick = () => {
+  const handleFaceKiSubmit = () => {
     onSubmit(login, true, email);
   }
 
@@ -173,7 +173,7 @@ export default function LoginScreen(props) {
     return (
       <FaceKiForm
         {...props}
-        onClick={handleFaceKiClick}
+        onSubmit={handleFaceKiSubmit}
         accountName={login}
         email={email}
         privKey={privKey}
