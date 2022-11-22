@@ -448,3 +448,12 @@ video {
 .phone-number-div .MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.country-code.css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:focus .css-1d3z3hw-MuiOutlinedInput-notchedOutline{
   border: 1px solid #ab7513 !important;
 }
+
+.migration_title {
+  display: block !important;
+  margin: 0 0 0.28571429rem 0 !important;
+  color: rgba(0,0,0,.87)  !important;
+  font-size: 0.928571rem !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+}

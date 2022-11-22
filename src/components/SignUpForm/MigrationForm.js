@@ -27,6 +27,9 @@ export default function MigrationForm(props) {
 
   return (
     <Grid className="migration-page">
+      <div className="migration_title">
+        Import Legacy Wallet
+      </div>
       <div className="migration_subtitle">
         To import your original wallet from the LEGACY META Blockchain please enter your LEGACY wallet ID and passkey for that wallet below.
       </div>
