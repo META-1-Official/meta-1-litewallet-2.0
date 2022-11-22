@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -46,7 +46,7 @@ const PortfolioTable = React.memo((props) => {
     return fetchedCryptos;
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     filteredPortfolio.forEach((d, i) => {
       let precision = assets.filter((asset) => asset.symbol.includes(d.name));
       Object.assign(filteredPortfolio[i], { pre: precision[0].precision });
