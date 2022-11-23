@@ -101,7 +101,7 @@ export default function FaceKiForm(props) {
                 <div className="position-head color-black">Position your face in the oval</div>
                 <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
               </div>
-              <img src={isMobile ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
+              {!isMobile && <img src={OvalImage} alt='oval-image' className='oval-image' />}
               <Webcam
                 audio={false}
                 ref={webcamRef}

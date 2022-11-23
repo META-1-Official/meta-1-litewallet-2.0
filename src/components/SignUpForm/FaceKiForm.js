@@ -12,7 +12,7 @@ export default function FaceKiForm(props) {
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const [device, setDevice] = React.useState({});
   const { innerWidth: width } = window;
-  const isMobile = width <= 678;
+  const isMobile = width <= 767;
   React.useEffect(
     async () => {
       let features = {
@@ -135,8 +135,8 @@ export default function FaceKiForm(props) {
                   width: 290,
                   height: 390,
                 } : { deviceId: device?.deviceId }}
-                width={500}
-                height={device?.aspectRatio ? 500 / device?.aspectRatio : 385}
+                width={isMobile ? 300 : 500}
+                height={isMobile ? 350 : device?.aspectRatio ? 500 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>
