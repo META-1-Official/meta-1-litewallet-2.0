@@ -83,18 +83,20 @@ const _createPaperWalletAsPDF = function (
     pdf.text(accountName, 42, rowHeight - 10)
 
     let content = keys.map((privateKeys, index) => {
-        if (index >= 1) {
-            rowHeight += 25 // add margin-top for block
+        if (privateKeys) {
+            if (index >= 1) {
+                rowHeight += 25 // add margin-top for block
+            }
+            checkPageH(pdf, rowHeight, 400)
+            pdf.text('Public', 22, rowHeight + 7)
+            pdf.text(keysName[index], 170, rowHeight + 7)
+            if (locked) {
+                pdf.text('Private', 327, rowHeight + 7)
+            }
+            pdf.line(lineMargin, rowHeight + 1, 365, rowHeight + 1)
+            pdf.line(lineMargin, rowHeight + 9, 365, rowHeight + 9)
+            keyRow(privateKeys)
         }
-        checkPageH(pdf, rowHeight, 400)
-        pdf.text('Public', 22, rowHeight + 7)
-        pdf.text(keysName[index], 170, rowHeight + 7)
-        if (locked) {
-            pdf.text('Private', 327, rowHeight + 7)
-        }
-        pdf.line(lineMargin, rowHeight + 1, 365, rowHeight + 1)
-        pdf.line(lineMargin, rowHeight + 9, 365, rowHeight + 9)
-        keyRow(privateKeys)
     })
 
     Promise.all(content).then(() => {

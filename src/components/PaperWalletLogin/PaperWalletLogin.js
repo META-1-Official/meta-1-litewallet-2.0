@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { generateKeyFromPassword } from "../../lib/createAccountWithPassword";
 import { Button, Form, FormField } from "semantic-ui-react";
 import useDebounce from "../../lib/useDebounce";
-import { PrivateKey } from "meta1-vision-js";
+import { PrivateKey, ChainStore } from "meta1-vision-js";
 import { createPaperWalletAsPDF } from "./CreatePdfWallet";
 import Meta1 from "meta1-vision-dex";
 import "./style.css";
@@ -18,6 +18,7 @@ export default function PaperWalletLogin({ accountName }) {
   const [check, setCheck] = useState(false);
   const debouncedAccount = useDebounce(account, 500);
   const portfolioReceiverState =  useSelector(portfolioReceiverSelector);
+  const acc = ChainStore.getAccount(account, false);
   useEffect(() => {
     if (account?.length > 0) {
       async function fetchAccount(debouncedAccount) {
@@ -38,43 +39,74 @@ export default function PaperWalletLogin({ accountName }) {
     }
   }, [debouncedAccount, account]);
 
-  // getting the privateKey
-  const getPrivateKey = (password) => PrivateKey.fromSeed(password).toWif();
-
   const handleSubmit = () => {
     setReadyToCreate(true);
   };
 
-  // Generate owner, memo and active Key
-  let { privKey: owner_private } = generateKeyFromPassword(
-    account,
-    "owner",
-    password
-  );
-  let { privKey: active_private } = generateKeyFromPassword(
-    account,
-    "active",
-    password
-  );
-  let { privKey: memo_private } = generateKeyFromPassword(
-    account,
-    "memo",
-    password
-  );
-
   const handleCreatePaperWallet = async () => {
     try {
       await Meta1.login(localStorage.getItem("login"), password);
+      const keys = getPrivateKeys();
       createPaperWalletAsPDF(
         localStorage.getItem("login"),
-        owner_private,
-        active_private,
-        memo_private
+        keys['owner'],
+        keys['active'],
+        keys['memo']
       );
     } catch (e) {
       setCheck(true);
     }
   };
+
+  const getPrivateKeys = () => {
+    let passwordKeys = {};
+
+    let fromWif;
+    try {
+      fromWif = PrivateKey.fromWif(password);
+    } catch (err) {
+      console.log('Err in validate', err);
+    }
+    
+    if (fromWif) {
+      const key = {
+        privKey: fromWif,
+        pubKey: fromWif.toPublicKey().toString()
+      };
+
+      if (acc)
+        ['active', 'owner', 'memo'].forEach((role) => {
+          if (acc) {
+            if (role === 'memo') {
+                if (acc.getIn(['options', 'memo_key']) == key.pubKey)
+                  passwordKeys[role] = acc.getIn(['options', 'memo_key']);
+            } else {
+              acc.getIn([role, 'key_auths']).forEach((auth) => {
+                if (auth.get(0) == key.pubKey)
+                  passwordKeys[role] = key.privKey;
+              });
+            }
+          }
+      });
+    } else {
+      passwordKeys['active'] = generateKeyFromPassword(
+        account,
+        "active",
+        password
+      ).privKey;
+      passwordKeys['owner'] = generateKeyFromPassword(
+        account,
+        "owner",
+        password
+      ).privKey;
+      passwordKeys['memo'] = generateKeyFromPassword(
+        account,
+        "memo",
+        password
+      ).privKey;
+    }
+    return passwordKeys;
+  }
 
   return (
     <div className="login-width">
