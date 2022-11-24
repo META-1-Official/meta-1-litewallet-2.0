@@ -98,7 +98,7 @@ export default function FaceKiForm(props) {
             </div>
             <div className='child-div'>
               <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
-                <div className="position-head color-black">Position your face in the oval</div>
+                <div className="position-head color-black">{isMobile ? '' : 'Position your face in the oval'}</div>
                 <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
               </div>
               {!isMobile && <img src={OvalImage} alt='oval-image' className='oval-image' />}
