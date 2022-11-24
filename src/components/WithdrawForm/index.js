@@ -526,6 +526,7 @@ const WithdrawForm = (props) => {
                     style={{ marginBottom: "1rem", borderRadius: "8px" }}
                     type="email"
                     autoComplete='off'
+                    name="new-password"
                   />
                   {emailAddress && !isValidEmailAddress &&
                     <span className="c-danger">Invalid email address</span>
