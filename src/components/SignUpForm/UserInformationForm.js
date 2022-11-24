@@ -232,11 +232,11 @@ const UserInformationForm = (props) => {
                       <p style={{ color: "red" }}> {firstNameError}</p>
                     )}
                   </Form.Field>
-                  <Form.Field>
+                  {!isMobile ? <Form.Field>
                     <label >Phone Number</label>
                     <div className="phone-number-div">
                       <Select
-                        tabIndex={isMobileTabIndex ? 2 : 3}
+                        tabIndex={3}
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         open={isSelectorOpen}
@@ -271,7 +271,7 @@ const UserInformationForm = (props) => {
                         })}
                       </Select>
                       <input
-                        tabIndex={isMobileTabIndex ? 3 : 4}
+                        tabIndex={4}
                         ref={phoneRef}
                         value={phoneFormat}
                         type='tel'
@@ -293,13 +293,10 @@ const UserInformationForm = (props) => {
                     {phoneError && (
                       <p style={{ color: "red" }}>{phoneError}</p>
                     )}
-                  </Form.Field>
-                </Grid.Column>
-                <Grid.Column width={isMobile ? 16 : 8}>
-                  <Form.Field>
+                  </Form.Field> : <Form.Field>
                     <label>Last Name</label>
                     <input
-                      tabIndex={isMobileTabIndex ? 4 : 2}
+                      tabIndex={2}
                       value={lastName}
                       onChange={(event) => {
                         setLastName(event.target.value);
@@ -327,7 +324,102 @@ const UserInformationForm = (props) => {
                     {lastNameError && (
                       <p style={{ color: "red" }}> {lastNameError}</p>
                     )}
-                  </Form.Field>
+                  </Form.Field>}
+                </Grid.Column>
+                <Grid.Column width={isMobile ? 16 : 8}>
+                  {!isMobile ? <Form.Field>
+                    <label>Last Name</label>
+                    <input
+                      tabIndex={2}
+                      value={lastName}
+                      onChange={(event) => {
+                        setLastName(event.target.value);
+                        if (!/^[A-Za-z]{0,63}$/.test(event.target.value)) {
+                          if (event.target.value.includes(' ')) {
+                            setLastNameError(
+                              "Whitespace character is not allowed."
+                            );
+                          } else if (/\d/.test(event.target.value)) {
+                            setLastNameError(
+                              "Numbers are not allowed."
+                            );
+                          } else {
+                            setLastNameError(
+                              "Your Last Name must not contain special characters."
+                            );
+                          }
+                        } else {
+                          setLastNameError(null);
+                        }
+                      }}
+                      placeholder="Last Name"
+                      required
+                    />
+                    {lastNameError && (
+                      <p style={{ color: "red" }}> {lastNameError}</p>
+                    )}
+                  </Form.Field> : <Form.Field>
+                    <label >Phone Number</label>
+                    <div className="phone-number-div">
+                      <Select
+                        tabIndex={3}
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        open={isSelectorOpen}
+                        onOpen={() => setIsSelectorOpen(true)}
+                        onClose={() => {
+                          setIsSelectorOpen(false);
+                          setIsTouchedCountry(true);
+                        }}
+                        value={country}
+                        className="country-code"
+                        MenuProps={{ classes: { paper: 'options-height' } }}
+                        label="Select"
+                        onChange={(e) => {
+                          const obj = countryCodes.find(data => data.id === Number(e.target.value));
+                          setCountry(e.target.value);
+                          setSelectedCountryObj(obj);
+                          setPhoneFormat('');
+                          setPhoneError('');
+                        }}
+                        style={{ maxHeight: '37px' }}
+                      >
+                        {countryCodes?.map((data, index) => {
+                          return <MenuItem key={index} value={data?.id}>
+                            <div className="country-select-data">
+                              <div>
+                                <img className="countryFlag-img" src={`https://flagcdn.com/24x18/${data?.iso2.toLowerCase()}.png`} alt='flag' />
+                                <span className={`countryName-span ${!isSelectorOpen ? 'hide-element' : ''}`} >{data.defaultName}</span>
+                              </div>
+                              <div className="countryCode-span">+{data?.countryCode}</div>
+                            </div>
+                          </MenuItem>
+                        })}
+                      </Select>
+                      <input
+                        tabIndex={4}
+                        ref={phoneRef}
+                        value={phoneFormat}
+                        type='tel'
+                        className="phone-number-input"
+                        onChange={(e) => phoneNumberChangeHandler(e)}
+                        onKeyDown={(event) => {
+                          if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
+                            event.preventDefault();
+                          } else if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
+                            event.preventDefault();
+                          } else if (event.key === " ") {
+                            event.preventDefault();
+                          }
+                        }}
+                        placeholder={Array.isArray(selectedCountryObj?.patterns) && selectedCountryObj?.patterns.length > 0 && selectedCountryObj?.patterns[0] ? selectedCountryObj?.patterns[0] : ''}
+                        required
+                      />
+                    </div>
+                    {phoneError && (
+                      <p style={{ color: "red" }}>{phoneError}</p>
+                    )}
+                  </Form.Field>}
                 </Grid.Column>
               </Grid>
             </div>
