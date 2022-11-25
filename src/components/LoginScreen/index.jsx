@@ -10,6 +10,7 @@ import OpenLogin from '@toruslabs/openlogin';
 import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
 import AccountApi from "../../lib/AccountApi";
+import MetaLoader from "../../UI/loader/Loader";
 
 export default function LoginScreen(props) {
   const {
@@ -39,6 +40,7 @@ export default function LoginScreen(props) {
   const [step, setStep] = useState('userform');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
+  const [loader, setLoader] = useState(false);
 
   const accountState = useSelector(accountsSelector);
   const isLoginState = useSelector(isLoginSelector);
@@ -151,6 +153,7 @@ export default function LoginScreen(props) {
             if (res[0] && res[0].length > 0) {
               if (res[0][0] === login) {
                 if (login.length !== 0) {
+                  setLoader(true);
                   renderTorusLogin();
                 }
               } else {
@@ -199,10 +202,11 @@ export default function LoginScreen(props) {
         setAuthData(data);
         setPrivKey(privKey);
         setEmail(data?.email);
-
+        setLoader(false);
         setStep('faceki');       
       }
     } catch (error) {
+      setLoader(false);
       console.log('Error in Torus Render', error);
     }
   };
@@ -383,6 +387,10 @@ export default function LoginScreen(props) {
         </Modal>
       </div>
     )
+  }
+
+  if (loader) {
+    return <MetaLoader size={"large"} />;
   }
 
   return (

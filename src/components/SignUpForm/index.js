@@ -15,6 +15,7 @@ import { createPaperWalletAsPDF } from "../PaperWalletLogin/CreatePdfWallet.js";
 import { sleepHandler } from "../../utils/common.js";
 import Meta1 from "meta1-vision-dex";
 import ModalTemplate from "./Modal.jsx";
+import MetaLoader from "../../UI/loader/Loader.js";
 
 export default function SignUpForm(props) {
   const {
@@ -43,6 +44,7 @@ export default function SignUpForm(props) {
   const [copyPasskeyModal, setCopyPasskeyModal] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { innerWidth: width } = window;
+  const [loader, setLoader] = useState(false);
   const isMobile = width <= 678;
   useEffect(() => {
     if (isSignatureProcessing) {
@@ -75,6 +77,8 @@ export default function SignUpForm(props) {
     newCountry,
     newSelectedCountryObj
   ) => {
+    // working
+    setLoader(true);
     setAccountName(accName);
     setFirstName(newFirstName);
     setPassword(pass);
@@ -90,6 +94,7 @@ export default function SignUpForm(props) {
     const response = await checkOldUser(accName);
 
     if (response?.found === true) {
+      setLoader(false);
       setStep('migration');
     }
     else renderTorusStep();
@@ -278,12 +283,13 @@ export default function SignUpForm(props) {
         setAuthData(data);
         setPrivKey(privKey);
         setEmail(data?.email);
-
+        setLoader(false);
         console.log('User logged in');
         setStep('faceki');
       }
     } catch (error) {
       console.log('Error in Torus Render', error);
+      setLoader(false);
     }
   }
 
@@ -295,6 +301,10 @@ export default function SignUpForm(props) {
     } else {
       setStep("userform");
     }
+  }
+
+  if (loader) {
+    return <MetaLoader size={"large"} />;
   }
 
   return (
