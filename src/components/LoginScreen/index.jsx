@@ -152,6 +152,7 @@ export default function LoginScreen(props) {
           if (Array.isArray(res) && res.length>0) {
             if (res[0] && res[0].length > 0) {
               if (res[0][0] === login) {
+                localStorage.removeItem('isMigrationUser');
                 if (login.length !== 0) {
                   setLoader(true);
                   renderTorusLogin();

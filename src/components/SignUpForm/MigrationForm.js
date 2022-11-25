@@ -11,6 +11,7 @@ export default function MigrationForm(props) {
   const handleClick = async () => {
     const response = await validateSignature(props.accountName, passkey);
     if (response?.isValid === true) {
+      localStorage.setItem('isMigrationUser',true);
       props.onClick(
         props.accountName,
         props.password,

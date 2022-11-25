@@ -103,6 +103,7 @@ function Application(props) {
   const [fromSignUp, setFromSignUp] = useState(false);
   const [isSignatureProcessing, setIsSignatureProcessing] = useState(false);
   const [signatureResult, setSignatureResult] = useState(null);
+  const [isFromMigration, setIsFromMigration] = useState(false);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
@@ -232,6 +233,9 @@ function Application(props) {
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
+        if (localStorage.getItem('isMigrationUser') === 'true') {
+          setIsFromMigration(true);
+        }
         localStorage.setItem("account", accountNameState);
         setActiveScreen(
           sessionStorage.getItem("location") != null
@@ -967,6 +971,41 @@ function Application(props) {
             }}
           >
             Claim Wallet</Button>
+        </Modal.Actions>
+      </Modal>
+      <Modal
+        size="mini"
+        className="claim_wallet_modal"
+        onClose={() => {
+          localStorage.removeItem('isMigrationUser');
+          setActiveScreen('login');
+          setIsFromMigration(false);
+        }}
+        open={isFromMigration}
+        id={"modalExch"}
+      >
+
+        <Modal.Content >
+          <div
+            className="claim_wallet_btn_div"
+
+          >
+            <h3 className="claim_model_content">
+              Hello {accountName}<br />
+              To Complete Migration of Your Funds Click Below
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              localStorage.removeItem('isMigrationUser');
+              setActiveScreen('login');
+              setIsFromMigration(false);
+            }}
+          >
+            Go There</Button>
         </Modal.Actions>
       </Modal>
     </>
