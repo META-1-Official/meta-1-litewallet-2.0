@@ -77,7 +77,6 @@ export default function SignUpForm(props) {
     newCountry,
     newSelectedCountryObj
   ) => {
-    // working
     setLoader(true);
     setAccountName(accName);
     setFirstName(newFirstName);
