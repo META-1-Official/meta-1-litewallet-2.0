@@ -54,22 +54,22 @@ export const assetsObj = [
     },
     {
         "id": "1.3.2",
-        "symbol": "ETH",
-        "precision": 10,
+        "symbol": "LTC",
+        "precision": 8,
         "issuer": "1.2.30",
         "dynamic_asset_data_id": "2.3.2"
     },
     {
         "id": "1.3.3",
-        "symbol": "XLM",
-        "precision": 7,
+        "symbol": "EOS",
+        "precision": 4,
         "issuer": "1.2.30",
         "dynamic_asset_data_id": "2.3.3"
     },
     {
         "id": "1.3.4",
-        "symbol": "EOS",
-        "precision": 4,
+        "symbol": "ETH",
+        "precision": 10,
         "issuer": "1.2.30",
         "dynamic_asset_data_id": "2.3.4"
     },
@@ -82,8 +82,8 @@ export const assetsObj = [
     },
     {
         "id": "1.3.6",
-        "symbol": "LTC",
-        "precision": 8,
+        "symbol": "XLM",
+        "precision": 7,
         "issuer": "1.2.30",
         "dynamic_asset_data_id": "2.3.6",
     },

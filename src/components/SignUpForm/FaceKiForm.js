@@ -16,11 +16,7 @@ export default function FaceKiForm(props) {
   React.useEffect(
     async () => {
       let features = {
-        audio: false,
-        video: {
-          width: { ideal: 1800 },
-          height: { ideal: 900 }
-        }
+        audio: false
       };
       let display = await navigator.mediaDevices.getUserMedia(features);
       setDevice(display?.getVideoTracks()[0]?.getSettings());
