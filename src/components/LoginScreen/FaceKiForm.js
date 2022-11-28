@@ -11,8 +11,7 @@ export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const [device, setDevice] = React.useState({});
-  const { innerWidth: width } = window;
-  const isMobile = width <= 678;
+  const [isMobile, setIsMobile] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
   useEffect(
@@ -23,9 +22,17 @@ export default function FaceKiForm(props) {
       };
       let display = await navigator.mediaDevices.getUserMedia(features);
       setDevice(display?.getVideoTracks()[0]?.getSettings());
+      isMobileHandler();
+      window.addEventListener('resize', isMobileHandler);
     },
     []
   );
+
+  const isMobileHandler = () => {
+    const { innerWidth: width } = window;
+    const isMobile = width <= 767;
+    setIsMobile(isMobile);
+  }
 
   const dataURLtoFile = (dataurl, filename) => {
     var arr = dataurl.split(','),
