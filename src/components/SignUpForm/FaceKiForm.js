@@ -46,7 +46,7 @@ export default function FaceKiForm(props) {
 
     if (!imageSrc) {
       alert('Check your camera');
-      setVerifying(true);
+      setVerifying(false);
       return;
     };
 
