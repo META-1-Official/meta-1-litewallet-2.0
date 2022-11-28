@@ -233,7 +233,7 @@ function Application(props) {
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
-        if (localStorage.getItem('isMigrationUser') === 'true') {
+        if (localStorage.getItem('isMigrationUser') === 'true' && localStorage.getItem('readyToMigrate') === 'true') {
           setIsFromMigration(true);
         }
         localStorage.setItem("account", accountNameState);
@@ -978,6 +978,7 @@ function Application(props) {
         className="claim_wallet_modal"
         onClose={() => {
           localStorage.removeItem('isMigrationUser');
+          localStorage.removeItem('readyToMigrate');
           setActiveScreen('login');
           setIsFromMigration(false);
         }}
@@ -1001,6 +1002,7 @@ function Application(props) {
             className="claim_wallet_btn"
             onClick={() => {
               localStorage.removeItem('isMigrationUser');
+              localStorage.removeItem('readyToMigrate');
               setActiveScreen('login');
               setIsFromMigration(false);
             }}

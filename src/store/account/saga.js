@@ -19,6 +19,9 @@ function* loginHandler(data) {
             setAccessToken(response.token);
             setLoginDetail(response.accountName)
             setLocation('wallet');
+            if (localStorage.getItem('isMigrationUser') === 'true' && data?.payload?.fromSignUpFlag) {
+                localStorage.setItem('readyToMigrate',true);
+            }
             yield put(loginSuccess({ accountName: response.accountName, token: response.token, fromSignUp: data?.payload?.fromSignUpFlag }));
         } else {
             yield put(loginError({ accountName: null, token: '', msg: 'Wallet name or Passkey is wrong' }));
