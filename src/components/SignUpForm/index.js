@@ -90,6 +90,7 @@ export default function SignUpForm(props) {
     localStorage.removeItem('recover');
     localStorage.removeItem('stored');
     localStorage.removeItem('living');
+    localStorage.removeItem('isMigrationUser');
     const response = await checkOldUser(accName);
 
     if (response?.found === true) {
