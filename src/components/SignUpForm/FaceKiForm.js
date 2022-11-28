@@ -10,6 +10,7 @@ import "./SignUpForm.css";
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [device, setDevice] = React.useState({});
   const { innerWidth: width } = window;
   const isMobile = width <= 767;
@@ -39,10 +40,13 @@ export default function FaceKiForm(props) {
 
   const videoEnroll = async () => {
     const { privKey, email } = props;
+
+    setVerifying(true);
     const imageSrc = webcamRef.current.getScreenshot();
 
     if (!imageSrc) {
       alert('Check your camera');
+      setVerifying(true);
       return;
     };
 
@@ -52,6 +56,7 @@ export default function FaceKiForm(props) {
 
     if (response.data.liveness !== 'Genuine') {
       alert('Try again by changing position or background.');
+      setVerifying(false);
     } else {
       const response_verify = await verify(file);
       if (
@@ -62,26 +67,31 @@ export default function FaceKiForm(props) {
         if (nameArry.includes(email)) {
           alert('You already enrolled and verified successfully.');
           setFaceKISuccess(true);
+          setVerifying(false);
         } else {
           const response_user = await getUserKycProfile(email);
           if (response_user) {
             alert('This email already has been used for another user.');
+            setVerifying(false);
           } else {
             const newName = response_verify.name + "," + email;
             const response_remove = await remove(response_verify.name);
 
             if (!response_remove) {
               alert('Something went wrong.');
+              setVerifying(false);
             } else {
               const response_enroll = await enroll(file, newName);
               if (response_enroll.status === 'Enroll OK') {
                 const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
                 if (add_response.result) {
                   alert('Successfully enrolled.');
+                  setVerifying(false);
                   setFaceKISuccess(true);
                 }
                 else {
                   alert('Something went wrong.');
+                  setVerifying(false);
                 }
               }
             }
@@ -91,6 +101,7 @@ export default function FaceKiForm(props) {
         const response_user = await getUserKycProfile(email);
         if (response_user) {
           alert('This email already has been used for another user.');
+          setVerifying(false);
         } else {
           const response_enroll = await enroll(file, email);
           if (response_enroll.status === 'Enroll OK') {
@@ -98,10 +109,12 @@ export default function FaceKiForm(props) {
             if (add_response.result) {
               alert('Successfully enrolled.');
               setFaceKISuccess(true);
+              setVerifying(false);
             }
             else {
               await remove(email);
               alert('Something went wrong.');
+              setVerifying(false);
             }
           }
         }
@@ -139,7 +152,7 @@ export default function FaceKiForm(props) {
               <div className='btn-div'>
                 <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
                 <div className="btn-grp">
-                  <button className={!faceKISuccess ? 'btn-1' : 'btn-1 btn-disabled'} disabled={faceKISuccess === true} onClick={videoEnroll}>Verify</button>
+                  <button className={!faceKISuccess ? 'btn-1' : 'btn-1 btn-disabled'} disabled={verifying ? true : faceKISuccess ? true : false} onClick={videoEnroll}>{verifying ? "Verifying..." : "Verify"}</button>
                   <Button
                     onClick={() => props.onClick()}
                     className={faceKISuccess ? 'btn-2' : 'btn-disabled'}

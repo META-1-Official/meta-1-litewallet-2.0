@@ -13,6 +13,7 @@ export default function FaceKiForm(props) {
   const [device, setDevice] = React.useState({});
   const { innerWidth: width } = window;
   const isMobile = width <= 678;
+  const [verifying, setVerifying] = useState(false);
 
   useEffect(
     async () => {
@@ -40,12 +41,14 @@ export default function FaceKiForm(props) {
 
   const videoVerify = async () => {
     const { email, accountName, onSubmit } = props;
-    const imageSrc = webcamRef.current.getScreenshot();
 
+    setVerifying(true);
+    const imageSrc = webcamRef.current.getScreenshot();
     const response_user = await getUserKycProfile(email);
 
     if (!response_user?.member1Name) {
       alert('Email and wallet name are not matched.');
+      setVerifying(false);
       return;
     } 
     else {
@@ -53,12 +56,14 @@ export default function FaceKiForm(props) {
 
       if (!walletArry.includes(accountName)) {
         alert('Email and wallet name are not matched.');
+        setVerifying(false);
         return;
       }
     };
 
     if (!imageSrc) {
       alert('Check your camera.');
+      setVerifying(false);
       return;
     };
 
@@ -67,6 +72,7 @@ export default function FaceKiForm(props) {
 
     if (response.data.liveness !== 'Genuine') {
         alert('Try again by changing position or background.');
+        setVerifying(false);
     } else {
       const response_verify = await verify(file);
       if (response_verify.status === 'Verify OK') {
@@ -74,12 +80,15 @@ export default function FaceKiForm(props) {
 
         if (nameArry.includes(email)) {
           setFaceKISuccess(true);
+          setVerifying(false);
           onSubmit();
         } else {
           alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
+          setVerifying(false);
         }
       } else {
         alert('We can not verify you because you never enrolled with your face yet.');
+        setVerifying(false);
       }
     }
   }
@@ -114,7 +123,7 @@ export default function FaceKiForm(props) {
               <div className='btn-div'>
                 <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to log complete authentication' : 'Verification Successful!'}</p>
                 <div className="btn-grp">
-                  <button className={!faceKISuccess ? 'btn-1' : 'btn-disabled'} onClick={videoVerify} disabled={faceKISuccess === true}>Verify</button>
+                  <button className={!faceKISuccess ? 'btn-1' : 'btn-disabled'} onClick={videoVerify} disabled={verifying ? true : faceKISuccess ? true : false}>{verifying ? "Verifying..." : "Verify"}</button>
                 </div>
               </div>
             </div>
