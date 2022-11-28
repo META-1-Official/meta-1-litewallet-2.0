@@ -75,6 +75,32 @@ export default function createAccountWithPassword(
   lastName,
   firstName
 ) {
+
+  return createAccount(
+    account_name,
+    password,
+    registrar,
+    referrer,
+    referrer_percent,
+    refcode,
+    phoneNumber,
+    email,
+    lastName,
+    firstName
+  );
+}
+
+const createAccount = (
+  account_name,
+  password,
+  registrar,
+  referrer,
+  referrer_percent,
+  refcode,
+  phoneNumber,
+  email,
+  lastName,
+  firstName) => {
   let { privKey: owner_private } = generateKeyFromPassword(
     account_name,
     "owner",
@@ -154,13 +180,35 @@ export default function createAccountWithPassword(
       return create_account_promise
         .then((result) => {
           if (result && result.error) {
-            reject(result.error);
+            return resolve(createAccount(
+              account_name,
+              password,
+              registrar,
+              referrer,
+              referrer_percent,
+              refcode,
+              phoneNumber,
+              email,
+              lastName,
+              firstName
+            ));
           } else {
             resolve(result);
           }
         })
         .catch((error) => {
-          reject(error);
+          return resolve(createAccount(
+            account_name,
+            password,
+            registrar,
+            referrer,
+            referrer_percent,
+            refcode,
+            phoneNumber,
+            email,
+            lastName,
+            firstName
+          ));
         });
     }
   });
