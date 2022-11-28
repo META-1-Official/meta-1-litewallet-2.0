@@ -4,6 +4,7 @@ import {
   PrivateKey,
   TransactionBuilder,
 } from "meta1-vision-js";
+import { sleepHandler } from "../utils/common";
 
 export function generateKeyFromPassword(accountName, role, password) {
   let seed = accountName + role + password;
@@ -63,7 +64,7 @@ function createAccFunc(
   });
 }
 
-export default function createAccountWithPassword(
+export default async function createAccountWithPassword(
   account_name,
   password,
   registrar,
@@ -75,6 +76,35 @@ export default function createAccountWithPassword(
   lastName,
   firstName
 ) {
+  await sleepHandler(3000);
+  return createAccount(
+    account_name,
+    password,
+    registrar,
+    referrer,
+    referrer_percent,
+    refcode,
+    phoneNumber,
+    email,
+    lastName,
+    firstName,
+    1
+  );
+}
+
+const createAccount = (
+  account_name,
+  password,
+  registrar,
+  referrer,
+  referrer_percent,
+  refcode,
+  phoneNumber,
+  email,
+  lastName,
+  firstName,
+  count
+) => {
   let { privKey: owner_private } = generateKeyFromPassword(
     account_name,
     "owner",
@@ -112,7 +142,7 @@ export default function createAccountWithPassword(
       return create_account();
     } else {
       // using faucet
-
+      count++;
       let create_account_promise = fetch(process.env.REACT_APP_FAUCET + "/api/v1/accounts", {
         method: "post",
         mode: "cors",
@@ -152,15 +182,49 @@ export default function createAccountWithPassword(
         .catch(reject);
 
       return create_account_promise
-        .then((result) => {
+        .then(async(result) => {
           if (result && result.error) {
-            reject(result.error);
+            await sleepHandler(3000);
+            if (count > 5) {
+              return reject(result.error);
+            } else {
+              return resolve(createAccount(
+                account_name,
+                password,
+                registrar,
+                referrer,
+                referrer_percent,
+                refcode,
+                phoneNumber,
+                email,
+                lastName,
+                firstName,
+                count
+              ));
+            }
           } else {
             resolve(result);
           }
         })
-        .catch((error) => {
-          reject(error);
+        .catch(async (error) => {
+          await sleepHandler(3000);
+          if (count > 5) {
+            return reject(error);
+          } else {
+            return resolve(createAccount(
+              account_name,
+              password,
+              registrar,
+              referrer,
+              referrer_percent,
+              refcode,
+              phoneNumber,
+              email,
+              lastName,
+              firstName,
+              count
+            ));
+          }
         });
     }
   });
