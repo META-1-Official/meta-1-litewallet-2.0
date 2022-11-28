@@ -87,7 +87,8 @@ export default async function createAccountWithPassword(
     phoneNumber,
     email,
     lastName,
-    firstName
+    firstName,
+    1
   );
 }
 
@@ -101,7 +102,9 @@ const createAccount = (
   phoneNumber,
   email,
   lastName,
-  firstName) => {
+  firstName,
+  count
+) => {
   let { privKey: owner_private } = generateKeyFromPassword(
     account_name,
     "owner",
@@ -139,7 +142,7 @@ const createAccount = (
       return create_account();
     } else {
       // using faucet
-
+      count++;
       let create_account_promise = fetch(process.env.REACT_APP_FAUCET + "/api/v1/accounts", {
         method: "post",
         mode: "cors",
@@ -182,6 +185,32 @@ const createAccount = (
         .then(async(result) => {
           if (result && result.error) {
             await sleepHandler(3000);
+            if (count > 5) {
+              return reject(result.error);
+            } else {
+              return resolve(createAccount(
+                account_name,
+                password,
+                registrar,
+                referrer,
+                referrer_percent,
+                refcode,
+                phoneNumber,
+                email,
+                lastName,
+                firstName,
+                count
+              ));
+            }
+          } else {
+            resolve(result);
+          }
+        })
+        .catch(async (error) => {
+          await sleepHandler(3000);
+          if (count > 5) {
+            return reject(error);
+          } else {
             return resolve(createAccount(
               account_name,
               password,
@@ -192,26 +221,10 @@ const createAccount = (
               phoneNumber,
               email,
               lastName,
-              firstName
+              firstName,
+              count
             ));
-          } else {
-            resolve(result);
           }
-        })
-        .catch(async (error) => {
-          await sleepHandler(3000);
-          return resolve(createAccount(
-            account_name,
-            password,
-            registrar,
-            referrer,
-            referrer_percent,
-            refcode,
-            phoneNumber,
-            email,
-            lastName,
-            firstName
-          ));
         });
     }
   });
