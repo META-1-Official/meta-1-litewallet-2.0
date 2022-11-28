@@ -4,6 +4,7 @@ import {
   PrivateKey,
   TransactionBuilder,
 } from "meta1-vision-js";
+import { sleepHandler } from "../utils/common";
 
 export function generateKeyFromPassword(accountName, role, password) {
   let seed = accountName + role + password;
@@ -63,7 +64,7 @@ function createAccFunc(
   });
 }
 
-export default function createAccountWithPassword(
+export default async function createAccountWithPassword(
   account_name,
   password,
   registrar,
@@ -75,7 +76,7 @@ export default function createAccountWithPassword(
   lastName,
   firstName
 ) {
-
+  await sleepHandler(3000);
   return createAccount(
     account_name,
     password,
@@ -178,8 +179,9 @@ const createAccount = (
         .catch(reject);
 
       return create_account_promise
-        .then((result) => {
+        .then(async(result) => {
           if (result && result.error) {
+            await sleepHandler(3000);
             return resolve(createAccount(
               account_name,
               password,
@@ -196,7 +198,8 @@ const createAccount = (
             resolve(result);
           }
         })
-        .catch((error) => {
+        .catch(async (error) => {
+          await sleepHandler(3000);
           return resolve(createAccount(
             account_name,
             password,
