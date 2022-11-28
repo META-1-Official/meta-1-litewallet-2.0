@@ -5,7 +5,7 @@ import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideH
 import { useDispatch, useSelector } from "react-redux";
 import { checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
 import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
-import { checkMigrationable, migrate } from "../../API/API";
+import { checkMigrationable, migrate, validateSignature } from "../../API/API";
 import OpenLogin from '@toruslabs/openlogin';
 import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
@@ -41,7 +41,7 @@ export default function LoginScreen(props) {
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
   const [loader, setLoader] = useState(false);
-
+  const [isMigrationPasskeyValid, setIsMigrationPasskeyValid]= useState(true);
   const accountState = useSelector(accountsSelector);
   const isLoginState = useSelector(isLoginSelector);
   const oldUserState = useSelector(oldUserSelector);
@@ -129,16 +129,25 @@ export default function LoginScreen(props) {
     }
   };
 
-  const checkTransferSubmitHandler = async () => {
-    const response = await migrate(accountState, checkTransfer.password);
-    if (response.error === false) {
-      setMigrationMsg(response.msg);
-      setOpenModal(true);
-    } else {
-      setMigrationMsg('Something went wrong');
-      setOpenModal(true);
-    }
-  };
+    const checkTransferSubmitHandler = async () => {
+      if (!isMigrationPasskeyValid) {
+        setIsMigrationPasskeyValid(true);
+      }
+      const response = await validateSignature(accountState, checkTransfer.password);
+      if (!response.error && response.isValid === true) {
+        const response = await migrate(accountState, checkTransfer.password);
+        if (response.error === false) {
+          setMigrationMsg(response.msg);
+          setOpenModal(true);
+          setIsMigrationPasskeyValid(true);
+        } else {
+          setMigrationMsg('Something went wrong');
+          setOpenModal(true);
+        }
+      } else {
+        setIsMigrationPasskeyValid(false);
+      }
+    };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -338,6 +347,12 @@ export default function LoginScreen(props) {
               </button>
             </>
             }
+             <span
+              className={styles.checkTransferError}
+              style={!isMigrationPasskeyValid ? null : { display: "none" }}
+            >
+              Private Key is Invalid
+            </span>
             <span
               className={styles.checkTransferError}
               style={checkTransfer.error ? null : { display: "none" }}
