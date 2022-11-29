@@ -3,7 +3,7 @@ import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
 import { liveLinessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
 import { Button } from "semantic-ui-react";
-import OvalImage from '../../images/oval/oval10.png';
+import OvalImage from '../../images/oval/oval19.png';
 import MobileOvalImage from '../../images/oval/oval11.png';
 import "./SignUpForm.css";
 
