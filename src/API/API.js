@@ -264,13 +264,31 @@ export async function getESigToken(email) {
 // FACEKI
 export async function liveLinessCheck(image) {
   try {
+    const faceAuthObj = {
+      "client_secret":process.env.REACT_APP_FACE_CLIENT_SECRET,
+      "password": process.env.REACT_APP_FACE_PASSWORD
+    }
+
+    const { data: dataFaceAuth  } = await axios.post(
+      `${process.env.REACT_APP_FACEKI_URL}/face/auth`,
+      faceAuthObj,
+      { headers: { 'content-type': 'application/json' } },
+    );
+
+    if (!dataFaceAuth || !dataFaceAuth?.token) {
+      return { message: "Something is wrong", error: true };
+    }
+
     let form_data = new FormData();
     form_data.append('image', image);
 
     const { data } = await axios.post(
       `${process.env.REACT_APP_FACEKI_URL}/face/attribute`,
       form_data,
-      { headers: { 'content-type': 'multipart/form-data' } },
+      { headers: {
+        'content-type': 'multipart/form-data',
+        "x-auth-token": dataFaceAuth.token
+      }},
     );
     return data;
   } catch (e) {
