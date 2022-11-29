@@ -13,7 +13,11 @@ export default function FaceKiForm(props) {
   const [device, setDevice] = React.useState({});
   const [isMobile, setIsMobile] = useState(false);
   const [verifying, setVerifying] = useState(false);
-
+  const [mobileScreenSize, setMobileScreenSize] = useState({
+    width: '',
+    height: ''
+  });
+  const childDivRef = useRef();
   useEffect(
     async () => {
       let features = {
@@ -31,6 +35,10 @@ export default function FaceKiForm(props) {
   const isMobileHandler = () => {
     const { innerWidth: width } = window;
     const isMobile = width <= 767;
+    setMobileScreenSize({
+      width: childDivRef.current.clientWidth,
+      height: childDivRef.current.clientHeight
+    });
     setIsMobile(isMobile);
   }
 
@@ -109,7 +117,7 @@ export default function FaceKiForm(props) {
               <h6 style={{ fontSize: '24px' }}>Authenticate Your Face</h6>
               <p className='header_ptag'>To log into your wallet, please complete biometric authentication.</p>
             </div>
-            <div className='child-div'>
+            <div className='child-div' ref={childDivRef} >
               <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head color-black">Position your face in the oval</div>
                 <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
@@ -120,11 +128,11 @@ export default function FaceKiForm(props) {
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
                 videoConstraints={isMobile ? {
-                  width: 310,
-                  height: 400,
+                  width: mobileScreenSize.width-10,
+                  height: mobileScreenSize.height-10,
                 } : { deviceId: device?.deviceId }}
-                width={isMobile ? 310 : 500}
-                height={isMobile ? 400 : device?.aspectRatio ? 500 / device?.aspectRatio : 385}
+                width={isMobile ? mobileScreenSize.width-20 : 500}
+                height={isMobile ? mobileScreenSize.height-50 : device?.aspectRatio ? 500 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>
