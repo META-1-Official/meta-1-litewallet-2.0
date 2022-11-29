@@ -264,6 +264,9 @@ video {
   .options-height {
     margin-left: 0 !important;
   }
+  .child-div {
+    height: 400px;
+  }
 }
 
 .phone-number-div {
@@ -400,6 +403,16 @@ video {
   width: 550px I !important;
   height: 550px  !important;
   background: #fff  !important;  
+}
+@media screen and (max-width: 1024px) {
+  .regForm {
+    width: 100% !important;
+  }
+}
+@media screen and (max-width: 1024px) {
+  .regForm {
+    width: 100% !important;
+  }
 }
 @media screen and (max-width: 678px) {
   .webcam_div {
