@@ -287,7 +287,7 @@ export async function liveLinessCheck(image) {
       form_data,
       { headers: {
         'content-type': 'multipart/form-data',
-        "x-auth-token": dataFaceAuth.token
+        "x-access-token": dataFaceAuth.token
       }},
     );
     return data;
