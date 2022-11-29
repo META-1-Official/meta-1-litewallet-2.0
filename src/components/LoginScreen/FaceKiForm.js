@@ -101,8 +101,11 @@ export default function FaceKiForm(props) {
           alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
           setVerifying(false);
         }
-      } else {
+      } else if (response_verify.status === 'Verify Failed') {
         alert('We can not verify you because you never enrolled with your face yet.');
+        setVerifying(false);
+      } else {
+        alert('Please try again.');
         setVerifying(false);
       }
     }

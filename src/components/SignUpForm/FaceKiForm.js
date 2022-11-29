@@ -75,9 +75,7 @@ export default function FaceKiForm(props) {
       setVerifying(false);
     } else {
       const response_verify = await verify(file);
-      if (
-        response_verify.status === 'Verify OK'
-      ) {
+      if (response_verify.status === 'Verify OK') {
         const nameArry = response_verify.name.split(',');
 
         if (nameArry.includes(email)) {
@@ -113,7 +111,7 @@ export default function FaceKiForm(props) {
             }
           }
         }
-      } else {
+      } else if (response_verify.status === 'Verify Failed') {
         const response_user = await getUserKycProfile(email);
         if (response_user) {
           alert('This email already has been used for another user.');
@@ -134,6 +132,9 @@ export default function FaceKiForm(props) {
             }
           }
         }
+      } else {
+        alert('Please try again.');
+        setVerifying(false);
       }
     }
   }
