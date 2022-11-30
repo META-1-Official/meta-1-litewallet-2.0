@@ -121,20 +121,23 @@ const createAccount = (
     password
   );
 
-  return new Promise((resolve, reject) => {
-    let create_account = () => {
-      return createAccFunc(
-        owner_private.toPublicKey().toPublicKeyString(),
-        active_private.toPublicKey().toPublicKeyString(),
-        memo_private.toPublicKey().toPublicKeyString(),
-        account_name,
-        registrar, //registrar_id,
-        referrer, //referrer_id,
-        referrer_percent, //referrer_percent,
-        true //broadcast
-      )
-        .then(resolve)
-        .catch(reject);
+  return new Promise( async (resolve, reject) => {
+    let create_account = async () => {
+      try {
+        await createAccFunc(
+          owner_private.toPublicKey().toPublicKeyString(),
+          active_private.toPublicKey().toPublicKeyString(),
+          memo_private.toPublicKey().toPublicKeyString(),
+          account_name,
+          registrar, //registrar_id,
+          referrer, //referrer_id,
+          referrer_percent, //referrer_percent,
+          true //broadcast
+        )
+        return resolve()
+      } catch(err) {
+        return reject()
+      }
     };
 
     if (registrar) {
@@ -143,48 +146,37 @@ const createAccount = (
     } else {
       // using faucet
       count++;
-      let create_account_promise = fetch(process.env.REACT_APP_FAUCET + "/api/v1/accounts", {
-        method: "post",
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          account: {
-            name: account_name,
-            email: email,
-            last_name: lastName,
-            refcode: "",
-            first_name: firstName,
-            phone_number: phoneNumber,
-            owner_key:
-              `${process.env.REACT_APP_KEY_PREFIX}` +
-              owner_private.toPublicKey().toPublicKeyString().substring(5),
-            active_key:
-              `${process.env.REACT_APP_KEY_PREFIX}` +
-              active_private.toPublicKey().toPublicKeyString().substring(5),
-            memo_key:
-              `${process.env.REACT_APP_KEY_PREFIX}` +
-              memo_private.toPublicKey().toPublicKeyString().substring(5),
+      try {
+        let create_account_promise = await fetch(process.env.REACT_APP_FAUCET + "/api/v1/accounts", {
+          method: "post",
+          mode: "cors",
+          headers: {
+            Accept: "application/json",
+            "Content-type": "application/json",
           },
-        }),
-      })
-        .then((r) =>
-          r.json().then((res) => {
-            if (!res || (res && res.error)) {
-              resolve(res);
-            } else {
-              resolve(res);
-            }
-          })
-        )
-        .catch(reject);
-
-      return create_account_promise
-        .then(async(result) => {
-          if (result && result.error) {
-            await sleepHandler(3000);
+          body: JSON.stringify({
+            account: {
+              name: account_name,
+              email: email,
+              last_name: lastName,
+              refcode: "",
+              first_name: firstName,
+              phone_number: phoneNumber,
+              owner_key:
+                `${process.env.REACT_APP_KEY_PREFIX}` +
+                owner_private.toPublicKey().toPublicKeyString().substring(5),
+              active_key:
+                `${process.env.REACT_APP_KEY_PREFIX}` +
+                active_private.toPublicKey().toPublicKeyString().substring(5),
+              memo_key:
+                `${process.env.REACT_APP_KEY_PREFIX}` +
+                memo_private.toPublicKey().toPublicKeyString().substring(5),
+            },
+          }),
+        });
+        let res = create_account_promise.json();
+        if (!res || (res && res.error)) {
+          await sleepHandler(3000);
             if (count > 5) {
               return reject(result.error);
             } else {
@@ -202,14 +194,13 @@ const createAccount = (
                 count
               ));
             }
-          } else {
-            resolve(result);
-          }
-        })
-        .catch(async (error) => {
-          await sleepHandler(3000);
+        } else {
+          return resolve(res);
+        }
+      } catch (err) {
+        await sleepHandler(3000);
           if (count > 5) {
-            return reject(error);
+            return reject(err);
           } else {
             return resolve(createAccount(
               account_name,
@@ -225,7 +216,7 @@ const createAccount = (
               count
             ));
           }
-        });
+      }
     }
   });
 }
