@@ -92,7 +92,7 @@ export default async function createAccountWithPassword(
   );
 }
 
-const createAccount = (
+const createAccount = async (
   account_name,
   password,
   registrar,
@@ -121,7 +121,7 @@ const createAccount = (
     password
   );
 
-  return new Promise( async (resolve, reject) => {
+  // return new Promise( async (resolve, reject) => {
     let create_account = async () => {
       try {
         await createAccFunc(
@@ -134,9 +134,9 @@ const createAccount = (
           referrer_percent, //referrer_percent,
           true //broadcast
         )
-        return resolve()
+        return //resolve()
       } catch(err) {
-        return reject()
+        return //reject()
       }
     };
 
@@ -178,9 +178,23 @@ const createAccount = (
         if (!res || (res && res.error)) {
           await sleepHandler(3000);
             if (count > 5) {
-              return reject(res.error);
+              // return reject(res.error);
+              return res.error;
             } else {
-              return resolve(createAccount(
+              // return resolve(createAccount(
+              //   account_name,
+              //   password,
+              //   registrar,
+              //   referrer,
+              //   referrer_percent,
+              //   refcode,
+              //   phoneNumber,
+              //   email,
+              //   lastName,
+              //   firstName,
+              //   count
+              // ));
+              return createAccount(
                 account_name,
                 password,
                 registrar,
@@ -192,17 +206,32 @@ const createAccount = (
                 lastName,
                 firstName,
                 count
-              ));
+              )
             }
         } else {
-          return resolve(res);
+          // return resolve(res);
+          return res;
         }
       } catch (err) {
         await sleepHandler(3000);
           if (count > 5) {
-            return reject(err);
+            // return reject(err);
+            return err;
           } else {
-            return resolve(createAccount(
+            // return resolve(createAccount(
+            //   account_name,
+            //   password,
+            //   registrar,
+            //   referrer,
+            //   referrer_percent,
+            //   refcode,
+            //   phoneNumber,
+            //   email,
+            //   lastName,
+            //   firstName,
+            //   count
+            // ));
+            return createAccount(
               account_name,
               password,
               registrar,
@@ -214,9 +243,9 @@ const createAccount = (
               lastName,
               firstName,
               count
-            ));
+            )
           }
       }
     }
-  });
+  // });
 }
