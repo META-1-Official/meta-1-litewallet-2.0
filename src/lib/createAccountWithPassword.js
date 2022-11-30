@@ -76,7 +76,6 @@ export default async function createAccountWithPassword(
   lastName,
   firstName
 ) {
-  await sleepHandler(3000);
   return createAccount(
     account_name,
     password,
@@ -121,7 +120,6 @@ const createAccount = async (
     password
   );
 
-  // return new Promise( async (resolve, reject) => {
     let create_account = async () => {
       try {
         await createAccFunc(
@@ -134,9 +132,9 @@ const createAccount = async (
           referrer_percent, //referrer_percent,
           true //broadcast
         )
-        return //resolve()
+        return;
       } catch(err) {
-        return //reject()
+        return;
       }
     };
 
@@ -178,22 +176,8 @@ const createAccount = async (
         if (!res || (res && res.error)) {
           await sleepHandler(3000);
             if (count > 5) {
-              // return reject(res.error);
               return res.error;
             } else {
-              // return resolve(createAccount(
-              //   account_name,
-              //   password,
-              //   registrar,
-              //   referrer,
-              //   referrer_percent,
-              //   refcode,
-              //   phoneNumber,
-              //   email,
-              //   lastName,
-              //   firstName,
-              //   count
-              // ));
               return createAccount(
                 account_name,
                 password,
@@ -215,22 +199,8 @@ const createAccount = async (
       } catch (err) {
         await sleepHandler(3000);
           if (count > 5) {
-            // return reject(err);
             return err;
           } else {
-            // return resolve(createAccount(
-            //   account_name,
-            //   password,
-            //   registrar,
-            //   referrer,
-            //   referrer_percent,
-            //   refcode,
-            //   phoneNumber,
-            //   email,
-            //   lastName,
-            //   firstName,
-            //   count
-            // ));
             return createAccount(
               account_name,
               password,
@@ -247,5 +217,4 @@ const createAccount = async (
           }
       }
     }
-  // });
 }
