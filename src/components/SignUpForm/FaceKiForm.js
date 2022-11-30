@@ -75,10 +75,13 @@ export default function FaceKiForm(props) {
 
     const response = await liveLinessCheck(file);
 
-    if (response.data.liveness !== 'Genuine') {
-      alert('Try again by changing position or background.');
+    if (!response) {
+      alert('Something went wrong from Biometric server.');
       setVerifying(false);
-    } else {
+      return;
+    } 
+
+    if (response.data.liveness === 'Genuine') {
       const response_verify = await verify(file);
       if (response_verify.status === 'Verify OK') {
         const nameArry = response_verify.name.split(',');
@@ -141,6 +144,9 @@ export default function FaceKiForm(props) {
         alert('Please try again.');
         setVerifying(false);
       }
+    } else {      
+      alert('Try again by changing position or background.');
+      setVerifying(false);
     }
   }
 

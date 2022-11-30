@@ -268,7 +268,7 @@ export async function liveLinessCheck(image) {
     form_data.append('image', image);
 
     const { data } = await axios.post(
-      `${process.env.REACT_APP_FACEKI_URL}/face/attribute`,
+      `${process.env.REACT_APP_BACK_URL}/face/attribute`,
       form_data,
       { headers: { 'content-type': 'multipart/form-data' } },
     );
@@ -285,7 +285,7 @@ export async function enroll(image, name) {
     form_data.append('name', name);
 
     const { data } = await axios.post(
-      `${process.env.REACT_APP_FACEKI_URL}/enroll_user`,
+      `${process.env.REACT_APP_BACK_URL}/enroll_user`,
       form_data,
       { headers: { 'content-type': 'multipart/form-data' } },
     );
@@ -301,7 +301,7 @@ export async function verify(image) {
     form_data.append('image', image);
 
     const { data } = await axios.post(
-      `${process.env.REACT_APP_FACEKI_URL}/verify_user`,
+      `${process.env.REACT_APP_BACK_URL}/verify_user`,
       form_data,
       { headers: { 'content-type': 'multipart/form-data' } },
     );
@@ -313,13 +313,9 @@ export async function verify(image) {
 
 export async function remove(name) {
   try {
-    let form_data = new FormData();
-    form_data.append('name', name);
-
     const { data } = await axios.post(
-      `${process.env.REACT_APP_FACEKI_URL}/remove_user`,
-      form_data,
-      { headers: { 'content-type': 'multipart/form-data' } },
+      `${process.env.REACT_APP_BACK_URL}/remove_user`,
+      { name }
     );
     return data;
   } catch (e) {
