@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
 import { liveLinessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
@@ -32,13 +32,18 @@ export default function FaceKiForm(props) {
     []
   );
 
+  useEffect(() => {
+    if (childDivRef?.current?.clientWidth && childDivRef?.current?.clientHeight) {
+      setMobileScreenSize({
+        width: childDivRef.current.clientWidth,
+        height: childDivRef.current.clientHeight
+      });
+    }
+  },[childDivRef.current]);
+
   const isMobileHandler = () => {
     const { innerWidth: width } = window;
     const isMobile = width <= 767;
-    setMobileScreenSize({
-      width: childDivRef.current.clientWidth,
-      height: childDivRef.current.clientHeight
-    });
     setIsMobile(isMobile);
   }
 
