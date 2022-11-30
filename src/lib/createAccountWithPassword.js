@@ -178,7 +178,7 @@ const createAccount = (
         if (!res || (res && res.error)) {
           await sleepHandler(3000);
             if (count > 5) {
-              return reject(result.error);
+              return reject(res.error);
             } else {
               return resolve(createAccount(
                 account_name,
