@@ -64,7 +64,7 @@ function createAccFunc(
   });
 }
 
-export default async function createAccountWithPassword(
+export default function createAccountWithPassword(
   account_name,
   password,
   registrar,
