@@ -4,7 +4,7 @@ import SubmitForm from "./SubmitForm.js";
 import createAccountWithPassword, { generateKeyFromPassword } from "../../lib/createAccountWithPassword.js";
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
-
+import { PrivateKey, ChainStore } from "meta1-vision-js";
 import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken } from "../../API/API";
 import OpenLogin from '@toruslabs/openlogin';
 
@@ -161,38 +161,79 @@ export default function SignUpForm(props) {
     } catch (e) { }
   };
 
+  const getPrivateKeys = (accountName, password) => {
+    let passwordKeys = {};
+    const acc = ChainStore.getAccount(accountName, false);
+    let fromWif;
+    try {
+      fromWif = PrivateKey.fromWif(password);
+    } catch (err) {
+      console.log('Err in validate', err);
+    }
+    
+    if (fromWif) {
+      const key = {
+        privKey: fromWif,
+        pubKey: fromWif.toPublicKey().toString()
+      };
+
+      if (acc)
+        ['active', 'owner', 'memo'].forEach((role) => {
+          if (acc) {
+            if (role === 'memo') {
+                if (acc.getIn(['options', 'memo_key']) == key.pubKey)
+                  passwordKeys[role] = key;
+                else {
+                  passwordKeys[role] = {
+                    pubKey: acc.getIn(['options', 'memo_key'])
+                  };
+                }
+            } else {
+              acc.getIn([role, 'key_auths']).forEach((auth) => {
+                if (auth.get(0) == key.pubKey)
+                  passwordKeys[role] = key;
+                else {
+                  passwordKeys[role] = {
+                    pubKey: auth.get(0)
+                  };
+                }
+              });
+            }
+          }
+      });
+    } else {
+      passwordKeys['active'] = generateKeyFromPassword(
+        accountName,
+        "active",
+        password
+      );
+      passwordKeys['owner'] = generateKeyFromPassword(
+        account,
+        "owner",
+        password
+      );
+      passwordKeys['memo'] = generateKeyFromPassword(
+        account,
+        "memo",
+        password
+      );
+    }
+    return passwordKeys;
+  }
+
   const createPaperWalletHandler = async () => {
     setDownloadPaperWalletModal(false);
     await sleepHandler(5000);
     // Generate owner, memo and active Key
-    let { privKey: owner_private } = generateKeyFromPassword(
-      accountName,
-      "owner",
-      password
-    );
-    let { privKey: active_private } = generateKeyFromPassword(
-      accountName,
-      "active",
-      password
-    );
-    let { privKey: memo_private } = generateKeyFromPassword(
-      accountName,
-      "memo",
-      password
-    );
-    console.log("keykeykey before",{
-      owner_private,
-      active_private,
-      memo_private,
-      accountName,
-      password
-    })
     await Meta1.login(accountName, password);
+    console.log("keykeykey start")
+    let keys = getPrivateKeys(accountName, password);
+    console.log("keykeykey before",keys)
     createPaperWalletAsPDF(
       accountName,
-      owner_private,
-      active_private,
-      memo_private
+      keys['owner'],
+      keys['active'],
+      keys['memo']
     );
     onRegistration(accountName, password, email);
   }
