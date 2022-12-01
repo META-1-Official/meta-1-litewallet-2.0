@@ -79,11 +79,21 @@ export default function PaperWalletLogin({ accountName }) {
           if (acc) {
             if (role === 'memo') {
                 if (acc.getIn(['options', 'memo_key']) == key.pubKey)
-                  passwordKeys[role] = acc.getIn(['options', 'memo_key']);
+                  passwordKeys[role] = key;
+                else {
+                  passwordKeys[role] = {
+                    pubKey: acc.getIn(['options', 'memo_key'])
+                  };
+                }
             } else {
               acc.getIn([role, 'key_auths']).forEach((auth) => {
                 if (auth.get(0) == key.pubKey)
-                  passwordKeys[role] = key.privKey;
+                  passwordKeys[role] = key;
+                else {
+                  passwordKeys[role] = {
+                    pubKey: auth.get(0)
+                  };
+                }
               });
             }
           }
@@ -93,18 +103,19 @@ export default function PaperWalletLogin({ accountName }) {
         account,
         "active",
         password
-      ).privKey;
+      );
       passwordKeys['owner'] = generateKeyFromPassword(
         account,
         "owner",
         password
-      ).privKey;
+      );
       passwordKeys['memo'] = generateKeyFromPassword(
         account,
         "memo",
         password
-      ).privKey;
+      );
     }
+
     return passwordKeys;
   }
 
