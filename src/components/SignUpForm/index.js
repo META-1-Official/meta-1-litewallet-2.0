@@ -208,12 +208,12 @@ export default function SignUpForm(props) {
         password
       );
       passwordKeys['owner'] = generateKeyFromPassword(
-        account,
+        accountName,
         "owner",
         password
       );
       passwordKeys['memo'] = generateKeyFromPassword(
-        account,
+        accountName,
         "memo",
         password
       );
