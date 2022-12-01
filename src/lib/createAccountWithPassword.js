@@ -76,6 +76,7 @@ export default function createAccountWithPassword(
   lastName,
   firstName
 ) {
+  console.log("innnnnnnnnnnnnnnnnn1.1")
   return createAccount(
     account_name,
     password,
@@ -104,6 +105,7 @@ const createAccount = async (
   firstName,
   count
 ) => {
+  console.log("innnnnnnnnnnnnnnnnn1.2")
   let { privKey: owner_private } = generateKeyFromPassword(
     account_name,
     "owner",
@@ -139,11 +141,13 @@ const createAccount = async (
     };
 
     if (registrar) {
+      console.log("innnnnnnnnnnnnnnnnn1.3")
       // using another user's account as registrar
       return create_account();
     } else {
       // using faucet
       count++;
+      console.log("innnnnnnnnnnnnnnnnn1.4 ", count)
       try {
         let create_account_promise = await fetch(process.env.REACT_APP_FAUCET + "/api/v1/accounts", {
           method: "post",
@@ -176,8 +180,10 @@ const createAccount = async (
         if (!res || (res && res.error)) {
           await sleepHandler(3000);
             if (count > 5) {
+              console.log("innnnnnnnnnnnnnnnnn1.5 endddd max limit over")
               return res.error;
             } else {
+              console.log("innnnnnnnnnnnnnnnnn1.6 repeat",count)
               return createAccount(
                 account_name,
                 password,
@@ -193,14 +199,17 @@ const createAccount = async (
               )
             }
         } else {
+          console.log("innnnnnnnnnnnnnnnnn1.7 ok case",count)
           // return resolve(res);
           return res;
         }
       } catch (err) {
         await sleepHandler(3000);
           if (count > 5) {
+            console.log("innnnnnnnnnnnnnnnnn1.8 ok catch enddd",count)
             return err;
           } else {
+            console.log("innnnnnnnnnnnnnnnnn1.9 ok catch recursion",count)
             return createAccount(
               account_name,
               password,

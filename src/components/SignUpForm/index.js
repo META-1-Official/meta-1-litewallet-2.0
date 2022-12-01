@@ -132,6 +132,7 @@ export default function SignUpForm(props) {
     if (!response_user) return;
 
     try {
+      console.log("innnnnnnnnnnnnnnnnn1")
       await createAccountWithPassword(
         accountName,
         password,
@@ -144,8 +145,9 @@ export default function SignUpForm(props) {
         lastName,
         firstName
       );
-
+      console.log("innnnnnnnnnnnnnnnnn2")
       const member1Name = response_user.member1Name ? response_user.member1Name + "," + accountName : accountName;
+      console.log("innnnnnnnnnnnnnnnnn3")
       const res_update = await updateUserKycProfile(email, { "member1Name": member1Name }, token);
 
       localStorage.removeItem('password');
