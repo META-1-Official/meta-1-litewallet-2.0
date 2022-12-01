@@ -163,6 +163,7 @@ export default function SignUpForm(props) {
 
   const createPaperWalletHandler = async () => {
     setDownloadPaperWalletModal(false);
+    await sleepHandler(5000);
     // Generate owner, memo and active Key
     let { privKey: owner_private } = generateKeyFromPassword(
       accountName,
@@ -179,7 +180,6 @@ export default function SignUpForm(props) {
       "memo",
       password
     );
-    await sleepHandler(5000);
     await Meta1.login(accountName, password);
     createPaperWalletAsPDF(
       accountName,
