@@ -180,6 +180,13 @@ export default function SignUpForm(props) {
       "memo",
       password
     );
+    console.log("keykeykey before",{
+      owner_private,
+      active_private,
+      memo_private,
+      accountName,
+      password
+    })
     await Meta1.login(accountName, password);
     createPaperWalletAsPDF(
       accountName,

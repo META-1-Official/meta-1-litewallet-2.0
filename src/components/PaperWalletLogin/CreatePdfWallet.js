@@ -44,6 +44,7 @@ const _createPaperWalletAsPDF = function (
     }
 
     const keyRow = (key) => {
+        console.log("keykeykey",key)
         let currentPage = checkPageH(pdf, rowHeight, 400)
         gQrcode(key.pubKey, qrMargin, rowHeight + 10, currentPage)
         if (locked && !!key.privKey) {
