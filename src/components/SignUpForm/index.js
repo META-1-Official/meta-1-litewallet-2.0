@@ -149,7 +149,7 @@ export default function SignUpForm(props) {
       const member1Name = response_user.member1Name ? response_user.member1Name + "," + accountName : accountName;
       console.log("innnnnnnnnnnnnnnnnn3")
       const res_update = await updateUserKycProfile(email, { "member1Name": member1Name }, token);
-
+      console.log("innnnnnnnnnnnnnnnnn4")
       localStorage.removeItem('password');
       localStorage.removeItem('firstname');
       localStorage.removeItem('lastname');
@@ -159,6 +159,7 @@ export default function SignUpForm(props) {
       localStorage.removeItem('recover');
       localStorage.removeItem('stored');
       localStorage.removeItem('living');
+      console.log("innnnnnnnnnnnnnnnnn5 end")
       setDownloadPaperWalletModal(true);
     } catch (e) { }
   };
