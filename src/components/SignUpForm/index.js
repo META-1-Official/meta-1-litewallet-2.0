@@ -226,9 +226,7 @@ export default function SignUpForm(props) {
     await sleepHandler(5000);
     // Generate owner, memo and active Key
     await Meta1.login(accountName, password);
-    console.log("keykeykey start")
     let keys = getPrivateKeys(accountName, password);
-    console.log("keykeykey before",keys)
     createPaperWalletAsPDF(
       accountName,
       keys['owner'],
