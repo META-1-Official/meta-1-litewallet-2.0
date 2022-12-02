@@ -67,7 +67,7 @@ const getChainStore = (accountName) => {
   })
 }
 const WithdrawForm = (props) => {
-  const { onBackClick, asset, redirectToPortfolio } = props;
+  const { onBackClick, asset, redirectToPortfolio, sendEmail } = props;
   const accountNameState = useSelector(accountsSelector);
   const userCurrencyState = useSelector(userCurrencySelector);
   const [isLoading, setIsLoading] = useState(false);
@@ -329,93 +329,38 @@ const WithdrawForm = (props) => {
   }, [isSuccess])
   const onClickWithdraw = async (e) => {
     e.preventDefault();
-    setIsSuccessHandler(false, 'loading');
-    let assetName = !!gatewayStatus.assetWithdrawlAlias
-      ? gatewayStatus.assetWithdrawlAlias[selectedFrom.value.toLowerCase()] ||
-      selectedFrom.value.toLowerCase() : selectedFrom.value.toLowerCase();
 
-    const intermediateAccountNameOrId = getIntermediateAccount(
-      selectedFrom.value,
-      backedCoins
-    );
-
-    const intermediateAccounts = await getChainStore(accountNameState);
-
-    if (!WithdrawAddresses.has(assetName)) {
-      let withdrawals = [];
-      withdrawals.push(trim(toAddress));
-      WithdrawAddresses.set({ wallet: assetName, addresses: withdrawals });
-    } else {
-      let withdrawals = WithdrawAddresses.get(assetName);
-      if (withdrawals.indexOf(trim(toAddress)) == -1) {
-        withdrawals.push(trim(toAddress));
-        WithdrawAddresses.set({
-          wallet: assetName,
-          addresses: withdrawals,
-        });
-      }
-    }
-
-    WithdrawAddresses.setLast({ wallet: assetName, address: trim(toAddress) });
-
-    const assetData = selectedData();
-    // fee
-    const assetObj = assetData.find(data => data.id === selectedFrom.value)
-    const assets = await getAssetsObject(intermediateAccounts);
-    let withdrawalCurrencyObj;
-    let withdrawalCurrency = assets.find((item, index) => {
-      if (item.get(index).symbol === selectedFrom.value) {
-        withdrawalCurrencyObj = { ...item.get(index) };
-        return item;
-      }
-    });
-    if (!withdrawalCurrencyObj) {
-      setIsSuccessHandler(false, "fail");
-    }
-    let sendAmount = new Asset({
-      asset_id: withdrawalCurrencyObj.id,
-      precision: withdrawalCurrencyObj.precision,
-      real: selectedFromAmount,
-    });
-
-    let balanceAmount = new Asset({
-      asset_id: withdrawalCurrencyObj.id,
-      precision: withdrawalCurrencyObj.precision,
-      real: 0,
-    });
-
-    if (Number(selectedFrom.balance) > 0) {
-      const precisionAmount = Number(1 + "0".repeat(selectedFrom.pre))
-      balanceAmount = sendAmount.clone(Number(selectedFrom.balance) * precisionAmount);
-    } else {
-      setIsSuccessHandler(false, "Not enough balance");
-      return;
-    }
-
-    const gateFeeAmount = new Asset({
-      asset_id: withdrawalCurrencyObj.id,
-      precision: withdrawalCurrencyObj.precision,
-      real: assetObj.gateFee,
-    });
-
-    sendAmount.plus(gateFeeAmount);
-    let descriptor = `${assetName}:${trim(toAddress)}`;
-    let feeAmount = new Asset({ amount: 0 })
-
-    let fromData = intermediateAccounts.get("id");
-    let args = [
-      fromData,
-      assetObj.issuerId,
-      sendAmount.getAmount(),
-      withdrawalCurrencyObj.id,
-      descriptor,
-      null,
-      feeAmount ? feeAmount.asset_id : '1.3.0',
-      accountNameState,
-      password,
-      setIsSuccessHandler
-    ];
-    transferHandler(...args)
+    setIsLoading(true);
+    const emailType = "withdraw";
+    const emailData = {
+      accountName: props.accountName,
+      name: trim(name),
+      emailAddress: trim(emailAddress),
+      asset: selectedFrom.value,
+      amount: selectedFromAmount,
+      toAddress: trim(toAddress)
+    };
+    sendEmail(emailType, emailData)
+      .then((res) => {
+        if (res.success === 'success') {
+          setIsLoading(false);
+          alert("Email sent, awesome!");
+          // Reset form inputs
+          setName('');
+          setEmailAddress('');
+          setSelectedFromAmount(NaN);
+          setBlockPrice(NaN);
+          setToAddress('');
+        } else {
+          if (res.tokenExpired) {
+            props.setTokenModalMsg(res.responseMsg);
+            props.setTokenModalOpen(true);
+            return;
+          }
+          setIsLoading(false);
+          alert("Oops, something went wrong. Try again");
+        }
+      })
   }
 
   const resetState = () => {

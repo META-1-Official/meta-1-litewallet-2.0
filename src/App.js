@@ -7,7 +7,7 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { getCryptosChange, loginRequest } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { getUserData, changeLastLocation, getLastLocation } from "./API/API";
+import { getUserData, changeLastLocation, getLastLocation, sendEmail } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import WithdrawForm from "./components/WithdrawForm";
@@ -668,6 +668,7 @@ function Application(props) {
                 <WithdrawForm
                   account={account}
                   accountName={accountName}
+                  sendEmail={sendEmail}
                   asset={tradeAsset}
                   assets={assets}
                   portfolio={portfolio}
