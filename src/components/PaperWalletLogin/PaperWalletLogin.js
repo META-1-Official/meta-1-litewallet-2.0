@@ -47,6 +47,7 @@ export default function PaperWalletLogin({ accountName }) {
     try {
       await Meta1.login(localStorage.getItem("login"), password);
       const keys = getPrivateKeys();
+      setCheck(false);
       createPaperWalletAsPDF(
         localStorage.getItem("login"),
         keys['owner'],
