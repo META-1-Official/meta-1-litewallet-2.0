@@ -132,32 +132,37 @@ export default function SignUpForm(props) {
     if (!response_user) return;
 
     try {
-      await createAccountWithPassword(
-        accountName,
-        password,
-        false,
-        "",
-        1,
-        "",
-        phone,
-        email,
-        lastName,
-        firstName
-      );
-
       const member1Name = response_user.member1Name ? response_user.member1Name + "," + accountName : accountName;
       const res_update = await updateUserKycProfile(email, { "member1Name": member1Name }, token);
 
-      localStorage.removeItem('password');
-      localStorage.removeItem('firstname');
-      localStorage.removeItem('lastname');
-      localStorage.removeItem('phone');
-      localStorage.removeItem('email');
-      localStorage.removeItem('access');
-      localStorage.removeItem('recover');
-      localStorage.removeItem('stored');
-      localStorage.removeItem('living');
-      setDownloadPaperWalletModal(true);
+      if (res_update) {
+        await createAccountWithPassword(
+          accountName,
+          password,
+          false,
+          "",
+          1,
+          "",
+          phone,
+          email,
+          lastName,
+          firstName
+        );
+
+        localStorage.removeItem('password');
+        localStorage.removeItem('firstname');
+        localStorage.removeItem('lastname');
+        localStorage.removeItem('phone');
+        localStorage.removeItem('email');
+        localStorage.removeItem('access');
+        localStorage.removeItem('recover');
+        localStorage.removeItem('stored');
+        localStorage.removeItem('living');
+        setDownloadPaperWalletModal(true);
+      } else {
+        return;
+      }
+
     } catch (e) { }
   };
 
@@ -170,7 +175,7 @@ export default function SignUpForm(props) {
     } catch (err) {
       console.log('Err in validate', err);
     }
-    
+
     if (fromWif) {
       const key = {
         privKey: fromWif,
@@ -181,13 +186,13 @@ export default function SignUpForm(props) {
         ['active', 'owner', 'memo'].forEach((role) => {
           if (acc) {
             if (role === 'memo') {
-                if (acc.getIn(['options', 'memo_key']) == key.pubKey)
-                  passwordKeys[role] = key;
-                else {
-                  passwordKeys[role] = {
-                    pubKey: acc.getIn(['options', 'memo_key'])
-                  };
-                }
+              if (acc.getIn(['options', 'memo_key']) == key.pubKey)
+                passwordKeys[role] = key;
+              else {
+                passwordKeys[role] = {
+                  pubKey: acc.getIn(['options', 'memo_key'])
+                };
+              }
             } else {
               acc.getIn([role, 'key_auths']).forEach((auth) => {
                 if (auth.get(0) == key.pubKey)
@@ -200,7 +205,7 @@ export default function SignUpForm(props) {
               });
             }
           }
-      });
+        });
     } else {
       passwordKeys['active'] = generateKeyFromPassword(
         accountName,
