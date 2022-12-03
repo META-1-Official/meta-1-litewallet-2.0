@@ -87,7 +87,7 @@ export default function createAccountWithPassword(
     email,
     lastName,
     firstName,
-    1
+    0
   );
 }
 
@@ -134,16 +134,32 @@ const createAccount = async (
         )
         return;
       } catch(err) {
-        return;
+        if (count > 5) {
+          return err;
+        } else {
+          return createAccount(
+            account_name,
+            password,
+            registrar,
+            referrer,
+            referrer_percent,
+            refcode,
+            phoneNumber,
+            email,
+            lastName,
+            firstName,
+            count
+          )
+        }
       }
     };
 
+    count++;
     if (registrar) {
       // using another user's account as registrar
       return create_account();
     } else {
       // using faucet
-      count++;
       try {
         let create_account_promise = await fetch(process.env.REACT_APP_FAUCET + "/api/v1/accounts", {
           method: "post",
