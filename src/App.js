@@ -32,7 +32,7 @@ import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, getLoginDetail, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
-import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
+import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder  from "./components/OpenOrder";
@@ -352,6 +352,7 @@ function Application(props) {
           dispatch(getUserRequest(login));
           setTradeAsset("BTC");
           setActiveScreen("exchange");
+          dispatch(passKeyResetService());
         }}
         onClickPaperWalletHandler={(e) => {
           e.preventDefault();
@@ -399,6 +400,7 @@ function Application(props) {
             dispatch(getUserRequest(login));
             setTradeAsset("BTC");
             setActiveScreen("exchange");
+            dispatch(passKeyResetService());
           }}
           onClickPaperWalletHandler={(e) => {
             e.preventDefault();

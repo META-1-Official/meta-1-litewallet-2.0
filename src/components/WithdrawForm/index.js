@@ -351,6 +351,10 @@ const WithdrawForm = (props) => {
           setSelectedFromAmount(NaN);
           setBlockPrice(NaN);
           setToAddress('');
+          setPassword('')
+          setIsValidPassword(false);
+          setIsPasswordTouched(false);
+          dispatch(passKeyResetService());
         } else {
           if (res.tokenExpired) {
             props.setTokenModalMsg(res.responseMsg);
