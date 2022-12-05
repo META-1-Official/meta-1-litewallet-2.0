@@ -26,7 +26,7 @@ export async function getUserData(login) {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    return { message: null, tokenExpired: false, responseMsg: err?.response?.data?.message ? err?.response?.data?.message : 'error' };
   }
 }
 
