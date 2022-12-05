@@ -14,8 +14,8 @@ import {
 import { saveUserCurrency } from "../../API/API";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, userCurrencySelector } from "../../store/meta1/selector";
-import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector, profileImageSelector } from "../../store/account/selector";
-import { deleteAvatarRequest, passKeyRequestService, passKeyResetService, uploadAvatarRequest } from "../../store/account/actions";
+import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector, profileImageSelector, uploadImageErrorSelector } from "../../store/account/selector";
+import { deleteAvatarRequest, passKeyRequestService, passKeyResetService, uploadAvatarRequest, uploadAvatarReset } from "../../store/account/actions";
 import { saveUserCurrencyRequest, saveUserCurrencyReset, setUserCurrencyAction } from "../../store/meta1/actions";
 let isSet = false;
 const Settings = (props) => {
@@ -31,6 +31,7 @@ const Settings = (props) => {
 
   const checkPasswordState = useSelector(checkPasswordObjSelector);
   const userCurrencyState = useSelector(userCurrencySelector);
+  const uploadImageErrorState = useSelector(uploadImageErrorSelector);
   const [currency, setCurrency] = useState(userCurrencyState);
   const [modalOpened, setModalOpened] = useState(false);
   const [password, setPassword] = useState('');
@@ -274,7 +275,7 @@ const Settings = (props) => {
                     Select your preferred display currency for all markets.
                   </span>
                 </div>
-                <div className={styles.changeDataInput}>
+                {cryptoDataState && cryptoDataState?.ExchangeRate && Array.isArray(cryptoDataState?.ExchangeRate) && cryptoDataState?.ExchangeRate.length > 0 && <div className={styles.changeDataInput}>
                   <select
                     className={styles.currencySelect}
                     onChange={(e) => setCurrency(e.target.value)}
@@ -298,7 +299,7 @@ const Settings = (props) => {
                       CA$ (CAD)
                     </option>
                   </select>
-                </div>
+                </div>}
                 <div className={styles.blockButton}>
                   <button
                     type={"submit"}
@@ -322,10 +323,13 @@ const Settings = (props) => {
 
       <Modal
         size="mini"
-        open={passwordError !== ''}
+        open={passwordError !== '' || uploadImageErrorState}
         onClose={() => {
           setPasswordError('');
           dispatch(passKeyResetService());
+          if (uploadImageErrorState) {
+            dispatch(uploadAvatarReset());
+          }
         }}
         id={"modalExch"}
       >
@@ -338,7 +342,7 @@ const Settings = (props) => {
               </Grid.Column>
 
               <Grid.Column width={10}>
-                <div className="trade-error">{passwordError}</div>
+                <div className="trade-error">{uploadImageErrorState ? 'Something went wrong' : passwordError}</div>
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -347,6 +351,9 @@ const Settings = (props) => {
           <Button positive onClick={() => {
             setPasswordError('');
             dispatch(passKeyResetService());
+            if (uploadImageErrorState) {
+              dispatch(uploadAvatarReset());
+            }
           }}>
             OK
           </Button>

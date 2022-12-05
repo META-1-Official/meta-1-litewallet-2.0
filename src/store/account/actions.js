@@ -66,6 +66,18 @@ export const uploadAvatarSuccess = (payload) => {
     }
 }
 
+export const uploadAvatarFail = () => {
+    return {
+        type: types.UPLOAD_AVATAR_FAILED
+    }
+}
+
+export const uploadAvatarReset = () => {
+    return {
+        type: types.UPLOAD_AVATAR_RESET
+    }
+}
+
 export const deleteAvatarRequest = (payload) => {
     return {
         type: types.DELETE_AVATAR_REQUEST,
@@ -76,6 +88,12 @@ export const deleteAvatarRequest = (payload) => {
 export const deleteAvatarSuccess = (payload) => {
     return {
         type: types.DELETE_AVATAR_SUCCESS,
+    }
+}
+
+export const deleteAvatarFailed = (payload) => {
+    return {
+        type: types.DELETE_AVATAR_FAILED,
     }
 }
 
