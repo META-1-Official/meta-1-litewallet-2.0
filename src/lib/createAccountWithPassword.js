@@ -14,7 +14,7 @@ export function generateKeyFromPassword(accountName, role, password) {
   return { privKey, pubKey };
 }
 
-function createAccFunc(
+async function createAccFunc(
   owner_pubkey,
   active_pubkey,
   memo_pubkey,
@@ -24,47 +24,43 @@ function createAccFunc(
   ChainValidation.required("meta1register", "registrar_id");
   ChainValidation.required("meta1register", "referrer_id");
 
-  return new Promise((resolve, reject) => {
-    return Promise.all([
-      FetchChain("getAccount", "meta1register"),
-      FetchChain("getAccount", "meta1register"),
-    ]).then((res) => {
-      let [chain_registrar, chain_referrer] = res;
-      let tr = new TransactionBuilder();
-      tr.add_type_operation("account_create", {
-        fee: {
-          amount: 0,
-          asset_id: 0,
-        },
-        registrar: chain_registrar.get("id"),
-        referrer: chain_referrer.get("id"),
-        referrer_percent: referrer_percent,
-        name: new_account_name,
-        owner: {
-          weight_threshold: 1,
-          account_auths: [],
-          key_auths: [[owner_pubkey, 1]],
-          address_auths: [],
-        },
-        active: {
-          weight_threshold: 1,
-          account_auths: [],
-          key_auths: [[active_pubkey, 1]],
-          address_auths: [],
-        },
-        options: {
-          memo_key: memo_pubkey,
-          voting_account: "1.2.5",
-          num_witness: 0,
-          num_committee: 0,
-          votes: [],
-        },
-      });
-    });
+  const meta1register = await FetchChain("getAccount", "meta1register");
+  const chain_registrar = meta1register;
+  const chain_referrer = meta1register;
+
+  let tr = new TransactionBuilder();
+  tr.add_type_operation("account_create", {
+    fee: {
+      amount: 0,
+      asset_id: 0,
+    },
+    registrar: chain_registrar.get("id"),
+    referrer: chain_referrer.get("id"),
+    referrer_percent: referrer_percent,
+    name: new_account_name,
+    owner: {
+      weight_threshold: 1,
+      account_auths: [],
+      key_auths: [[owner_pubkey, 1]],
+      address_auths: [],
+    },
+    active: {
+      weight_threshold: 1,
+      account_auths: [],
+      key_auths: [[active_pubkey, 1]],
+      address_auths: [],
+    },
+    options: {
+      memo_key: memo_pubkey,
+      voting_account: "1.2.5",
+      num_witness: 0,
+      num_committee: 0,
+      votes: [],
+    },
   });
 }
 
-export default function createAccountWithPassword(
+export default async function createAccountWithPassword(
   account_name,
   password,
   registrar,
@@ -76,7 +72,7 @@ export default function createAccountWithPassword(
   lastName,
   firstName
 ) {
-  return createAccount(
+  return await createAccount(
     account_name,
     password,
     registrar,
@@ -134,6 +130,7 @@ const createAccount = async (
         )
         return;
       } catch(err) {
+        console.error('[create_account]', err);
         return;
       }
     };
@@ -145,7 +142,8 @@ const createAccount = async (
       // using faucet
       count++;
       try {
-        let create_account_promise = await fetch(process.env.REACT_APP_FAUCET + "/api/v1/accounts", {
+        console.log("[createAccount] Calling faucet...");
+        const faucet_res = await fetch(process.env.REACT_APP_FAUCET + "/api/v1/accounts", {
           method: "post",
           mode: "cors",
           headers: {
@@ -172,13 +170,14 @@ const createAccount = async (
             },
           }),
         });
-        let res = create_account_promise.json();
-        if (!res || (res && res.error)) {
+        const res = await faucet_res.json();
+        console.log('[createAccount] faucet response:', faucet_res.status, res);
+        if (faucet_res.status === 500 || !res || (res && res.error)) {
           await sleepHandler(3000);
             if (count > 5) {
               return res.error;
             } else {
-              return createAccount(
+              return await createAccount(
                 account_name,
                 password,
                 registrar,
@@ -193,7 +192,6 @@ const createAccount = async (
               )
             }
         } else {
-          // return resolve(res);
           return res;
         }
       } catch (err) {
@@ -201,7 +199,7 @@ const createAccount = async (
           if (count > 5) {
             return err;
           } else {
-            return createAccount(
+            return await createAccount(
               account_name,
               password,
               registrar,
