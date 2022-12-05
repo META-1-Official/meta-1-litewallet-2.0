@@ -13,6 +13,9 @@ async function getHistory(event) {
     return [];
   }
   const response = await getHistoryData(localStorage.getItem("login"), (pageNo-1)*perPage, perPage, searchFilterValues);
+  if (response.error) {
+    return [];
+  }
   const historyData = response.data.splice(0,numberOfRecords).map(async (value) => {
     let timestamp;
     let witness;
