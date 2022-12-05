@@ -163,7 +163,9 @@ export default function SignUpForm(props) {
         return;
       }
 
-    } catch (e) { }
+    } catch (e) {
+      console.error('[stepLastSubmit]', e);
+    }
   };
 
   const getPrivateKeys = (accountName, password) => {
