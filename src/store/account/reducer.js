@@ -32,6 +32,7 @@ const initialState = {
     },
     passwordRequestFlag: false,
     fromSignUp: false,
+    uploadImageError: false,
 };
 const loginDetail = getLoginDetail();
 if(loginDetail){
@@ -60,11 +61,17 @@ const accountsReducer = (state = initialState, action) => {
         case types.UPLOAD_AVATAR_REQUEST:
             return {...state, loading: true };
         case types.UPLOAD_AVATAR_SUCCESS:
-            return {...state, loading: false, profileImage: action.payload.avatarImage, navbarProfileImage: action.payload.avatarImage };
+            return {...state, loading: false, profileImage: action.payload.avatarImage, navbarProfileImage: action.payload.avatarImage, uploadImageError: false };
+        case types.UPLOAD_AVATAR_FAILED:
+            return {...state, loading: false, uploadImageError: true };
+        case types.UPLOAD_AVATAR_RESET:
+            return {...state, uploadImageError: false };
         case types.DELETE_AVATAR_REQUEST:
             return {...state, loading: true };
         case types.DELETE_AVATAR_SUCCESS:
             return {...state, loading: false, profileImage: logoDefault, navbarProfileImage: logoNavbar };
+        case types.DELETE_AVATAR_FAILED:
+            return {...state, loading: false, uploadImageError: true};
         case types.SEND_MAIL_REQUEST:
             return {...state, sentMailSuccess: null };
         case types.SEND_MAIL_SUCCESS:

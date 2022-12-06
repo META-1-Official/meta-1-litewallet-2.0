@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
 import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar, validateSignature } from '../../API/API';
 import { setAccessToken, setLocation, setLoginDetail } from '../../utils/localstorage';
-import { checkTokenRequest, checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService } from './actions';
+import { checkTokenRequest, checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService, uploadAvatarFail, deleteAvatarFailed } from './actions';
 import * as types from './types';
 import Meta1 from "meta1-vision-dex";
 import { signUpHandler } from '../../utils/common';
@@ -49,8 +49,12 @@ function* uploadAvatarHandler(data) {
     if (response['tokenExpired']) {
         yield put(getUserError({ msg: response.responseMsg }));
     } else {
-        let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message}`;
-        yield put(uploadAvatarSuccess({ avatarImage }));
+        if (response.error) {
+            yield put(uploadAvatarFail());
+        } else {
+            let avatarImage = `${process.env.REACT_APP_BACK_URL}/public/${response.message}`;
+            yield put(uploadAvatarSuccess({ avatarImage }));
+        }
     }
 }
 function* deleteAvatarHandler(data) {
@@ -58,7 +62,12 @@ function* deleteAvatarHandler(data) {
     if (response['tokenExpired']) {
         yield put(getUserError({ msg: response.responseMsg }));
     } else {
-        yield put(deleteAvatarSuccess());
+        if (response.error) {
+            yield put(deleteAvatarFailed());
+        } else {
+            yield put(deleteAvatarSuccess());
+        }
+            
     }
 }
 function* sendMailHandler(data) {

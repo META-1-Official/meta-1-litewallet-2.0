@@ -26,7 +26,7 @@ export async function getUserData(login) {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    return { message: null, tokenExpired: false, responseMsg: err?.response?.data?.message ? err?.response?.data?.message : 'error' };
   }
 }
 
@@ -67,13 +67,13 @@ export async function uploadAvatar(formData) {
       formData,
       config
     );
-    return data;
+    return {...data, error: false};
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+    if (err?.response?.data?.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    return { message: null, tokenExpired: false, responseMsg: 'error', error: true };
   }
 }
 
@@ -87,13 +87,13 @@ export async function deleteAvatar(login) {
     const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/deleteAvatar`, {
       login: login,
     }, config);
-    return data;
+    return {...data, error: false};
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+    if (err.response?.data?.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    return { message: null, tokenExpired: false, responseMsg: 'error', error: true };
   }
 }
 
@@ -110,11 +110,11 @@ export async function changeLastLocation(login, location) {
     }, config);
     return data;
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+    if (err?.response?.data?.error.toLowerCase() === 'unauthorized') {
       tokenFail();
       return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    return { message: null, tokenExpired: false, responseMsg: 'error' };
   }
 }
 
@@ -144,13 +144,13 @@ export async function getLastLocation(login) {
       },
       config
     );
-    return data;
+    return { ...data, error: false };
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+    if (err?.response?.data?.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    return { message: null, tokenExpired: false, responseMsg: 'error', error: true };
   }
 }
 
@@ -166,13 +166,13 @@ export async function sendEmail(emailType, emailData) {
       { emailType, emailData },
       config
     );
-    return data;
+    return { ...data, error: false };
   } catch (err) {
-    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+    if (err?.response?.data?.error.toLowerCase() === 'unauthorized') {
       tokenFail();
-      return { message: null, tokenExpired: true, responseMsg: "Authentication failed" };
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
     }
-    return { message: null, tokenExpired: false, responseMsg: err.response.data.message };
+    return { message: null, tokenExpired: false, responseMsg: err?.response?.data?.message ? err?.response?.data?.message : 'error', error: true };
   }
 }
 
