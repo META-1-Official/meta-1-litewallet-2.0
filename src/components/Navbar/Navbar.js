@@ -133,7 +133,7 @@ const Navbar = (props) => {
                     >
                     </div>
                   </a>
-                  <ul
+                  {/* <ul
                     className="dropdown-menu dropdown-width"
                     aria-labelledby="navbarScrollingDropdown"
                     style={{ marginLeft: "-4rem", width: "8rem" }}
@@ -167,7 +167,7 @@ const Navbar = (props) => {
                         Fund Wallet with Wire or Check
                       </button>
                     </li>
-                  </ul>
+                  </ul> */}
                 </div>
                 <div className={styles.line + styles.adaptNeed} />
                 <div
