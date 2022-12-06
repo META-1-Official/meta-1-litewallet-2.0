@@ -131,9 +131,21 @@ export default function SignUpForm(props) {
     if (!token || token.error === true) return;
     if (!response_user) return;
 
+    let member1Name = "";
+
+    if (response_user.member1Name) {
+      let nameArry = response_user.member1Name.split(',');
+      if (nameArry.includes(accountName)) {
+        member1Name = response_user.member1Name;
+      } else {
+        member1Name = response_user.member1Name + "," + accountName
+      }
+    } else {
+      member1Name = accountName;
+    }
+
     try {
-      const member1Name = response_user.member1Name ? response_user.member1Name + "," + accountName : accountName;
-      const res_update = await updateUserKycProfile(email, { "member1Name": member1Name }, token);
+      const res_update = await updateUserKycProfile(email, { member1Name }, token);
       if (res_update.error === true) {
         return;
       } else if (res_update) {
