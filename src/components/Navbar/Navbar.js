@@ -113,7 +113,7 @@ const Navbar = (props) => {
                     Get help
                   </span>
                 </div>
-                <div className="nav-item dropdown parent-this">
+                {/* <div className="nav-item dropdown parent-this">
                   <a
                     className={styles.btn}
                     href="#"
@@ -168,7 +168,7 @@ const Navbar = (props) => {
                       </button>
                     </li>
                   </ul>
-                </div>
+                </div> */}
                 <div className={styles.line + styles.adaptNeed} />
                 <div
                   className={styles.adaptNeed}
