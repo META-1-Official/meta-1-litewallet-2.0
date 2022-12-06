@@ -128,14 +128,15 @@ export default function SignUpForm(props) {
     const response_user = await getUserKycProfile(email);
     const token = await getESigToken(email);
 
-    if (!token) return;
+    if (!token || token.error === true) return;
     if (!response_user) return;
 
     try {
       const member1Name = response_user.member1Name ? response_user.member1Name + "," + accountName : accountName;
       const res_update = await updateUserKycProfile(email, { "member1Name": member1Name }, token);
-
-      if (res_update) {
+      if (res_update.error === true) {
+        return;
+      } else if (res_update) {
         await createAccountWithPassword(
           accountName,
           password,
