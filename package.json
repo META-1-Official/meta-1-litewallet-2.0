@@ -85,5 +85,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "engines": {
+    "node": ">=15.0.0",
+    "npm": "please-use-yarn",
+    "yarn": ">=1.22.00"
   }
 }
