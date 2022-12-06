@@ -90,7 +90,7 @@ export default function FaceKiForm(props) {
     var file = dataURLtoFile(imageSrc, 'a.jpg');
     const response = await liveLinessCheck(file);
 
-    if (!response) {
+    if (!response || response.error === true) {
       alert('Something went wrong from Biometric server.');
       setVerifying(false);
       return;

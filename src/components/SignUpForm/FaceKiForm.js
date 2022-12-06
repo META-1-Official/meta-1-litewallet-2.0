@@ -75,7 +75,7 @@ export default function FaceKiForm(props) {
 
     const response = await liveLinessCheck(file);
 
-    if (!response) {
+    if (!response || response.error === true) {
       alert('Something went wrong from Biometric server.');
       setVerifying(false);
       return;
@@ -92,7 +92,9 @@ export default function FaceKiForm(props) {
           setVerifying(false);
         } else {
           const response_user = await getUserKycProfile(email);
-          if (response_user) {
+          if (response_user.error === true) {
+            alert('Something went wrong.');
+          } else if (response_user) {
             alert('This email already has been used for another user.');
             setVerifying(false);
           } else {
@@ -121,7 +123,9 @@ export default function FaceKiForm(props) {
         }
       } else if (response_verify.status === 'Verify Failed') {
         const response_user = await getUserKycProfile(email);
-        if (response_user) {
+        if (response_user.error === true) {
+          alert('Something went wrong.');
+        } else if (response_user) {
           alert('This email already has been used for another user.');
           setVerifying(false);
         } else {

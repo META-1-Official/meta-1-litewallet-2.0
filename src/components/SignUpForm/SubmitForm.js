@@ -31,8 +31,8 @@ export default function SubmitForm(props) {
 
   useEffect(async () => {
     const response = await getUserKycProfile(email);
-    if (response && response.status.isPayed === true ) setPaid(true);
-    if (response && response.status.isSign === true) setSigned(true);
+    if (response && response?.status?.isPayed === true ) setPaid(true);
+    if (response && response?.status?.isSign === true) setSigned(true);
   }, [])
 
   const handleSign = async (e) => {
@@ -42,7 +42,7 @@ export default function SubmitForm(props) {
     else {
       try {
         const response = await getUserKycProfile(email);
-        if (response && response.status.isSign === 1) {
+        if (response && response?.status?.isSign === 1) {
           alert('You already signed E-Signature');
           setSigned(true);
           return;
@@ -54,7 +54,9 @@ export default function SubmitForm(props) {
 
       try {
         const token = await getESigToken(email);
-        if (token) {
+        if (token.error === true) {
+          return;
+        } else if (token) {
           localStorage.setItem('login', accountName);
           localStorage.setItem('password', password);
           localStorage.setItem('firstname', firstName);
