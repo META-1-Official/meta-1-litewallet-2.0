@@ -104,6 +104,7 @@ function Application(props) {
   const [isSignatureProcessing, setIsSignatureProcessing] = useState(false);
   const [signatureResult, setSignatureResult] = useState(null);
   const [isFromMigration, setIsFromMigration] = useState(false);
+  const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
@@ -273,6 +274,7 @@ function Application(props) {
             const portfolioObj = new Portfolio({
               metaApi: Meta1,
               accountName: accountNameState,
+              setFetchAssetModalOpen
             });
             const tradeWithPasswordObj = new TradeWithPassword({
               metaApi: Meta1,
@@ -310,6 +312,12 @@ function Application(props) {
     setTimeout(async () => {
       if (isLoginState && getLoginDetail()) {
         const fetched = await portfolioReceiverState.fetch();
+        if (!fetched) {
+          return;
+        }
+        if (!assets || (Array.isArray(assets) && assets.length === 0)) {
+          setAssets(fetched.assets);
+        }
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
       }

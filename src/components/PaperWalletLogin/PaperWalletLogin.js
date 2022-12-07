@@ -24,7 +24,11 @@ export default function PaperWalletLogin({ accountName }) {
       async function fetchAccount(debouncedAccount) {
         // Сделать запрос к АП
         try {
-          await portfolioReceiverState.fetch(debouncedAccount);
+          const res = await portfolioReceiverState.fetch(debouncedAccount);
+          if (!res) {
+            setAccountChecked(false);
+            return;
+          }
           setAccountChecked(true);
         } catch (e) {
           setAccountChecked(false);
