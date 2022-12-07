@@ -315,6 +315,9 @@ function Application(props) {
         if (!fetched) {
           return;
         }
+        if (!assets || (Array.isArray(assets) && assets.length === 0)) {
+          setAssets(fetched.assets);
+        }
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
       }
