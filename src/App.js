@@ -1021,6 +1021,38 @@ function Application(props) {
             Go There</Button>
         </Modal.Actions>
       </Modal>
+
+      <Modal
+        size="mini"
+        className="claim_wallet_modal"
+        onClose={() => {
+          setFetchAssetModalOpen(false);
+        }}
+        open={fetchAssetModalOpen}
+        id={"modalExch"}
+      >
+
+        <Modal.Content >
+          <div
+            className="claim_wallet_btn_div"
+
+          >
+            <h3 className="claim_model_content">
+              Hello {accountName}<br />
+              {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              setFetchAssetModalOpen(false);
+            }}
+          >
+            OK</Button>
+        </Modal.Actions>
+      </Modal>
     </>
   );
 }
