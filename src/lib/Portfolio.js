@@ -21,11 +21,27 @@ export default class Portfolio {
     constructor(props) {
         this.metaApi = props.metaApi
         this.accountName = props.accountName
+        this.setFetchAssetModalOpen = props.setFetchAssetModalOpen
+        this.fetchAssetLastValueOk = null
+        this.fetchAssetLastValueError = null
     }
 
     async fetch(accountName) {
         const accName = accountName || this.accountName
         const fetchedAssets = await this._fetchAssets()
+        if (!fetchedAssets) {
+            if (this.fetchAssetLastValueError ===  null) {
+                this.fetchAssetLastValueError = false;
+                this.fetchAssetLastValueOk = false;
+                this.setFetchAssetModalOpen(true);
+            }
+            return null;
+        } else {
+            if (this.fetchAssetLastValueOk === false) {
+                this.fetchAssetLastValueOk = true;
+                this.setFetchAssetModalOpen(true);
+            }
+        }
         const fetchedAccounts = await this.metaApi.db.get_full_accounts(
             [accName],
             false
@@ -70,7 +86,11 @@ export default class Portfolio {
     }
 
     async _fetchAssets() {
-        return await this.metaApi.db.list_assets('', 101)
+        try {
+            return await this.metaApi.db.list_assets('', 101);
+        } catch (err) {
+            return null;
+        }
     }
 
     _getBalance(symbol, fetchedPortfolio) {
@@ -80,5 +100,9 @@ export default class Portfolio {
         } else {
             return 0
         }
+    }
+
+    _fetchAssetLastValue(getErrorValue = false) {
+        return getErrorValue ? this.fetchAssetLastValueError : this.fetchAssetLastValueOk;
     }
 }

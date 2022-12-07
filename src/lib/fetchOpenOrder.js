@@ -48,7 +48,9 @@ async function getOpenOrder(event) {
             order = ChainStore.getObject(orderID).toJS();
             const baseResult = await UseAsset(order.sell_price.base.asset_id);
             const quoteResult = await UseAsset(order.sell_price.quote.asset_id);
-
+            if (!baseResult || !quoteResult) {
+                return [];
+            }
             const marketName = quoteResult?.data?.symbol.includes('META') ? `${baseResult?.data?.symbol}_${quoteResult?.data?.symbol}` : `${quoteResult?.data?.symbol}_${baseResult?.data?.symbol}`;
             let isInverted = isInventState?.symbol.includes(marketName);
 
@@ -61,7 +63,9 @@ async function getOpenOrder(event) {
                 !isInverted ? baseResult?.data?.symbol : quoteResult?.data?.symbol,
                 !isInverted ? quoteResult?.data?.symbol : baseResult?.data?.symbol
             );
-            
+            if (!newPair) {
+                return [];
+            }
             let assets = {
                 [order.sell_price.base.asset_id]: {precision: baseResult?.data?.precision},
                 [order.sell_price.quote.asset_id]: {precision: quoteResult?.data?.precision},
