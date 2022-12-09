@@ -155,7 +155,7 @@ export default function SubmitForm(props) {
               <Checkbox
                 onChange={(e) => setStored(!stored)}
                 checked={stored}
-                label="I have written down or otherwise stored my passkey"
+                label="I have copied and stored my passkey"
               />
             </Form.Field>
 
