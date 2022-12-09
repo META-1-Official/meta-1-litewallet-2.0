@@ -6,7 +6,7 @@ import firstPart from "../../images/assetsForSidebar/Shape 2.png";
 import secondPart from "../../images/assetsForSidebar/Shape 2 copy.png";
 import homeIcon from "../../images/assetsForSidebar/Shape 5.png";
 import { useSelector } from "react-redux";
-import { profileImageSelector } from "../../store/account/selector";
+import { isLoginSelector, profileImageSelector } from "../../store/account/selector";
 
 const LeftPanel = (props) => {
   const {
@@ -17,11 +17,13 @@ const LeftPanel = (props) => {
     onClickOrderTableHandler,
     onClickSettingsHandler,
     onClickHistoryHandler,
+    onClickOpenOrderHandler,
     portfolio,
     name,
     activeScreen
   } = props;
   const profileImageState =  useSelector(profileImageSelector);
+  const isLoginState = useSelector(isLoginSelector);
   const portfolioScrollPositionHoverEvent = (e) => {
     if (e.clientY <= 70) {
       if (document.querySelector('#modalBlock')) {
@@ -85,7 +87,7 @@ const LeftPanel = (props) => {
       </li>
       <li
         style={{ marginTop: "1rem" }}
-        onClick={portfolio ? onClickHomeHandler : null}
+        onClick={portfolio && isLoginState ? onClickHomeHandler : null}
         className={styles.Li + " nav-item"}
       >
         <div className={styles.containerLi}>
@@ -110,25 +112,25 @@ const LeftPanel = (props) => {
           <ul className={"event"}>
             <li
               className={"event"}
-              onClick={portfolio ? onClickPortfolioHandler : null}
+              onClick={portfolio && isLoginState ? onClickPortfolioHandler : null}
               style={{ cursor: "pointer" }}
             >
               Show All Balance
             </li>
             <li
               className={"event"}
-              onClick={portfolio ? onClickOrderTableHandler : null}
+              onClick={portfolio && isLoginState ? onClickOpenOrderHandler : null}
               style={{ cursor: "pointer" }}
             >
               Open Orders
             </li>
-            {/* <li
+            <li
               className={"event"}
-              onClick={portfolio ? onClickPaperWalletHandler : null}
+              onClick={portfolio && isLoginState ? onClickPaperWalletHandler : null}
               style={{ cursor: "pointer" }}
             >
               Paper Wallet
-            </li> */}
+            </li>
           </ul>
         </div>
       </div>
@@ -138,7 +140,7 @@ const LeftPanel = (props) => {
             ? styles.Li + " nav-item event portforlio-class"
             : styles.LiDisabled + " nav-item event portforlio-class"
         }
-        onClick={portfolio ? onClickPortfolioHandler : null}
+        onClick={portfolio && isLoginState ? onClickPortfolioHandler : null}
       >
         <div
           style={{
@@ -190,7 +192,7 @@ const LeftPanel = (props) => {
             ? styles.Li + " nav-item"
             : styles.LiDisabled + " nav-item"
         }
-        onClick={portfolio ? onClickExchangeHandler : null}
+        onClick={portfolio && isLoginState ? onClickExchangeHandler : null}
       >
         <div className={styles.containerLi}>
           <div className={styles.circle}>
@@ -223,7 +225,7 @@ const LeftPanel = (props) => {
             ? styles.Li + " nav-item"
             : styles.LiDisabled + " nav-item"
         }
-        onClick={portfolio ? onClickHistoryHandler : null}
+        onClick={portfolio && isLoginState ? onClickHistoryHandler : null}
       >
         <div className={styles.containerLi}>
           <div className={styles.circle}>
@@ -233,7 +235,7 @@ const LeftPanel = (props) => {
             className={styles.textSpan}
             style={activeScreen === "orderTable" ? { color: "#FFC000" } : null}
           >
-            <span>Transfer History</span>
+            <span>Transaction History</span>
           </div>
         </div>
       </li>
@@ -243,7 +245,7 @@ const LeftPanel = (props) => {
             ? styles.Li + " nav-item"
             : styles.LiDisabled + " nav-item"
         }
-        onClick={portfolio ? onClickSettingsHandler : null}
+        onClick={portfolio && isLoginState ? onClickSettingsHandler : null}
       >
         <div className={styles.containerLi}>
           <div className={styles.circle}>

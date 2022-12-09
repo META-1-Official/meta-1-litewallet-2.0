@@ -1,6 +1,5 @@
 import {ChainStore} from "meta1-vision-js";
 import utils from "./utils";
-import counterpart from "counterpart";
 import {estimateFee} from "./trxHelper";
 import {
     scamAccountsPolo,
@@ -106,11 +105,11 @@ export default class AccountUtils {
     static isKnownScammer(account) {
         let scamMessage = null;
         if (scamAccountsPolo.indexOf(account) !== -1) {
-            scamMessage = counterpart.translate("account.polo_scam");
+            scamMessage = "account.polo_scam";
         } else if (scamAccountsBittrex.indexOf(account) !== -1) {
-            scamMessage = counterpart.translate("account.bittrex_scam");
+            scamMessage = "account.bittrex_scam";
         } else if (scamAccountsOther.indexOf(account) !== -1) {
-            scamMessage = counterpart.translate("account.other_scam");
+            scamMessage = "account.other_scam";
         }
         return scamMessage;
     }

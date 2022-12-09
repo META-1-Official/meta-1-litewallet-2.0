@@ -1,4 +1,4 @@
-import { removeAccessToken, removeLoginDetail } from '../../utils/localstorage';
+import { removeAccessToken, removeLocation, removeLoginDetail } from '../../utils/localstorage';
 import * as types from './types';
 
 export const loginRequestService = (payload) => {
@@ -25,6 +25,7 @@ export const loginError = (payload) => {
 export const logoutRequest = () => {
     removeLoginDetail();
     removeAccessToken();
+    removeLocation();
     return {
         type: types.LOGOUT_REQUEST
     }
@@ -65,6 +66,18 @@ export const uploadAvatarSuccess = (payload) => {
     }
 }
 
+export const uploadAvatarFail = () => {
+    return {
+        type: types.UPLOAD_AVATAR_FAILED
+    }
+}
+
+export const uploadAvatarReset = () => {
+    return {
+        type: types.UPLOAD_AVATAR_RESET
+    }
+}
+
 export const deleteAvatarRequest = (payload) => {
     return {
         type: types.DELETE_AVATAR_REQUEST,
@@ -75,6 +88,12 @@ export const deleteAvatarRequest = (payload) => {
 export const deleteAvatarSuccess = (payload) => {
     return {
         type: types.DELETE_AVATAR_SUCCESS,
+    }
+}
+
+export const deleteAvatarFailed = (payload) => {
+    return {
+        type: types.DELETE_AVATAR_FAILED,
     }
 }
 
@@ -100,5 +119,97 @@ export const sendMailError = () => {
 export const sendMailReset = () => {
     return {
         type: types.SEND_MAIL_RESET
+    }
+}
+export const checkTransferableModelAction = (payload) => {
+    return {
+        type: types.CHECK_TRANSFERABLE_WALLET_MODAL,
+        payload
+    }
+}
+export const checkTransferableRequest = (payload) => {
+    return {
+        type: types.CHECK_TRANSFERABLE_REQUEST,
+        payload
+    }
+}
+
+export const checkTransferableSuccess = (payload) => {
+    return {
+        type: types.CHECK_TRANSFERABLE_SUCCESS,
+        payload
+    }
+}
+export const checkTransferableError = () => {
+    return {
+        type: types.CHECK_TRANSFERABLE_ERROR,
+    }
+}
+
+export const checkAccountSignatureRequest = (payload) => {
+    return {
+        type: types.CHECK_ACCOUNT_SIGNATURE_REQUEST,
+        payload
+    }
+}
+
+export const checkAccountSignatureSuccess = (payload) => {
+    return {
+        type: types.CHECK_ACCOUNT_SIGNATURE_SUCCESS,
+        payload
+    }
+}
+
+export const checkAccountSignatureError = (payload) => {
+    return {
+        type: types.CHECK_ACCOUNT_SIGNATURE_ERROR,
+        payload
+    }
+}
+
+export const checkAccountSignatureReset = () => {
+    return {
+        type: types.CHECK_ACCOUNT_SIGNATURE_RESET,
+    }
+}
+
+export const checkTokenRequest = (payload) => {
+    return {
+        type: types.CHECK_TOKEN_REQUEST,
+        payload
+    }
+}
+
+export const passKeyRequestService = (payload) => {
+    return {
+        type: types.PASS_KEY_REQUEST,
+        payload
+    }
+}
+
+export const passKeySuccessService = (payload) => {
+    return {
+        type: types.PASS_KEY_SUCCESS,
+        payload
+    }
+}
+
+export const passKeyErrorService = (payload) => {
+    return {
+        type: types.PASS_KEY_ERROR,
+        payload
+    }
+}
+
+export const passKeyResetService = () => {
+    return {
+        type: types.PASS_KEY_RESET,
+    }
+}
+
+export const customizedColumnOpenOrderRequest = (payload) => {
+    return {
+        type: types.CUSTOMIZED_COLUMNS_OPEN_ORDER,
+        payload
     }
 }

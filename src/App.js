@@ -1,3 +1,5 @@
+import axios from "axios";
+import { PrivateKey, Signature } from "meta1-vision-js";
 import "regenerator-runtime/runtime";
 import TradeWithPassword from "./lib/TradeWithPassword";
 import SendWithPassword from "./lib/SendWithPassword";
@@ -5,7 +7,7 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { getCryptosChange, loginRequest } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { getUserData, changeLastLocation, getLastLocation } from "./API/API";
+import { getUserData, changeLastLocation, getLastLocation, sendEmail } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import WithdrawForm from "./components/WithdrawForm";
@@ -27,16 +29,20 @@ import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
-import { getAccessToken, setAccessToken } from "./utils/localstorage";
+import { getAccessToken, getLoginDetail, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector } from "./store/account/selector";
-import { getUserRequest, loginRequestService, logoutRequest } from "./store/account/actions";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
+import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
+import OpenOrder  from "./components/OpenOrder";
+import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
+import { useQuery } from "react-query";
 
 window.Meta1 = Meta1;
 function Application(props) {
   const accountNameState = useSelector(accountsSelector);
+  const isLoginState = useSelector(isLoginSelector);
   const tokenState = useSelector(tokenSelector);
   const loaderState = useSelector(loaderSelector);
   const loginErrorState = useSelector(loginErrorSelector);
@@ -46,11 +52,12 @@ function Application(props) {
   const demoState = useSelector(demoSelector);
   const meta1State = useSelector(meta1Selector);
   const cryptoDataState = useSelector(cryptoDataSelector);
-
+  const fromSignUpState = useSelector(fromSignUpSelector);
   const portfolioReceiverState = useSelector(portfolioReceiverSelector);
   const traderState = useSelector(traderSelector);
   const checkPasswordObjState = useSelector(checkPasswordObjSelector);
   const senderApiState = useSelector(senderApiSelector);
+  const checkTransferableModelState = useSelector(checkTransferableModelSelector);
 
   const { metaUrl } = props;
   const domAccount =
@@ -94,7 +101,24 @@ function Application(props) {
   const [userCurrency, setUserCurrency] = useState("$ USD 1");
   const [refreshData, setRefreshData] = useState(false);
   const [fromSignUp, setFromSignUp] = useState(false);
+  const [isSignatureProcessing, setIsSignatureProcessing] = useState(false);
+  const [signatureResult, setSignatureResult] = useState(null);
+  const [isFromMigration, setIsFromMigration] = useState(false);
+  const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
   const dispatch = useDispatch();
+
+  const urlParams = window.location.search.replace('?', '').split('&');
+  const signatureParam = urlParams[0].split('=');
+
+  const updateBalances = () => {
+    if (portfolioReceiverState && accountName) {
+      refetchPortfolio();
+    }
+  }
+
+  const newUpdatedBalance = useQuery(['updateBalance'], updateBalances, {
+    refetchInterval: 20000
+  });
 
   useEffect(() => {
     if (login !== null) {
@@ -102,12 +126,13 @@ function Application(props) {
     }
   }, []);
 
-  const onLogin = async (login, clicked = false, password = '', fromSignUpFlag = false) => {
+  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "") => {
     setIsLoading(true);
     if (clicked) {
-      dispatch(loginRequestService({login ,password, setLoginDataError}));
+      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail }));
     }
     if (getAccessToken()) {
+      dispatch(checkTransferableRequest({ login }))
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
@@ -126,6 +151,22 @@ function Application(props) {
   };
 
   useEffect(() => {
+    if (signatureParam[0] === 'signature') {
+      if (!fromSignUpState) {
+        setIsSignatureProcessing(true);
+        setSignatureResult(signatureParam[1]);
+        setActiveScreen('registration');
+      } else {
+        if (window.location.search.includes('?signature=success')) {
+          sessionStorage.setItem('location','wallet');
+          setActiveScreen("wallet");
+          window.location.href = window.location.href.split('?')[0];
+        }
+      }
+    }
+  },[signatureParam]);
+
+  useEffect(() => {
     if (loginErrorState) {
       setIsLoading(false);
       setLoginDataError(true);
@@ -138,6 +179,9 @@ function Application(props) {
         setRefreshData(prev=>!prev);
         dispatch(resetMetaStore());
         setFromSignUp(false);
+        if (accountNameState) {
+          setActiveScreen("wallet");
+        }
       }
     }
     if (accountNameState === null) {
@@ -187,9 +231,15 @@ function Application(props) {
       if (accountNameState === null || accountNameState.length === 0) return;
       try {
         const fetched = await portfolioReceiverState.fetch();
+        if (!fetched) {
+          return;
+        }
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
+        if (localStorage.getItem('isMigrationUser') === 'true' && localStorage.getItem('readyToMigrate') === 'true') {
+          setIsFromMigration(true);
+        }
         localStorage.setItem("account", accountNameState);
         setActiveScreen(
           sessionStorage.getItem("location") != null
@@ -227,6 +277,7 @@ function Application(props) {
             const portfolioObj = new Portfolio({
               metaApi: Meta1,
               accountName: accountNameState,
+              setFetchAssetModalOpen
             });
             const tradeWithPasswordObj = new TradeWithPassword({
               metaApi: Meta1,
@@ -262,17 +313,25 @@ function Application(props) {
 
   function refetchPortfolio() {
     setTimeout(async () => {
-      const fetched = await portfolioReceiverState.fetch();
-      setPortfolio(fetched.portfolio);
-      setFullPortfolio(fetched.full);
+      if (isLoginState && getLoginDetail()) {
+        const fetched = await portfolioReceiverState.fetch();
+        if (!fetched) {
+          return;
+        }
+        if (!assets || (Array.isArray(assets) && assets.length === 0)) {
+          setAssets(fetched.assets);
+        }
+        setPortfolio(fetched.portfolio);
+        setFullPortfolio(fetched.full);
+      }
     }, 2000);
   }
 
-  const onRegistration = (acc, pass, regEmail) => {
+  const onRegistration = async (acc, pass, regEmail) => {
     localStorage.setItem("account", acc);
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
-    onLogin(acc, true, pass, true);
+    onLogin(acc, true, pass, true, regEmail);
     setActiveScreen("wallet");
   };
 
@@ -304,6 +363,7 @@ function Application(props) {
           dispatch(getUserRequest(login));
           setTradeAsset("BTC");
           setActiveScreen("exchange");
+          dispatch(passKeyResetService());
         }}
         onClickPaperWalletHandler={(e) => {
           e.preventDefault();
@@ -324,6 +384,11 @@ function Application(props) {
           e.preventDefault();
           dispatch(getUserRequest(login));
           setActiveScreen("orderTable");
+        }}
+        onClickOpenOrderHandler={(e) => {
+          e.preventDefault();
+          dispatch(getUserRequest(login));
+          setActiveScreen("openOrder");
         }}
         portfolio={portfolio}
         name={accountName}
@@ -346,6 +411,7 @@ function Application(props) {
             dispatch(getUserRequest(login));
             setTradeAsset("BTC");
             setActiveScreen("exchange");
+            dispatch(passKeyResetService());
           }}
           onClickPaperWalletHandler={(e) => {
             e.preventDefault();
@@ -366,6 +432,11 @@ function Application(props) {
             e.preventDefault();
             dispatch(getUserRequest(login));
             setActiveScreen("orderTable");
+          }}
+          onClickOpenOrderHandler={(e) => {
+            e.preventDefault();
+            dispatch(getUserRequest(login));
+            setActiveScreen("openOrder");
           }}
           portfolio={portfolio}
           name={accountName}
@@ -393,6 +464,8 @@ function Application(props) {
                     setActiveScreen("exchange");
                   }}
                   portfolio={portfolio}
+                  isSignatureProcessing={isSignatureProcessing}
+                  signatureResult={signatureResult}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -512,6 +585,9 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
+                  onClickRedirectToPortfolio={(e) => {
+                    setActiveScreen("wallet");
+                  }}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -605,12 +681,18 @@ function Application(props) {
                 <WithdrawForm
                   account={account}
                   accountName={accountName}
+                  sendEmail={sendEmail}
                   asset={tradeAsset}
                   assets={assets}
                   portfolio={portfolio}
                   onBackClick={(e) => {
                     e.preventDefault();
                     setActiveScreen("wallet");
+                  }}
+                  redirectToPortfolio={() => setActiveScreen("wallet")}
+                  onSuccessWithDrawal={()=> {
+                    setPortfolio(null);
+                    refetchPortfolio();
                   }}
                   setTokenModalOpen={setTokenModalOpen}
                   setTokenModalMsg={setTokenModalMsg}
@@ -753,11 +835,11 @@ function Application(props) {
                   <div>
                     <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
-                        <strong>Transfer History</strong>
+                        <strong>Transaction History</strong>
                       </h5>
                     </div>
                     <div className={"justFlexAndDirect"}>
-                      <div className={"paperWalletStylesTH"}>
+                      <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
                         <OrdersTable
                           data={orders}
                           column={null}
@@ -765,7 +847,7 @@ function Application(props) {
                           assets={assets}
                         />
                       </div>
-                      <div className={"bottomAdaptBlock"}>
+                      <div className={"bottomAdaptBlock margin-class newBottomAdaptBlock"}>
                         <RightSideHelpMenuSecondType
                           onClickExchangeUSDTHandler={(e) => {
                             e.preventDefault();
@@ -778,6 +860,48 @@ function Application(props) {
                             setActiveScreen("exchange");
                           }}
                           fromHistory={true}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                    }}
+                  />
+                </div>
+              </>
+            )}
+            {activeScreen === "openOrder" && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <div>
+                    <div className="orderOrderMainFlex" style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                      <div>
+                        <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                          <strong>Open Order</strong>
+                        </h5>
+                      </div>
+                      <div>
+                        <CustomizeColumns/>
+                      </div>
+                    </div>
+                    <div className="justFlexAndDirect justFlexAndDirectMobile">
+                      <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
+                        <OpenOrder
+                          data={orders}
+                          column={null}
+                          direction={null}
+                          assets={assets}
+                          portfolio={portfolio}
                         />
                       </div>
                     </div>
@@ -830,6 +954,108 @@ function Application(props) {
           </Button>
         </Modal.Actions>
       </Modal>}
+      <Modal
+        size="mini"
+        className="claim_wallet_modal"
+        onClose={() => {
+          dispatch(checkTransferableModelAction(false));
+          dispatch(checkAccountSignatureReset());
+        }}
+        open={checkTransferableModelState}
+        id={"modalExch"}
+      >
+
+        <Modal.Content >
+          <div
+            className="claim_wallet_btn_div"
+
+          >
+            <h3 className="claim_model_content">
+              Hello {accountName}<br />
+              To Claim your previous wallet META1, click on Button
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              dispatch(checkTransferableModelAction(false));
+              dispatch(checkAccountSignatureReset());
+            }}
+          >
+            Claim Wallet</Button>
+        </Modal.Actions>
+      </Modal>
+      <Modal
+        size="mini"
+        className="claim_wallet_modal"
+        onClose={() => {
+          localStorage.removeItem('isMigrationUser');
+          localStorage.removeItem('readyToMigrate');
+          setActiveScreen('login');
+          setIsFromMigration(false);
+        }}
+        open={isFromMigration}
+        id={"modalExch"}
+      >
+
+        <Modal.Content >
+          <div
+            className="claim_wallet_btn_div"
+
+          >
+            <h3 className="claim_model_content">
+              Hello {accountName}<br />
+              To Complete Migration of Your Funds Click Below
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              localStorage.removeItem('isMigrationUser');
+              localStorage.removeItem('readyToMigrate');
+              setActiveScreen('login');
+              setIsFromMigration(false);
+            }}
+          >
+            Go There</Button>
+        </Modal.Actions>
+      </Modal>
+
+      <Modal
+        size="mini"
+        className="claim_wallet_modal"
+        onClose={() => {
+          setFetchAssetModalOpen(false);
+        }}
+        open={fetchAssetModalOpen}
+        id={"modalExch"}
+      >
+
+        <Modal.Content >
+          <div
+            className="claim_wallet_btn_div"
+
+          >
+            <h3 className="claim_model_content">
+              Hello {accountName}<br />
+              {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              setFetchAssetModalOpen(false);
+            }}
+          >
+            OK</Button>
+        </Modal.Actions>
+      </Modal>
     </>
   );
 }

@@ -13,10 +13,11 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Meta1 from "meta1-vision-dex";
 import { useDispatch, useSelector } from "react-redux";
 import { checkPasswordObjSelector, portfolioReceiverSelector, senderApiSelector, userCurrencySelector } from "../../store/meta1/selector";
-import { accountsSelector } from "../../store/account/selector";
+import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector } from "../../store/account/selector";
 import { saveBalanceRequest } from "../../store/meta1/actions";
+import { passKeyRequestService, passKeyResetService } from "../../store/account/actions";
 
-const FEE = 0.0035;
+const FEE = 0.00034;
 
 const SendForm = React.memo((props) => {
   const {
@@ -63,6 +64,8 @@ const SendForm = React.memo((props) => {
   const [clickedInputs, setClickedInputs] = useState(false);
   const [feeAlert, setFeeAlert] = useState(false);
   const checkPasswordState = useSelector(checkPasswordObjSelector);
+  const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
+  const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
 
   useEffect(() => {
     async function getData() {
@@ -82,6 +85,42 @@ const SendForm = React.memo((props) => {
     getData();
   }, [asset]);
 
+  useEffect(() => {
+    if (!isValidPasswordKeyState && passwordKeyErrorState) {
+      setError("Invalid Credentials");
+      setRepeat(true);
+      dispatch(passKeyResetService());
+      setInProgress(false);
+    }
+    if (isValidPasswordKeyState) {
+      dispatch(passKeyResetService());
+      performTransferSubmit();
+    }
+  },[isValidPasswordKeyState, passwordKeyErrorState])
+
+  const performTransferSubmit = async () => {
+    const result = await sendApiState.perform({
+      password,
+      to: receiver,
+      amount,
+      message,
+      asset,
+    });
+    if (result.error) {
+      if (result.error === "Invalid credentials") {
+        setError(result.error);
+      } else if ((asset === "META1" && feeAsset.qty === amount) || !feeAsset) {
+        setError("You don't have enough cryptocurrency to pay FEE");
+      } else {
+        setError("Invalid Receiver");
+      }
+      setRepeat(true);
+    } else {
+      dispatch(saveBalanceRequest(accountState))
+      setModalOpened(true);
+    }
+    setInProgress(false);
+  }
   useEffect(() => {
     function filterPrec() {
       let preObj = {};
@@ -199,7 +238,12 @@ const SendForm = React.memo((props) => {
     async function fetchAccount(debouncedAccount) {
       // Сделать запрос к АП
       try {
-        await portfolioReceiverState.fetch(debouncedAccount);
+        const res = await portfolioReceiverState.fetch(debouncedAccount);
+        if (!res) {
+          setAccountChecked(false);
+          setAccountIsLoading(false);
+          return;
+        }
         setAccountChecked(true);
         setAccountIsLoading(false);
         if (receiver === sender) {
@@ -235,35 +279,8 @@ const SendForm = React.memo((props) => {
     let asset = assetCh;
     setError(null);
     setInProgress(true);
-    const { password, to, amount, message } = params;
-    const passwordResult = await checkPasswordState.checkPasword(password);
-    if (passwordResult.error !== null) {
-      setError(passwordResult.error);
-      setRepeat(true);
-      setInProgress(false);
-      return;
-    }
-    const result = await sendApiState.perform({
-      password,
-      to,
-      amount,
-      message,
-      asset,
-    });
-    if (result.error) {
-      if (result.error === "Invalid credentials") {
-        setError(result.error);
-      } else if ((asset === "META1" && feeAsset.qty === amount) || !feeAsset) {
-        setError("You don't have enough cryptocurrency to pay FEE");
-      } else {
-        setError("Invalid Receiver");
-      }
-      setRepeat(true);
-    } else {
-      dispatch(saveBalanceRequest(accountState))
-      setModalOpened(true);
-    }
-    setInProgress(false);
+    const { password } = params;
+    dispatch(passKeyRequestService({ login: accountState, password}));  
   };
 
   const setAssetMax = () => {
@@ -499,7 +516,7 @@ const SendForm = React.memo((props) => {
                       }}
                     >
                       <span style={{ color: "#505361", paddingTop: "2rem" }}>
-                        FEE: 0.00035 META1
+                        FEE: {FEE} META1
                       </span>
                       <div
                         className="max-button-new"

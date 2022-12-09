@@ -1,4 +1,4 @@
-import assetConstants from "../chain/asset_constants";
+import assetConstants from "./asset_constants";
 import sanitize from "sanitize";
 
 export default class AssetUtils {

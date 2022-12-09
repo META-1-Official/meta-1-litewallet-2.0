@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,6 +16,7 @@ import { removeExponent } from "../../utils/commonFunction";
 import { userCurrencySelector } from "../../store/meta1/selector";
 import { useSelector } from "react-redux";
 
+const DEPOSIT_BTN_HIDE = ["META1", "BNB", "XLM", "EOS"];
 const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +47,7 @@ const PortfolioTable = React.memo((props) => {
     return fetchedCryptos;
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     filteredPortfolio.forEach((d, i) => {
       let precision = assets.filter((asset) => asset.symbol.includes(d.name));
       Object.assign(filteredPortfolio[i], { pre: precision[0].precision });
@@ -167,7 +168,7 @@ const PortfolioTable = React.memo((props) => {
             <StyledTableRow key={datas?.name}>
               <StyledTableCell component="th" scope="row">
                 {
-                  <div className="asset-image">
+                  <div className="asset-image dashboard">
                     <Image size="mini" src={datas?.image} />
                     <div className="asset-name">{datas?.name}</div>
                   </div>
@@ -232,7 +233,7 @@ const PortfolioTable = React.memo((props) => {
                 </button>
               </StyledTableCell>
               <StyledTableCell align="left">
-                {datas.name !== "XLM" && datas.name !== "BNB" && datas.name !== "EOS" && datas.name !== "META1" && (
+                {!DEPOSIT_BTN_HIDE.includes(datas.name) && (
                   <button
                     onClick={() => {
                       onDepositClick(datas.name);
@@ -244,7 +245,7 @@ const PortfolioTable = React.memo((props) => {
                 )}
               </StyledTableCell>
               <StyledTableCell align="left">
-                {(datas.name == "ETH" || datas.name === "USDT") && (
+                {(datas.name === "USDT" || datas.name === "ETH") && (
                   <button
                     onClick={() => {
                       onWithdrawClick(datas.name);

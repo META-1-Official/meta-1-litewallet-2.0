@@ -14,8 +14,8 @@ import {
 import { saveUserCurrency } from "../../API/API";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, userCurrencySelector } from "../../store/meta1/selector";
-import { accountsSelector, profileImageSelector } from "../../store/account/selector";
-import { deleteAvatarRequest, uploadAvatarRequest } from "../../store/account/actions";
+import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector, profileImageSelector, uploadImageErrorSelector } from "../../store/account/selector";
+import { deleteAvatarRequest, passKeyRequestService, passKeyResetService, uploadAvatarRequest, uploadAvatarReset } from "../../store/account/actions";
 import { saveUserCurrencyRequest, saveUserCurrencyReset, setUserCurrencyAction } from "../../store/meta1/actions";
 let isSet = false;
 const Settings = (props) => {
@@ -31,6 +31,7 @@ const Settings = (props) => {
 
   const checkPasswordState = useSelector(checkPasswordObjSelector);
   const userCurrencyState = useSelector(userCurrencySelector);
+  const uploadImageErrorState = useSelector(uploadImageErrorSelector);
   const [currency, setCurrency] = useState(userCurrencyState);
   const [modalOpened, setModalOpened] = useState(false);
   const [password, setPassword] = useState('');
@@ -44,6 +45,25 @@ const Settings = (props) => {
   const accountNameState = useSelector(accountsSelector);
   const profileImageState =  useSelector(profileImageSelector);
   const changeCurrencyState = useSelector(changeCurrencySelector);
+  const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
+  const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
+  
+  useEffect(() => {
+    if (!isValidPasswordKeyState && passwordKeyErrorState) {
+      setPasswordError("Invalid Credentials");
+      return;
+    }
+    if (isValidPasswordKeyState) {
+      if (isRemoveBtn) {
+        dispatch(passKeyResetService());
+        dispatch(deleteAvatarRequest(accountNameState));
+      }
+      else {
+        imageRef.current.click();
+      }
+      closePasswordSectionHandler(false);
+    }
+  }, [isValidPasswordKeyState, passwordKeyErrorState])
   const changeCurrencyHandler = async (e) => {
     e.preventDefault();
     dispatch(saveUserCurrencyRequest({login:accountNameState,currency}));
@@ -59,13 +79,7 @@ const Settings = (props) => {
       setIsPasswordTouch(true);
       return;
     }
-    const result = await checkPasswordState.checkPasword(password)
-    if (result.error !== null) {
-      setPasswordError(result.error);
-      return;
-    }
-    imageRef.current.click();
-    closePasswordSectionHandler(false);
+    dispatch(passKeyRequestService({ login: accountNameState, password}));
   }
 
   const removeImageValidation = async () => {
@@ -73,18 +87,11 @@ const Settings = (props) => {
       setIsPasswordTouch(true);
       return;
     }
-    const result = await checkPasswordState.checkPasword(password)
-    if (result.error !== null) {
-      setPasswordError(result.error);
-      return;
-    }
-    dispatch(deleteAvatarRequest(accountNameState))
-    closePasswordSectionHandler(false);
+    dispatch(passKeyRequestService({ login: accountNameState, password}));
   }
 
   async function uploadFile(e) {
     e.preventDefault();
-
     if (e.target?.files[0]?.name) {
       let type = e.target?.files[0]?.name.split(".")[1];
       if (type === "png" || type === "jpeg" || type === "jpg") {
@@ -210,6 +217,9 @@ const Settings = (props) => {
                             onChange={(e) => {
                               uploadFile(e);
                             }}
+                            onClick={()=>{
+                              dispatch(passKeyResetService());
+                            }}
                             ref={imageRef}
                             className={styles.uploadButton}
                           />
@@ -265,7 +275,7 @@ const Settings = (props) => {
                     Select your preferred display currency for all markets.
                   </span>
                 </div>
-                <div className={styles.changeDataInput}>
+                {cryptoDataState && cryptoDataState?.ExchangeRate && Array.isArray(cryptoDataState?.ExchangeRate) && cryptoDataState?.ExchangeRate.length > 0 && <div className={styles.changeDataInput}>
                   <select
                     className={styles.currencySelect}
                     onChange={(e) => setCurrency(e.target.value)}
@@ -289,7 +299,7 @@ const Settings = (props) => {
                       CA$ (CAD)
                     </option>
                   </select>
-                </div>
+                </div>}
                 <div className={styles.blockButton}>
                   <button
                     type={"submit"}
@@ -313,8 +323,14 @@ const Settings = (props) => {
 
       <Modal
         size="mini"
-        open={passwordError !== ''}
-        onClose={() => setPasswordError('')}
+        open={passwordError !== '' || uploadImageErrorState}
+        onClose={() => {
+          setPasswordError('');
+          dispatch(passKeyResetService());
+          if (uploadImageErrorState) {
+            dispatch(uploadAvatarReset());
+          }
+        }}
         id={"modalExch"}
       >
         <Modal.Header>Error occured</Modal.Header>
@@ -326,13 +342,19 @@ const Settings = (props) => {
               </Grid.Column>
 
               <Grid.Column width={10}>
-                <div className="trade-error">{passwordError}</div>
+                <div className="trade-error">{uploadImageErrorState ? 'Something went wrong' : passwordError}</div>
               </Grid.Column>
             </Grid.Row>
           </Grid>
         </Modal.Content>
         <Modal.Actions>
-          <Button positive onClick={() => setPasswordError('')}>
+          <Button positive onClick={() => {
+            setPasswordError('');
+            dispatch(passKeyResetService());
+            if (uploadImageErrorState) {
+              dispatch(uploadAvatarReset());
+            }
+          }}>
             OK
           </Button>
         </Modal.Actions>

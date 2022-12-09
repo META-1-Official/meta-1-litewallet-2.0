@@ -19,6 +19,7 @@ const Navbar = (props) => {
     onClickOrderTableHandler,
     onClickSettingsHandler,
     onClickHistoryHandler,
+    onClickOpenOrderHandler,
     portfolio,
     name
   } = props;
@@ -133,7 +134,7 @@ const Navbar = (props) => {
                     </div>
                   </a>
                   <ul
-                    className="dropdown-menu"
+                    className="dropdown-menu dropdown-width"
                     aria-labelledby="navbarScrollingDropdown"
                     style={{ marginLeft: "-4rem", width: "8rem" }}
                   >
@@ -233,6 +234,7 @@ const Navbar = (props) => {
                 onClickHistoryHandler={onClickHistoryHandler}
                 portfolio={portfolio}
                 name={name}
+                onClickOpenOrderHandler={onClickOpenOrderHandler}
               />
             ) : null}
           </div>

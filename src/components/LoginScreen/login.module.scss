@@ -109,7 +109,7 @@
   left: 1rem;
   @media (max-width: 600px) {
     left: 0;
-    top: 7.5rem;
+    top: 3.5rem;
   }
 }
 
@@ -160,4 +160,15 @@
     border-bottom: 1px solid var(--textGold);
     text-decoration: none !important;
   }
+}
+.checkTransferButtonDisplay {
+  display: block;
+}
+.checkTransferError {
+  color: red !important;
+  font-size: 15px !important;
+  margin-left: 1rem !important;
+}
+.checkTransferPassword {
+  margin-top: 0.5rem !important;
 }

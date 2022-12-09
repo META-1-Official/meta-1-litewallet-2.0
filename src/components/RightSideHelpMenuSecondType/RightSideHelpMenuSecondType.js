@@ -31,8 +31,8 @@ const RightSideHelpMenuSecondType = (props) => {
   };
 
   return (
-    <div className={styles.adaptNeed}>
-      <div className={styles.newCrypto}>
+    <div className={`${styles.adaptNeed} ${props.fromHistory ? styles.newAdaptNeed : ''}`}>
+      <div className={`${styles.newCrypto} ${typeof props.fromHistory === 'boolean' && props.fromHistory ? styles.newCryptoCustom : ''} ${typeof props.fromHistory === 'string' && props.fromHistory === 'exchange' ? styles.newCryptoCustomExchange : ''}`}>
         <h5 style={{ fontWeight: "bold", fontSize: "1rem" }}>
           New Crypto on META1
         </h5>
@@ -101,7 +101,7 @@ const RightSideHelpMenuSecondType = (props) => {
           </div>
         </div>
       </div>
-      <div className={`${styles.intro} ${props.fromHistory ? styles.introHistory : ''}`}>
+      <div className={`${styles.intro} ${typeof props.fromHistory === "boolean" && props.fromHistory ? styles.newIntro : ''} ${typeof props.fromHistory === 'string' && props.fromHistory === 'exchange' ? styles.newCryptoCustomExchange : ''}`}>
         <h5>Recent Transactions</h5>
         <hr />
         {isLoading ? (
@@ -119,30 +119,16 @@ const RightSideHelpMenuSecondType = (props) => {
               }}
             >
               <div
-                style={{
-                margin: "auto 0",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                width: "6rem",
-              }}
+                style={{ margin: "auto 0", width: "6rem", textAlign: "end" }}
               >
-                {getAsset(el.asset.abbr)}
-                <p
-                  className={styles.symbol_para}
-                >
-                  <strong>{el.asset.abbr}</strong>
-                </p>
-              </div>
-              <div
-                style={{ margin: "auto 0", width: "4rem", textAlign: "end" }}
-              >
-                <p>{el.type}</p>
+                <span
+                  className={`${styles.spanStatusBtn} ${trxTypes[ops[el.op_type]] === 'Cancel order' ? styles.transactionSpanCancel : trxTypes[ops[el.op_type]] === 'Place order' ? styles.transactionSpanPlace : styles.transactionSpanFill }`}
+                >{trxTypes[ops[el.op_type]]}</span>
               </div>
               <div
                 style={{ margin: ".25rem 0", width: "6rem", textAlign: "end" }}
               >
-                <p>{removeExponent(Number(el.volume))}</p>
+                <p>{removeExponent(Number(el.amount))}</p>
               </div>
             </div>
           ))

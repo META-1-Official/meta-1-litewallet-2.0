@@ -320,7 +320,34 @@
 .grid-css {
   margin-top: 1.6rem;
 }
-
+.search-grid {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 10px 0 0;
+}
+.search-filter {
+  border-radius: 7px;
+  padding: 0;
+  text-align: center;
+  width: 25px;
+  background: #fdc000 !important;
+  border: none !important;
+  padding: 0 !important;
+  width: 200px;
+  color: #240000 !important;
+  font-weight: 400;
+}
+.search-filter:before{
+  border: none !important;
+}
+.search-filter:after{
+  border: none !important;
+}
+@media (max-width: 991px) {
+  .search-grid {
+    justify-content: space-evenly;
+  } 
+}
 @media (max-width: 600px) {
   .choosenContainerItem {
     display: flex;
@@ -341,11 +368,24 @@
     padding-bottom: 1rem;
     margin-left: 3rem;
   }
+  .search-grid {
+    margin-right: 20px !important;
+    justify-content: flex-end;
+  }
 }
 
 .success-class {
   margin: 0; 
   color: #00aa08;
+}
+.transaction-span-place {
+  background: #856916;
+}
+.transaction-span-fill {
+  background: #127655;
+}
+.transaction-span-cancel {
+  background: #823637;
 }
 
 .span-status-btn {
@@ -360,6 +400,10 @@
   align-items: center;
   display: flex;
   white-space: pre-wrap;
+  border-radius: 5px;
+  color: #fff;
+  max-width: 80px;
+  line-height: 12px;
 }
 
 .page_sec {
@@ -374,5 +418,82 @@
 }
 .page_sec ul {
   width: 100% !important;
-  
+}
+.dashboard .image {
+  mask-image: none !important;
+}
+.select_currency .MuiOutlinedInput-notchedOutline {
+  border-style: none;
+}
+.select-label {
+  color: rgba(0,0,0, .85) !important;
+}
+.options-height-wallet {
+  max-height: 250px !important;
+}
+.select_currency.MuiSelect-select {
+  padding: 8px !important;
+}
+.selectbox_div {
+  padding: 25px !important;
+  margin-left: -20px !important;
+  font-family: sans-serif;
+  color: rgba(0, 0, 0, .85) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding-left: -10px !important;
+  margin-top: 2px !important;
+}
+.selectbox_div {
+  padding: 25px !important;
+  margin-left: -20px !important;
+  font-family: sans-serif;
+  color: rgba(0, 0, 0, .85) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding-left: -10px !important;
+  margin-top: 2px !important;
+}
+.newSpanDropClass {
+  margin-left: 182px !important;
+  position: relative !important;
+  top: 2px !important;
+}
+.select-label {
+  color: rgba(0, 0, 0, .85) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  margin-top: 6px !important;
+  position: absolute !important;
+  left: 30px !important;
+  top: 0px !important;
+  font-family: "Poppins", sans-serif !important;
+}
+.width-selectBox {
+  min-width: 270px !important;
+}
+.select-label-selected {
+  font-size: 17px !important;
+  left: 45px !important;
+  top: 29px !important;
+  cursor: pointer;
+}
+.rightSideBlock {
+  width: 100%;
+}
+.totalSumBlock {
+  padding: 20px 15px;
+}
+.balanceFontSize {
+  font-size: 18px !important;
+}
+
+.balanceFontSizeMobile {
+  font-size: 16px !important;
+}
+.blockSumAndPercentage {
+  min-width: 200px;
+}
+.hide-zero-span {
+  font-size: 12px !important;
 }
