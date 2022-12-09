@@ -115,7 +115,11 @@ export default function FaceKiForm(props) {
       } else if (response_verify.status === 'Verify Failed') {
         alert('We can not verify you because you never enrolled with your face yet.');
         setVerifying(false);
-      } else {
+      } else if (response_verify.status === 'No Users') {
+        alert('You never enrolled with your face yet. Please enroll first via signup process.');
+        setVerifying(false);
+      }
+      else {
         alert('Please try again.');
         setVerifying(false);
       }
