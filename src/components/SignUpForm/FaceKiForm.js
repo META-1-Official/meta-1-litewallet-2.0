@@ -121,7 +121,7 @@ export default function FaceKiForm(props) {
             }
           }
         }
-      } else if (response_verify.status === 'Verify Failed') {
+      } else if (response_verify.status === 'Verify Failed' || response_verify.status === 'No Users') {
         const response_user = await getUserKycProfile(email);
         if (response_user.error === true) {
           alert('Something went wrong.');
