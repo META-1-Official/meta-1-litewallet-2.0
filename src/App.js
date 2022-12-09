@@ -104,6 +104,7 @@ function Application(props) {
   const [isSignatureProcessing, setIsSignatureProcessing] = useState(false);
   const [signatureResult, setSignatureResult] = useState(null);
   const [isFromMigration, setIsFromMigration] = useState(false);
+  const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
@@ -230,6 +231,9 @@ function Application(props) {
       if (accountNameState === null || accountNameState.length === 0) return;
       try {
         const fetched = await portfolioReceiverState.fetch();
+        if (!fetched) {
+          return;
+        }
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
@@ -273,6 +277,7 @@ function Application(props) {
             const portfolioObj = new Portfolio({
               metaApi: Meta1,
               accountName: accountNameState,
+              setFetchAssetModalOpen
             });
             const tradeWithPasswordObj = new TradeWithPassword({
               metaApi: Meta1,
@@ -310,6 +315,12 @@ function Application(props) {
     setTimeout(async () => {
       if (isLoginState && getLoginDetail()) {
         const fetched = await portfolioReceiverState.fetch();
+        if (!fetched) {
+          return;
+        }
+        if (!assets || (Array.isArray(assets) && assets.length === 0)) {
+          setAssets(fetched.assets);
+        }
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
       }
@@ -1011,6 +1022,38 @@ function Application(props) {
             }}
           >
             Go There</Button>
+        </Modal.Actions>
+      </Modal>
+
+      <Modal
+        size="mini"
+        className="claim_wallet_modal"
+        onClose={() => {
+          setFetchAssetModalOpen(false);
+        }}
+        open={fetchAssetModalOpen}
+        id={"modalExch"}
+      >
+
+        <Modal.Content >
+          <div
+            className="claim_wallet_btn_div"
+
+          >
+            <h3 className="claim_model_content">
+              Hello {accountName}<br />
+              {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              setFetchAssetModalOpen(false);
+            }}
+          >
+            OK</Button>
         </Modal.Actions>
       </Modal>
     </>

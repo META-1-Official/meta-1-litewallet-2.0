@@ -238,7 +238,12 @@ const SendForm = React.memo((props) => {
     async function fetchAccount(debouncedAccount) {
       // Сделать запрос к АП
       try {
-        await portfolioReceiverState.fetch(debouncedAccount);
+        const res = await portfolioReceiverState.fetch(debouncedAccount);
+        if (!res) {
+          setAccountChecked(false);
+          setAccountIsLoading(false);
+          return;
+        }
         setAccountChecked(true);
         setAccountIsLoading(false);
         if (receiver === sender) {

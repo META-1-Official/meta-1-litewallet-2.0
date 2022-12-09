@@ -19,10 +19,18 @@ const UseAsset = async (assetId) => {
     if (filteredAssets.length) {
       return Promise.resolve(filteredAssets[0]);
     } else {
-      return await axios.get(EXPLORER_URL + '/asset?asset_id=' + assetId);
+      try {
+        return await axios.get(EXPLORER_URL + '/asset?asset_id=' + assetId);
+      } catch (err) {
+        return null;
+      }
     }
   } else {
-    return await axios.get(EXPLORER_URL + '/asset?asset_id=' + assetId);
+    try {
+      return await axios.get(EXPLORER_URL + '/asset?asset_id=' + assetId);
+    } catch (err) {
+      return null;
+    }
   }
 };
 
