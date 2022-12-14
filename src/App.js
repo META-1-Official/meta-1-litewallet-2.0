@@ -105,13 +105,15 @@ function Application(props) {
   const [signatureResult, setSignatureResult] = useState(null);
   const [isFromMigration, setIsFromMigration] = useState(false);
   const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
+  const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
+    useState(false);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
 
   const updateBalances = () => {
-    if (portfolioReceiverState && accountName) {
+    if (portfolioReceiverState && accountName && !passwordShouldBeProvided) {
       refetchPortfolio();
     }
   }
@@ -549,6 +551,8 @@ function Application(props) {
                     setTradeAsset("EOS");
                     setActiveScreen("exchange");
                   }}
+                  passwordShouldBeProvided={passwordShouldBeProvided}
+                  setPasswordShouldBeProvided={setPasswordShouldBeProvided}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {

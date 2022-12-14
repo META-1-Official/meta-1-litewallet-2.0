@@ -31,14 +31,14 @@ export default function ExchangeForm(props) {
     asset,
     onBackClick,
     metaUrl,
-    onSuccessTrade
+    onSuccessTrade,
+    passwordShouldBeProvided,
+    setPasswordShouldBeProvided
   } = props;
   const traderState = useSelector(traderSelector);
   const userCurrencyState = useSelector(userCurrencySelector);
   const accountState = useSelector(accountsSelector);
   const [portfolio, setPortfolio] = useState(props.portfolio);
-  const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
-    useState(false);
   const [password, setPassword] = useState("");
   const [assets, setAssets] = useState(props.assets);
   const [options, setOptions] = useState([]);
