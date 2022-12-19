@@ -32,6 +32,7 @@ export default function SubmitForm(props) {
   useEffect(async () => {
     const response = await getUserKycProfile(email);
     if (response && response?.status?.isPayed === true ) setPaid(true);
+    if (response && response?.status?.isPaidByCrypto === true ) setPaid(true);
     if (response && response?.status?.isSign === true) setSigned(true);
   }, [])
 
