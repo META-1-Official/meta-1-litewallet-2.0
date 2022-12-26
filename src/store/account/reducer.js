@@ -34,7 +34,7 @@ const initialState = {
     fromSignUp: false,
     uploadImageError: false,
 };
-const loginDetail = getLoginDetail();
+const loginDetail = getAccessToken();
 if(loginDetail){
     initialState.isLogin = true;
     initialState.account = loginDetail;
