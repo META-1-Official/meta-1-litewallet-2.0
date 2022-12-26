@@ -37,8 +37,8 @@ const initialState = {
 const loginDetail = getAccessToken();
 if(loginDetail){
     initialState.isLogin = true;
-    initialState.account = loginDetail;
-    initialState.token = getAccessToken();
+    initialState.account = getLoginDetail();
+    initialState.token = loginDetail;
 }
 
 const accountsReducer = (state = initialState, action) => {
