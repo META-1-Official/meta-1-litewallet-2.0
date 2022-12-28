@@ -275,6 +275,7 @@ const UserInformationForm = (props) => {
                         ref={phoneRef}
                         value={phoneFormat}
                         type='tel'
+                        name="new-password"
                         className="phone-number-input"
                         onChange={(e) => phoneNumberChangeHandler(e)}
                         onKeyDown={(event) => {
@@ -400,6 +401,7 @@ const UserInformationForm = (props) => {
                         tabIndex={4}
                         ref={phoneRef}
                         value={phoneFormat}
+                        name="new-password"
                         type='tel'
                         className="phone-number-input"
                         onChange={(e) => phoneNumberChangeHandler(e)}
@@ -431,6 +433,7 @@ const UserInformationForm = (props) => {
                 control={Input}
                 value={accountName}
                 type="text"
+                name="new-password"
                 error={accountNameErrors}
                 placeholder="Wallet Name"
                 onChange={({ target }) => {

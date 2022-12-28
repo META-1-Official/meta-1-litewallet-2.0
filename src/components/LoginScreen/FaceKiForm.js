@@ -154,7 +154,7 @@ export default function FaceKiForm(props) {
                 mirrored
               />
               <div className='btn-div'>
-                <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to log complete authentication' : 'Verification Successful!'}</p>
+                <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>
                 <div className="btn-grp">
                   <button className={!faceKISuccess ? 'btn-1' : 'btn-disabled'} onClick={videoVerify} disabled={verifying ? true : faceKISuccess ? true : false}>{verifying ? "Verifying..." : "Verify"}</button>
                 </div>

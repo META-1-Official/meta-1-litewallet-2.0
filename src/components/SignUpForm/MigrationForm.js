@@ -53,7 +53,7 @@ export default function MigrationForm(props) {
                   <input
                     control={Input}
                     value={passkey}
-                    type="text"
+                    type="password"
                     placeholder="Enter passkey or owner private key"
                     onChange={(event) => {
                       setPasskey(event.target.value);
