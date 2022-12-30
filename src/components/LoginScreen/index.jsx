@@ -211,7 +211,7 @@ export default function LoginScreen(props) {
 
         setAuthData(data);
         setPrivKey(privKey);
-        setEmail(data?.email);
+        setEmail(data?.email.toLowerCase());
         setLoader(false);
         setStep('faceki');       
       }
