@@ -183,6 +183,9 @@ export default function FaceKiForm(props) {
               />
               <div className='btn-div'>
                 <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
+								<span className="span-class color-black">
+									Min camera resolution must me 720p
+								</span>
                 <div className="btn-grp">
                   <button className={!faceKISuccess ? 'btn-1' : 'btn-1 btn-disabled'} disabled={verifying ? true : faceKISuccess ? true : false} onClick={videoEnroll}>{verifying ? "Verifying..." : "Verify"}</button>
                   <Button
