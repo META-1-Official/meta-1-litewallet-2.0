@@ -177,12 +177,15 @@ export default function FaceKiForm(props) {
                   width: mobileScreenSize.width-10,
                   height: mobileScreenSize.height-10,
                 } : { deviceId: device?.deviceId }}
-                width={isMobile ? mobileScreenSize.width-20 : 500}
-                height={isMobile ? mobileScreenSize.height-50 : device?.aspectRatio ? 500 / device?.aspectRatio : 385}
+                width={isMobile ? mobileScreenSize.width-20 : 550}
+                height={isMobile ? mobileScreenSize.height-50 : device?.aspectRatio ? 550 / device?.aspectRatio : 390}
                 mirrored
               />
               <div className='btn-div'>
-                <p className='span-class color-black'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
+                <p className='span-class color-black margin-bottom-zero'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
+								<span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+									Min camera resolution must be 720p
+								</span>
                 <div className="btn-grp">
                   <button className={!faceKISuccess ? 'btn-1' : 'btn-1 btn-disabled'} disabled={verifying ? true : faceKISuccess ? true : false} onClick={videoEnroll}>{verifying ? "Verifying..." : "Verify"}</button>
                   <Button

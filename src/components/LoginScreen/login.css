@@ -204,6 +204,10 @@ video {
   background: #fff  !important;  
 }
 
+.margin-bottom-zero {
+  margin-bottom: 0 !important;
+}
+
 @media screen and (max-width: 678px) {
   .webcam_div {
     width: 100% !important;
@@ -228,5 +232,11 @@ video {
   }
   .totalSumBlock {
     padding: 0 !important;
+  }
+  .camera-text-font-size {
+    font-size: 13px !important;
+  }
+  .verify-text-font-size {
+    font-size: 12px !important;
   }
 }
