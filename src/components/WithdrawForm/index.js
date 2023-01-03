@@ -33,7 +33,8 @@ import { Asset } from "../../utils/MarketClasses";
 import AccountUtils from "../../utils/account_utils";
 import { transferHandler } from "./withdrawalFunction";
 
-const WITHDRAW_ASSETS = ["ETH", "BTC", "BNB", "XLM", "LTC", "USDT"];
+// const WITHDRAW_ASSETS = ["ETH", "BTC", "BNB", "XLM", "LTC", "USDT"];
+const WITHDRAW_ASSETS = ["ETH", "USDT"];
 
 const getChainStore = (accountName) => {
   return new Promise(async (resolve, fail) => {
@@ -229,11 +230,17 @@ const WithdrawForm = (props) => {
         .then((res) => setPriceForAsset(Number(res.latest).toFixed(2)));
     }
 
-    if (val !== "META1") {
-      const response_min = await fetch(
-        `${process.env.REACT_APP_GATEWAY_META1_JS_URL}api/currency/${val}`
-      );
-      await setMinAmountForAsset((await response_min.json()).minWithdrawal);
+    // if (val !== "META1") {
+    //   const response_min = await fetch(
+    //     `${process.env.REACT_APP_GATEWAY_META1_JS_URL}api/currency/${val}`
+    //   );
+    //   await setMinAmountForAsset((await response_min.json()).minWithdrawal);
+    // }
+
+    if (val === "ETH") {
+      setMinAmountForAsset(0.02)
+    } else if (val === "USDT") {
+      setMinAmountForAsset(25);
     }
   };
 
