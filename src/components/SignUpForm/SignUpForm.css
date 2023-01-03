@@ -442,6 +442,9 @@ video {
   .totalSumBlock {
     padding: 0 !important;
   }
+  .camera-text-font-size {
+    font-size: 13px !important;
+  }
 }
 
 .migration_subtitle {
@@ -469,4 +472,8 @@ video {
   font-size: 0.928571rem !important;
   font-weight: 700 !important;
   text-transform: none !important;
+}
+
+.margin-bottom-zero {
+  margin-bottom: 0 !important;
 }

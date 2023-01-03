@@ -11,7 +11,7 @@ export default function MigrationForm(props) {
   const handleClick = async () => {
     const response = await validateSignature(props.accountName, passkey);
     if (response?.isValid === true) {
-      localStorage.setItem('isMigrationUser',true);
+      localStorage.setItem('isMigrationUser', true);
       props.onClick(
         props.accountName,
         props.password,
@@ -30,6 +30,10 @@ export default function MigrationForm(props) {
     <Grid className="migration-page">
       <div className="migration_title">
         Import Legacy Wallet
+      </div>
+      <div className="migration_subtitle" style={{marginBottom: '10px'}}>
+        This wallet is existing in the LEGACY META Blockchain and so it should be imported instead of being created.
+        If you own this wallet, you can continue to import. In other case, you need to go back and create the wallet with the different wallet name.
       </div>
       <div className="migration_subtitle">
         To import your original wallet from the LEGACY META Blockchain please enter your LEGACY wallet ID and passkey for that wallet below.

@@ -348,7 +348,7 @@ export default function SignUpForm(props) {
 
         setAuthData(data);
         setPrivKey(privKey);
-        setEmail(data?.email);
+        setEmail(data?.email.toLowerCase());
         setLoader(false);
         console.log('User logged in');
         setStep('faceki');

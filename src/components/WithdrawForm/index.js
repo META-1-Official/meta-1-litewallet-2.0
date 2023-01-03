@@ -35,16 +35,6 @@ import { transferHandler } from "./withdrawalFunction";
 
 const WITHDRAW_ASSETS = ["ETH", "BTC", "BNB", "XLM", "LTC", "USDT"];
 
-const MIN_WITHDRAW_AMOUNT = {
-  "BTC": 0.0005,
-  "ETH": 0.01,
-  "LTC": 0.001,
-  "EOS": 0.1,
-  "XLM": 0.01,
-  "META1": 0.02,
-  "USDT": 50,
-};
-
 const getChainStore = (accountName) => {
   return new Promise(async (resolve, fail) => {
     await ChainStore.clearCache()
@@ -80,6 +70,7 @@ const WithdrawForm = (props) => {
   const [isValidEmailAddress, setIsValidEmailAddress] = useState(false);
   const [blockPrice, setBlockPrice] = useState();
   const [priceForAsset, setPriceForAsset] = useState(0);
+  const [minAmountForAsset, setMinAmountForAsset] = useState(0);
   const [assets, setAssets] = useState(props.assets);
   const [options, setOptions] = useState([]);
   const [invalidEx, setInvalidEx] = useState(false);
@@ -134,6 +125,7 @@ const WithdrawForm = (props) => {
       setSelectedFrom(newOptions.find((o) => o.value === selectedFrom.value));
     }
   }, [props.assets, props.portfolio]);
+  
   useEffect(() => {
     if (selectedFrom) {
       changeAssetHandler(selectedFrom.value);
@@ -160,10 +152,10 @@ const WithdrawForm = (props) => {
 
   useEffect(() => {
     if (selectedFrom && selectedFromAmount) {
-      console.log("@1 - ", selectedFromAmount === 0)
       if (parseFloat(selectedFrom.balance) < parseFloat(selectedFromAmount)) {
         setAmountError('Amount exceeded the balance.');
-      } else if (parseFloat(MIN_WITHDRAW_AMOUNT['USDT']) > parseFloat(blockPrice) / userCurrencyState.split(' ')[2]) {
+      // } else if (parseFloat(MIN_WITHDRAW_AMOUNT['USDT']) > parseFloat(blockPrice) / userCurrencyState.split(' ')[2]) {
+      } else if (parseFloat(selectedFromAmount) < minAmountForAsset) {
         setAmountError('Amount is too small.');
       } else {
         setAmountError('');
@@ -235,6 +227,13 @@ const WithdrawForm = (props) => {
       Meta1
         .ticker("USDT", "META1")
         .then((res) => setPriceForAsset(Number(res.latest).toFixed(2)));
+    }
+
+    if (val !== "META1") {
+      const response_min = await fetch(
+        `${process.env.REACT_APP_GATEWAY_META1_JS_URL}api/currency/${val}`
+      );
+      await setMinAmountForAsset((await response_min.json()).minWithdrawal);
     }
   };
 
