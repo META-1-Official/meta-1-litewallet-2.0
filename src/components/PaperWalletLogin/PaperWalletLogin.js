@@ -9,9 +9,11 @@ import Meta1 from "meta1-vision-dex";
 import "./style.css";
 import { useSelector } from "react-redux";
 import { portfolioReceiverSelector } from "../../store/meta1/selector";
+import { accountsSelector } from "../../store/account/selector";
 
 export default function PaperWalletLogin({ accountName }) {
-  const [account, setAccount] = useState(localStorage.getItem("login") || accountName);
+  const accountNameState = useSelector(accountsSelector);
+  const [account, setAccount] = useState(accountNameState);
   const [password, setPassword] = useState("");
   const [readyToCreate, setReadyToCreate] = useState(false);
   const [accountChecked, setAccountChecked] = useState(true);
@@ -49,11 +51,11 @@ export default function PaperWalletLogin({ accountName }) {
 
   const handleCreatePaperWallet = async () => {
     try {
-      await Meta1.login(localStorage.getItem("login"), password);
+      await Meta1.login(accountNameState, password);
       const keys = getPrivateKeys();
       setCheck(false);
       createPaperWalletAsPDF(
-        localStorage.getItem("login"),
+        accountNameState,
         keys['owner'],
         keys['active'],
         keys['memo']
@@ -138,7 +140,7 @@ export default function PaperWalletLogin({ accountName }) {
             Account Name
           </label>
           <input
-            value={localStorage.getItem("login") || accountName}
+            value={accountNameState}
             disabled
             placeholder={"Account Name"}
           />
