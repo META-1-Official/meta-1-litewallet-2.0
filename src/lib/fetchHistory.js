@@ -12,7 +12,8 @@ async function getHistory(event) {
   } else if(event?.queryKey[3] === 'no found') {
     return [];
   }
-  const response = await getHistoryData(localStorage.getItem("login"), (pageNo-1)*perPage, perPage, searchFilterValues);
+  const accountName = event?.queryKey[4] || localStorage.getItem("login");
+  const response = await getHistoryData(accountName, (pageNo-1)*perPage, perPage, searchFilterValues);
   if (response.error) {
     return [];
   }

@@ -37,7 +37,7 @@ export const OrdersTable = (props) => {
   const [perPage,setPerPage]= useState(10);
   const [filterValues, setFilterValues] = useState('-1')
   const [filterCollection, setFilterCollection] = useState([]);
-  const { data, isLoading, error } = useQuery(["history", pageNum, perPage, filterValues === "-1" ? '' : filterValues], getHistory);
+  const { data, isLoading, error } = useQuery(["history", pageNum, perPage, filterValues === "-1" ? '' : filterValues, accountNameState], getHistory);
   useEffect(()=>{
     if (Array.isArray(data)) {
       setFilterCollection(data);
