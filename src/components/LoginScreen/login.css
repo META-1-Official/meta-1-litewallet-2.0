@@ -133,6 +133,7 @@ video {
   margin-bottom: 10px;
   color: white;
   text-align: center;
+  line-height: 1;
 }
 .oval-image {
   position: absolute;
@@ -238,5 +239,8 @@ video {
   }
   .verify-text-font-size {
     font-size: 12px !important;
+  }
+  .span-class {
+    line-height: 1.4285em !important;
   }
 }
