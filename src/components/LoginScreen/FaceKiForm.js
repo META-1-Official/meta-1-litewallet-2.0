@@ -88,9 +88,11 @@ export default function FaceKiForm(props) {
     };
 
     var file = dataURLtoFile(imageSrc, 'a.jpg');
+    console.log("attribute1 file",file)
     const response = await liveLinessCheck(file);
-
+    console.log("attribute1.1 response",response)
     if (!response || response.error === true) {
+      console.log("attribute1.2 response",response)
       alert('Something went wrong from Biometric server.');
       setVerifying(false);
       return;

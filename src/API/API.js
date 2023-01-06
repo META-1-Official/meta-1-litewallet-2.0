@@ -266,14 +266,16 @@ export async function liveLinessCheck(image) {
   try {
     let form_data = new FormData();
     form_data.append('image', image);
-
+    console.log("attribute2 image",image)
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/face/attribute`,
       form_data,
       { headers: { 'content-type': 'multipart/form-data' } },
     );
+    console.log("attribute3 data",data)
     return data;
   } catch (e) {
+    console.log("attribute4 error",e.message)
     return { message: "Something is wrong", error: true };
   }
 };
