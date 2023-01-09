@@ -217,16 +217,11 @@ const WithdrawForm = (props) => {
     return newData;
   }
   const changeAssetHandler = async (val) => {
-    if (val !== "META1" && val !== "USDT") {
-      const response = await fetch(
-        `https://api.binance.com/api/v3/ticker/24hr?symbol=${val}USDT`
-      );
-      await setPriceForAsset((await response.json()).lastPrice);
-    } else if (val === "USDT") {
+    if (val === "USDT") {
       setPriceForAsset(1);
     } else {
       Meta1
-        .ticker("USDT", "META1")
+        .ticker("USDT", val)
         .then((res) => setPriceForAsset(Number(res.latest).toFixed(2)));
     }
 

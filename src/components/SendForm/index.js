@@ -69,13 +69,8 @@ const SendForm = React.memo((props) => {
 
   useEffect(() => {
     async function getData() {
-      if (asset !== "USDT" && asset !== "META1") {
-        const response = await fetch(
-          `https://api.binance.com/api/v3/ticker/24hr?symbol=${asset}USDT`
-        );
-        await setPriceForAsset((await response.json()).lastPrice);
-      } else if (asset === "META1") {
-        Meta1.ticker("USDT", "META1").then((res) =>
+      if (asset !== "USDT") {
+        Meta1.ticker("USDT", asset).then((res) =>
           setPriceForAsset(Number(res.latest).toFixed(2))
         );
       } else {

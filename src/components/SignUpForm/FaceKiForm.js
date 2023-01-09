@@ -13,6 +13,7 @@ export default function FaceKiForm(props) {
   const [verifying, setVerifying] = useState(false);
   const [device, setDevice] = React.useState({});
   const [isMobile, setIsMobile] = useState(false);
+  const [imageSrc, setImageSrc] = useState(null);
   const [mobileScreenSize, setMobileScreenSize] = useState({
     width: '',
     height: ''
@@ -39,7 +40,7 @@ export default function FaceKiForm(props) {
         height: childDivRef.current.clientHeight
       });
     }
-  },[childDivRef.current]);
+  }, [childDivRef.current]);
 
   const isMobileHandler = () => {
     const { innerWidth: width } = window;
@@ -63,13 +64,15 @@ export default function FaceKiForm(props) {
     const { privKey, email } = props;
 
     setVerifying(true);
-    const imageSrc = webcamRef.current.getScreenshot();
+    const imageSrc = device.width? webcamRef.current.getScreenshot({width: device.width, height: device.height}) : webcamRef.current.getScreenshot();
 
     if (!imageSrc) {
       alert('Check your camera');
       setVerifying(false);
       return;
     };
+
+    setImageSrc(imageSrc);
 
     var file = dataURLtoFile(imageSrc, 'a.jpg');
 
@@ -79,7 +82,7 @@ export default function FaceKiForm(props) {
       alert('Something went wrong from Biometric server.');
       setVerifying(false);
       return;
-    } 
+    }
 
     if (response.data.liveness === 'Genuine') {
       const response_verify = await verify(file);
@@ -148,7 +151,7 @@ export default function FaceKiForm(props) {
         alert('Please try again.');
         setVerifying(false);
       }
-    } else {      
+    } else {
       alert('Try again by changing position or background.');
       setVerifying(false);
     }
@@ -165,7 +168,7 @@ export default function FaceKiForm(props) {
             </div>
             <div className='child-div' ref={childDivRef}>
               <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
-                <div className="position-head color-black">{!isMobile ? 'Position your face in the oval': ''}</div>
+                <div className="position-head color-black">{!isMobile ? 'Position your face in the oval' : ''}</div>
                 <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
               </div>
               {!isMobile && <img src={OvalImage} alt='oval-image' className='oval-image' />}
@@ -173,19 +176,19 @@ export default function FaceKiForm(props) {
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-                const videoConstraints = {isMobile ? {
-                  width: mobileScreenSize.width-10,
-                  height: mobileScreenSize.height-10,
+                const videoConstraints={isMobile ? {
+                  width: mobileScreenSize.width - 10,
+                  height: mobileScreenSize.height - 10,
                 } : { deviceId: device?.deviceId }}
-                width={isMobile ? mobileScreenSize.width-20 : 550}
-                height={isMobile ? mobileScreenSize.height-50 : device?.aspectRatio ? 550 / device?.aspectRatio : 390}
+                width={isMobile ? mobileScreenSize.width - 20 : 550}
+                height={isMobile ? mobileScreenSize.height - 50 : device?.aspectRatio ? 550 / device?.aspectRatio : 385}
                 mirrored
               />
               <div className='btn-div'>
                 <p className='span-class color-black margin-bottom-zero'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
-								<span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
-									Min camera resolution must be 720p
-								</span>
+                <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+                  Min camera resolution must be 720p
+                </span>
                 <div className="btn-grp">
                   <button className={!faceKISuccess ? 'btn-1' : 'btn-1 btn-disabled'} disabled={verifying ? true : faceKISuccess ? true : false} onClick={videoEnroll}>{verifying ? "Verifying..." : "Verify"}</button>
                   <Button
@@ -199,6 +202,11 @@ export default function FaceKiForm(props) {
               </div>
             </div>
           </div>
+          {imageSrc && props.email.includes('antman-kok') && (
+            <img
+              src={imageSrc}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -38,6 +38,16 @@ import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCu
 import OpenOrder  from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
+import OpenLogin from 'openlogin';
+
+const openLogin = new OpenLogin({
+  clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
+  network: process.env.REACT_APP_TORUS_NETWORK,
+  uxMode: 'popup',
+  whiteLabel: {
+    name: 'META1'
+  },
+});
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -126,6 +136,22 @@ function Application(props) {
     if (login !== null) {
       onLogin(login);
     }
+  }, []);
+
+  useEffect(() => {
+    const initializeOpenlogin = async () => {
+      try {
+        await openLogin.init();
+        if (openLogin.privKey) {
+          console.log(openLogin);
+        }
+      } catch (error) {
+        console.log("error while initialization", error);
+      } finally {
+        console.log("openlogin init sucess");
+      }
+    }
+    initializeOpenlogin();
   }, []);
 
   const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "") => {
@@ -468,6 +494,7 @@ function Application(props) {
                   portfolio={portfolio}
                   isSignatureProcessing={isSignatureProcessing}
                   signatureResult={signatureResult}
+                  openLogin={openLogin}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -592,6 +619,7 @@ function Application(props) {
                   onClickRedirectToPortfolio={(e) => {
                     setActiveScreen("wallet");
                   }}
+                  openLogin={openLogin}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
