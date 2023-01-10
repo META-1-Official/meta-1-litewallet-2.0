@@ -23,7 +23,8 @@ export default function LoginScreen(props) {
     onClickExchangeUSDTHandler,
     setLoginDataError,
     onClickRedirectToPortfolio,
-    openLogin
+    openLogin,
+    onClickResetIsSignatureProcessing
   } = props;
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
@@ -79,6 +80,7 @@ export default function LoginScreen(props) {
 
   const handleSignUpClick = (e) => {
     e.preventDefault();
+    onClickResetIsSignatureProcessing();
     onSignUpClick();
   };
 
@@ -297,6 +299,7 @@ export default function LoginScreen(props) {
                 className={styles.Button}
                 onClick={() => {
                   dispatch(logoutRequest());
+                  onClickResetIsSignatureProcessing();
                 }}
                 type={"button"}
                 style={{ marginTop: "0" }}
