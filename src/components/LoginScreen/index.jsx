@@ -81,6 +81,7 @@ export default function LoginScreen(props) {
   const handleSignUpClick = (e) => {
     e.preventDefault();
     onClickResetIsSignatureProcessing();
+    localStorage.removeItem('isSignature');
     onSignUpClick();
   };
 

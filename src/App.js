@@ -191,6 +191,9 @@ function Application(props) {
           window.location.href = window.location.href.split('?')[0];
         }
       }
+      if (window.location.search.includes('?signature=success')) {
+        localStorage.setItem('isSignature',true);
+      }
     }
   },[signatureParam]);
 
@@ -292,7 +295,12 @@ function Application(props) {
             accountNameState.length === 0 ||
             !localStorage.getItem("login")
           ) {
-            setActiveScreen("login");
+            if (localStorage.getItem('isSignature')) {
+              setActiveScreen("registration");
+              localStorage.removeItem('isSignature');
+            } else {
+              setActiveScreen("login");
+            }
           } else {
             setActiveScreen(
               sessionStorage.getItem("location") != null
@@ -459,7 +467,6 @@ function Application(props) {
             e.preventDefault();
             dispatch(getUserRequest(login));
             setActiveScreen("paperWallet");
-            setIsSignatureProcessing(false);
             setIsSignatureProcessing(false);
           }}
           onClickOrderTableHandler={(e) => {

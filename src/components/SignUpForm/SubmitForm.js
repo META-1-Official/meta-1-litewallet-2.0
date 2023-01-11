@@ -34,6 +34,9 @@ export default function SubmitForm(props) {
     if (response && response?.status?.isPayed === true ) setPaid(true);
     if (response && response?.status?.isPaidByCrypto === true ) setPaid(true);
     if (response && response?.status?.isSign === true) setSigned(true);
+    if (response && response?.status?.isSign === true && response?.status?.isPayed === true) {
+      props.setStep('signature');
+    }
   }, [])
 
   const handleSign = async (e) => {
