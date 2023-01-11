@@ -73,7 +73,9 @@ export default function ExchangeForm(props) {
     }
     if (isValidPasswordKeyState) {
       dispatch(passKeyResetService());
-      performTradeSubmit();
+      if (selectedFrom && selectedTo) {
+        performTradeSubmit();
+      }
     }
   },[isValidPasswordKeyState, passwordKeyErrorState])
 
