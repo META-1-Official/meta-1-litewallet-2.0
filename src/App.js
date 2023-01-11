@@ -648,6 +648,7 @@ function Application(props) {
                   }}
                   onClickResetIsSignatureProcessing={() => {
                     setIsSignatureProcessing(false);
+                    setSignatureResult(null);
                   }}
                   openLogin={openLogin}
                 />
