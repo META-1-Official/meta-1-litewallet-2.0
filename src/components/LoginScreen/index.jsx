@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
 import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
 import { checkMigrationable, migrate, validateSignature } from "../../API/API";
-import OpenLogin from '@toruslabs/openlogin';
+
 import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
 import AccountApi from "../../lib/AccountApi";
@@ -23,6 +23,8 @@ export default function LoginScreen(props) {
     onClickExchangeUSDTHandler,
     setLoginDataError,
     onClickRedirectToPortfolio,
+    openLogin,
+    onClickResetIsSignatureProcessing
   } = props;
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
@@ -30,7 +32,7 @@ export default function LoginScreen(props) {
   const [migrationMsg, setMigrationMsg] = useState('');
   const [openVideoModal, setOpenVideoModal] = useState(false);
   const [migratable, setMigratable] = useState(false);
-  const [errorAttr, setErrorAttr] = useState({login: false, notFound: false});
+  const [errorAttr, setErrorAttr] = useState({ login: false, notFound: false });
   const [checkTransfer, setCheckTransfer] = useState({
     password: '',
     showPasswordColumn: false,
@@ -41,23 +43,14 @@ export default function LoginScreen(props) {
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
   const [loader, setLoader] = useState(false);
-  const [isMigrationPasskeyValid, setIsMigrationPasskeyValid]= useState(true);
+  const [isMigrationPasskeyValid, setIsMigrationPasskeyValid] = useState(true);
   const accountState = useSelector(accountsSelector);
   const isLoginState = useSelector(isLoginSelector);
   const oldUserState = useSelector(oldUserSelector);
   const signatureErrorState = useSelector(signatureErrorSelector);
   const isSignatureValidState = useSelector(isSignatureValidSelector);
   const loginErrorMsgState = useSelector(loginErrorMsgSelector);
-  const dispatch = useDispatch();
-
-  const openLogin = new OpenLogin({
-    clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
-    network: process.env.REACT_APP_TORUS_NETWORK,
-    uxMode: 'popup',
-    whiteLabel: {
-      name: 'META1'
-    },
-  });
+  const dispatch = useDispatch();  
 
   useEffect(() => {
     if (signatureErrorState) {
@@ -87,6 +80,7 @@ export default function LoginScreen(props) {
 
   const handleSignUpClick = (e) => {
     e.preventDefault();
+    onClickResetIsSignatureProcessing();
     onSignUpClick();
   };
 
@@ -129,25 +123,25 @@ export default function LoginScreen(props) {
     }
   };
 
-    const checkTransferSubmitHandler = async () => {
-      if (!isMigrationPasskeyValid) {
+  const checkTransferSubmitHandler = async () => {
+    if (!isMigrationPasskeyValid) {
+      setIsMigrationPasskeyValid(true);
+    }
+    const response = await validateSignature(accountState, checkTransfer.password);
+    if (!response.error && response.isValid === true) {
+      const response = await migrate(accountState, checkTransfer.password);
+      if (response.error === false) {
+        setMigrationMsg(response.msg);
+        setOpenModal(true);
         setIsMigrationPasskeyValid(true);
-      }
-      const response = await validateSignature(accountState, checkTransfer.password);
-      if (!response.error && response.isValid === true) {
-        const response = await migrate(accountState, checkTransfer.password);
-        if (response.error === false) {
-          setMigrationMsg(response.msg);
-          setOpenModal(true);
-          setIsMigrationPasskeyValid(true);
-        } else {
-          setMigrationMsg('Something went wrong');
-          setOpenModal(true);
-        }
       } else {
-        setIsMigrationPasskeyValid(false);
+        setMigrationMsg('Something went wrong');
+        setOpenModal(true);
       }
-    };
+    } else {
+      setIsMigrationPasskeyValid(false);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -158,7 +152,7 @@ export default function LoginScreen(props) {
     if (login) {
       AccountApi.lookupAccounts(login, 1)
         .then((res) => {
-          if (Array.isArray(res) && res.length>0) {
+          if (Array.isArray(res) && res.length > 0) {
             if (res[0] && res[0].length > 0) {
               if (res[0][0] === login) {
                 localStorage.removeItem('isMigrationUser');
@@ -174,7 +168,7 @@ export default function LoginScreen(props) {
             }
           }
         })
-        .catch((err) => console.log("err",err));
+        .catch((err) => console.log("err", err));
     }
   };
 
@@ -203,21 +197,22 @@ export default function LoginScreen(props) {
     }
 
     try {
-      await openLogin.init();
-      await openLogin.login();
-      if (openLogin.privKey) {
-        const privKey = openLogin.privKey;
+      const { privKey } = await openLogin.login({
+        loginProvider: "",
+      });
+
+      if (privKey && typeof privKey === "string") {
         const data = await openLogin.getUserInfo();
 
         setAuthData(data);
         setPrivKey(privKey);
         setEmail(data?.email.toLowerCase());
         setLoader(false);
-        setStep('faceki');       
+        setStep('faceki');
       }
     } catch (error) {
-      setLoader(false);
       console.log('Error in Torus Render', error);
+      setLoader(false);
     }
   };
 
@@ -282,8 +277,8 @@ export default function LoginScreen(props) {
                 >
                   {loginErrorMsgState}
                 </p>
-                { errorAttr.login ? <p className={styles.ErrorP}>Wallet Name can't be empty</p> : null }
-                { errorAttr.notFound && !errorAttr.login ? <p className={styles.ErrorP}>Invalid Wallet Name</p> : null }
+                {errorAttr.login ? <p className={styles.ErrorP}>Wallet Name can't be empty</p> : null}
+                {errorAttr.notFound && !errorAttr.login ? <p className={styles.ErrorP}>Invalid Wallet Name</p> : null}
                 <button
                   className={styles.Button}
                   style={{ fontSize: "100%", marginTop: "0" }}
@@ -304,6 +299,7 @@ export default function LoginScreen(props) {
                 className={styles.Button}
                 onClick={() => {
                   dispatch(logoutRequest());
+                  onClickResetIsSignatureProcessing();
                 }}
                 type={"button"}
                 style={{ marginTop: "0" }}
@@ -347,7 +343,7 @@ export default function LoginScreen(props) {
               </button>
             </>
             }
-             <span
+            <span
               className={styles.checkTransferError}
               style={!isMigrationPasskeyValid ? null : { display: "none" }}
             >
@@ -383,7 +379,7 @@ export default function LoginScreen(props) {
             <div
               className="migration-modal-div"
             >
-              <h3 className="claim_model_content" style={{color : '#330000', display: 'block'}}>
+              <h3 className="claim_model_content" style={{ color: '#330000', display: 'block' }}>
                 Hello {accountState}
               </h3>
               <h3 className="text2">{migrationMsg}</h3>
@@ -421,98 +417,3 @@ export default function LoginScreen(props) {
     </div>
   );
 }
-
-// const ModalWalletInstructions = ({ setOpenModal, openModal }) => {
-//   return (
-//     <Modal
-//       style={{ padding: 20 }}
-//       open={openModal}
-//       onClose={() => setOpenModal(false)}
-//     >
-//       <h3>META Wallet Creation</h3>
-//       <p>
-//         The META 1 Coin Digital Wallet can be created and accessed from your
-//         meta1coin.vision Dashboard account OR on meta-exchange.io.
-//       </p>
-//       <br />
-//       <h3>GET STARTED: Create a META Lite Wallet on meta1coin.vision Dashboard</h3>
-//       <p>
-//         1. Click the White ‘Create META Wallet’ button to start the process.
-//         <br />
-//         2. Fill in your information. Some fields may already be auto-filled.
-//         Make sure the fields are filled in properly. You may need to clear the
-//         fields and re-enter correctly.
-//         <br />
-//         3. Account Box – Create your wallet name <br />
-//         Note: the ‘Wallet Account Name’ you choose is visible on the
-//         meta-exchange.io platform. For optimum security, avoid using your name
-//         or personal information as a part of your META Wallet Account name (do
-//         not use an email address or your personal name. Your META Wallet Account
-//         Name must contain from 4 to 63 characters and must consist of a
-//         combination of lowercase Latin letters, dashes, or numbers. (No capital
-//         letters, blank spaces, @, +, !, nor any other non- number/letter
-//         characters except a dash)
-//         <br />
-//         4. Copy the Generated Passkey / Passphrase (52 characters) Do NOT
-//         create your own passkey. You must use the auto generated passkey and
-//         properly paste it into the confirm passkey field; You can click the
-//         small clipboard under the ‘generated’ passkey field (lower right side).
-//         Be sure to properly record and secure both the passkey ‘KEY’ and
-//         account name in a safe location.
-//         <br />
-//         5. PASTE passkey phrase into the confirmation box below.
-//         <br />
-//         6. Click Submit
-//         <br />
-//         7. Confirm and check off ALL 4 Boxes to acknowledge you understand about
-//         ‘SAVING the Key in a safe place
-//         <br />
-//         8. Click Submit
-//         <br />
-//         9. Your wallet will now be created, and it will say it is ‘LINKED’ at
-//         the top of the page.
-//       </p>
-//       <br /> <br />
-//       <p>
-//         Once you have set up your wallet correctly, and if you have Ready to
-//         Claim certificates under the ‘Coin Certificate Tab’ they will change to
-//         Receive and Accept.
-//       </p>
-//       <h3>LOADING META 1 COINS INTO YOUR WALLET</h3>
-//       <p>
-//         When you are ready to receive your coins, click on the Receive and
-//         Accept button and confirm you want to accept them into your wallet. Look
-//         on the META Lite wallet tab to see the newly loaded coins.
-//       </p>
-//       <br /> <br />
-//       <p>
-//         The META Lite Wallet has the basic essential functionality of the META
-//         Wallet (accessible on meta-exchange.io). The two versions access the
-//         same account data on the META Blockchain. Nothing is compromised
-//         including speed and transactional integrity. Many Coin holders will find
-//         it easier to work from the meta1coin.vision Dashboard. But keep in mind that
-//         META Exchange is a powerful leading edge tool with many features and
-//         advanced functionality.
-//       </p>
-//       <p>
-//         Your META Wallet can be used for several crypto currencies (select “Show
-//         All balances” in the META Lite Wallet section for a complete list).{" "}
-//         <br />
-//         CREATE MULTIPLE WALLETS - You can create more than one META Wallet.{" "}
-//         <br />
-//         First ‘unlink’ your active META Wallet before creating a new one. <br />
-//         - Click the word ‘here’ in the phrase, “To unlink your wallet, click
-//         here”, to unlink your wallet. <br />
-//         Click the ‘Create META Wallet’ button to create an additional wallet.{" "}
-//         <br />
-//         You can switch from one wallet to another by using the ‘unlink’ feature
-//         and then entering your additional wallet name and clicking the ‘Link
-//         META Wallet’ button. <br />
-//         And as a general security measure, always double check that you are on
-//         an official META 1 website. <br />
-//         And as a general security measure, always double check that you are on
-//         an official META 1 website. <br />
-//       </p>
-//     </Modal>
-//   );
-// };

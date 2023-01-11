@@ -6,7 +6,6 @@ import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 import { PrivateKey, ChainStore } from "meta1-vision-js";
 import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken } from "../../API/API";
-import OpenLogin from '@toruslabs/openlogin';
 
 import "./SignUpForm.css";
 import FaceKiForm from "./FaceKiForm.js";
@@ -25,7 +24,8 @@ export default function SignUpForm(props) {
     portfolio,
     isSignatureProcessing,
     signatureResult,
-    onBackClick
+    onBackClick,
+    openLogin
   } = props;
 
   const [accountName, setAccountName] = useState("");
@@ -46,6 +46,7 @@ export default function SignUpForm(props) {
   const { innerWidth: width } = window;
   const [loader, setLoader] = useState(false);
   const isMobile = width <= 678;
+
   useEffect(() => {
     if (isSignatureProcessing) {
       setAccountName(localStorage.getItem('login'));
@@ -57,15 +58,6 @@ export default function SignUpForm(props) {
       setStep('signature');
     }
   }, []);
-
-  const openLogin = new OpenLogin({
-    clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
-    network: process.env.REACT_APP_TORUS_NETWORK,
-    uxMode: 'popup',
-    whiteLabel: {
-      name: 'META1'
-    },
-  });
 
   const stepUserInfoSubmit = async (
     accName,
@@ -340,17 +332,17 @@ export default function SignUpForm(props) {
     }
 
     try {
-      await openLogin.init();
-      await openLogin.login();
-      if (openLogin.privKey) {
-        const privKey = openLogin.privKey;
+      const { privKey } = await openLogin.login({
+        loginProvider: "",
+      });
+
+      if (privKey && typeof privKey === "string") {
         const data = await openLogin.getUserInfo();
 
         setAuthData(data);
         setPrivKey(privKey);
         setEmail(data?.email.toLowerCase());
         setLoader(false);
-        console.log('User logged in');
         setStep('faceki');
       }
     } catch (error) {

@@ -21,7 +21,8 @@ const Navbar = (props) => {
     onClickHistoryHandler,
     onClickOpenOrderHandler,
     portfolio,
-    name
+    name,
+    onClickResetIsSignatureProcessing
   } = props;
 
   const { innerWidth: width } = window;
@@ -211,6 +212,7 @@ const Navbar = (props) => {
                             className="dropdown-item"
                             style={{ textAlign: "center" }}
                             onClick={() => {
+                              onClickResetIsSignatureProcessing();
                               dispatch(logoutRequest());
                             }}
                           >

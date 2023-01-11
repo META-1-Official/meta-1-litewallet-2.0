@@ -38,6 +38,16 @@ import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCu
 import OpenOrder  from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
+import OpenLogin from 'openlogin';
+
+const openLogin = new OpenLogin({
+  clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
+  network: process.env.REACT_APP_TORUS_NETWORK,
+  uxMode: 'popup',
+  whiteLabel: {
+    name: 'META1'
+  },
+});
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -126,6 +136,22 @@ function Application(props) {
     if (login !== null) {
       onLogin(login);
     }
+  }, []);
+
+  useEffect(() => {
+    const initializeOpenlogin = async () => {
+      try {
+        await openLogin.init();
+        if (openLogin.privKey) {
+          console.log(openLogin);
+        }
+      } catch (error) {
+        console.log("error while initialization", error);
+      } finally {
+        console.log("openlogin init sucess");
+      }
+    }
+    initializeOpenlogin();
   }, []);
 
   const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "") => {
@@ -354,11 +380,13 @@ function Application(props) {
           e.preventDefault();
           dispatch(getUserRequest(login));
           setActiveScreen("login");
+          setIsSignatureProcessing(false);
         }}
         onClickPortfolioHandler={(e) => {
           e.preventDefault();
           dispatch(getUserRequest(login));
           setActiveScreen("wallet");
+          setIsSignatureProcessing(false);
         }}
         onClickExchangeHandler={(e) => {
           e.preventDefault();
@@ -366,31 +394,40 @@ function Application(props) {
           setTradeAsset("BTC");
           setActiveScreen("exchange");
           dispatch(passKeyResetService());
+          setIsSignatureProcessing(false);
         }}
         onClickPaperWalletHandler={(e) => {
           e.preventDefault();
           dispatch(getUserRequest(login));
           setActiveScreen("paperWallet");
+          setIsSignatureProcessing(false);
         }}
         onClickOrderTableHandler={(e) => {
           e.preventDefault();
           dispatch(getUserRequest(login));
           setActiveScreen("orderTable");
+          setIsSignatureProcessing(false);
         }}
         onClickSettingsHandler={(e) => {
           e.preventDefault();
           dispatch(getUserRequest(login));
           setActiveScreen("settings");
+          setIsSignatureProcessing(false);
         }}
         onClickHistoryHandler={(e) => {
           e.preventDefault();
           dispatch(getUserRequest(login));
           setActiveScreen("orderTable");
+          setIsSignatureProcessing(false);
         }}
         onClickOpenOrderHandler={(e) => {
           e.preventDefault();
           dispatch(getUserRequest(login));
           setActiveScreen("openOrder");
+          setIsSignatureProcessing(false);
+        }}
+        onClickResetIsSignatureProcessing={() => {
+          setIsSignatureProcessing(false);
         }}
         portfolio={portfolio}
         name={accountName}
@@ -402,11 +439,13 @@ function Application(props) {
             e.preventDefault();
             dispatch(getUserRequest(login));
             setActiveScreen("login");
+            setIsSignatureProcessing(false);
           }}
           onClickPortfolioHandler={(e) => {
             e.preventDefault();
             dispatch(getUserRequest(login));
             setActiveScreen("wallet");
+            setIsSignatureProcessing(false);
           }}
           onClickExchangeHandler={(e) => {
             e.preventDefault();
@@ -414,31 +453,38 @@ function Application(props) {
             setTradeAsset("BTC");
             setActiveScreen("exchange");
             dispatch(passKeyResetService());
+            setIsSignatureProcessing(false);
           }}
           onClickPaperWalletHandler={(e) => {
             e.preventDefault();
             dispatch(getUserRequest(login));
             setActiveScreen("paperWallet");
+            setIsSignatureProcessing(false);
+            setIsSignatureProcessing(false);
           }}
           onClickOrderTableHandler={(e) => {
             e.preventDefault();
             dispatch(getUserRequest(login));
             setActiveScreen("orderTable");
+            setIsSignatureProcessing(false);
           }}
           onClickSettingsHandler={(e) => {
             e.preventDefault();
             dispatch(getUserRequest(login));
             setActiveScreen("settings");
+            setIsSignatureProcessing(false);
           }}
           onClickHistoryHandler={(e) => {
             e.preventDefault();
             dispatch(getUserRequest(login));
             setActiveScreen("orderTable");
+            setIsSignatureProcessing(false);
           }}
           onClickOpenOrderHandler={(e) => {
             e.preventDefault();
             dispatch(getUserRequest(login));
             setActiveScreen("openOrder");
+            setIsSignatureProcessing(false);
           }}
           portfolio={portfolio}
           name={accountName}
@@ -468,6 +514,7 @@ function Application(props) {
                   portfolio={portfolio}
                   isSignatureProcessing={isSignatureProcessing}
                   signatureResult={signatureResult}
+                  openLogin={openLogin}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -592,11 +639,16 @@ function Application(props) {
                   onClickRedirectToPortfolio={(e) => {
                     setActiveScreen("wallet");
                   }}
+                  onClickResetIsSignatureProcessing={() => {
+                    setIsSignatureProcessing(false);
+                  }}
+                  openLogin={openLogin}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
                     e.preventDefault();
                     setActiveScreen("login");
+                    setIsSignatureProcessing(false);
                   }}
                 />
               </div>
@@ -640,6 +692,7 @@ function Application(props) {
                   onClickHomeHandler={(e) => {
                     e.preventDefault();
                     setActiveScreen("login");
+                    setIsSignatureProcessing(false);
                   }}
                 />
               </div>
@@ -662,12 +715,14 @@ function Application(props) {
                   onBackClick={(e) => {
                     e.preventDefault();
                     setActiveScreen("wallet");
+                    setIsSignatureProcessing(false);
                   }}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
                     e.preventDefault();
                     setActiveScreen("login");
+                    setIsSignatureProcessing(false);
                   }}
                 />
               </div>
@@ -705,6 +760,7 @@ function Application(props) {
                   onClickHomeHandler={(e) => {
                     e.preventDefault();
                     setActiveScreen("login");
+                    setIsSignatureProcessing(false);
                   }}
                 />
               </div>
@@ -792,6 +848,7 @@ function Application(props) {
                     onClickHomeHandler={(e) => {
                       e.preventDefault();
                       setActiveScreen("login");
+                      setIsSignatureProcessing(false);
                     }}
                   />
                 </div>
@@ -821,6 +878,7 @@ function Application(props) {
                     onClickHomeHandler={(e) => {
                       e.preventDefault();
                       setActiveScreen("login");
+                      setIsSignatureProcessing(false);
                     }}
                   />
                 </div>
@@ -872,6 +930,7 @@ function Application(props) {
                     onClickHomeHandler={(e) => {
                       e.preventDefault();
                       setActiveScreen("login");
+                      setIsSignatureProcessing(false);
                     }}
                   />
                 </div>
@@ -914,6 +973,7 @@ function Application(props) {
                     onClickHomeHandler={(e) => {
                       e.preventDefault();
                       setActiveScreen("login");
+                      setIsSignatureProcessing(false);
                     }}
                   />
                 </div>
@@ -951,6 +1011,7 @@ function Application(props) {
             style={{ backgroundColor: "#fc0", color: "white" }}
             onClick={() => {
               setTokenModalOpen(false);
+              setIsSignatureProcessing(false);
               dispatch(logoutRequest())
             }}
           >

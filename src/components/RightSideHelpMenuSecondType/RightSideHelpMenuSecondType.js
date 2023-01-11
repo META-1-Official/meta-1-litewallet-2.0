@@ -7,6 +7,8 @@ import getHistory from "../../lib/fetchHistory";
 import { removeExponent } from '../../utils/commonFunction'
 import { trxTypes } from "../../helpers/utility";
 import { ChainTypes as grapheneChainTypes } from 'meta1-vision-js';
+import { accountsSelector } from "../../store/account/selector";
+import { useSelector } from "react-redux";
 const {operations} = grapheneChainTypes;
 const ops = Object.keys(operations);
 ops.push(
@@ -18,8 +20,9 @@ ops.push(
 );
 const RightSideHelpMenuSecondType = (props) => {
   const { onClickExchangeEOSHandler, onClickExchangeUSDTHandler } = props;
+  const accountNameState = useSelector(accountsSelector);
 
-  const { data, isLoading } = useQuery("historySideBar", getHistory, {
+  const { data, isLoading } = useQuery(["historySideBar", null, null, null, accountNameState], getHistory, {
     refetchInterval: 3000,
   });
 

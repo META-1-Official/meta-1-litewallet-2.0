@@ -63,7 +63,7 @@ export default function FaceKiForm(props) {
     const { email, accountName, onSubmit } = props;
 
     setVerifying(true);
-    const imageSrc = webcamRef.current.getScreenshot();
+    const imageSrc = device.width? webcamRef.current.getScreenshot({width: device.width, height: device.height}) : webcamRef.current.getScreenshot();
     const response_user = await getUserKycProfile(email);
 
     if (!response_user?.member1Name) {
