@@ -644,6 +644,7 @@ function Application(props) {
                     setActiveScreen("exchange");
                   }}
                   onClickRedirectToPortfolio={(e) => {
+                    refetchPortfolio();
                     setActiveScreen("wallet");
                   }}
                   onClickResetIsSignatureProcessing={() => {
