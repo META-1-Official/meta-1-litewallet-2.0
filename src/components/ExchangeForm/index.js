@@ -80,7 +80,7 @@ export default function ExchangeForm(props) {
   const performTradeSubmit = async () => {
     const buyResult = await traderState.perform({
       from: selectedFrom.value,
-      to: selectedTo.value.trim(),
+      to: selectedTo.value?.trim(),
       amount: selectedToAmount,
       password: password,
     });
