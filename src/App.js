@@ -31,7 +31,7 @@ import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, getLoginDetail, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector, refreshLoginDataSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
@@ -52,6 +52,7 @@ const openLogin = new OpenLogin({
 window.Meta1 = Meta1;
 function Application(props) {
   const accountNameState = useSelector(accountsSelector);
+  const refreshLoginDataState = useSelector(refreshLoginDataSelector);
   const isLoginState = useSelector(isLoginSelector);
   const tokenState = useSelector(tokenSelector);
   const loaderState = useSelector(loaderSelector);
@@ -256,6 +257,15 @@ function Application(props) {
   }
 
   useEffect(() => {
+    if (localStorage.getItem('isMigrationUser') === 'true' && localStorage.getItem('readyToMigrate') === 'true') {
+      setIsFromMigration(true);
+    }
+    if (accountNameState) {
+      dispatch(checkTransferableRequest({ login: accountNameState }));
+    }
+  }, [refreshLoginDataState, accountNameState])
+  
+  useEffect(() => {
     async function fetchPortfolio() {
       if (portfolioReceiverState === null) return;
       if (portfolio !== null) return;
@@ -268,9 +278,6 @@ function Application(props) {
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
-        if (localStorage.getItem('isMigrationUser') === 'true' && localStorage.getItem('readyToMigrate') === 'true') {
-          setIsFromMigration(true);
-        }
         localStorage.setItem("account", accountNameState);
         setActiveScreen(
           sessionStorage.getItem("location") != null
@@ -282,7 +289,7 @@ function Application(props) {
       }
     }
     fetchPortfolio();
-  }, [portfolioReceiverState, portfolio, accountName, refreshData ]);
+  }, [portfolioReceiverState, portfolio, accountName, refreshData, refreshLoginDataState ]);
 
   useEffect(() => {
     async function connect() {
@@ -1067,6 +1074,7 @@ function Application(props) {
         onClose={() => {
           localStorage.removeItem('isMigrationUser');
           localStorage.removeItem('readyToMigrate');
+          dispatch(checkTransferableRequest({ login: accountNameState }));
           setActiveScreen('login');
           setIsFromMigration(false);
         }}
@@ -1093,6 +1101,7 @@ function Application(props) {
               localStorage.removeItem('readyToMigrate');
               setActiveScreen('login');
               setIsFromMigration(false);
+              dispatch(checkTransferableRequest({ login: accountNameState }));
             }}
           >
             Go There</Button>
