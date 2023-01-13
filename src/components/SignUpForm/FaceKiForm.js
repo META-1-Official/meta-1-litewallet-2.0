@@ -20,19 +20,10 @@ export default function FaceKiForm(props) {
     height: ''
   });
   const childDivRef = useRef();
-  React.useEffect(
-    async () => {
-      let features = {
-        audio: false,
-        video: true
-      };
-      let display = await navigator.mediaDevices.getUserMedia(features);
-      setDevice(display?.getVideoTracks()[0]?.getSettings());
-      isMobileHandler();
-      window.addEventListener('resize', isMobileHandler);
-    },
-    []
-  );
+
+  useEffect(() => {
+    loadVideo(true);
+  }, []);
 
   useEffect(() => {
     if (childDivRef?.current?.clientWidth && childDivRef?.current?.clientHeight) {
@@ -43,10 +34,44 @@ export default function FaceKiForm(props) {
     }
   }, [childDivRef.current]);
 
+  const loadVideo = (flag) => {
+    const videoTag = document.querySelector('video');
+    console.log('[loadVideo] @10 - ', flag, videoTag);
+    const features = {audio: false, video: true};
+
+    if (flag) {
+      return navigator.mediaDevices
+        .getUserMedia(features)
+        .then((display) => {
+          setDevice(display?.getVideoTracks()[0]?.getSettings());
+          isMobileHandler();
+          window.addEventListener('resize', isMobileHandler);
+        })
+        .finally(() => {
+          return true;
+        });
+    } else {
+      try {
+        for (const track of videoTag.srcObject.getTracks()) track.stop();
+        videoTag.srcObject = null;
+      } catch (err) {
+        console.log('[loadVideo] @104 - ', err);
+      }
+
+      return Promise.resolve();
+    }
+  }
+
   const isMobileHandler = () => {
     const { innerWidth: width } = window;
     const isMobile = width <= 767;
     setIsMobile(isMobile);
+  }
+
+  const onClickNext = () => {
+    loadVideo(false).then(() => {
+      props.onClick();
+    });
   }
 
   const dataURLtoFile = (dataurl, filename) => {
@@ -194,7 +219,7 @@ export default function FaceKiForm(props) {
                 <div className="btn-grp">
                   <button className={!faceKISuccess ? 'btn-1' : 'btn-1 btn-disabled'} disabled={verifying ? true : faceKISuccess ? true : false} onClick={videoEnroll}>{verifying ? "Verifying..." : "Verify"}</button>
                   <Button
-                    onClick={() => props.onClick()}
+                    onClick={onClickNext}
                     className={faceKISuccess ? 'btn-2' : 'btn-disabled'}
                     disabled={faceKISuccess === false}
                   >
