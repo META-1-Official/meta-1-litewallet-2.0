@@ -18,19 +18,10 @@ export default function FaceKiForm(props) {
     height: ''
   });
   const childDivRef = useRef();
-  useEffect(
-    async () => {
-      let features = {
-        audio: false,
-        video: true
-      };
-      let display = await navigator.mediaDevices.getUserMedia(features);
-      setDevice(display?.getVideoTracks()[0]?.getSettings());
-      isMobileHandler();
-      window.addEventListener('resize', isMobileHandler);
-    },
-    []
-  );
+
+  useEffect(() => {
+    loadVideo(true);
+  }, []);
 
   useEffect(() => {
     if (childDivRef?.current?.clientWidth && childDivRef?.current?.clientHeight) {
@@ -40,6 +31,34 @@ export default function FaceKiForm(props) {
       });
     }
   },[childDivRef.current]);
+
+  const loadVideo = (flag) => {
+    const videoTag = document.querySelector('video');
+    console.log('[loadVideo] @10 - ', flag, videoTag);
+    const features = {audio: false, video: true};
+
+    if (flag) {
+      return navigator.mediaDevices
+        .getUserMedia(features)
+        .then((display) => {
+          setDevice(display?.getVideoTracks()[0]?.getSettings());
+          isMobileHandler();
+          window.addEventListener('resize', isMobileHandler);
+        })
+        .finally(() => {
+          return true;
+        });
+    } else {
+      try {
+        for (const track of videoTag.srcObject.getTracks()) track.stop();
+        videoTag.srcObject = null;
+      } catch (err) {
+        console.log('[loadVideo] @104 - ', err);
+      }
+
+      return Promise.resolve();
+    }
+  }
 
   const isMobileHandler = () => {
     const { innerWidth: width } = window;
@@ -107,7 +126,9 @@ export default function FaceKiForm(props) {
         if (nameArry.includes(email)) {
           setFaceKISuccess(true);
           setVerifying(false);
-          onSubmit();
+          loadVideo(false).then(() => {
+            onSubmit();
+          });
         } else {
           alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
           setVerifying(false);
