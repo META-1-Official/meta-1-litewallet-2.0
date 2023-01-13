@@ -209,6 +209,10 @@ video {
   margin-bottom: 0 !important;
 }
 
+.qr-modal {
+  height: 500px;
+}
+
 @media screen and (max-width: 678px) {
   .webcam_div {
     width: 100% !important;

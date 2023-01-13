@@ -5,6 +5,7 @@ import { liveLinessCheck, verify, enroll, remove, getUserKycProfile, postUserKyc
 import { Button } from "semantic-ui-react";
 import OvalImage from '../../images/oval/oval19.png';
 import MobileOvalImage from '../../images/oval/oval11.png';
+import { Icon, Modal } from "semantic-ui-react";
 import "./SignUpForm.css";
 
 export default function FaceKiForm(props) {
@@ -64,7 +65,8 @@ export default function FaceKiForm(props) {
     const { privKey, email } = props;
 
     setVerifying(true);
-    const imageSrc = device.width? webcamRef.current.getScreenshot({width: device.width, height: device.height}) : webcamRef.current.getScreenshot();
+    // const imageSrc = device.width? webcamRef.current.getScreenshot({width: device.width, height: device.height}) : webcamRef.current.getScreenshot();
+    const imageSrc = webcamRef.current.getScreenshot({ width: 1270, height: 720 });
 
     if (!imageSrc) {
       alert('Check your camera');
@@ -155,7 +157,7 @@ export default function FaceKiForm(props) {
       alert('Try again by changing position or background.');
       setVerifying(false);
     }
-  }
+  } 
 
   return (
     <div style={{ marginLeft: "3rem" }} className={"totalSumBlock"}>
@@ -207,6 +209,7 @@ export default function FaceKiForm(props) {
               src={imageSrc}
             />
           )}
+          {/* {renderQRModal()} */}
         </div>
       </div>
     </div>

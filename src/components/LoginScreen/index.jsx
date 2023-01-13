@@ -50,7 +50,7 @@ export default function LoginScreen(props) {
   const signatureErrorState = useSelector(signatureErrorSelector);
   const isSignatureValidState = useSelector(isSignatureValidSelector);
   const loginErrorMsgState = useSelector(loginErrorMsgSelector);
-  const dispatch = useDispatch();  
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (signatureErrorState) {
@@ -160,6 +160,8 @@ export default function LoginScreen(props) {
                 if (login.length !== 0) {
                   setLoader(true);
                   renderTorusLogin();
+
+                  // setStep('faceki');
                 }
               } else {
                 setErrorAttr(prev => {
@@ -185,6 +187,8 @@ export default function LoginScreen(props) {
         accountName={login}
         email={email}
         privKey={privKey}
+        // email="antman-kok357@yopmail.com"
+        // privKey="priv1234567890"
         setStep={setStep}
       />
     )
