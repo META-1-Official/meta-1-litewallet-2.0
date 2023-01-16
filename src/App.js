@@ -31,7 +31,7 @@ import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken, getLoginDetail, setAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
+import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector, refreshLoginDataSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
@@ -117,6 +117,7 @@ function Application(props) {
   const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
     useState(false);
+  const refreshLoginDataState = useSelector(refreshLoginDataSelector);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
@@ -221,7 +222,7 @@ function Application(props) {
       setPortfolio(null);
       setActiveScreen("login");
     }
-  },[accountNameState, loginErrorState]);
+  },[accountNameState, loginErrorState, refreshLoginDataSelector]);
 
   const loc = React.useMemo(() => {
     if (
@@ -270,6 +271,9 @@ function Application(props) {
         setFullPortfolio(fetched.full);
         if (localStorage.getItem('isMigrationUser') === 'true' && localStorage.getItem('readyToMigrate') === 'true') {
           setIsFromMigration(true);
+        }
+        if (accountNameState) {
+          dispatch(checkTransferableRequest({ login: accountNameState }));
         }
         localStorage.setItem("account", accountNameState);
         setActiveScreen(
@@ -1034,6 +1038,7 @@ function Application(props) {
         onClose={() => {
           dispatch(checkTransferableModelAction(false));
           dispatch(checkAccountSignatureReset());
+          dispatch(checkTransferableRequest({ login: accountNameState }));
         }}
         open={checkTransferableModelState}
         id={"modalExch"}
@@ -1056,6 +1061,7 @@ function Application(props) {
             onClick={() => {
               dispatch(checkTransferableModelAction(false));
               dispatch(checkAccountSignatureReset());
+              dispatch(checkTransferableRequest({ login: accountNameState }));
             }}
           >
             Claim Wallet</Button>
