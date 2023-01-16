@@ -61,7 +61,7 @@ export default function SubmitForm(props) {
         if (token.error === true) {
           return;
         } else if (token) {
-          localStorage.setItem('login', accountName);
+          localStorage.setItem('loginData', accountName);
           localStorage.setItem('password', password);
           localStorage.setItem('firstname', firstName);
           localStorage.setItem('lastname', lastName);
