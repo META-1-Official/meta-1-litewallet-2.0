@@ -222,7 +222,7 @@ function Application(props) {
       setPortfolio(null);
       setActiveScreen("login");
     }
-  },[accountNameState, loginErrorState, refreshLoginDataSelector]);
+  },[accountNameState, loginErrorState, refreshLoginDataState]);
 
   const loc = React.useMemo(() => {
     if (
