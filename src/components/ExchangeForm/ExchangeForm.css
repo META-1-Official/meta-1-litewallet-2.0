@@ -314,3 +314,29 @@
     margin-left: 1rem;
   }
 }
+.limit-input-grid {
+  padding-top: 11px !important;
+}
+.input-price label {
+  margin-left: 17px !important;
+}
+.custom-tab {
+  background: #FFC000 !important;
+  color: #000 !important;
+}
+.percentage-container {
+  background-color: #FFC000;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 4px;
+  margin-left: 1rem;
+
+}
+.percentage-container .active {
+  font-weight: 700;
+
+}
+.percentage-padding {
+  padding-right: 5px;
+  cursor: pointer;
+}
