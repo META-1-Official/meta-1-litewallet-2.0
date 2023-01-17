@@ -39,7 +39,7 @@ const QRCodeModal = (props) => {
         props.setPhoto("data:image/jpeg;base64, " + Buffer.from(poll.bio_blob).toString('base64'));
       }
     }
-  }, 1000 * 10);
+  }, 1000 * 5);
 
   const handleClose = async () => {
     const {acc, email} = props;

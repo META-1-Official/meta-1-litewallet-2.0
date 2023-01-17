@@ -53,7 +53,7 @@ const QRBioVerification = (props) => {
 
     const check = async () => {
         setVerifying(true);
-        const imageSrc = webcamRef.current.getScreenshot();
+        const imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
 
         if (!imageSrc) {
             alert('Check your camera.');
