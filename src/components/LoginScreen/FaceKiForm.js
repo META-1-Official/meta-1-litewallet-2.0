@@ -15,6 +15,7 @@ export default function FaceKiForm(props) {
   const [device, setDevice] = React.useState({});
   const [isMobile, setIsMobile] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [photo, setPhoto] = useState(null);
   const [mobileScreenSize, setMobileScreenSize] = useState({
     width: '',
     height: ''
@@ -43,13 +44,17 @@ export default function FaceKiForm(props) {
     }
   }, [childDivRef.current]);
 
+  useEffect(() => {
+    if (faceKISuccess === true) props.onSubmit();
+  }, [faceKISuccess])
+
   const isMobileHandler = () => {
     const { innerWidth: width } = window;
     const isMobile = width <= 767;
     setIsMobile(isMobile);
   }
 
-  const dataURLtoFile = (dataurl, filename) => {
+  const dataURL2File = (dataurl, filename) => {
     var arr = dataurl.split(','),
       mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]),
@@ -61,12 +66,17 @@ export default function FaceKiForm(props) {
     return new File([u8arr], filename, { type: mime });
   }
 
+  // const file2Url = file => new Promise((resolve, reject) => {
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onload = () => resolve(reader.result);
+  //   reader.onerror = error => reject(error);
+  // });
+
   const videoVerify = async () => {
-    const { email, accountName, onSubmit } = props;
+    const { email, accountName } = props;
 
     setVerifying(true);
-    // const imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
-    const imageSrc = webcamRef.current.getScreenshot({ width: 1270, height: 720 });
     const response_user = await getUserKycProfile(email);
 
     if (!response_user?.member1Name) {
@@ -84,49 +94,59 @@ export default function FaceKiForm(props) {
       }
     };
 
+    var file = dataURL2File(photo, 'a.jpg');
+    const response_verify = await verify(file);
+
+    if (response_verify.status === 'Verify OK') {
+      const nameArry = response_verify.name.split(',');
+
+      if (nameArry.includes(email)) {
+        setFaceKISuccess(true);
+        setVerifying(false);
+      } else {
+        alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
+        setVerifying(false);
+      }
+    } else if (response_verify.status === 'Verify Failed') {
+      alert('We can not verify you because you never enrolled with your face yet.');
+      setVerifying(false);
+    } else if (response_verify.status === 'No Users') {
+      alert('You never enrolled with your face yet. Please enroll first via signup process.');
+      setVerifying(false);
+    }
+    else {
+      alert('Please try again.');
+      setVerifying(false);
+    }
+  }
+
+  const takePhoto = async () => {
+    // const imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
+    const imageSrc = webcamRef.current.getScreenshot({ width: 1270, height: 720 });
+
     if (!imageSrc) {
       alert('Check your camera.');
-      setVerifying(false);
       return;
     };
 
-    var file = dataURLtoFile(imageSrc, 'a.jpg');
+    var file = dataURL2File(imageSrc, 'a.jpg');
     const response = await liveLinessCheck(file);
 
     if (!response || response.error === true) {
       alert('Something went wrong from Biometric server.');
-      setVerifying(false);
       return;
     }
 
     if (response.data.liveness !== 'Genuine') {
       alert('Try again by changing position or background.');
-      setVerifying(false);
+      return;
     } else {
-      const response_verify = await verify(file);
-      if (response_verify.status === 'Verify OK') {
-        const nameArry = response_verify.name.split(',');
-
-        if (nameArry.includes(email)) {
-          setFaceKISuccess(true);
-          setVerifying(false);
-          onSubmit();
-        } else {
-          alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
-          setVerifying(false);
-        }
-      } else if (response_verify.status === 'Verify Failed') {
-        alert('We can not verify you because you never enrolled with your face yet.');
-        setVerifying(false);
-      } else if (response_verify.status === 'No Users') {
-        alert('You never enrolled with your face yet. Please enroll first via signup process.');
-        setVerifying(false);
-      }
-      else {
-        alert('Please try again.');
-        setVerifying(false);
-      }
+      setPhoto(imageSrc);
     }
+  }
+
+  const resetPhoto = async () => {
+    setPhoto(null);
   }
 
   return (
@@ -140,12 +160,12 @@ export default function FaceKiForm(props) {
                 <p className='header_ptag'>To log into your wallet, please complete biometric authentication.</p>
               </div>
               <div className='child-div' ref={childDivRef} >
-                <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
+                {photo === null && <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                   <div className="position-head color-black">{!isMobile ? 'Position your face in the oval' : ''}</div>
                   <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
-                </div>
-                {!isMobile && <img src={OvalImage} alt='oval-image' className='oval-image' />}
-                <Webcam
+                </div>}
+                {!isMobile && photo === null && <img src={OvalImage} alt='oval-image' className='oval-image' />}
+                {photo === null && <Webcam
                   audio={false}
                   ref={webcamRef}
                   screenshotFormat="image/jpeg"
@@ -156,15 +176,24 @@ export default function FaceKiForm(props) {
                   width={isMobile ? mobileScreenSize.width - 20 : 550}
                   height={isMobile ? mobileScreenSize.height - 50 : device?.aspectRatio ? 550 / device?.aspectRatio : 385}
                   mirrored
-                />
+                />}
+                {photo && <img
+                  src={photo}
+                  className="photo"
+                  style={{
+                    width: isMobile ? mobileScreenSize.width - 20 : 550,
+                    height: isMobile ? mobileScreenSize.height - 50 : device?.aspectRatio ? 550 / device?.aspectRatio : 385
+                  }}
+                />}
                 <div className='btn-div'>
                   <p className={`span-class color-black margin-bottom-zero ${isMobile ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>
                   <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
                     Min camera resolution must be 720p
                   </span>
-                  <div className="btn-grp" style={{"marginTop": '5px' }}>
-                    <button className={!faceKISuccess ? 'btn-1' : 'btn-disabled'} onClick={videoVerify} disabled={verifying ? true : faceKISuccess ? true : false}>{verifying ? "Verifying..." : "Verify"}</button>
-                    {/* <button className='btn-1' style={{"marginLeft": '30px' }} onClick={() => setQrOpen(true)} >Verify on Mobile</button> */}
+                  <div className="btn-grp" style={{ "marginTop": '5px' }}>
+                    <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }}>{photo ? "Reset Photo" : "Take Photo"}</button>
+                    {photo && <button className='btn-1' onClick={videoVerify} >{verifying ? "Verifying..." : "Verify"}</button>}
+                    <button className='btn-1' style={{ "marginLeft": '20px' }} onClick={() => setQrOpen(true)}>Take Photo via Mobile</button>
                   </div>
                 </div>
               </div>
@@ -172,7 +201,15 @@ export default function FaceKiForm(props) {
           </div>
         </div>
       </div>
-      {/* {qrOpen && <QRCodeModal open={qrOpen} setOpen={(val) => setQrOpen(val)} />} */}
+      {qrOpen && <QRCodeModal
+        open={qrOpen}
+        setOpen={(val) => setQrOpen(val)}
+        acc={props.accountName}
+        email={props.email}
+        setPhoto={(val) => setPhoto(val)}
+        mode={'login'}
+      />
+      }
     </>
   )
 }

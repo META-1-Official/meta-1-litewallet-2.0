@@ -371,3 +371,54 @@ export async function migrate(accountName, password) {
     return { message: "Something is wrong", error: true };
   }
 }
+
+export async function createQRPoll(qr_hash) {
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_BACK_URL}/createPoll`,
+      {qr_hash}
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+
+export async function findQRPoll(qr_hash) {
+  try {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_BACK_URL}/findPoll?qr_hash=${qr_hash}`
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+
+export async function setQRPollVerified(qr_hash, bio_blob) {
+  let form_data = new FormData();
+  form_data.append('image', bio_blob);
+
+  try {
+    const { data } = await axios.patch(
+      `${process.env.REACT_APP_BACK_URL}/updatePoll?qr_hash=${qr_hash}`,
+      form_data,
+      { headers: { 'content-type': 'multipart/form-data' } },
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+
+export async function removeQRPoll(qr_hash) {
+  try {
+    const { data } = await axios.delete(
+      `${process.env.REACT_APP_BACK_URL}/removePoll?qr_hash=${qr_hash}`
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+

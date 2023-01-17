@@ -16,6 +16,7 @@ import SendForm from "./components/SendForm";
 import LoginScreen from "./components/LoginScreen";
 import Wallet from "./components/Wallet";
 import Settings from "./components/Settings/Settings";
+import QRBioVerification from "./UI/loader/QRBioVerification";
 import logoNavbar from "./images/default-pic2.png";
 import logoDefalt from "./images/default-pic1.png";
 import "./App.css";
@@ -35,7 +36,7 @@ import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, login
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
-import OpenOrder  from "./components/OpenOrder";
+import OpenOrder from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
 import OpenLogin from 'openlogin';
@@ -115,8 +116,7 @@ function Application(props) {
   const [signatureResult, setSignatureResult] = useState(null);
   const [isFromMigration, setIsFromMigration] = useState(false);
   const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
-  const [passwordShouldBeProvided, setPasswordShouldBeProvided] =
-    useState(false);
+  const [passwordShouldBeProvided, setPasswordShouldBeProvided] = useState(false);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
@@ -131,6 +131,22 @@ function Application(props) {
   const newUpdatedBalance = useQuery(['updateBalance'], updateBalances, {
     refetchInterval: 20000
   });
+
+  useEffect(() => {
+    if (urlParams[0] === 'onMobile=true') {
+      localStorage.setItem('qr-bio', true);
+
+      const accountName = urlParams[1].split('=')[1];
+      const email = urlParams[2].split('=')[1];
+
+      if (accountName && email) {
+        localStorage.setItem('qr-hash', `${accountName}_${email}`);
+        setActiveScreen('qr-bio');
+      } else {
+        alert("QR code is wrong or link has been edited. Try again.");
+      }
+    }
+  }, [urlParams])
 
   useEffect(() => {
     if (login !== null) {
@@ -186,16 +202,16 @@ function Application(props) {
         setActiveScreen('registration');
       } else {
         if (window.location.search.includes('?signature=success')) {
-          sessionStorage.setItem('location','wallet');
+          sessionStorage.setItem('location', 'wallet');
           setActiveScreen("wallet");
           window.location.href = window.location.href.split('?')[0];
         }
       }
       if (window.location.search.includes('?signature=success')) {
-        localStorage.setItem('isSignature',true);
+        localStorage.setItem('isSignature', true);
       }
     }
-  },[signatureParam]);
+  }, [signatureParam]);
 
   useEffect(() => {
     if (loginErrorState) {
@@ -204,10 +220,10 @@ function Application(props) {
     }
     if (accountNameState) {
       setLoginDataError(false);
-      onLogin(accountNameState,false)
+      onLogin(accountNameState, false)
       if (fromSignUp) {
         setPortfolio(null);
-        setRefreshData(prev=>!prev);
+        setRefreshData(prev => !prev);
         dispatch(resetMetaStore());
         setFromSignUp(false);
         if (accountNameState) {
@@ -221,26 +237,28 @@ function Application(props) {
       setPortfolio(null);
       setActiveScreen("login");
     }
-  },[accountNameState, loginErrorState]);
+  }, [accountNameState, loginErrorState]);
 
-  const loc = React.useMemo(() => {
-    if (
-      activeScreen !== "sendFunds" &&
-      activeScreen !== "login" &&
-      activeScreen != null
-    ) {
-      sessionStorage.setItem("location", activeScreen);
+  // const loc = React.useMemo(() => {
+  //   if (
+  //     activeScreen !== "sendFunds" &&
+  //     activeScreen !== "login" &&
+  //     activeScreen != null
+  //   ) {
+  //     sessionStorage.setItem("location", activeScreen);
+  //   }
+  //   return true;
+  // }, [activeScreen]);
+
+  useEffect(() => {
+    if (userDataState?.message?.currency === "USD") {
+    } else if (userDataState?.message?.currency) {
+      const userCurrencyData = `${crypt[userDataState?.message?.currency][1]} ${userDataState?.message?.currency} ${cryptoDataState.ExchangeRate[crypt[userDataState?.message?.currency][0]].rate
+        }`
+      dispatch(setUserCurrencyAction(userCurrencyData))
     }
-    return true;
-  }, [activeScreen]);
-  useEffect(()=>{
-      if (userDataState?.message?.currency === "USD") {
-      } else if (userDataState?.message?.currency) {
-          const userCurrencyData = `${crypt[userDataState?.message?.currency][1]} ${userDataState?.message?.currency} ${cryptoDataState.ExchangeRate[crypt[userDataState?.message?.currency][0]].rate
-          }`
-          dispatch(setUserCurrencyAction(userCurrencyData))
-      }
-  },[cryptoDataState]);
+  }, [cryptoDataState]);
+
   useEffect(() => {
     if (!isTokenValidState) {
       setTokenModalOpen(true);
@@ -250,7 +268,8 @@ function Application(props) {
         dispatch(getCryptosChangeRequest())
       }
     }
-  },[userDataState, isTokenValidState]);
+  }, [userDataState, isTokenValidState]);
+
   async function getAvatarFromBack(login) {
     dispatch(getUserRequest(login));
   }
@@ -282,7 +301,7 @@ function Application(props) {
       }
     }
     fetchPortfolio();
-  }, [portfolioReceiverState, portfolio, accountName, refreshData ]);
+  }, [portfolioReceiverState, portfolio, accountName, refreshData]);
 
   useEffect(() => {
     async function connect() {
@@ -298,7 +317,10 @@ function Application(props) {
             if (localStorage.getItem('isSignature')) {
               setActiveScreen("registration");
               localStorage.removeItem('isSignature');
-            } else {
+            } else if (urlParams[0] === 'onMobile=true' || localStorage.getItem("qr-bio")) {
+              setActiveScreen('qr-bio');
+            }
+            else {
               setActiveScreen("login");
             }
           } else {
@@ -324,16 +346,16 @@ function Application(props) {
               metaApi: Meta1,
               login: accountNameState,
             });
-          
+
             const sendWithPasswordObj = new SendWithPassword({
               metaApi: Meta1,
               login: accountNameState,
             });
-            const obj = { 
-                portfolioReceiver: portfolioObj,
-                trader: tradeWithPasswordObj,
-                checkPasswordObj,
-                senderApi: sendWithPasswordObj
+            const obj = {
+              portfolioReceiver: portfolioObj,
+              trader: tradeWithPasswordObj,
+              checkPasswordObj,
+              senderApi: sendWithPasswordObj
             };
             dispatch(meta1ConnectSuccess(obj))
           }
@@ -383,66 +405,8 @@ function Application(props) {
 
   return (
     <>
-      <Navbar
-        onClickHomeHandler={(e) => {
-          e.preventDefault();
-          dispatch(getUserRequest(login));
-          setActiveScreen("login");
-          setIsSignatureProcessing(false);
-        }}
-        onClickPortfolioHandler={(e) => {
-          e.preventDefault();
-          dispatch(getUserRequest(login));
-          setActiveScreen("wallet");
-          setIsSignatureProcessing(false);
-        }}
-        onClickExchangeHandler={(e) => {
-          e.preventDefault();
-          dispatch(getUserRequest(login));
-          setTradeAsset("BTC");
-          setActiveScreen("exchange");
-          dispatch(passKeyResetService());
-          setIsSignatureProcessing(false);
-        }}
-        onClickPaperWalletHandler={(e) => {
-          e.preventDefault();
-          dispatch(getUserRequest(login));
-          setActiveScreen("paperWallet");
-          setIsSignatureProcessing(false);
-        }}
-        onClickOrderTableHandler={(e) => {
-          e.preventDefault();
-          dispatch(getUserRequest(login));
-          setActiveScreen("orderTable");
-          setIsSignatureProcessing(false);
-        }}
-        onClickSettingsHandler={(e) => {
-          e.preventDefault();
-          dispatch(getUserRequest(login));
-          setActiveScreen("settings");
-          setIsSignatureProcessing(false);
-        }}
-        onClickHistoryHandler={(e) => {
-          e.preventDefault();
-          dispatch(getUserRequest(login));
-          setActiveScreen("orderTable");
-          setIsSignatureProcessing(false);
-        }}
-        onClickOpenOrderHandler={(e) => {
-          e.preventDefault();
-          dispatch(getUserRequest(login));
-          setActiveScreen("openOrder");
-          setIsSignatureProcessing(false);
-        }}
-        onClickResetIsSignatureProcessing={() => {
-          setIsSignatureProcessing(false);
-        }}
-        portfolio={portfolio}
-        name={accountName}
-        activeScreen={activeScreen}
-      />
-      <div className={"forAdapt"}>
-        <LeftPanel
+      {activeScreen !== 'qr-bio' && <>
+        <Navbar
           onClickHomeHandler={(e) => {
             e.preventDefault();
             dispatch(getUserRequest(login));
@@ -493,290 +457,104 @@ function Application(props) {
             setActiveScreen("openOrder");
             setIsSignatureProcessing(false);
           }}
+          onClickResetIsSignatureProcessing={() => {
+            setIsSignatureProcessing(false);
+          }}
           portfolio={portfolio}
           name={accountName}
           activeScreen={activeScreen}
         />
-        <div style={{ width: "100%" }} className="App">
-          <div className="AppContent">
-            {activeScreen === "registration" && (
-              <div className={"fullBlockWithAdapt"}>
-                <SignUpForm
-                  {...props}
-                  onRegistration={onRegistration}
-                  onBackClick={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("login");
-                  }}
-                  onClickExchangeUSDTHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("USDT");
-                    setActiveScreen("exchange");
-                  }}
-                  onClickExchangeEOSHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("EOS");
-                    setActiveScreen("exchange");
-                  }}
-                  portfolio={portfolio}
-                  isSignatureProcessing={isSignatureProcessing}
-                  signatureResult={signatureResult}
-                  openLogin={openLogin}
-                />
-                <Footer
-                  onClickHomeHandler={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("login");
-                  }}
-                />
-              </div>
-            )}
-            {activeScreen === "settings" && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "100%",
-                }}
-              >
-                <Settings
-                  fetcher={fetchDepositFn}
-                  asset={tradeAsset}
-                  address={""}
-                  onBackClick={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("wallet");
-                  }}
-                  onClickExchangeUSDTHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("USDT");
-                    setActiveScreen("exchange");
-                  }}
-                  onClickExchangeEOSHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("EOS");
-                    setActiveScreen("exchange");
-                  }}
-                  getAvatarFromBack={getAvatarFromBack}
-                  userCurrency={userCurrency}
-                  setUserCurrency={setUserCurrency}
-                  setTokenModalMsg={setTokenModalMsg}
-                  setTokenModalOpen={setTokenModalOpen}
-                />
-                <Footer
-                  onClickHomeHandler={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("login");
-                  }}
-                />
-              </div>
-            )}
-            {activeScreen === "exchange" && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "100%",
-                }}
-              >
-                <ExchangeForm
-                  onBackClick={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("wallet");
-                  }}
-                  onSuccessModal={() => setActiveScreen("wallet")}
-                  onSuccessTrade={() => {
-                    setPortfolio(null);
-                    refetchPortfolio();
-                  }}
-                  portfolio={portfolio}
-                  asset={tradeAsset}
-                  metaUrl={metaUrl}
-                  assets={assets}
-                  onClickExchangeUSDTHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("USDT");
-                    setActiveScreen("exchange");
-                  }}
-                  onClickExchangeEOSHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("EOS");
-                    setActiveScreen("exchange");
-                  }}
-                  passwordShouldBeProvided={passwordShouldBeProvided}
-                  setPasswordShouldBeProvided={setPasswordShouldBeProvided}
-                />
-                <Footer
-                  onClickHomeHandler={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("login");
-                  }}
-                />
-              </div>
-            )}
-
-            {activeScreen === "login" && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "100%",
-                }}
-              >
-                <LoginScreen
-                  onSignUpClick={() => setActiveScreen("registration")}
-                  error={loginError}
-                  loginDataError={loginDataError}
-                  setLoginDataError={setLoginDataError}
-                  onSubmit={onLogin}
-                  portfolio={portfolio}
-                  onClickExchangeUSDTHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("USDT");
-                    setActiveScreen("exchange");
-                  }}
-                  onClickExchangeEOSHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("EOS");
-                    setActiveScreen("exchange");
-                  }}
-                  onClickRedirectToPortfolio={(e) => {
-                    refetchPortfolio();
-                    setActiveScreen("wallet");
-                  }}
-                  onClickResetIsSignatureProcessing={() => {
-                    setIsSignatureProcessing(false);
-                    setSignatureResult(null);
-                  }}
-                  openLogin={openLogin}
-                />
-                <Footer
-                  onClickHomeHandler={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("login");
-                    setIsSignatureProcessing(false);
-                  }}
-                />
-              </div>
-            )}
-
-            {activeScreen === "sendFunds" && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "100%",
-                }}
-              >
-                <SendForm
-                  onBackClick={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("wallet");
-                  }}
-                  portfolio={portfolio}
-                  onSuccessTransfer={() => {
-                    setActiveScreen("wallet");
-                    setPortfolio(null);
-                    refetchPortfolio();
-                  }}
-                  asset={tradeAsset}
-                  sender={accountName}
-                  assets={assets}
-                  onClickExchangeUSDTHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("USDT");
-                    setActiveScreen("exchange");
-                  }}
-                  onClickExchangeEOSHandler={(e) => {
-                    e.preventDefault();
-                    setTradeAsset("EOS");
-                    setActiveScreen("exchange");
-                  }}
-                />
-                <Footer
-                  onClickHomeHandler={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("login");
-                    setIsSignatureProcessing(false);
-                  }}
-                />
-              </div>
-            )}
-
-            {activeScreen === "deposit" && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "100%",
-                }}
-              >
-                <DepositForm
-                  account={account}
-                  fetcher={fetchDepositFn}
-                  asset={tradeAsset}
-                  address={""}
-                  onBackClick={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("wallet");
-                    setIsSignatureProcessing(false);
-                  }}
-                />
-                <Footer
-                  onClickHomeHandler={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("login");
-                    setIsSignatureProcessing(false);
-                  }}
-                />
-              </div>
-            )}
-
-            {activeScreen === "withdraw" && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "100%",
-                }}
-              >
-                <WithdrawForm
-                  account={account}
-                  accountName={accountName}
-                  sendEmail={sendEmail}
-                  asset={tradeAsset}
-                  assets={assets}
-                  portfolio={portfolio}
-                  onBackClick={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("wallet");
-                  }}
-                  redirectToPortfolio={() => setActiveScreen("wallet")}
-                  onSuccessWithDrawal={()=> {
-                    setPortfolio(null);
-                    refetchPortfolio();
-                  }}
-                  setTokenModalOpen={setTokenModalOpen}
-                  setTokenModalMsg={setTokenModalMsg}
-                />
-                <Footer
-                  onClickHomeHandler={(e) => {
-                    e.preventDefault();
-                    setActiveScreen("login");
-                    setIsSignatureProcessing(false);
-                  }}
-                />
-              </div>
-            )}
-
-            {activeScreen === "wallet" && (
-              <>
+        <div className={"forAdapt"}>
+          <LeftPanel
+            onClickHomeHandler={(e) => {
+              e.preventDefault();
+              dispatch(getUserRequest(login));
+              setActiveScreen("login");
+              setIsSignatureProcessing(false);
+            }}
+            onClickPortfolioHandler={(e) => {
+              e.preventDefault();
+              dispatch(getUserRequest(login));
+              setActiveScreen("wallet");
+              setIsSignatureProcessing(false);
+            }}
+            onClickExchangeHandler={(e) => {
+              e.preventDefault();
+              dispatch(getUserRequest(login));
+              setTradeAsset("BTC");
+              setActiveScreen("exchange");
+              dispatch(passKeyResetService());
+              setIsSignatureProcessing(false);
+            }}
+            onClickPaperWalletHandler={(e) => {
+              e.preventDefault();
+              dispatch(getUserRequest(login));
+              setActiveScreen("paperWallet");
+              setIsSignatureProcessing(false);
+            }}
+            onClickOrderTableHandler={(e) => {
+              e.preventDefault();
+              dispatch(getUserRequest(login));
+              setActiveScreen("orderTable");
+              setIsSignatureProcessing(false);
+            }}
+            onClickSettingsHandler={(e) => {
+              e.preventDefault();
+              dispatch(getUserRequest(login));
+              setActiveScreen("settings");
+              setIsSignatureProcessing(false);
+            }}
+            onClickHistoryHandler={(e) => {
+              e.preventDefault();
+              dispatch(getUserRequest(login));
+              setActiveScreen("orderTable");
+              setIsSignatureProcessing(false);
+            }}
+            onClickOpenOrderHandler={(e) => {
+              e.preventDefault();
+              dispatch(getUserRequest(login));
+              setActiveScreen("openOrder");
+              setIsSignatureProcessing(false);
+            }}
+            portfolio={portfolio}
+            name={accountName}
+            activeScreen={activeScreen}
+          />
+          <div style={{ width: "100%" }} className="App">
+            <div className="AppContent">
+              {activeScreen === "registration" && (
+                <div className={"fullBlockWithAdapt"}>
+                  <SignUpForm
+                    {...props}
+                    onRegistration={onRegistration}
+                    onBackClick={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                    }}
+                    onClickExchangeUSDTHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("USDT");
+                      setActiveScreen("exchange");
+                    }}
+                    onClickExchangeEOSHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("EOS");
+                      setActiveScreen("exchange");
+                    }}
+                    portfolio={portfolio}
+                    isSignatureProcessing={isSignatureProcessing}
+                    signatureResult={signatureResult}
+                    openLogin={openLogin}
+                  />
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                    }}
+                  />
+                </div>
+              )}
+              {activeScreen === "settings" && (
                 <div
                   style={{
                     display: "flex",
@@ -785,74 +563,119 @@ function Application(props) {
                     height: "100%",
                   }}
                 >
-                  <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
-                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
-                        <strong>Portfolio</strong>
-                      </h5>
-                    </div>
-                    <div className={"justFlexAndDirect customJustFlexAndDirect"}>
-                      <div
-                        className={"blockInfoYourCrypto blockInfoYourCryptoCustom"}
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          borderRadius: "8px",
-                        }}
-                      >
-                        <Wallet
-                          assets={assets}
-                          portfolio={portfolioFull}
-                          tradeAsset={tradeAsset}
-                          onSendClick={(assetName) => {
-                            setTradeAsset(assetName);
-                            setActiveScreen("sendFunds");
-                          }}
-                          onDepositClick={(assetName) => {
-                            setTradeAsset(assetName);
-                            setActiveScreen("deposit");
-                          }}
-                          onWithdrawClick={(assetName) => {
-                            setTradeAsset(assetName);
-                            setActiveScreen("withdraw");
-                          }}
-                          onAssetSelect={(name) => {
-                            setTradeAsset(name);
-                            setActiveScreen("exchange");
-                          }}
-                          account={account}
-                          accountName={accountName}
-                          onClickExchangeUSDTHandler={(e) => {
-                            e.preventDefault();
-                            setTradeAsset("USDT");
-                            setActiveScreen("exchange");
-                          }}
-                          onClickExchangeEOSHandler={(e) => {
-                            e.preventDefault();
-                            setTradeAsset("EOS");
-                            setActiveScreen("exchange");
-                          }}
-                          setFullPortfolio={setFullPortfolio}
-                          userCurrency={userCurrency}
-                        />
-                      </div>
-                      <div className={"bottomAdaptBlock"}>
-                        <RightSideHelpMenuSecondType
-                          onClickExchangeUSDTHandler={(e) => {
-                            e.preventDefault();
-                            setTradeAsset("USDT");
-                            setActiveScreen("exchange");
-                          }}
-                          onClickExchangeEOSHandler={(e) => {
-                            e.preventDefault();
-                            setTradeAsset("EOS");
-                            setActiveScreen("exchange");
-                          }}
-                          fromHistory={false}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <Settings
+                    fetcher={fetchDepositFn}
+                    asset={tradeAsset}
+                    address={""}
+                    onBackClick={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("wallet");
+                    }}
+                    onClickExchangeUSDTHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("USDT");
+                      setActiveScreen("exchange");
+                    }}
+                    onClickExchangeEOSHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("EOS");
+                      setActiveScreen("exchange");
+                    }}
+                    getAvatarFromBack={getAvatarFromBack}
+                    userCurrency={userCurrency}
+                    setUserCurrency={setUserCurrency}
+                    setTokenModalMsg={setTokenModalMsg}
+                    setTokenModalOpen={setTokenModalOpen}
+                  />
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                    }}
+                  />
+                </div>
+              )}
+              {activeScreen === "exchange" && (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <ExchangeForm
+                    onBackClick={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("wallet");
+                    }}
+                    onSuccessModal={() => setActiveScreen("wallet")}
+                    onSuccessTrade={() => {
+                      setPortfolio(null);
+                      refetchPortfolio();
+                    }}
+                    portfolio={portfolio}
+                    asset={tradeAsset}
+                    metaUrl={metaUrl}
+                    assets={assets}
+                    onClickExchangeUSDTHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("USDT");
+                      setActiveScreen("exchange");
+                    }}
+                    onClickExchangeEOSHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("EOS");
+                      setActiveScreen("exchange");
+                    }}
+                    passwordShouldBeProvided={passwordShouldBeProvided}
+                    setPasswordShouldBeProvided={setPasswordShouldBeProvided}
+                  />
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                    }}
+                  />
+                </div>
+              )}
+
+              {activeScreen === "login" && (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <LoginScreen
+                    onSignUpClick={() => setActiveScreen("registration")}
+                    error={loginError}
+                    loginDataError={loginDataError}
+                    setLoginDataError={setLoginDataError}
+                    onSubmit={onLogin}
+                    portfolio={portfolio}
+                    onClickExchangeUSDTHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("USDT");
+                      setActiveScreen("exchange");
+                    }}
+                    onClickExchangeEOSHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("EOS");
+                      setActiveScreen("exchange");
+                    }}
+                    onClickRedirectToPortfolio={(e) => {
+                      refetchPortfolio();
+                      setActiveScreen("wallet");
+                    }}
+                    onClickResetIsSignatureProcessing={() => {
+                      setIsSignatureProcessing(false);
+                      setSignatureResult(null);
+                    }}
+                    openLogin={openLogin}
+                  />
                   <Footer
                     onClickHomeHandler={(e) => {
                       e.preventDefault();
@@ -861,10 +684,9 @@ function Application(props) {
                     }}
                   />
                 </div>
-              </>
-            )}
-            {activeScreen === "paperWallet" && (
-              <>
+              )}
+
+              {activeScreen === "sendFunds" && (
                 <div
                   style={{
                     display: "flex",
@@ -873,16 +695,31 @@ function Application(props) {
                     height: "100%",
                   }}
                 >
-                  <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
-                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
-                        <strong>Paper Wallet</strong>
-                      </h5>
-                    </div>
-                    <div className={"paperWalletStyles"}>
-                      <PaperWalletLogin />
-                    </div>
-                  </div>
+                  <SendForm
+                    onBackClick={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("wallet");
+                    }}
+                    portfolio={portfolio}
+                    onSuccessTransfer={() => {
+                      setActiveScreen("wallet");
+                      setPortfolio(null);
+                      refetchPortfolio();
+                    }}
+                    asset={tradeAsset}
+                    sender={accountName}
+                    assets={assets}
+                    onClickExchangeUSDTHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("USDT");
+                      setActiveScreen("exchange");
+                    }}
+                    onClickExchangeEOSHandler={(e) => {
+                      e.preventDefault();
+                      setTradeAsset("EOS");
+                      setActiveScreen("exchange");
+                    }}
+                  />
                   <Footer
                     onClickHomeHandler={(e) => {
                       e.preventDefault();
@@ -891,10 +728,9 @@ function Application(props) {
                     }}
                   />
                 </div>
-              </>
-            )}
-            {activeScreen === "orderTable" && (
-              <>
+              )}
+
+              {activeScreen === "deposit" && (
                 <div
                   style={{
                     display: "flex",
@@ -903,38 +739,17 @@ function Application(props) {
                     height: "100%",
                   }}
                 >
-                  <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
-                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
-                        <strong>Transaction History</strong>
-                      </h5>
-                    </div>
-                    <div className={"justFlexAndDirect"}>
-                      <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
-                        <OrdersTable
-                          data={orders}
-                          column={null}
-                          direction={null}
-                          assets={assets}
-                        />
-                      </div>
-                      <div className={"bottomAdaptBlock margin-class newBottomAdaptBlock"}>
-                        <RightSideHelpMenuSecondType
-                          onClickExchangeUSDTHandler={(e) => {
-                            e.preventDefault();
-                            setTradeAsset("USDT");
-                            setActiveScreen("exchange");
-                          }}
-                          onClickExchangeEOSHandler={(e) => {
-                            e.preventDefault();
-                            setTradeAsset("EOS");
-                            setActiveScreen("exchange");
-                          }}
-                          fromHistory={true}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <DepositForm
+                    account={account}
+                    fetcher={fetchDepositFn}
+                    asset={tradeAsset}
+                    address={""}
+                    onBackClick={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("wallet");
+                      setIsSignatureProcessing(false);
+                    }}
+                  />
                   <Footer
                     onClickHomeHandler={(e) => {
                       e.preventDefault();
@@ -943,10 +758,9 @@ function Application(props) {
                     }}
                   />
                 </div>
-              </>
-            )}
-            {activeScreen === "openOrder" && (
-              <>
+              )}
+
+              {activeScreen === "withdraw" && (
                 <div
                   style={{
                     display: "flex",
@@ -955,181 +769,393 @@ function Application(props) {
                     height: "100%",
                   }}
                 >
-                  <div>
-                    <div className="orderOrderMainFlex" style={{ background: "#fff", padding: "1.1rem 2rem" }}>
-                      <div>
+                  <WithdrawForm
+                    account={account}
+                    accountName={accountName}
+                    sendEmail={sendEmail}
+                    asset={tradeAsset}
+                    assets={assets}
+                    portfolio={portfolio}
+                    onBackClick={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("wallet");
+                    }}
+                    redirectToPortfolio={() => setActiveScreen("wallet")}
+                    onSuccessWithDrawal={() => {
+                      setPortfolio(null);
+                      refetchPortfolio();
+                    }}
+                    setTokenModalOpen={setTokenModalOpen}
+                    setTokenModalMsg={setTokenModalMsg}
+                  />
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                      setIsSignatureProcessing(false);
+                    }}
+                  />
+                </div>
+              )}
+
+              {activeScreen === "wallet" && (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                    }}
+                  >
+                    <div>
+                      <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
-                          <strong>Open Order</strong>
+                          <strong>Portfolio</strong>
                         </h5>
                       </div>
-                      <div>
-                        <CustomizeColumns/>
+                      <div className={"justFlexAndDirect customJustFlexAndDirect"}>
+                        <div
+                          className={"blockInfoYourCrypto blockInfoYourCryptoCustom"}
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          <Wallet
+                            assets={assets}
+                            portfolio={portfolioFull}
+                            tradeAsset={tradeAsset}
+                            onSendClick={(assetName) => {
+                              setTradeAsset(assetName);
+                              setActiveScreen("sendFunds");
+                            }}
+                            onDepositClick={(assetName) => {
+                              setTradeAsset(assetName);
+                              setActiveScreen("deposit");
+                            }}
+                            onWithdrawClick={(assetName) => {
+                              setTradeAsset(assetName);
+                              setActiveScreen("withdraw");
+                            }}
+                            onAssetSelect={(name) => {
+                              setTradeAsset(name);
+                              setActiveScreen("exchange");
+                            }}
+                            account={account}
+                            accountName={accountName}
+                            onClickExchangeUSDTHandler={(e) => {
+                              e.preventDefault();
+                              setTradeAsset("USDT");
+                              setActiveScreen("exchange");
+                            }}
+                            onClickExchangeEOSHandler={(e) => {
+                              e.preventDefault();
+                              setTradeAsset("EOS");
+                              setActiveScreen("exchange");
+                            }}
+                            setFullPortfolio={setFullPortfolio}
+                            userCurrency={userCurrency}
+                          />
+                        </div>
+                        <div className={"bottomAdaptBlock"}>
+                          <RightSideHelpMenuSecondType
+                            onClickExchangeUSDTHandler={(e) => {
+                              e.preventDefault();
+                              setTradeAsset("USDT");
+                              setActiveScreen("exchange");
+                            }}
+                            onClickExchangeEOSHandler={(e) => {
+                              e.preventDefault();
+                              setTradeAsset("EOS");
+                              setActiveScreen("exchange");
+                            }}
+                            fromHistory={false}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="justFlexAndDirect justFlexAndDirectMobile">
-                      <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
-                        <OpenOrder
-                          data={orders}
-                          column={null}
-                          direction={null}
-                          assets={assets}
-                          portfolio={portfolio}
-                        />
-                      </div>
-                    </div>
+                    <Footer
+                      onClickHomeHandler={(e) => {
+                        e.preventDefault();
+                        setActiveScreen("login");
+                        setIsSignatureProcessing(false);
+                      }}
+                    />
                   </div>
-                  <Footer
-                    onClickHomeHandler={(e) => {
-                      e.preventDefault();
-                      setActiveScreen("login");
-                      setIsSignatureProcessing(false);
+                </>
+              )}
+              {activeScreen === "paperWallet" && (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
                     }}
-                  />
-                </div>
-              </>
-            )}
+                  >
+                    <div>
+                      <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                        <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                          <strong>Paper Wallet</strong>
+                        </h5>
+                      </div>
+                      <div className={"paperWalletStyles"}>
+                        <PaperWalletLogin />
+                      </div>
+                    </div>
+                    <Footer
+                      onClickHomeHandler={(e) => {
+                        e.preventDefault();
+                        setActiveScreen("login");
+                        setIsSignatureProcessing(false);
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+              {activeScreen === "orderTable" && (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                    }}
+                  >
+                    <div>
+                      <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                        <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                          <strong>Transaction History</strong>
+                        </h5>
+                      </div>
+                      <div className={"justFlexAndDirect"}>
+                        <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
+                          <OrdersTable
+                            data={orders}
+                            column={null}
+                            direction={null}
+                            assets={assets}
+                          />
+                        </div>
+                        <div className={"bottomAdaptBlock margin-class newBottomAdaptBlock"}>
+                          <RightSideHelpMenuSecondType
+                            onClickExchangeUSDTHandler={(e) => {
+                              e.preventDefault();
+                              setTradeAsset("USDT");
+                              setActiveScreen("exchange");
+                            }}
+                            onClickExchangeEOSHandler={(e) => {
+                              e.preventDefault();
+                              setTradeAsset("EOS");
+                              setActiveScreen("exchange");
+                            }}
+                            fromHistory={true}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <Footer
+                      onClickHomeHandler={(e) => {
+                        e.preventDefault();
+                        setActiveScreen("login");
+                        setIsSignatureProcessing(false);
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+              {activeScreen === "openOrder" && (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                    }}
+                  >
+                    <div>
+                      <div className="orderOrderMainFlex" style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                        <div>
+                          <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                            <strong>Open Order</strong>
+                          </h5>
+                        </div>
+                        <div>
+                          <CustomizeColumns />
+                        </div>
+                      </div>
+                      <div className="justFlexAndDirect justFlexAndDirectMobile">
+                        <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
+                          <OpenOrder
+                            data={orders}
+                            column={null}
+                            direction={null}
+                            assets={assets}
+                            portfolio={portfolio}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <Footer
+                      onClickHomeHandler={(e) => {
+                        e.preventDefault();
+                        setActiveScreen("login");
+                        setIsSignatureProcessing(false);
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      {tokenModalOpen && <Modal
-        size="mini"
-        open={true}
-        onClose={() => {
-          // setModalOpened(false);
-        }}
-        id={"modalExch"}
-      >
-        <Modal.Header>Alert</Modal.Header>
-        <Modal.Content style={{ height: "55%" }}>
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <h3 style={{ textAlign: "center" }}>
-              {errorMsgState}. Please Login
-            </h3>
-          </div>
-        </Modal.Content>
-        <Modal.Actions>
-          <Button
-            style={{ backgroundColor: "#fc0", color: "white" }}
-            onClick={() => {
-              setTokenModalOpen(false);
-              setIsSignatureProcessing(false);
-              dispatch(logoutRequest())
-            }}
-          >
-            OK
-          </Button>
-        </Modal.Actions>
-      </Modal>}
-      <Modal
-        size="mini"
-        className="claim_wallet_modal"
-        onClose={() => {
-          dispatch(checkTransferableModelAction(false));
-          dispatch(checkAccountSignatureReset());
-        }}
-        open={checkTransferableModelState}
-        id={"modalExch"}
-      >
+        {tokenModalOpen && <Modal
+          size="mini"
+          open={true}
+          onClose={() => {
+            // setModalOpened(false);
+          }}
+          id={"modalExch"}
+        >
+          <Modal.Header>Alert</Modal.Header>
+          <Modal.Content style={{ height: "55%" }}>
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h3 style={{ textAlign: "center" }}>
+                {errorMsgState}. Please Login
+              </h3>
+            </div>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button
+              style={{ backgroundColor: "#fc0", color: "white" }}
+              onClick={() => {
+                setTokenModalOpen(false);
+                setIsSignatureProcessing(false);
+                dispatch(logoutRequest())
+              }}
+            >
+              OK
+            </Button>
+          </Modal.Actions>
+        </Modal>}
+        <Modal
+          size="mini"
+          className="claim_wallet_modal"
+          onClose={() => {
+            dispatch(checkTransferableModelAction(false));
+            dispatch(checkAccountSignatureReset());
+          }}
+          open={checkTransferableModelState}
+          id={"modalExch"}
+        >
 
-        <Modal.Content >
-          <div
-            className="claim_wallet_btn_div"
+          <Modal.Content >
+            <div
+              className="claim_wallet_btn_div"
 
-          >
-            <h3 className="claim_model_content">
-              Hello {accountName}<br />
-              To Claim your previous wallet META1, click on Button
-            </h3>
-          </div>
-        </Modal.Content>
-        <Modal.Actions className="claim_modal-action">
-          <Button
-            className="claim_wallet_btn"
-            onClick={() => {
-              dispatch(checkTransferableModelAction(false));
-              dispatch(checkAccountSignatureReset());
-            }}
-          >
-            Claim Wallet</Button>
-        </Modal.Actions>
-      </Modal>
-      <Modal
-        size="mini"
-        className="claim_wallet_modal"
-        onClose={() => {
-          localStorage.removeItem('isMigrationUser');
-          localStorage.removeItem('readyToMigrate');
-          setActiveScreen('login');
-          setIsFromMigration(false);
-        }}
-        open={isFromMigration}
-        id={"modalExch"}
-      >
+            >
+              <h3 className="claim_model_content">
+                Hello {accountName}<br />
+                To Claim your previous wallet META1, click on Button
+              </h3>
+            </div>
+          </Modal.Content>
+          <Modal.Actions className="claim_modal-action">
+            <Button
+              className="claim_wallet_btn"
+              onClick={() => {
+                dispatch(checkTransferableModelAction(false));
+                dispatch(checkAccountSignatureReset());
+              }}
+            >
+              Claim Wallet</Button>
+          </Modal.Actions>
+        </Modal>
+        <Modal
+          size="mini"
+          className="claim_wallet_modal"
+          onClose={() => {
+            localStorage.removeItem('isMigrationUser');
+            localStorage.removeItem('readyToMigrate');
+            setActiveScreen('login');
+            setIsFromMigration(false);
+          }}
+          open={isFromMigration}
+          id={"modalExch"}
+        >
 
-        <Modal.Content >
-          <div
-            className="claim_wallet_btn_div"
+          <Modal.Content >
+            <div
+              className="claim_wallet_btn_div"
 
-          >
-            <h3 className="claim_model_content">
-              Hello {accountName}<br />
-              To Complete Migration of Your Funds Click Below
-            </h3>
-          </div>
-        </Modal.Content>
-        <Modal.Actions className="claim_modal-action">
-          <Button
-            className="claim_wallet_btn"
-            onClick={() => {
-              localStorage.removeItem('isMigrationUser');
-              localStorage.removeItem('readyToMigrate');
-              setActiveScreen('login');
-              setIsFromMigration(false);
-            }}
-          >
-            Go There</Button>
-        </Modal.Actions>
-      </Modal>
+            >
+              <h3 className="claim_model_content">
+                Hello {accountName}<br />
+                To Complete Migration of Your Funds Click Below
+              </h3>
+            </div>
+          </Modal.Content>
+          <Modal.Actions className="claim_modal-action">
+            <Button
+              className="claim_wallet_btn"
+              onClick={() => {
+                localStorage.removeItem('isMigrationUser');
+                localStorage.removeItem('readyToMigrate');
+                setActiveScreen('login');
+                setIsFromMigration(false);
+              }}
+            >
+              Go There</Button>
+          </Modal.Actions>
+        </Modal>
 
-      <Modal
-        size="mini"
-        className="claim_wallet_modal"
-        onClose={() => {
-          setFetchAssetModalOpen(false);
-        }}
-        open={fetchAssetModalOpen}
-        id={"modalExch"}
-      >
+        <Modal
+          size="mini"
+          className="claim_wallet_modal"
+          onClose={() => {
+            setFetchAssetModalOpen(false);
+          }}
+          open={fetchAssetModalOpen}
+          id={"modalExch"}
+        >
 
-        <Modal.Content >
-          <div
-            className="claim_wallet_btn_div"
+          <Modal.Content >
+            <div
+              className="claim_wallet_btn_div"
 
-          >
-            <h3 className="claim_model_content">
-              Hello {accountName}<br />
-              {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
-            </h3>
-          </div>
-        </Modal.Content>
-        <Modal.Actions className="claim_modal-action">
-          <Button
-            className="claim_wallet_btn"
-            onClick={() => {
-              setFetchAssetModalOpen(false);
-            }}
-          >
-            OK</Button>
-        </Modal.Actions>
-      </Modal>
+            >
+              <h3 className="claim_model_content">
+                Hello {accountName}<br />
+                {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
+              </h3>
+            </div>
+          </Modal.Content>
+          <Modal.Actions className="claim_modal-action">
+            <Button
+              className="claim_wallet_btn"
+              onClick={() => {
+                setFetchAssetModalOpen(false);
+              }}
+            >
+              OK</Button>
+          </Modal.Actions>
+        </Modal>
+      </>
+      }
+      {activeScreen === 'qr-bio' && <QRBioVerification />}
     </>
   );
 }

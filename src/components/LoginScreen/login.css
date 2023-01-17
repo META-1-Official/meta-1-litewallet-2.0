@@ -144,6 +144,10 @@ video {
   z-index: 2;
   opacity: 0.8;
 }
+.photo {
+
+}
+
 .btn-grp {
   display: flex;
   align-items: center;
@@ -211,6 +215,25 @@ video {
 
 .qr-modal {
   height: 500px;
+  width: 300px;
+  left: calc(50% - 150px);
+  top: calc(50% - 250px);
+}
+
+.qrmodal-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qrmodal-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.qrmodal-scan-info {
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 @media screen and (max-width: 678px) {

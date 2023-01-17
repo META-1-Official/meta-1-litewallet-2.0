@@ -1,0 +1,28 @@
+.qr-code-mob-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.header-tag {
+  position: absolute;
+  color: #ffcc00;
+  z-index: 5;
+  width: 100%;
+  text-align: center;
+  top: 20px;
+}
+
+.qr-code-mob-btn-div {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  bottom: 20px;
+  z-index: 5;
+  width: 100%;
+}
+
+.qr-webcam {
+  width: 100%;
+  position: absolute;
+}

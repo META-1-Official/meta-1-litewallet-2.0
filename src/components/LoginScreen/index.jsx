@@ -160,8 +160,6 @@ export default function LoginScreen(props) {
                 if (login.length !== 0) {
                   setLoader(true);
                   renderTorusLogin();
-
-                  // setStep('faceki');
                 }
               } else {
                 setErrorAttr(prev => {
@@ -187,8 +185,6 @@ export default function LoginScreen(props) {
         accountName={login}
         email={email}
         privKey={privKey}
-        // email="antman-kok357@yopmail.com"
-        // privKey="priv1234567890"
         setStep={setStep}
       />
     )
