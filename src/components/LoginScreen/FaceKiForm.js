@@ -21,19 +21,10 @@ export default function FaceKiForm(props) {
     height: ''
   });
   const childDivRef = useRef();
-  useEffect(
-    async () => {
-      let features = {
-        audio: false,
-        video: true
-      };
-      let display = await navigator.mediaDevices.getUserMedia(features);
-      setDevice(display?.getVideoTracks()[0]?.getSettings());
-      isMobileHandler();
-      window.addEventListener('resize', isMobileHandler);
-    },
-    []
-  );
+
+  useEffect(() => {
+    loadVideo(true);
+  }, []);
 
   useEffect(() => {
     if (childDivRef?.current?.clientWidth && childDivRef?.current?.clientHeight) {
@@ -44,9 +35,40 @@ export default function FaceKiForm(props) {
     }
   }, [childDivRef.current]);
 
-  useEffect(() => {
-    if (faceKISuccess === true) props.onSubmit();
+  useEffect(async () => {
+    if (faceKISuccess === true) {
+      loadVideo(false).then(() => {
+        props.onSubmit();
+      });
+    }
   }, [faceKISuccess])
+
+  const loadVideo = async (flag) => {
+    const videoTag = document.querySelector('video');
+    const features = {audio: false, video: true};
+
+    if (flag) {
+      return navigator.mediaDevices
+        .getUserMedia(features)
+        .then((display) => {
+          setDevice(display?.getVideoTracks()[0]?.getSettings());
+          isMobileHandler();
+          window.addEventListener('resize', isMobileHandler);
+        })
+        .finally(() => {
+          return true;
+        });
+    } else {
+      try {
+        for (const track of videoTag?.srcObject.getTracks()) track.stop();
+        videoTag?.srcObject = null;
+      } catch (err) {
+        console.log('[loadVideo]', err);
+      }
+
+      return Promise.resolve();
+    }
+  }
 
   const isMobileHandler = () => {
     const { innerWidth: width } = window;
