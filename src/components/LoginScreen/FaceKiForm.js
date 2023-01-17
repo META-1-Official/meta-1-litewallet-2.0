@@ -60,8 +60,8 @@ export default function FaceKiForm(props) {
         });
     } else {
       try {
-        for (const track of videoTag?.srcObject.getTracks()) track.stop();
-        videoTag?.srcObject = null;
+        for (const track of videoTag.srcObject.getTracks()) track.stop();
+        videoTag.srcObject = null;
       } catch (err) {
         console.log('[loadVideo]', err);
       }
