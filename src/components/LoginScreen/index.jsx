@@ -50,7 +50,7 @@ export default function LoginScreen(props) {
   const signatureErrorState = useSelector(signatureErrorSelector);
   const isSignatureValidState = useSelector(isSignatureValidSelector);
   const loginErrorMsgState = useSelector(loginErrorMsgSelector);
-  const dispatch = useDispatch();  
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (signatureErrorState) {
