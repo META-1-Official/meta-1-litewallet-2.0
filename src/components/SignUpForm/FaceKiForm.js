@@ -174,8 +174,8 @@ export default function FaceKiForm(props) {
 
   const takePhoto = async () => {
     setTakingPhoto(true);
-    const imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
-    // const imageSrc = webcamRef.current.getScreenshot({ width: 1280, height: 720 });
+    // const imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
+    const imageSrc = webcamRef.current.getScreenshot({ width: 1280, height: 720 });
 
     if (!imageSrc) {
       alert('Check your camera.');
