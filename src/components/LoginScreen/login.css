@@ -269,5 +269,8 @@ video {
   }
   .span-class {
     line-height: 1.4285em !important;
+    text-shadow: 1px 1px #000 !important;
+    font-weight: 700 !important;
+    color: #fff !important;
   }
 }

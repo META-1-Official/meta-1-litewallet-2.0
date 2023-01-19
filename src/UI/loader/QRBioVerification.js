@@ -77,7 +77,7 @@ const QRBioVerification = (props) => {
             const response_update = await setQRPollVerified(qr_hash, file);
 
             if (!response_update || response_update.error === true) {
-                alert('Try again.');
+                alert('Try again from QR code scanning.');
                 setVerifying(false);
                 return;
             }

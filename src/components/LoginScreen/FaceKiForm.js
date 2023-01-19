@@ -213,7 +213,7 @@ export default function FaceKiForm(props) {
                   <div className="btn-grp" style={{ "marginTop": '5px' }}>
                     <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button>
                     {photo && <button className='btn-1' onClick={videoVerify} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>}
-                    {!photo && <button className='btn-1' style={{ "marginLeft": '20px' }} onClick={() => setQrOpen(true)}>Take Photo via Mobile</button>}
+                    {/* {!photo && <button className='btn-1' style={{ "marginLeft": '20px' }} onClick={() => setQrOpen(true)}>Take Photo via Mobile</button>} */}
                   </div>
                 </div>
               </div>
