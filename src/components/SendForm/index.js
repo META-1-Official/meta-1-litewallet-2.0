@@ -36,10 +36,9 @@ const SendForm = React.memo((props) => {
   const accountState = useSelector(accountsSelector);
   const dispatch = useDispatch();
   const feeAsset = portfolio.find((asset) => asset.name === "META1");
-  console.log("portfolio",portfolio,portfolio.find((cur) => cur.name === "asset"))
-  console.log("asset",asset,portfolio.find((cur) => cur.name === asset))
+
   const amountHold =
-    portfolio.find((cur) => cur.name === asset) === undefined || portfolio.find((cur) => cur.name === asset) === null || portfolio.find((cur) => cur.name === asset).qty == undefined
+    portfolio.find((cur) => cur.name === asset) === undefined || portfolio.find((cur) => cur.name === asset) === null || portfolio.find((cur) => cur.name === asset).qty === undefined
       ? 0
       : portfolio.find((cur) => cur.name === asset).qty;
   const pre = assets.find((el) => el.symbol === asset).precision;
