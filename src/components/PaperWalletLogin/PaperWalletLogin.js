@@ -153,6 +153,12 @@ export default function PaperWalletLogin({ accountName }) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.code === 'Backspace') {
+                setPassword('');
+                e.preventDefault();
+              }
+            }}
           />
           {check !== false && <p style={{ color: "red" }}>Invalid Passkey</p>}
         </FormField>
