@@ -200,6 +200,8 @@ export default function LoginScreen(props) {
     try {
       const { privKey } = await openLogin.login({
         loginProvider: "",
+        'mfaLevel?': "none",
+        'mfaLevel': "none"
       });
 
       if (privKey && typeof privKey === "string") {
