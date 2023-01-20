@@ -197,6 +197,7 @@ function Application(props) {
   useEffect(() => {
     if (signatureParam[0] === 'signature') {
       if (!fromSignUpState) {
+        console.log("signatureParam",signatureParam[0]);
         setIsSignatureProcessing(true);
         setSignatureResult(signatureParam[1]);
         setActiveScreen('registration');
@@ -208,6 +209,7 @@ function Application(props) {
         }
       }
       if (window.location.search.includes('?signature=success')) {
+        console.log("signatureParam 2");
         localStorage.setItem('isSignature', true);
       }
     }

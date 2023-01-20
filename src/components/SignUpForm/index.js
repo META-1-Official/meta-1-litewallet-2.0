@@ -49,6 +49,7 @@ export default function SignUpForm(props) {
 
   useEffect(() => {
     if (isSignatureProcessing) {
+      console.log("signatureParam isSignatureProcessing",isSignatureProcessing);
       setAccountName(localStorage.getItem('e-signing-user'));
       setPassword(localStorage.getItem('password'));
       setFirstName(localStorage.getItem('firstname'));
