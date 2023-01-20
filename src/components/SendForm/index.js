@@ -38,9 +38,9 @@ const SendForm = React.memo((props) => {
   const feeAsset = portfolio.find((asset) => asset.name === "META1");
 
   const amountHold =
-    portfolio.find((cur) => cur.name === asset) === undefined || portfolio.find((cur) => cur.name === asset) === null || portfolio.find((cur) => cur.name === asset).realQty === undefined
+    portfolio.find((cur) => cur.name === asset) === undefined || portfolio.find((cur) => cur.name === asset) === null || portfolio.find((cur) => cur.name === asset).qty === undefined
       ? 0
-      : portfolio.find((cur) => cur.name === asset).realQty;
+      : portfolio.find((cur) => cur.name === asset).qty;
   const pre = assets.find((el) => el.symbol === asset).precision;
   const [chosenCrypt, setChosenCrypt] = useState("");
   const [receiver, setReceiver] = useState("");
@@ -105,7 +105,7 @@ const SendForm = React.memo((props) => {
     if (result.error) {
       if (result.error === "Invalid credentials") {
         setError(result.error);
-      } else if ((asset === "META1" && feeAsset.realQty === amount) || !feeAsset) {
+      } else if ((asset === "META1" && feeAsset.qty === amount) || !feeAsset) {
         setError("You don't have enough cryptocurrency to pay FEE");
       } else {
         setError("Invalid Receiver");
@@ -129,7 +129,7 @@ const SendForm = React.memo((props) => {
   }, [assets]);
 
   useEffect(() => {
-    if (parseFloat(feeAsset?.realQty) < FEE && feeAsset) {
+    if (parseFloat(feeAsset?.qty) < FEE && feeAsset) {
       setError("Not enough FEE");
     }
   }, [feeAsset]);
@@ -195,7 +195,7 @@ const SendForm = React.memo((props) => {
     portfolio.map((el) =>
       el.name === value.value
         ? setAssetData({
-          balance: el.realQty,
+          balance: el.qty,
           image: el.image,
           label: el.name,
           value: el.name,
@@ -216,7 +216,7 @@ const SendForm = React.memo((props) => {
       image: asset.image,
       value: asset.name,
       label: asset.name,
-      balance: asset.realQty || 0,
+      balance: asset.qty || 0,
     };
   });
 
@@ -301,7 +301,7 @@ const SendForm = React.memo((props) => {
     portfolio.map((el) =>
       el.name === assetCh
         ? setAssetData({
-          balance: el.realQty,
+          balance: el.qty,
           image: el.image,
           label: el.name,
           value: el.name,
@@ -635,12 +635,12 @@ const SendForm = React.memo((props) => {
                                 "reddit-input pass"
                               ).value;
                             if (receiver !== "" && password !== "" && amount) {
-                              if (parseFloat(feeAsset?.realQty) < FEE) {
+                              if (parseFloat(feeAsset?.qty) < FEE) {
                                 setError("Not enough FEE");
                               } else {
                                 if (
                                   assetCh === "META1" &&
-                                  Number(amount) === Number(feeAsset.realQty)
+                                  Number(amount) === Number(feeAsset.qty)
                                 ) {
                                   setFeeAlert(true);
                                 } else {

@@ -65,8 +65,7 @@ export default class Portfolio {
             return {
                 image: el.asset.image,
                 name: el.asset.symbol,
-                qty: qty.toFixed(8).replace(/\.?0+$/, ''),
-                realQty: `${qty}`,
+                qty: `${qty}`,
                 present: el.amount !== 0
             }
         })
