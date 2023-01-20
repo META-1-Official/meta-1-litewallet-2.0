@@ -110,29 +110,51 @@ export default function FaceKiForm(props) {
       }
     };
 
-    var file = await dataURL2File(photo, 'a.jpg');
-    const response_verify = await verify(file);
+    var imageSrc = null;
 
-    if (response_verify.status === 'Verify OK') {
-      const nameArry = response_verify.name.split(',');
+    if (!photo) {
+      // imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
+      imageSrc = webcamRef.current.getScreenshot({ width: 1280, height: 720 });
 
-      if (nameArry.includes(email)) {
-        setFaceKISuccess(true);
+      if (!imageSrc) {
+        alert('Check your camera.');
         setVerifying(false);
-      } else {
-        alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
+        return;
+      };
+    } else {
+      imageSrc = photo;
+    }
+
+    var file = await dataURL2File(imageSrc, 'a.jpg');
+    const response = file && await liveLinessCheck(file);
+
+    if (response.data.liveness !== 'Genuine') {
+      setVerifying(false);
+      alert('Try again by changing position or background.');
+      return;
+    } else {
+      const response_verify = await verify(file);
+      if (response_verify.status === 'Verify OK') {
+        const nameArry = response_verify.name.split(',');
+  
+        if (nameArry.includes(email)) {
+          setFaceKISuccess(true);
+          setVerifying(false);
+        } else {
+          alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
+          setVerifying(false);
+        }
+      } else if (response_verify.status === 'Verify Failed') {
+        alert('We can not verify you because you never enrolled with your face yet.');
+        setVerifying(false);
+      } else if (response_verify.status === 'No Users') {
+        alert('You never enrolled with your face yet. Please enroll first via signup process.');
         setVerifying(false);
       }
-    } else if (response_verify.status === 'Verify Failed') {
-      alert('We can not verify you because you never enrolled with your face yet.');
-      setVerifying(false);
-    } else if (response_verify.status === 'No Users') {
-      alert('You never enrolled with your face yet. Please enroll first via signup process.');
-      setVerifying(false);
-    }
-    else {
-      alert('Please try again.');
-      setVerifying(false);
+      else {
+        alert('Please try again.');
+        setVerifying(false);
+      }
     }
   }
 
@@ -198,21 +220,21 @@ export default function FaceKiForm(props) {
                   height={isMobile ? mobileScreenSize.height - 50 : device?.aspectRatio ? 550 / device?.aspectRatio : 385}
                   mirrored
                 />}
-                {photo && <img
+                {/* {photo && <img
                   src={photo}
                   className="photo"
                   style={{
                     height: isMobile ? mobileScreenSize.height - 50 : device?.aspectRatio ? 550 / device?.aspectRatio : 385
                   }}
-                />}
+                />} */}
                 <div className='btn-div'>
                   <p className={`span-class color-black margin-bottom-zero ${isMobile ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>
                   <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
                     Min camera resolution must be 720p
                   </span>
                   <div className="btn-grp" style={{ "marginTop": '5px' }}>
-                    <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button>
-                    {photo && <button className='btn-1' onClick={videoVerify} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>}
+                    {/* <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button> */}
+                    <button className='btn-1' onClick={videoVerify} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>
                     {/* {!photo && <button className='btn-1' style={{ "marginLeft": '20px' }} onClick={() => setQrOpen(true)}>Take Photo via Mobile</button>} */}
                   </div>
                 </div>
