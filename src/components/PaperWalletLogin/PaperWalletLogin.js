@@ -18,6 +18,7 @@ export default function PaperWalletLogin({ accountName }) {
   const [readyToCreate, setReadyToCreate] = useState(false);
   const [accountChecked, setAccountChecked] = useState(true);
   const [check, setCheck] = useState(false);
+  const [isLongBackspace, setIsLongBackspace] = useState(false);
   const debouncedAccount = useDebounce(account, 500);
   const portfolioReceiverState =  useSelector(portfolioReceiverSelector);
   const acc = ChainStore.getAccount(account, false);
@@ -145,7 +146,7 @@ export default function PaperWalletLogin({ accountName }) {
             placeholder={"Account Name"}
           />
         </FormField>
-        <FormField>
+        <FormField className="paper-wallet-password">
           <label basic className="paper_wallet_login_label">
           Passkey
           </label>
@@ -153,6 +154,15 @@ export default function PaperWalletLogin({ accountName }) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.code === 'Backspace') {
+                if (isLongBackspace) {
+                  setPassword('');
+                }
+                setIsLongBackspace(true);
+              }
+            }}
+            onKeyUp={() => setIsLongBackspace(false)}
           />
           {check !== false && <p style={{ color: "red" }}>Invalid Passkey</p>}
         </FormField>

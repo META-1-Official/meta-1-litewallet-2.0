@@ -1,3 +1,4 @@
-.paper_wallet_login_label{
-
+.paper-wallet-password input[type="password"] {
+    height: 43px !important;
+    font-size: 10px !important;
 }
