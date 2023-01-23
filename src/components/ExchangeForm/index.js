@@ -717,7 +717,11 @@ export default function ExchangeForm(props) {
                       className="input-price"
                       disabled={tradeType === 'market'? true: false}
                       value={limitPrice}
-                      onChange={(e) => setLimitPrice(e.target.value)}
+                      onChange={(e) => {
+                        if (/^\d*\.?\d*$/.test(e.target.value)) {
+                          setLimitPrice(e.target.value);
+                        }
+                      }}
                     />
                   </Grid>
                 </div>
