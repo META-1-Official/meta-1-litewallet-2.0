@@ -63,7 +63,6 @@ export default function ExchangeForm(props) {
   const [limitPrice, setLimitPrice] = useState(0);
   const [isLimitPriceSet, setIsLimitPriceSet] = useState(false);
   const [amountPercent, setAmountPercent] = useState(null);
-  const [balanceAmount, setBalanceAmount] = useState(0);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -411,7 +410,7 @@ export default function ExchangeForm(props) {
       setAmountPercent(val);
       const value = (Number(selectedFrom.balance)*(val/100));
       setSelectedFromAmount(value);
-      inputChangeHandler(selectedFrom.label, value.toFixed(8), true);
+      inputChangeHandler(selectedFrom.label, value, true);
     }
   }
 
@@ -584,7 +583,6 @@ export default function ExchangeForm(props) {
                         <ExchangeSelect
                           onChange={(val) => {
                             setAmountPercent(0);
-                            setBalanceAmount(val?.balance);
                             setSelectedFrom(val);
                             changeAssetHandler(val.value);
                             setSelectedFromAmount(NaN);
