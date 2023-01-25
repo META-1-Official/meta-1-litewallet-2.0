@@ -584,6 +584,7 @@ export default function ExchangeForm(props) {
                       <Grid.Column>
                         <ExchangeSelect
                           onChange={(val) => {
+                            setIsLimitPriceSet(prev => !prev);
                             setAmountPercent(0);
                             setSelectedFrom(val);
                             changeAssetHandler(val.value);
@@ -770,6 +771,7 @@ export default function ExchangeForm(props) {
                       <Grid.Column>
                         <ExchangeSelect
                           onChange={(val) => {
+                            setIsLimitPriceSet(prev => !prev);
                             setSelectedTo(val);
                             setSelectedFromAmount(NaN);
                             setSelectedToAmount(NaN);
