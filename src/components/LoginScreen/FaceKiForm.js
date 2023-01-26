@@ -184,7 +184,7 @@ export default function FaceKiForm(props) {
 
     if (response.data.liveness === 'Genuine') {
       setPhoto(imageSrc);
-      setVerifying(false);
+      // setVerifying(false);
     }
 
     setCounter(counter + 1);

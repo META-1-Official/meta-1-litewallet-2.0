@@ -13,7 +13,6 @@ import "./SignUpForm.css";
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
-  const [takingPhoto, setTakingPhoto] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [device, setDevice] = React.useState({});
   const [qrOpen, setQrOpen] = useState(false);
@@ -21,7 +20,6 @@ export default function FaceKiForm(props) {
   const [counter, setCounter] = useState(0);
   const [error, setError] = useState("");
   const [photo, setPhoto] = useState(null);
-  const [photos, setPhotos] = useState([]);
   const [mobileScreenSize, setMobileScreenSize] = useState({
     width: '',
     height: ''
@@ -53,17 +51,16 @@ export default function FaceKiForm(props) {
 
   useEffect(() => {
     if (counter === 10) {
-      console.log('photos', photos);
-      // if (!photo) {
-      //   setError("Try again by changing position or background.");
-      // }
+      if (!photo) {
+        setError("Try again by changing position or background.");
+      }
       setCounter(0);
     }
   }, [counter])
 
   useEffect(async () => {
     if (photo) {
-      // await videoEnroll();
+      await videoEnroll();
     }
   }, [photo]);
 
@@ -210,22 +207,17 @@ export default function FaceKiForm(props) {
     };
 
     var file = await dataURL2File(imageSrc, 'a.jpg');
-    // const response = file && await livenessCheck(file);
+    const response = file && await livenessCheck(file);
 
-    // if (!response || response.error === true) {
-    //   setError('Biometric server is busy. Please try again after 2 or 3 seconds.');
-    //   return;
-    // }
+    if (!response || response.error === true) {
+      setError('Biometric server is busy. Please try again after 2 or 3 seconds.');
+      return;
+    }
 
-    // if (response.data.liveness === 'Genuine') {
-    //   setPhoto(imageSrc);
-    //   setVerifying(false);
-    // }
-
-
-    var tmpArry = photos;
-    tmpArry.push(imageSrc);
-    setPhotos(tmpArry);
+    if (response.data.liveness === 'Genuine') {
+      setPhoto(imageSrc);
+      // setVerifying(false);
+    }
 
     setCounter(counter + 1);
   }
