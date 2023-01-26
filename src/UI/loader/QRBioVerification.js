@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import Webcam from 'react-webcam';
-import { liveLinessCheck, setQRPollVerified, findQRPoll } from "../../API/API";
+import { livenessCheck, setQRPollVerified, findQRPoll } from "../../API/API";
 import { isMobile } from "react-device-detect";
 import './qrcode.css';
 
@@ -62,7 +62,7 @@ const QRBioVerification = (props) => {
         };
 
         var file = dataURLtoFile(imageSrc, 'a.jpg');
-        const response = await liveLinessCheck(file);
+        const response = await livenessCheck(file);
 
         if (!response || response.error === true) {
             alert('Something went wrong from Biometric server.');

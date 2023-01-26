@@ -262,7 +262,7 @@ export async function getESigToken(email) {
 };
 
 // FACEKI
-export async function liveLinessCheck(image) {
+export async function livenessCheck(image) {
   try {
     let form_data = new FormData();
     form_data.append('image', image);
