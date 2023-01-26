@@ -21,6 +21,7 @@ export default function FaceKiForm(props) {
   const [counter, setCounter] = useState(0);
   const [error, setError] = useState("");
   const [photo, setPhoto] = useState(null);
+  const [photos, setPhotos] = useState([]);
   const [mobileScreenSize, setMobileScreenSize] = useState({
     width: '',
     height: ''
@@ -52,16 +53,17 @@ export default function FaceKiForm(props) {
 
   useEffect(() => {
     if (counter === 10) {
-      if (!photo) {
-        setError("Try again by changing position or background.");
-      }
+      console.log('photos', photos);
+      // if (!photo) {
+      //   setError("Try again by changing position or background.");
+      // }
       setCounter(0);
     }
   }, [counter])
 
   useEffect(async () => {
     if (photo) {
-      await videoEnroll();
+      // await videoEnroll();
     }
   }, [photo]);
 
@@ -138,7 +140,7 @@ export default function FaceKiForm(props) {
       const nameArry = response_verify.name.split(',');
 
       if (nameArry.includes(email)) {
-        setError('You already enrolled and verified successfully.');
+        alert('You already enrolled and verified successfully.');
         setFaceKISuccess(true);
       } else {
         const response_user = await getUserKycProfile(email);
@@ -160,7 +162,7 @@ export default function FaceKiForm(props) {
                 if (!response_remove) {
                   setError('Something went wrong.');
                 } else {
-                  setError('Successfully enrolled.');
+                  alert('Successfully enrolled.');
                   setFaceKISuccess(true);
                 }
               }
@@ -184,7 +186,7 @@ export default function FaceKiForm(props) {
         if (response_enroll.status === 'Enroll OK') {
           const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
           if (add_response.result) {
-            setError('Successfully enrolled.');
+            alert('Successfully enrolled.');
             setFaceKISuccess(true);
           }
           else {
@@ -208,17 +210,22 @@ export default function FaceKiForm(props) {
     };
 
     var file = await dataURL2File(imageSrc, 'a.jpg');
-    const response = file && await livenessCheck(file);
+    // const response = file && await livenessCheck(file);
 
-    if (!response || response.error === true) {
-      setError('Biometric server is busy. Please try again after 2 or 3 seconds.');
-      return;
-    }
+    // if (!response || response.error === true) {
+    //   setError('Biometric server is busy. Please try again after 2 or 3 seconds.');
+    //   return;
+    // }
 
-    if (response.data.liveness === 'Genuine') {
-      setPhoto(imageSrc);
-      setVerifying(false);
-    }
+    // if (response.data.liveness === 'Genuine') {
+    //   setPhoto(imageSrc);
+    //   setVerifying(false);
+    // }
+
+
+    var tmpArry = photos;
+    tmpArry.push(imageSrc);
+    setPhotos(tmpArry);
 
     setCounter(counter + 1);
   }
