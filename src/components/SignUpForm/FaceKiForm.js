@@ -138,9 +138,8 @@ export default function FaceKiForm(props) {
       const nameArry = response_verify.name.split(',');
 
       if (nameArry.includes(email)) {
-        alert('You already enrolled and verified successfully.');
+        setError('You already enrolled and verified successfully.');
         setFaceKISuccess(true);
-        setVerifying(false);
       } else {
         const response_user = await getUserKycProfile(email);
         if (response_user.error === true) {
@@ -161,8 +160,7 @@ export default function FaceKiForm(props) {
                 if (!response_remove) {
                   setError('Something went wrong.');
                 } else {
-                  alert('Successfully enrolled.');
-                  setVerifying(false);
+                  setError('Successfully enrolled.');
                   setFaceKISuccess(true);
                 }
               }
@@ -186,9 +184,8 @@ export default function FaceKiForm(props) {
         if (response_enroll.status === 'Enroll OK') {
           const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
           if (add_response.result) {
-            alert('Successfully enrolled.');
+            setError('Successfully enrolled.');
             setFaceKISuccess(true);
-            setVerifying(false);
           }
           else {
             await remove(email);
