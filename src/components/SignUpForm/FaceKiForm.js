@@ -13,7 +13,6 @@ import "./SignUpForm.css";
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
-  const [takingPhoto, setTakingPhoto] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [device, setDevice] = React.useState({});
   const [qrOpen, setQrOpen] = useState(false);
@@ -138,7 +137,7 @@ export default function FaceKiForm(props) {
       const nameArry = response_verify.name.split(',');
 
       if (nameArry.includes(email)) {
-        setError('You already enrolled and verified successfully.');
+        alert('You already enrolled and verified successfully.');
         setFaceKISuccess(true);
       } else {
         const response_user = await getUserKycProfile(email);
@@ -160,7 +159,7 @@ export default function FaceKiForm(props) {
                 if (!response_remove) {
                   setError('Something went wrong.');
                 } else {
-                  setError('Successfully enrolled.');
+                  alert('Successfully enrolled.');
                   setFaceKISuccess(true);
                 }
               }
@@ -184,7 +183,7 @@ export default function FaceKiForm(props) {
         if (response_enroll.status === 'Enroll OK') {
           const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
           if (add_response.result) {
-            setError('Successfully enrolled.');
+            alert('Successfully enrolled.');
             setFaceKISuccess(true);
           }
           else {
@@ -217,7 +216,7 @@ export default function FaceKiForm(props) {
 
     if (response.data.liveness === 'Genuine') {
       setPhoto(imageSrc);
-      setVerifying(false);
+      // setVerifying(false);
     }
 
     setCounter(counter + 1);

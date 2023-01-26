@@ -59,7 +59,7 @@ export default function ExchangeForm(props) {
   const [feeAlert, setFeeAlert] = useState(false);
   const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
-  const [tradeType, setTradeType] = useState('market');
+  const [tradeType, setTradeType] = useState('limit');
   const [limitPrice, setLimitPrice] = useState(0);
   const [isLimitPriceSet, setIsLimitPriceSet] = useState(false);
   const [amountPercent, setAmountPercent] = useState(null);
@@ -569,7 +569,7 @@ export default function ExchangeForm(props) {
         <div className={"adaptForMainExchange"}>
           <div className={`${styles.mainBlock} marginBottomZero`}>
           <div>
-              <Button className={tradeType === 'market' ? 'custom-tab' : ''} onClick={() => setTradeType('market')}>Market</Button>
+              {/* <Button className={tradeType === 'market' ? 'custom-tab' : ''} onClick={() => setTradeType('market')}>Market</Button> */}
               <Button className={tradeType === 'limit' ? 'custom-tab' : ''} onClick={() => {
                 setTradeType('limit');
                 setIsLimitPriceSet(prev => !prev);

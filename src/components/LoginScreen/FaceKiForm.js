@@ -151,7 +151,7 @@ export default function FaceKiForm(props) {
 
       if (nameArry.includes(email)) {
         setFaceKISuccess(true);
-        setVerifying(false);
+        // setVerifying(false);
       } else {
         setError('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
       }
@@ -184,7 +184,7 @@ export default function FaceKiForm(props) {
 
     if (response.data.liveness === 'Genuine') {
       setPhoto(imageSrc);
-      setVerifying(false);
+      // setVerifying(false);
     }
 
     setCounter(counter + 1);
