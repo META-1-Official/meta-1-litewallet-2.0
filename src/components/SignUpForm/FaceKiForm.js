@@ -54,16 +54,48 @@ export default function FaceKiForm(props) {
   useEffect(() => {
     if (counter === 10) {
       console.log('photos', photos);
-      // if (!photo) {
-      //   setError("Try again by changing position or background.");
-      // }
-      setCounter(0);
+
+      const livenessCheckPromises = photos.map(async (photo) => {
+        const file = await dataURL2File(photo, 'a.jpg');
+        return livenessCheck(file);
+      });
+      Promise.all(livenessCheckPromises)
+        .then((responses) => {
+          let hasError = false;
+          let hasGenuine = false;
+          let genuineIndex = 0;
+
+          responses.map((response, index) => {
+            if (!response || response.error === true)
+              hasError = true;
+
+            if (response.data.liveness === 'Genuine') {
+              hasGenuine = true;
+              genuineIndex = index;
+            }
+          });
+
+          if (hasGenuine) {
+            setPhoto(photos[genuineIndex]);
+            setVerifying(false);
+            return;
+          }
+
+          if (!hasGenuine && hasError) {
+            setError('Biometric server is busy. Please try again after 2 or 3 seconds.');
+            setPhotos([]);
+            return;
+          }
+        })
+        .finally(() => {
+          setCounter(0);
+        });
     }
   }, [counter])
 
   useEffect(async () => {
     if (photo) {
-      // await videoEnroll();
+      await videoEnroll();
     }
   }, [photo]);
 
@@ -209,7 +241,7 @@ export default function FaceKiForm(props) {
       return;
     };
 
-    var file = await dataURL2File(imageSrc, 'a.jpg');
+    // var file = await dataURL2File(imageSrc, 'a.jpg');
     // const response = file && await livenessCheck(file);
 
     // if (!response || response.error === true) {
@@ -222,11 +254,7 @@ export default function FaceKiForm(props) {
     //   setVerifying(false);
     // }
 
-
-    var tmpArry = photos;
-    tmpArry.push(imageSrc);
-    setPhotos(tmpArry);
-
+    setPhotos([...photos, imageSrc]);
     setCounter(counter + 1);
   }
 

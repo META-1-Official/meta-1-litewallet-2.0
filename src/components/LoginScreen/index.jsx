@@ -199,7 +199,7 @@ export default function LoginScreen(props) {
 
     try {
       const { privKey } = await openLogin.login({
-        loginProvider: "",
+        loginProvider: "jwt, google",
         'mfaLevel?': "none",
         'mfaLevel': "none"
       });

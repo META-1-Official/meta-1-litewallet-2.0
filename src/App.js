@@ -157,7 +157,29 @@ function Application(props) {
   useEffect(() => {
     const initializeOpenlogin = async () => {
       try {
-        await openLogin.init();
+        console.log("@ - ", openLogin.init)
+        console.log("@ - ", openLogin.initModal)
+        await openLogin.init({
+        modalConfig: {
+          ["openlogin"]: {
+            label: 'openlogin',
+            loginMethods: {
+              google: {
+                name: 'google login',
+                showOnModal: true,
+                showOnDesktop: true
+              },
+              facebook: {
+                name: 'facebook login',
+                showOnModal: true,
+                showOnDesktop: true
+              }
+            },
+            // setting it to false will hide all social login methods from modal.
+            showOnModal: true
+          }
+        }
+      });
         if (openLogin.privKey) {
           console.log(openLogin);
         }
