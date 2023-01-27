@@ -34,7 +34,7 @@ export default function FaceKiForm(props) {
     if (verifying && !photo && error === "" && counter < 10) {
       await takePhoto();
     }
-  }, 2000);
+  }, 1500);
 
   useEffect(() => {
     if (error !== "") {

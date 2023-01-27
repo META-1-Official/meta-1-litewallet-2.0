@@ -30,11 +30,10 @@ export default function FaceKiForm(props) {
   }, []);
 
   useInterval(async () => {
-    console.log('@1 - useInterval')
     if (verifying && !photo && error === "" && counter < 10) {
       await takePhoto();
     }
-  }, 2000);
+  }, 1500);
 
   useEffect(() => {
     if (error !== "") {
@@ -46,12 +45,10 @@ export default function FaceKiForm(props) {
   }, [error]);
 
   useEffect(() => {
-    console.log('@2 - verifying', verifying)
     verifying && setError("") && setPhoto(null);
   }, [verifying]);
 
   useEffect(() => {
-    console.log('@3 - counter', counter, !!photo)
     if (counter === 10) {
       if (!photo) {
         setError("Try again by changing position or background.");
@@ -61,7 +58,6 @@ export default function FaceKiForm(props) {
   }, [counter])
 
   useEffect(async () => {
-    console.log('@4 - photo', !!photo)
     if (photo) {
       await videoVerify();
     }
@@ -77,7 +73,6 @@ export default function FaceKiForm(props) {
   }, [childDivRef.current]);
 
   useEffect(async () => {
-    console.log('@5 - facekisuccess')
     if (faceKISuccess === true) {
       loadVideo(false).then(() => {
         props.onSubmit();
