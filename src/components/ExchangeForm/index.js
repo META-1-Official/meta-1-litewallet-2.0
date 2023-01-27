@@ -24,6 +24,7 @@ import { checkPasswordObjSelector, traderSelector, userCurrencySelector } from "
 import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector } from "../../store/account/selector";
 import { saveBalanceRequest } from "../../store/meta1/actions";
 import { passKeyRequestService, passKeyResetService } from "../../store/account/actions";
+import { TextField } from "@mui/material";
 
 export default function ExchangeForm(props) {
   const {
@@ -177,12 +178,13 @@ export default function ExchangeForm(props) {
   }, [pair]);
 
   const calculateUsdPriceHandler = (e,lastPrice='') => {
-    if (e.target.value.length != 0) {
+    const value = e.target.value;
+    if (value.length != 0) {
       let priceAsset = priceForAsset
       if(lastPrice!=''){
         priceAsset=lastPrice
       }
-      let priceForOne = (Number(e.target.value) * priceAsset).toFixed(10);
+      let priceForOne = (Number(value) * priceAsset).toFixed(10);
       setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
     } else {
       setBlockPrice(NaN);
@@ -343,8 +345,9 @@ export default function ExchangeForm(props) {
   const getAssets = (except) => options.filter((el) => el.value !== except);
 
   const inputChangeValuesHandler =(e,currentInput,lastPrice)=>{
-    handleCalculateSelectedTo(e.target.value);
-    calculateUsdPriceHandler(e,lastPrice);
+    const val = e.target.value;
+    handleCalculateSelectedTo(val);
+    calculateUsdPriceHandler(e, lastPrice);
     setClickedInputs(true);
   }
 
@@ -355,18 +358,17 @@ export default function ExchangeForm(props) {
     });
     if (val === "USDT") {
       setPriceForAsset(1);
-      inputChangeValuesHandler(e,currentInput,'')
+      inputChangeValuesHandler(e,currentInput,'');
     } else {
       Meta1.ticker("USDT", val).then((res) =>{
         setPriceForAsset(prev=>{
           return Number(res.latest).toFixed(2)
         })
-        inputChangeValuesHandler(e,currentInput,Number(res.latest).toFixed(2))
+        inputChangeValuesHandler(e, currentInput,Number(res.latest).toFixed(2));
       }
       );
     }
   }
-
 
   return (
     <>

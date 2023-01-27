@@ -24,6 +24,7 @@ export default class TradeWithPassword {
       if (!account) {
         return { error: "Something went wrong" };
       }
+
       const buyResult = await account.buy(
         to,
         from,
