@@ -30,10 +30,11 @@ export default function FaceKiForm(props) {
   }, []);
 
   useInterval(async () => {
+    console.log('@1 - useInterval')
     if (verifying && !photo && error === "" && counter < 10) {
       await takePhoto();
     }
-  }, 300);
+  }, 2000);
 
   useEffect(() => {
     if (error !== "") {
@@ -45,10 +46,12 @@ export default function FaceKiForm(props) {
   }, [error]);
 
   useEffect(() => {
+    console.log('@2 - verifying', verifying)
     verifying && setError("") && setPhoto(null);
   }, [verifying]);
 
   useEffect(() => {
+    console.log('@3 - counter', counter, !!photo)
     if (counter === 10) {
       if (!photo) {
         setError("Try again by changing position or background.");
@@ -58,6 +61,7 @@ export default function FaceKiForm(props) {
   }, [counter])
 
   useEffect(async () => {
+    console.log('@4 - photo', !!photo)
     if (photo) {
       await videoVerify();
     }
@@ -73,6 +77,7 @@ export default function FaceKiForm(props) {
   }, [childDivRef.current]);
 
   useEffect(async () => {
+    console.log('@5 - facekisuccess')
     if (faceKISuccess === true) {
       loadVideo(false).then(() => {
         props.onSubmit();
@@ -166,6 +171,7 @@ export default function FaceKiForm(props) {
   }
 
   const takePhoto = async () => {
+    console.log('@6 - takephoto')
     // const imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
     const imageSrc = webcamRef.current.getScreenshot({ width: 1280, height: 720 });
 
@@ -183,6 +189,7 @@ export default function FaceKiForm(props) {
     }
 
     if (response.data.liveness === 'Genuine') {
+      console.log('@7 - genuin detect')
       setPhoto(imageSrc);
       // setVerifying(false);
     }
