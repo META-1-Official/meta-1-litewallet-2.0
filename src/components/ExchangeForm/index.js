@@ -197,7 +197,7 @@ export default function ExchangeForm(props) {
       Number(e.target.value) /
       priceForAsset /
       Number(userCurrencyState.split(" ")[2])
-    ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
+    ).toFixed(selectedFrom.label === "USDT" ? 8 : selectedFrom.pre).replace(/^([\d,]+)$|^([\d,]+)\.0*$|^([\d,]+\.[0-9]*?)0*$/, "$1$2$3");
     setSelectedFromAmount(priceForOne);
   };
 
