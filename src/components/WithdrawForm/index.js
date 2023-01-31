@@ -82,6 +82,7 @@ const WithdrawForm = (props) => {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidCurrency, setIsValidCurrency] = useState(false);
+  const [gateFee, setGateFee] = useState(0);
   const [isSuccess, setIsSuccess] = useState({
     status: false,
     text: '',
@@ -200,6 +201,18 @@ const WithdrawForm = (props) => {
     }
   }, [toAddress, selectedFrom]);
 
+  useEffect(() => {
+    if (selectedFrom) {
+        const arr = selectedData();
+        const res = arr.find(obj => obj.id === selectedFrom.value)
+        if (res && res?.gateFee) {
+          setGateFee(res?.gateFee);
+        } else {
+          setGateFee(0);
+        }
+    }
+  }, [selectedFrom])
+  
   const setIsSuccessHandler = (status, text, errorMsg = "") => {
     setIsSuccess({
       status,
@@ -311,8 +324,8 @@ const WithdrawForm = (props) => {
           if (item.id == 'META1') {
             return true;
           }
-          if (include) {
-            return include.includes(item.id);
+          if (WITHDRAW_ASSETS) {
+            return WITHDRAW_ASSETS.includes(item.id);
           }
           return true;
         });
@@ -509,6 +522,7 @@ const WithdrawForm = (props) => {
                   from='withdrawal'
                 />
               </label><br />
+              <span className="gatefee-span">Gateway fee : {gateFee} {selectedFrom && selectedFrom.value ? selectedFrom.value : ''}</span>
               <label>
                 <span>From Amount:</span>
                 <div className="wallet-input new-wallet_input">
