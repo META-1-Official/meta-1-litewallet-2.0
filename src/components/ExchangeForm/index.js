@@ -59,6 +59,10 @@ export default function ExchangeForm(props) {
   const [feeAlert, setFeeAlert] = useState(false);
   const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
+  const [tradeType, setTradeType] = useState('market');
+  const [limitPrice, setLimitPrice] = useState(0);
+  const [isLimitPriceSet, setIsLimitPriceSet] = useState(false);
+  const [amountPercent, setAmountPercent] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -84,6 +88,7 @@ export default function ExchangeForm(props) {
       to: selectedTo?.value?.trim(),
       amount: selectedToAmount,
       password: password,
+      tradePrice: tradeType === 'limit' ? limitPrice : null
     });
     
     if (buyResult.error) {
@@ -177,8 +182,8 @@ export default function ExchangeForm(props) {
     setInvalidEx(false);
   }, [pair]);
 
-  const calculateUsdPriceHandler = (e,lastPrice='') => {
-    const value = e.target.value;
+  const calculateUsdPriceHandler = (e,lastPrice='', fromPercent = false) => {
+    const value = fromPercent ? e : e.target.value;
     if (value.length != 0) {
       let priceAsset = priceForAsset
       if(lastPrice!=''){
@@ -275,6 +280,36 @@ export default function ExchangeForm(props) {
     fetchPair(selectedTo, selectedFrom);
   }, [selectedFrom, selectedTo]);
 
+  useEffect(() => {
+    if (amountPercent !== 0) {
+      setAmountPercent(0);
+    }
+    async function fetchPair(selectedTo, selectedFrom) {
+      if (
+        selectedTo != null &&
+        selectedFrom != null &&
+        selectedFrom.value !== undefined
+      ) {
+        const newPair = await Meta1.ticker(
+          selectedFrom.value,
+          selectedTo.value
+        );
+        let pairAmt = 0;
+        if (selectedFrom.value === "META1") {
+          pairAmt = newPair.latest;
+        } else if (selectedFrom.value === "USDT") {
+          pairAmt = newPair.latest;
+        } else {
+          pairAmt = newPair.lowest_ask;
+        }
+        setLimitPrice(pairAmt);
+      } else {
+        setIsLimitPriceSet(prev => !prev);
+      }
+    }
+    fetchPair(selectedTo, selectedFrom);
+  }, [isLimitPriceSet, tradeType]);
+
   const changeAssetHandler = async (val) => {
     if (val === "USDT") {
       setPriceForAsset(1);
@@ -328,6 +363,9 @@ export default function ExchangeForm(props) {
 
   const setAssetMax = (e) => {
     e.preventDefault();
+    if (amountPercent) {
+      setAmountPercent(null);
+    }
     setSelectedFromAmount(selectedFrom.balance);
     handleCalculateSelectedTo();
     setTimeout(() => {
@@ -344,29 +382,38 @@ export default function ExchangeForm(props) {
 
   const getAssets = (except) => options.filter((el) => el.value !== except);
 
-  const inputChangeValuesHandler =(e,currentInput,lastPrice)=>{
-    const val = e.target.value;
+  const inputChangeValuesHandler =(e,currentInput,lastPrice, fromPercent= false)=>{
+    const val = fromPercent ? e : e.target.value;
     handleCalculateSelectedTo(val);
-    calculateUsdPriceHandler(e, lastPrice);
+    calculateUsdPriceHandler(e, lastPrice, fromPercent);
     setClickedInputs(true);
   }
 
-  const inputChangeHandler = async (val,e)=>{
-    const currentInput = e.target.value
+  const inputChangeHandler = async (val,e, fromPercent = false)=>{
+    const currentInput = fromPercent ? e : e.target.value;
     setSelectedFromAmount(prev=>{
       return currentInput
     });
     if (val === "USDT") {
       setPriceForAsset(1);
-      inputChangeValuesHandler(e,currentInput,'');
+      inputChangeValuesHandler(e,currentInput,'', fromPercent);
     } else {
       Meta1.ticker("USDT", val).then((res) =>{
         setPriceForAsset(prev=>{
           return Number(res.latest).toFixed(2)
         })
-        inputChangeValuesHandler(e, currentInput,Number(res.latest).toFixed(2));
+        inputChangeValuesHandler(e, currentInput,Number(res.latest).toFixed(2), fromPercent);
       }
       );
+    }
+  }
+
+  const changePercentageHandler = (val) => {
+    if (!invalidEx) {
+      setAmountPercent(val);
+      const value = String(Number(selectedFrom.balance)*(val/100));
+      setSelectedFromAmount(value);
+      inputChangeHandler(selectedFrom.label, value, true);
     }
   }
 
@@ -522,6 +569,13 @@ export default function ExchangeForm(props) {
         </Modal>
         <div className={"adaptForMainExchange"}>
           <div className={`${styles.mainBlock} marginBottomZero`}>
+          <div>
+              <Button className={tradeType === 'market' ? 'custom-tab' : ''} onClick={() => setTradeType('market')}>Market</Button>
+              <Button className={tradeType === 'limit' ? 'custom-tab' : ''} onClick={() => {
+                setTradeType('limit');
+                setIsLimitPriceSet(prev => !prev);
+              }}>Limit Order</Button>
+            </div>
             <div className={styles.mainBlockExchange}>
               <div className={styles.leftBlockExchange}>
                 <h2 style={{ textAlign: "center" }}>Exchange</h2>
@@ -531,6 +585,7 @@ export default function ExchangeForm(props) {
                       <Grid.Column>
                         <ExchangeSelect
                           onChange={(val) => {
+                            setIsLimitPriceSet(prev => !prev);
                             setSelectedFrom(val);
                             changeAssetHandler(val.value);
                             setSelectedFromAmount(NaN);
@@ -569,6 +624,9 @@ export default function ExchangeForm(props) {
                                       ) &&
                                       Number(e.target.value) >= 0
                                     ) {
+                                      if (amountPercent) {
+                                        setAmountPercent(null);
+                                      }
                                       inputChangeHandler(selectedFrom.label,e)
                                     }
                                   }}
@@ -605,6 +663,9 @@ export default function ExchangeForm(props) {
                                         ) &&
                                         Number(e.target.value) >= 0
                                       ) {
+                                        if (amountPercent) {
+                                          setAmountPercent(null);
+                                        }
                                         calculateCryptoPriceHandler(e);
                                         setClickedInputs(true);
                                       }
@@ -647,6 +708,29 @@ export default function ExchangeForm(props) {
                       </Grid.Column>
                     </Grid.Column>
                   </Grid>
+                  <Grid>
+                    <div className="percentage-container">
+                      <span className={`percentage-padding ${amountPercent === 25 ? 'active' : ''}`} onClick={() => changePercentageHandler(25)}>25%</span>
+                      <span className={`percentage-padding ${amountPercent === 50 ? 'active' : ''}`} onClick={() => changePercentageHandler(50)}>50%</span>
+                      <span className={`percentage-padding ${amountPercent === 75 ? 'active' : ''}`} onClick={() => changePercentageHandler(75)}>75%</span>
+                      <span className={`percentage-padding ${amountPercent === 100 ? 'active' : ''}`} onClick={() => changePercentageHandler(100)}>100%</span>
+                    </div>
+                  </Grid>
+                  <Grid className="limit-input-grid">
+                    <TextField
+                      id="outlined-textarea"
+                      label="Price"
+                      placeholder="Enter Price"
+                      className="input-price"
+                      disabled={tradeType === 'market'? true: false}
+                      value={limitPrice}
+                      onChange={(e) => {
+                        if (/^\d*\.?\d*$/.test(e.target.value)) {
+                          setLimitPrice(e.target.value);
+                        }
+                      }}
+                    />
+                  </Grid>
                 </div>
               </div>
               <div
@@ -661,6 +745,7 @@ export default function ExchangeForm(props) {
                       className={styles.button}
                       style={{ width: "3rem", height: "3rem" }}
                       onClick={(e) => {
+                        setIsLimitPriceSet(prev => !prev);
                         changeAssetHandlerSwap(selectedTo);
                         setSelectedToAmount(NaN);
                         setSelectedFromAmount(NaN);
@@ -692,6 +777,7 @@ export default function ExchangeForm(props) {
                       <Grid.Column>
                         <ExchangeSelect
                           onChange={(val) => {
+                            setIsLimitPriceSet(prev => !prev);
                             setSelectedTo(val);
                             setSelectedFromAmount(NaN);
                             setSelectedToAmount(NaN);
