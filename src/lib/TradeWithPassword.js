@@ -5,7 +5,7 @@ export default class TradeWithPassword {
   }
 
   async perform(props) {
-    const { password, from, to, amount } = props;
+    const { password, from, to, amount, tradePrice } = props;
 
     try {
       const pair = await this.metaApi.ticker(from, to);
@@ -20,6 +20,7 @@ export default class TradeWithPassword {
       } else {
         pairAmt = pair.lowest_ask;
       }
+      const newPairAmt = tradePrice ? tradePrice : pairAmt;
       const account = await this.metaApi.login(this.login, password);
       if (!account) {
         return { error: "Something went wrong" };
@@ -29,7 +30,7 @@ export default class TradeWithPassword {
         to,
         from,
         parseFloat(amount),
-        pairAmt,
+        newPairAmt,
         false,
         new Date(new Date().setYear(new Date().getFullYear()+1))
       );
