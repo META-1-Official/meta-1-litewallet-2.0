@@ -153,17 +153,11 @@ export default function FaceKiForm(props) {
           } else {
             const response_enroll = await enroll(file, newName);
             if (response_enroll.status === 'Enroll OK') {
+              await remove(response_verify.name);
               const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
               if (add_response.result) {
-                const response_remove = await remove(response_verify.name);
-                if (!response_remove) {
-                  setError('Something went wrong.');
-                } else {
-                  alert('Successfully enrolled.');
-                  setFaceKISuccess(true);
-                }
-              }
-              else {
+                setFaceKISuccess(true);
+              } else {
                 setError('Something went wrong.');
               }
             } else {
