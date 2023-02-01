@@ -207,6 +207,8 @@ export default function LoginScreen(props) {
       if (privKey && typeof privKey === "string") {
         const data = await openLogin.getUserInfo();
 
+        console.log('@TR-data', data)
+
         setAuthData(data);
         setPrivKey(privKey);
         setEmail(data?.email.toLowerCase());

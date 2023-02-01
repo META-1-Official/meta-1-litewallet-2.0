@@ -166,7 +166,6 @@ export default function FaceKiForm(props) {
   }
 
   const takePhoto = async () => {
-    console.log('@6 - takephoto')
     // const imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
     const imageSrc = webcamRef.current.getScreenshot({ width: 1280, height: 720 });
 
@@ -184,7 +183,6 @@ export default function FaceKiForm(props) {
     }
 
     if (response.data.liveness === 'Genuine') {
-      console.log('@7 - genuin detect')
       setPhoto(imageSrc);
       // setVerifying(false);
     }
