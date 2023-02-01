@@ -716,13 +716,12 @@ export default function ExchangeForm(props) {
                       <span className={`percentage-padding ${amountPercent === 100 ? 'active' : ''}`} onClick={() => changePercentageHandler(100)}>100%</span>
                     </div>
                   </Grid>
-                  <Grid className="limit-input-grid">
+                  {tradeType === 'limit' && <Grid className="limit-input-grid">
                     <TextField
                       id="outlined-textarea"
                       label="Price"
                       placeholder="Enter Price"
                       className="input-price"
-                      disabled={tradeType === 'market'? true: false}
                       value={limitPrice}
                       onChange={(e) => {
                         if (/^\d*\.?\d*$/.test(e.target.value)) {
@@ -730,7 +729,7 @@ export default function ExchangeForm(props) {
                         }
                       }}
                     />
-                  </Grid>
+                  </Grid>}
                 </div>
               </div>
               <div

@@ -59,6 +59,7 @@
 .wallet-option-picture img {
   width: 40px;
   margin-right: 15px;
+  z-index: 100;
 }
 
 .wallet-option-content {
@@ -316,11 +317,12 @@
 }
 
 .limit-input-grid {
-  padding-top: 11px !important;
+  padding-top: 30px !important;
 }
 
 .input-price label {
   margin-left: 17px !important;
+  z-index: unset;
 }
 
 .custom-tab {
