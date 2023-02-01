@@ -149,11 +149,22 @@ export default function PaperWalletLogin({ accountName }) {
           <label basic className="paper_wallet_login_label">
           Passkey
           </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="pwd_input_wrapper">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{marginRight: '5px'}}
+            />
+            <Button
+              color="yellow"
+              onClick={(e) => setPassword("")}
+              disabled={!password}
+            >
+              {" "}
+              Clear
+            </Button>
+          </div>
           {check !== false && <p style={{ color: "red" }}>Invalid Passkey</p>}
         </FormField>
         <Button
