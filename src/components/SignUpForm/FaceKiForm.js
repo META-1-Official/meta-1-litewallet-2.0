@@ -17,9 +17,6 @@ export default function FaceKiForm(props) {
   const [device, setDevice] = React.useState({});
   const [qrOpen, setQrOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [counter, setCounter] = useState(0);
-  const [error, setError] = useState("");
-  const [photo, setPhoto] = useState(null);
   const [mobileScreenSize, setMobileScreenSize] = useState({
     width: '',
     height: ''
@@ -29,40 +26,6 @@ export default function FaceKiForm(props) {
   useEffect(() => {
     loadVideo(true);
   }, []);
-
-  useInterval(async () => {
-    if (verifying && !photo && error === "" && counter < 10) {
-      await takePhoto();
-    }
-  }, 2000);
-
-  useEffect(() => {
-    if (error !== "") {
-      alert(error);
-      setCounter(0);
-      setPhoto(null);
-      setVerifying(false);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    verifying && setError("") && setPhoto(null);
-  }, [verifying]);
-
-  useEffect(() => {
-    if (counter === 10) {
-      if (!photo) {
-        setError("Try again by changing position or background.");
-      }
-      setCounter(0);
-    }
-  }, [counter])
-
-  useEffect(async () => {
-    if (photo) {
-      await videoEnroll();
-    }
-  }, [photo]);
 
   useEffect(() => {
     if (childDivRef?.current?.clientWidth && childDivRef?.current?.clientHeight) {
@@ -127,12 +90,46 @@ export default function FaceKiForm(props) {
     return new File([u8arr], filename, { type: mime });
   }
 
-  const videoEnroll = async () => {
+  const checkAndEnroll = async (photoIndex) => {
+    const {privKey, email} = props;
+    if (!email || !privKey) return;
+
+    setVerifying(true);
+
+    const imageSrc = webcamRef.current.getScreenshot({
+      width: 1280,
+      height: 720,
+    });
+
+    if (!imageSrc) {
+      alert('Please check your camera.');
+      setVerifying(false);
+      return;
+    }
+
+    const file = await dataURL2File(imageSrc, 'a.jpg');
+    const response = await livenessCheck(file);
+
+    if (!response) {
+      alert('Something went wrong from Biometric server.');
+      setVerifying(false);
+      return;
+    }
+
+    if (response.data.liveness !== 'Genuine' && photoIndex === 5) {
+      alert('Try again by changing position or background.');
+      setVerifying(false);
+    } else if (response.data.liveness === 'Genuine') {
+      await faceEnroll(file);
+    } else {
+      await checkAndEnroll(photoIndex + 1);
+    }
+  }
+
+  const faceEnroll = async (file) => {
     const { privKey, email } = props;
 
-    var file = await dataURL2File(photo, 'a.jpg');
-    const response_verify = await verify(file);
-    
+    const response_verify = await verify(file);    
     if (response_verify.status === 'Verify OK') {
       const nameArry = response_verify.name.split(',');
 
@@ -142,14 +139,17 @@ export default function FaceKiForm(props) {
       } else {
         const response_user = await getUserKycProfile(email);
         if (response_user.error === true) {
-          setError('Something went wrong.');
+          alert('Something went wrong.');
+          setVerifying(false);
         } else if (response_user) {
-          setError('This email already has been used for another user.');
+          alert('This email already has been used for another user.');
+          setVerifying(false);
         } else {
           const newName = response_verify.name + "," + email;
 
           if (!newName) {
-            setError('Can not generate new name!');
+            alert('Can not generate new name!');
+            setVerifying(false);
           } else {
             const response_enroll = await enroll(file, newName);
             if (response_enroll.status === 'Enroll OK') {
@@ -158,10 +158,12 @@ export default function FaceKiForm(props) {
               if (add_response.result) {
                 setFaceKISuccess(true);
               } else {
-                setError('Something went wrong.');
+                alert('Something went wrong.');
+                setVerifying(false);
               }
             } else {
-              setError('Something went wrong.');
+              alert('Something went wrong.');
+              setVerifying(false);
             }
           }
         }
@@ -169,9 +171,11 @@ export default function FaceKiForm(props) {
     } else if (response_verify.status === 'Verify Failed' || response_verify.status === 'No Users') {
       const response_user = await getUserKycProfile(email);
       if (response_user.error === true) {
-        setError('Something went wrong.');
+        alert('Something went wrong.');
+        setVerifying(false);
       } else if (response_user) {
-        setError('This email already has been used for another user.');
+        alert('This email already has been used for another user.');
+        setVerifying(false);
       } else {
         const response_enroll = await enroll(file, email);
         if (response_enroll.status === 'Enroll OK') {
@@ -182,38 +186,15 @@ export default function FaceKiForm(props) {
           }
           else {
             await remove(email);
-            setError('Something went wrong.');
+            alert('Something went wrong.');
+            setVerifying(false);
           }
         }
       }
     } else {
-      setError('Please try again.');
+      alert('Please try again.');
+      setVerifying(false);
     }
-  }
-
-  const takePhoto = async () => {
-    // const imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
-    const imageSrc = webcamRef.current.getScreenshot({ width: 1280, height: 720 });
-
-    if (!imageSrc) {
-      setError('Check your camera.');
-      return;
-    };
-
-    var file = await dataURL2File(imageSrc, 'a.jpg');
-    const response = file && await livenessCheck(file);
-
-    if (!response || response.error === true) {
-      setError('Biometric server is busy. Please try again after 2 or 3 seconds.');
-      return;
-    }
-
-    if (response.data.liveness === 'Genuine') {
-      setPhoto(imageSrc);
-      // setVerifying(false);
-    }
-
-    setCounter(counter + 1);
   }
 
   return (
@@ -252,7 +233,7 @@ export default function FaceKiForm(props) {
                   <div className="btn-grp" style={{ marginTop: '5px' }}>
                     {/* {!faceKISuccess && <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button>} */}
                     {/* {photo && <button className='btn-1' disabled={verifying && !faceKISuccess} onClick={faceKISuccess ? onClickNext : videoEnroll}>{verifying ? "Verifying..." : faceKISuccess ? "Next" : "Verify"}</button>} */}
-                    <button className='btn-1' disabled={verifying} onClick={() => setVerifying(true)}>{verifying ? "Verifying..." : "Verify"}</button>
+                    <button className='btn-1' disabled={verifying} onClick={() => checkAndEnroll(0)}>{verifying ? "Verifying..." : "Verify"}</button>
                     {/* {!photo && <button className='btn-1' style={{ "marginLeft": '20px' }} onClick={() => setQrOpen(true)}>Take Photo via Mobile</button>} */}
                   </div>
                 </div>
@@ -261,14 +242,13 @@ export default function FaceKiForm(props) {
           </div>
         </div>
       </div>
-      {qrOpen && <QRCodeModal
+      {/* qrOpen && <QRCodeModal
         open={qrOpen}
         setOpen={(val) => setQrOpen(val)}
         acc={props.accountName}
         email={props.email}
         setPhoto={(val) => setPhoto(val)}
-      />
-      }
+      />*/}
     </>
   )
 }
