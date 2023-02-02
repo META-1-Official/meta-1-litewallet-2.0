@@ -4,9 +4,9 @@ import Webcam from 'react-webcam';
 import { livenessCheck, verify, getUserKycProfile } from "../../API/API";
 import { Button, Icon, Modal } from "semantic-ui-react";
 import OvalImage from '../../images/oval/oval19.png';
-import MobileOvalImage from '../../images/oval/oval12.png';
+import MobileOvalImage from '../../images/oval/oval19.png';
 import QRCodeModal from "../../UI/loader/QRCodeModal";
-import { useInterval } from "../../lib/useInterval";
+import {isMobile} from "react-device-detect";
 import "./login.css";
 
 export default function FaceKiForm(props) {
@@ -14,26 +14,11 @@ export default function FaceKiForm(props) {
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [device, setDevice] = React.useState({});
-  const [isMobile, setIsMobile] = useState(false);
   const [verifying, setVerifying] = useState(false);
-  const [mobileScreenSize, setMobileScreenSize] = useState({
-    width: '',
-    height: ''
-  });
-  const childDivRef = useRef();
 
   useEffect(() => {
     loadVideo(true);
   }, []);
-
-  useEffect(() => {
-    if (childDivRef?.current?.clientWidth && childDivRef?.current?.clientHeight) {
-      setMobileScreenSize({
-        width: childDivRef.current.clientWidth,
-        height: childDivRef.current.clientHeight
-      });
-    }
-  }, [childDivRef.current]);
 
   useEffect(async () => {
     if (faceKISuccess === true) {
@@ -52,8 +37,6 @@ export default function FaceKiForm(props) {
         .getUserMedia(features)
         .then((display) => {
           setDevice(display?.getVideoTracks()[0]?.getSettings());
-          isMobileHandler();
-          window.addEventListener('resize', isMobileHandler);
         })
         .finally(() => {
           return true;
@@ -68,12 +51,6 @@ export default function FaceKiForm(props) {
 
       return Promise.resolve();
     }
-  }
-
-  const isMobileHandler = () => {
-    const { innerWidth: width } = window;
-    const isMobile = width <= 767;
-    setIsMobile(isMobile);
   }
 
   const dataURL2File = async (dataurl, filename) => {
@@ -172,28 +149,25 @@ export default function FaceKiForm(props) {
                 <h6 style={{ fontSize: '24px' }}>Authenticate Your Face</h6>
                 <p className='header_ptag'>To log into your wallet, please complete biometric authentication.</p>
               </div>
-              <div className='child-div' ref={childDivRef} style={{ borderRadius: '5px', padding: '1px' }}>
+              <div className='child-div'style={{ borderRadius: '5px', padding: '1px' }}>
                 <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                   <div className="position-head color-black">{!isMobile ? 'Position your face in the oval' : ''}</div>
                   <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
                 </div>
-                {!isMobile && <img src={OvalImage} alt='oval-image' className='oval-image' />}
+                <img src={isMobile ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
                 <Webcam
                   audio={false}
                   ref={webcamRef}
                   screenshotFormat="image/jpeg"
-                  videoConstraints={isMobile ? {
-                    width: mobileScreenSize.width - 10,
-                    height: mobileScreenSize.height - 10,
-                  } : { deviceId: device?.deviceId }}
-                  width={isMobile ? mobileScreenSize.width - 20 : 550}
-                  height={isMobile ? mobileScreenSize.height - 50 : device?.aspectRatio ? 550 / device?.aspectRatio : 385}
                   mirrored
                 />
                 <div className='btn-div'>
                   <p className={`span-class color-black margin-bottom-zero ${isMobile ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>
                   <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
                     Min camera resolution must be 720p
+                  </span>
+                  <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+                    Verifying will take 10 seconds as maximum.
                   </span>
                   <div className="btn-grp" style={{ "marginTop": '5px' }}>
                     {/* <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button> */}

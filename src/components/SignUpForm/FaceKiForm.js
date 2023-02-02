@@ -4,10 +4,10 @@ import Webcam from 'react-webcam';
 import { livenessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
 import { Button } from "semantic-ui-react";
 import OvalImage from '../../images/oval/oval19.png';
-import MobileOvalImage from '../../images/oval/oval11.png';
+import MobileOvalImage from '../../images/oval/oval19.png';
+import {isMobile} from "react-device-detect";
 import { Icon, Modal } from "semantic-ui-react";
 import QRCodeModal from "../../UI/loader/QRCodeModal";
-import { useInterval } from "../../lib/useInterval";
 import "./SignUpForm.css";
 
 export default function FaceKiForm(props) {
@@ -16,7 +16,6 @@ export default function FaceKiForm(props) {
   const [verifying, setVerifying] = useState(false);
   const [device, setDevice] = React.useState({});
   const [qrOpen, setQrOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [mobileScreenSize, setMobileScreenSize] = useState({
     width: '',
     height: ''
@@ -26,15 +25,6 @@ export default function FaceKiForm(props) {
   useEffect(() => {
     loadVideo(true);
   }, []);
-
-  useEffect(() => {
-    if (childDivRef?.current?.clientWidth && childDivRef?.current?.clientHeight) {
-      setMobileScreenSize({
-        width: childDivRef.current.clientWidth,
-        height: childDivRef.current.clientHeight
-      });
-    }
-  }, [childDivRef.current]);
 
   useEffect(async () => {
     if (faceKISuccess === true) {
@@ -54,8 +44,6 @@ export default function FaceKiForm(props) {
         .getUserMedia(features)
         .then((display) => {
           setDevice(display?.getVideoTracks()[0]?.getSettings());
-          isMobileHandler();
-          window.addEventListener('resize', isMobileHandler);
         })
         .finally(() => {
           return true;
@@ -72,12 +60,6 @@ export default function FaceKiForm(props) {
     }
   }
 
-  const isMobileHandler = () => {
-    const { innerWidth: width } = window;
-    const isMobile = width <= 767;
-    setIsMobile(isMobile);
-  }
-
   const dataURL2File = async (dataurl, filename) => {
     var arr = dataurl.split(','),
       mime = arr[0].match(/:(.*?);/)[1],
@@ -91,7 +73,7 @@ export default function FaceKiForm(props) {
   }
 
   const checkAndEnroll = async (photoIndex) => {
-    const {privKey, email} = props;
+    const { privKey, email } = props;
     if (!email || !privKey) return;
 
     setVerifying(true);
@@ -129,7 +111,7 @@ export default function FaceKiForm(props) {
   const faceEnroll = async (file) => {
     const { privKey, email } = props;
 
-    const response_verify = await verify(file);    
+    const response_verify = await verify(file);
     if (response_verify.status === 'Verify OK') {
       const nameArry = response_verify.name.split(',');
 
@@ -212,23 +194,20 @@ export default function FaceKiForm(props) {
                   <div className="position-head color-black">{!isMobile ? 'Position your face in the oval' : ''}</div>
                   <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
                 </div>
-                {!isMobile && <img src={OvalImage} alt='oval-image' className='oval-image' />}
+                <img src={isMobile ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
                 <Webcam
                   audio={false}
                   ref={webcamRef}
                   screenshotFormat="image/jpeg"
-                  const videoConstraints={isMobile ? {
-                    width: mobileScreenSize.width - 10,
-                    height: mobileScreenSize.height - 10,
-                  } : { deviceId: device?.deviceId }}
-                  width={isMobile ? mobileScreenSize.width - 20 : 550}
-                  height={isMobile ? mobileScreenSize.height - 50 : device?.aspectRatio ? 550 / device?.aspectRatio : 385}
                   mirrored
                 />
                 <div className='btn-div'>
                   <p className='span-class color-black margin-bottom-zero'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
                   <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
                     Min camera resolution must be 720p
+                  </span>
+                  <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+                    Verifying will take 10 seconds as maximum.
                   </span>
                   <div className="btn-grp" style={{ marginTop: '5px' }}>
                     {/* {!faceKISuccess && <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button>} */}
