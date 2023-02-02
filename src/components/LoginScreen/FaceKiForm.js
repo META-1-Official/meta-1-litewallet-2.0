@@ -16,9 +16,6 @@ export default function FaceKiForm(props) {
   const [device, setDevice] = React.useState({});
   const [isMobile, setIsMobile] = useState(false);
   const [verifying, setVerifying] = useState(false);
-  const [counter, setCounter] = useState(0);
-  const [error, setError] = useState("");
-  const [photo, setPhoto] = useState(null);
   const [mobileScreenSize, setMobileScreenSize] = useState({
     width: '',
     height: ''
@@ -28,44 +25,6 @@ export default function FaceKiForm(props) {
   useEffect(() => {
     loadVideo(true);
   }, []);
-
-  useInterval(async () => {
-    console.log('@1 - useInterval')
-    if (verifying && !photo && error === "" && counter < 10) {
-      await takePhoto();
-    }
-  }, 2000);
-
-  useEffect(() => {
-    if (error !== "") {
-      alert(error);
-      setCounter(0);
-      setPhoto(null);
-      setVerifying(false);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    console.log('@2 - verifying', verifying)
-    verifying && setError("") && setPhoto(null);
-  }, [verifying]);
-
-  useEffect(() => {
-    console.log('@3 - counter', counter, !!photo)
-    if (counter === 10) {
-      if (!photo) {
-        setError("Try again by changing position or background.");
-      }
-      setCounter(0);
-    }
-  }, [counter])
-
-  useEffect(async () => {
-    console.log('@4 - photo', !!photo)
-    if (photo) {
-      await videoVerify();
-    }
-  }, [photo]);
 
   useEffect(() => {
     if (childDivRef?.current?.clientWidth && childDivRef?.current?.clientHeight) {
@@ -77,7 +36,6 @@ export default function FaceKiForm(props) {
   }, [childDivRef.current]);
 
   useEffect(async () => {
-    console.log('@5 - facekisuccess')
     if (faceKISuccess === true) {
       loadVideo(false).then(() => {
         props.onSubmit();
@@ -130,25 +88,59 @@ export default function FaceKiForm(props) {
     return new File([u8arr], filename, { type: mime });
   }
 
-  const videoVerify = async () => {
+  const checkAndVerify = async (photoIndex) => {
+    const {privKey, email} = props;
+    if (!email || !privKey) return;
+
+    setVerifying(true);
+
+    const imageSrc = webcamRef.current.getScreenshot({
+      width: 1280,
+      height: 720,
+    });
+
+    if (!imageSrc) {
+      alert('Please check your camera.');
+      setVerifying(false);
+      return;
+    }
+
+    const file = await dataURL2File(imageSrc, 'a.jpg');
+    const response = await livenessCheck(file);
+
+    if (!response) {
+      alert('Something went wrong from Biometric server.');
+      setVerifying(false);
+      return;
+    }
+
+    if (response.data.liveness !== 'Genuine' && photoIndex === 5) {
+      alert('Try again by changing position or background.');
+      setVerifying(false);
+    } else if (response.data.liveness === 'Genuine') {
+      await videoVerify(file);
+    } else {
+      await checkAndVerify(photoIndex + 1);
+    }
+  }
+
+  const videoVerify = async (file) => {
     const { email, accountName } = props;
 
     const response_user = await getUserKycProfile(email);
 
     if (!response_user?.member1Name) {
-      setError('Email and wallet name are not matched.');
+      alert('Email and wallet name are not matched.');
       return;
     }
     else {
       const walletArry = response_user.member1Name.split(',');
 
       if (!walletArry.includes(accountName)) {
-        setError('Email and wallet name are not matched.');
+        alert('Email and wallet name are not matched.');
         return;
       }
     };
-
-    var file = await dataURL2File(photo, 'a.jpg');
 
     const response_verify = await verify(file);
     if (response_verify.status === 'Verify OK') {
@@ -158,47 +150,16 @@ export default function FaceKiForm(props) {
         setFaceKISuccess(true);
         // setVerifying(false);
       } else {
-        setError('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
+        alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
       }
     } else if (response_verify.status === 'Verify Failed') {
-      setError('We can not verify you because you never enrolled with your face yet.');
+      alert('We can not verify you because you never enrolled with your face yet.');
     } else if (response_verify.status === 'No Users') {
-      setError('You never enrolled with your face yet. Please enroll first via signup process.');
+      alert('You never enrolled with your face yet. Please enroll first via signup process.');
     }
     else {
-      setError('Please try again.');
+      alert('Please try again.');
     }
-  }
-
-  const takePhoto = async () => {
-    console.log('@6 - takephoto')
-    // const imageSrc = device.width ? webcamRef.current.getScreenshot({ width: device.width, height: device.height }) : webcamRef.current.getScreenshot();
-    const imageSrc = webcamRef.current.getScreenshot({ width: 1280, height: 720 });
-
-    if (!imageSrc) {
-      setError('Check your camera.');
-      return;
-    };
-
-    var file = await dataURL2File(imageSrc, 'a.jpg');
-    const response = file && await livenessCheck(file);
-
-    if (!response || response.error === true) {
-      setError('Biometric server is busy. Please try again after 2 or 3 seconds.');
-      return;
-    }
-
-    if (response.data.liveness === 'Genuine') {
-      console.log('@7 - genuin detect')
-      setPhoto(imageSrc);
-      // setVerifying(false);
-    }
-
-    setCounter(counter + 1);
-  }
-
-  const resetPhoto = async () => {
-    setPhoto(null);
   }
 
   return (
@@ -236,7 +197,7 @@ export default function FaceKiForm(props) {
                   </span>
                   <div className="btn-grp" style={{ "marginTop": '5px' }}>
                     {/* <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button> */}
-                    <button className='btn-1' onClick={() => setVerifying(true)} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>
+                    <button className='btn-1' onClick={() => checkAndVerify(0)} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>
                     {/* {!photo && <button className='btn-1' style={{ "marginLeft": '20px' }} onClick={() => setQrOpen(true)}>Take Photo via Mobile</button>} */}
                   </div>
                 </div>
@@ -245,14 +206,13 @@ export default function FaceKiForm(props) {
           </div>
         </div>
       </div>
-      {qrOpen && <QRCodeModal
+      {/* qrOpen && <QRCodeModal
         open={qrOpen}
         setOpen={(val) => setQrOpen(val)}
         acc={props.accountName}
         email={props.email}
         setPhoto={(val) => setPhoto(val)}
-      />
-      }
+      />*/}
     </>
   )
 }
