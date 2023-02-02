@@ -230,6 +230,9 @@ export default function FaceKiForm(props) {
                   <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
                     Min camera resolution must be 720p
                   </span>
+                  <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+                    Verifying will take 10 seconds as maximum.
+                  </span>
                   <div className="btn-grp" style={{ marginTop: '5px' }}>
                     {/* {!faceKISuccess && <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button>} */}
                     {/* {photo && <button className='btn-1' disabled={verifying && !faceKISuccess} onClick={faceKISuccess ? onClickNext : videoEnroll}>{verifying ? "Verifying..." : faceKISuccess ? "Next" : "Verify"}</button>} */}
