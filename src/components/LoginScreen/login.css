@@ -64,7 +64,7 @@ iframe {
 }
 
 .under-div {
-  height: 550px;
+  height: 600px;
   width: 600px;
   padding: 1rem;
   margin: 0 auto;
@@ -81,7 +81,7 @@ iframe {
 }
 
 .header_tag {
-  height: 500px;
+  height: 550px;
   width: 550px;
   background-color: rgb(210, 205, 205);
   margin: auto;
@@ -107,8 +107,20 @@ iframe {
 }
 
 video {
-  margin-bottom: 30px;
   border-radius: 5px;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  video {
+    position: absolute;
+  }
+
+  .oval-image {
+    height: 80% !important;
+    top: 10% !important;
+  }
 }
 
 .btn-div {
@@ -116,7 +128,7 @@ video {
   align-items: center;
   flex-direction: column;
   position: absolute;
-  bottom: 40px;
+  bottom: 20px;
   z-index: 5;
 }
 .btn_x {
@@ -205,7 +217,7 @@ video {
 
 .webcam_div {
   width: 550px I !important;
-  height: 550px  !important;
+  height: 600px  !important;
   background: #fff  !important;  
 }
 
