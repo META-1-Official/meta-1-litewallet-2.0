@@ -52,6 +52,7 @@ export default function ExchangeForm(props) {
   const [quoteAsset, setQuoteAsset] = useState(null);
   const [baseAsset, setBaseAsset] = useState(null);
   const [limitOrders, setLimitOrders] = useState([]);
+  const [marketPrice, setMarketPrice] = useState(0);
   const [invalidEx, setInvalidEx] = useState(false);
   const [modalOpened, setModalOpened] = useState(false);
   const [tradeError, setTradeError] = useState(null);
@@ -182,6 +183,8 @@ export default function ExchangeForm(props) {
     }
     setInvalidEx(false);
 
+    setMarketPrice(0);
+    setLimitPrice(0);
     getLimitOrders(pair);
   }, [pair]);
 
@@ -217,7 +220,7 @@ export default function ExchangeForm(props) {
 
   const handleCalculateSelectedTo = (currentValue='') => {
     if (pair == null) return;
-    if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
+    if (marketPrice) {
       setInvalidEx(true);
       setSelectedToAmount(NaN);
       setSelectedFromAmount(NaN);
@@ -225,16 +228,10 @@ export default function ExchangeForm(props) {
       return;
     }
     setInvalidEx(false);
-    const selectedAmount=currentValue?currentValue:selectedFromAmount
-    let amount;
+    const selectedAmount = currentValue ? currentValue : selectedFromAmount;
+
     if (selectedAmount !== "" && selectedAmount) {
-      if (pair.base === "META1") {
-        amount = (selectedAmount / pair.latest).toString().substr(0, 11) * 1;
-      } else if (pair.base === "USDT") {
-        amount = (selectedAmount / pair.latest).toString().substr(0, 11) * 1;
-      } else {
-        amount = (selectedAmount / pair.lowest_ask).toString().substr(0, 11) * 1;
-      }
+      const amount = (selectedAmount * marketPrice).toString().substr(0, 11) * 1;
       setSelectedToAmount(amount);
     } else {
       setSelectedToAmount(0);
@@ -243,14 +240,14 @@ export default function ExchangeForm(props) {
 
   const handleCalculateSelectedFrom = () => {
     if (pair == null) return;
-    if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
+    if (marketPrice) {
       setInvalidEx(true);
       setSelectedFromAmount(0);
       setBlockPrice("");
       return;
     }
     setInvalidEx(false);
-    const amount = selectedToAmount * pair.lowest_ask;
+    const amount = selectedToAmount * pair.marketPrice;
     setSelectedFromAmount(amount);
   };
 
@@ -290,35 +287,35 @@ export default function ExchangeForm(props) {
     fetchPair(selectedTo, selectedFrom);
   }, [selectedFrom, selectedTo]);
 
-  useEffect(() => {
-    if (amountPercent !== 0) {
-      setAmountPercent(0);
-    }
-    async function fetchPair(selectedTo, selectedFrom) {
-      if (
-        selectedTo != null &&
-        selectedFrom != null &&
-        selectedFrom.value !== undefined
-      ) {
-        const newPair = await Meta1.ticker(
-          selectedFrom.value,
-          selectedTo.value
-        );
-        let pairAmt = 0;
-        if (selectedFrom.value === "META1") {
-          pairAmt = newPair.latest;
-        } else if (selectedFrom.value === "USDT") {
-          pairAmt = newPair.latest;
-        } else {
-          pairAmt = newPair.lowest_ask;
-        }
-        setLimitPrice(pairAmt);
-      } else {
-        setIsLimitPriceSet(prev => !prev);
-      }
-    }
-    fetchPair(selectedTo, selectedFrom);
-  }, [isLimitPriceSet, tradeType]);
+  // useEffect(() => {
+  //   if (amountPercent !== 0) {
+  //     setAmountPercent(0);
+  //   }
+  //   async function fetchPair(selectedTo, selectedFrom) {
+  //     if (
+  //       selectedTo != null &&
+  //       selectedFrom != null &&
+  //       selectedFrom.value !== undefined
+  //     ) {
+  //       const newPair = await Meta1.ticker(
+  //         selectedFrom.value,
+  //         selectedTo.value
+  //       );
+  //       let pairAmt = 0;
+  //       if (selectedFrom.value === "META1") {
+  //         pairAmt = newPair.latest;
+  //       } else if (selectedFrom.value === "USDT") {
+  //         pairAmt = newPair.latest;
+  //       } else {
+  //         pairAmt = newPair.lowest_ask;
+  //       }
+  //       setLimitPrice(pairAmt);
+  //     } else {
+  //       setIsLimitPriceSet(prev => !prev);
+  //     }
+  //   }
+  //   fetchPair(selectedTo, selectedFrom);
+  // }, [isLimitPriceSet, tradeType]);
 
   const changeAssetHandler = async (val) => {
     if (val === "USDT") {
@@ -438,11 +435,10 @@ export default function ExchangeForm(props) {
         setBaseAsset(res[1]);
         Apis.instance()
           .db_api()
-          .exec('get_limit_orders', [
-            res[0].id,
-            res[1].id,
-            300,
-          ])
+          .exec(
+            'get_limit_orders', 
+            [res[0].id, res[1].id, 300]
+          )
           .then(res => {
             setLimitOrders(res);
           })
@@ -456,11 +452,19 @@ export default function ExchangeForm(props) {
   }
 
   const calculateMarketPrice = () => {
-    // for (let limitOrder of limitOrders) {
-    //   if (limitOrder.sell_price.base.asset_id === baseAsset.id) {
-    //     console.log("@1 - ", baseAsset.symbol, limitOrder)
-    //   }
-    // }
+    let marketPrice = 0;
+
+    for (let limitOrder of limitOrders) {
+      if (limitOrder.sell_price.base.asset_id === baseAsset.id) {
+        let divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
+        let price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+        marketPrice = marketPrice > price ? marketPrice : price;
+      }
+    }
+
+    console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, marketPrice);
+    setMarketPrice(marketPrice);
+    setLimitPrice(marketPrice);
   }
 
   return (
