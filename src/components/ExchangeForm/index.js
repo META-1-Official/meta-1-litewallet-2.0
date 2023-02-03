@@ -16,6 +16,7 @@ import Input from "@mui/material/Input";
 import MetaLoader from "../../UI/loader/Loader";
 import "./ExchangeForm.css";
 import Meta1 from "meta1-vision-dex";
+import {Apis} from 'meta1-vision-ws';
 import InputAdornment from "@mui/material/InputAdornment";
 import leftArrow from "../../images/exchangeAssets/Shape Left.png";
 import rightArrow from "../../images/exchangeAssets/Shape 2 copy 2.png";
@@ -48,6 +49,9 @@ export default function ExchangeForm(props) {
   const [selectedFromAmount, setSelectedFromAmount] = useState("");
   const [selectedToAmount, setSelectedToAmount] = useState(0);
   const [pair, setPair] = useState(null);
+  const [quoteAsset, setQuoteAsset] = useState(null);
+  const [baseAsset, setBaseAsset] = useState(null);
+  const [limitOrders, setLimitOrders] = useState([]);
   const [invalidEx, setInvalidEx] = useState(false);
   const [modalOpened, setModalOpened] = useState(false);
   const [tradeError, setTradeError] = useState(null);
@@ -64,10 +68,6 @@ export default function ExchangeForm(props) {
   const [isLimitPriceSet, setIsLimitPriceSet] = useState(false);
   const [amountPercent, setAmountPercent] = useState(null);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    console.log(pair);
-  }, [pair]);
 
   useEffect(() => {
     if (!isValidPasswordKeyState && passwordKeyErrorState) {
@@ -100,6 +100,7 @@ export default function ExchangeForm(props) {
     setPassword("");
     setTradeInProgress(false);
   }
+
   useEffect(() => {
     async function getPriceForAsset() {
       if (asset === "USDT") {
@@ -180,7 +181,15 @@ export default function ExchangeForm(props) {
       return;
     }
     setInvalidEx(false);
+
+    getLimitOrders(pair);
   }, [pair]);
+
+  useEffect(() => {
+    if (limitOrders && limitOrders.length > 0) {
+      calculateMarketPrice();
+    }
+  }, [limitOrders]);
 
   const calculateUsdPriceHandler = (e,lastPrice='', fromPercent = false) => {
     const value = fromPercent ? e : e.target.value;
@@ -231,6 +240,7 @@ export default function ExchangeForm(props) {
       setSelectedToAmount(0);
     }
   };
+
   const handleCalculateSelectedFrom = () => {
     if (pair == null) return;
     if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
@@ -417,6 +427,42 @@ export default function ExchangeForm(props) {
     }
   }
 
+  const getLimitOrders = (pair) => {
+    Apis.instance()
+      .db_api()
+      .exec('lookup_asset_symbols', [
+        [pair.quote, pair.base]
+      ])
+      .then(res => {
+        setQuoteAsset(res[0]);
+        setBaseAsset(res[1]);
+        Apis.instance()
+          .db_api()
+          .exec('get_limit_orders', [
+            res[0].id,
+            res[1].id,
+            300,
+          ])
+          .then(res => {
+            setLimitOrders(res);
+          })
+          .catch(err => {
+            console.log('get_limit_orders error:', err);
+          });
+      })
+      .catch(err => {
+        console.log("lookup_asset_symbols error:", err);
+      });
+  }
+
+  const calculateMarketPrice = () => {
+    // for (let limitOrder of limitOrders) {
+    //   if (limitOrder.sell_price.base.asset_id === baseAsset.id) {
+    //     console.log("@1 - ", baseAsset.symbol, limitOrder)
+    //   }
+    // }
+  }
+
   return (
     <>
       <div>
@@ -569,7 +615,7 @@ export default function ExchangeForm(props) {
         </Modal>
         <div className={"adaptForMainExchange"}>
           <div className={`${styles.mainBlock} marginBottomZero`}>
-          <div>
+            <div style={{ display: "none" }}>
               <Button className={tradeType === 'market' ? 'custom-tab' : ''} onClick={() => setTradeType('market')}>Market</Button>
               <Button className={tradeType === 'limit' ? 'custom-tab' : ''} onClick={() => {
                 setTradeType('limit');
