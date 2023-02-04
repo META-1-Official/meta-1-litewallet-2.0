@@ -130,9 +130,9 @@ export default function LoginScreen(props) {
     }
     const response = await validateSignature(accountState, checkTransfer.password);
     if (!response.error && response.isValid === true) {
-      const response = await migrate(accountState, checkTransfer.password);
-      if (response.error === false) {
-        setMigrationMsg(response.msg);
+      const response_migrate = await migrate(accountState, checkTransfer.password);
+      if (response_migrate && response_migrate.error === false) {
+        setMigrationMsg(response_migrate.msg);
         setOpenModal(true);
         setIsMigrationPasskeyValid(true);
       } else {

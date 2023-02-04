@@ -231,7 +231,7 @@ export default function ExchangeForm(props) {
     const selectedAmount = currentValue ? currentValue : selectedFromAmount;
 
     if (selectedAmount !== "" && selectedAmount) {
-      const amount = (selectedAmount * marketPrice).toString().substr(0, 11) * 1;
+      const amount = (selectedAmount / pair.latest).toString().substr(0, 11) * 1;
       setSelectedToAmount(amount);
     } else {
       setSelectedToAmount(0);
