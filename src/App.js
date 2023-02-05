@@ -39,7 +39,7 @@ import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCu
 import OpenOrder from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
-import OpenLogin from 'openlogin';
+import OpenLogin from '@toruslabs/openlogin';
 
 const openLogin = new OpenLogin({
   clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
@@ -48,6 +48,15 @@ const openLogin = new OpenLogin({
   whiteLabel: {
     name: 'META1'
   },
+  loginConfig: {
+    sms_passwordless: {
+      name: "sms_passwordless",
+      typeOfLogin: "sms_passwordless",
+      showOnModal: false,
+      showOnDesktop: false,
+      showOnMobile: false,
+    }
+  }
 });
 
 window.Meta1 = Meta1;
