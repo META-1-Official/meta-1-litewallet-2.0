@@ -249,15 +249,17 @@ export default function ExchangeForm(props) {
     const userCurrencySymbol = userCurrencyState.split(" ")[1];
 
     if (userCurrencySymbol === 'USD' && baseAsset.symbol === 'USDT') {
-      setSelectedFromAmount(_blockPrice);
+      setSelectedFromAmount(_blockPrice)
       calculateSelectedToAmount(_blockPrice);
     } else {
       let asssetPrice = baseAssetPrice;
 
-      if (tradeType === 'market' && userCurrencySymbol === 'USD' && (quoteAsset.symbol === 'USDT')) {
+      if (tradeType === 'market' && userCurrencySymbol === 'USD' && quoteAsset.symbol === 'USDT') {
         asssetPrice = marketPrice;
-      }  else if (tradeType === 'limit') {
+      } else if (tradeType === 'limit') {
         asssetPrice = limitPrice;
+      } else if (tradeType === 'limit' && quoteAsset.symbol === 'USDT') {
+        asssetPrice = 1;
       }
 
       const fromAmount = (
@@ -268,7 +270,7 @@ export default function ExchangeForm(props) {
     }
   };
 
-  function fetchPair(selectedTo, selectedFrom) {
+  const fetchPair = (selectedTo, selectedFrom) => {
     if (
       selectedTo != null &&
       selectedFrom != null &&
@@ -307,6 +309,7 @@ export default function ExchangeForm(props) {
     const feeAsset = portfolio?.find((asset) => asset.name === "META1");
     localStorage.setItem("selectFrom", selectedFromAmount);
     localStorage.setItem("selectTo", selectedToAmount);
+
     if (
       selectedFrom.label === "META1" &&
       Number(selectedFromAmount) === Number(feeAsset.qty)
@@ -320,7 +323,7 @@ export default function ExchangeForm(props) {
   const performTrade = async () => {
     setTradeInProgress(true);
     setPasswordShouldBeProvided(false);
-    dispatch(passKeyRequestService({ login: accountState, password}));
+    dispatch(passKeyRequestService({ login: accountState, password }));
   }
 
   if (selectedFrom == null && selectedTo == null) return null;
