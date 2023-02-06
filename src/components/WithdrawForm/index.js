@@ -125,7 +125,10 @@ const WithdrawForm = (props) => {
     } else {
       setSelectedFrom(newOptions.find((o) => o.value === selectedFrom.value));
     }
-  }, [props.assets, props.portfolio]);
+  }, 
+    // [props.assets, props.portfolio]
+    []
+  );
 
   useEffect(() => {
     if (selectedFrom) {
