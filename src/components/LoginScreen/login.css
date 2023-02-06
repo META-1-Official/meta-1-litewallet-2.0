@@ -2,12 +2,6 @@
   width: 100% !important;
 }
 
-@media (min-width: 768px) {
-  .login-grid {
-    width: 640px !important;
-  }
-}
-
 .loginTitle {
   font-size: 24px !important;
 }
@@ -110,17 +104,6 @@ video {
   border-radius: 5px;
   width: 100%;
   height: 100%;
-}
-
-@media (max-width: 768px) {
-  video {
-    position: absolute;
-  }
-
-  .oval-image {
-    height: 80% !important;
-    top: 10% !important;
-  }
 }
 
 .btn-div {
