@@ -131,6 +131,7 @@ video {
   bottom: 20px;
   z-index: 5;
 }
+
 .btn_x {
   border: none;
   background-color: transparent;
@@ -140,6 +141,7 @@ video {
   opacity: 1;
   font-size: 20px;
 }
+
 .span-class {
   position: relative;
   margin-bottom: 10px;
@@ -147,15 +149,17 @@ video {
   text-align: center;
   line-height: 1;
 }
+
 .oval-image {
   position: absolute;
   width: 100%;
   height: 100%;
-  top:0;
+  top: 0;
   left: 0;
   z-index: 2;
   opacity: 0.8;
 }
+
 .photo {
   width: 100%;
 }
@@ -200,7 +204,7 @@ video {
 
 .migration-modal-div {
   width: 100%;
-  height: 100%;  
+  height: 100%;
 }
 
 .migration-modal-div .text2 {
@@ -212,13 +216,13 @@ video {
 }
 
 .color-black {
-  color: rgba(0,0,0,.87) !important;
+  color: rgba(0, 0, 0, .87) !important;
 }
 
 .webcam_div {
   width: 550px I !important;
-  height: 600px  !important;
-  background: #fff  !important;  
+  height: 600px !important;
+  background: #fff !important;  
 }
 
 .margin-bottom-zero {
@@ -248,37 +252,59 @@ video {
   text-align: center;
 }
 
+@media (min-width: 768px) {
+  .login-grid {
+    width: 640px !important;
+  }
+  video {
+    position: absolute;
+  }
+  .oval-image {
+    height: 80% !important;
+    top: 10% !important;
+  }
+}
+
 @media screen and (max-width: 678px) {
   .webcam_div {
     width: 100% !important;
-    height: 100%  !important;  
+    height: 100% !important;  
   }
+
   .under-div {
     width: 100% !important;
-    height: 100%  !important;  
+    height: 100% !important;  
   }
+
   .header_tag {
     width: 100% !important;
-    height: 100%  !important;  
+    height: 100% !important;  
   }
+
   .btn-1 {
     width: 80px !important;
   }
+
   .btn-2 {
     width: 80px !important;
   }
+
   .btn-disabled {
     width: 80px !important;
   }
+
   .totalSumBlock {
     padding: 0 !important;
   }
+  
   .camera-text-font-size {
     font-size: 13px !important;
   }
+
   .verify-text-font-size {
     font-size: 12px !important;
   }
+
   .span-class {
     line-height: 1.4285em !important;
     text-shadow: 1px 1px #000 !important;

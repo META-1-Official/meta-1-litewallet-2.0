@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
 import { livenessCheck, verify, getUserKycProfile } from "../../API/API";
-import { Button, Icon, Modal } from "semantic-ui-react";
 import OvalImage from '../../images/oval/oval19.png';
 import MobileOvalImage from '../../images/oval/oval19.png';
 import QRCodeModal from "../../UI/loader/QRCodeModal";
@@ -125,7 +124,6 @@ export default function FaceKiForm(props) {
 
       if (nameArry.includes(email)) {
         setFaceKISuccess(true);
-        // setVerifying(false);
       } else {
         alert('Bio-metric verification failed for this email. Please use an email that has been linked to your biometric verification / enrollment.');
       }
@@ -167,9 +165,7 @@ export default function FaceKiForm(props) {
                     Min camera resolution must be 720p
                   </span>
                   <div className="btn-grp" style={{ "marginTop": '5px' }}>
-                    {/* <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button> */}
                     <button className='btn-1' onClick={() => checkAndVerify(0)} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>
-                    {/* {!photo && <button className='btn-1' style={{ "marginLeft": '20px' }} onClick={() => setQrOpen(true)}>Take Photo via Mobile</button>} */}
                   </div>
                 </div>
               </div>
