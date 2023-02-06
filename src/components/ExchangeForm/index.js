@@ -3,13 +3,7 @@ import styles from "./ExchangeForm.module.scss";
 import RightSideHelpMenuSecondType from "../RightSideHelpMenuSecondType/RightSideHelpMenuSecondType";
 import ExchangeSelect from "./ExchangeSelect.js";
 import {
-  Image,
-  Modal,
-  Button,
-  Grid,
-  Icon,
-  Label,
-  Popup,
+  Image, Modal, Button, Grid, Icon, Label, Popup
 } from "semantic-ui-react";
 import { helpInput, helpMax1, helpSwap } from "../../config/help";
 import Input from "@mui/material/Input";
@@ -52,6 +46,11 @@ export default function ExchangeForm(props) {
   const [quoteAsset, setQuoteAsset] = useState(null);
   const [baseAsset, setBaseAsset] = useState(null);
   const [limitOrders, setLimitOrders] = useState([]);
+  const [marketPrice, setMarketPrice] = useState(0);
+  const [baseAssetPrice, setBaseAssetPrice] = useState(0);
+  const [quoteAssetPrice, setQuoteAssetPrice] = useState(0);
+  const [isInputsEnabled, setIsInputsEnabled] = useState(false);
+  const [isLoadingPrice, setIsLoadingPrice] = useState(false);
   const [invalidEx, setInvalidEx] = useState(false);
   const [modalOpened, setModalOpened] = useState(false);
   const [tradeError, setTradeError] = useState(null);
@@ -82,25 +81,6 @@ export default function ExchangeForm(props) {
     }
   },[isValidPasswordKeyState, passwordKeyErrorState])
 
-  const performTradeSubmit = async () => {
-    const buyResult = await traderState.perform({
-      from: selectedFrom.value,
-      to: selectedTo?.value?.trim(),
-      amount: selectedToAmount,
-      password: password,
-      tradePrice: tradeType === 'limit' ? limitPrice : null
-    });
-    
-    if (buyResult.error) {
-      setTradeError(buyResult.error);
-    } else {
-      dispatch(saveBalanceRequest(accountState))
-      setModalOpened(true);
-    }
-    setPassword("");
-    setTradeInProgress(false);
-  }
-
   useEffect(() => {
     async function getPriceForAsset() {
       if (asset === "USDT") {
@@ -113,24 +93,6 @@ export default function ExchangeForm(props) {
     }
     getPriceForAsset();
   }, [asset, portfolio]);
-
-  useEffect(() => {
-    const feeAsset = portfolio?.find((asset) => asset.name === "META1");
-    if (Number(selectedFromAmount) <= 0 && clickedInputs) {
-      setError(
-        `The amount must be greater than ${(
-          0.003 * Number(userCurrencyState.split(" ")[2])
-        ).toFixed(4)} ${userCurrencyState.split(" ")[1]}`
-      );
-    } else {
-      setError("");
-    }
-    if (feeAsset == undefined) {
-      setError("Not enough FEE");
-    } else {
-      setError("");
-    }
-  }, [selectedFromAmount, blockPrice]);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
@@ -154,7 +116,7 @@ export default function ExchangeForm(props) {
     });
 
     setOptions(newOptions);
-    if (selectedTo == null && options !== []) {
+    if ((selectedFrom == null || selectedTo == null) && options !== []) {
       const from = asset
         ? newOptions.find((el) => el.value === asset)
         : newOptions[0];
@@ -164,174 +126,173 @@ export default function ExchangeForm(props) {
       if (asset === "META1") {
         to = newOptions.find((el) => el.value === "USDT");
       }
+
       setSelectedTo(to);
       setSelectedFrom(from);
     } else {
-      setSelectedTo(newOptions.find((o) => o.value === selectedTo.value));
-      setSelectedFrom(newOptions.find((o) => o.value === selectedFrom.value));
+      const from = newOptions.find((o) => o.value === selectedFrom.value);
+      const to = newOptions.find((o) => o.value === selectedTo.value);
+      if (from.value !== selectedFrom.value) setSelectedFrom(from);
+      if (to.value !== selectedTo.value) setSelectedTo(to);
     }
   }, [props.assets, props.portfolio]);
 
   useEffect(() => {
     if (pair == null) return;
-    if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
-      setInvalidEx(true);
-      setSelectedFromAmount(0);
-      setBlockPrice("");
-      return;
-    }
-    setInvalidEx(false);
+    console.log("pair change:", pair.base, pair.quote, "trade type:", tradeType);
 
-    getLimitOrders(pair);
+    if (tradeType === 'market') {
+      getLimitOrders(pair);
+    } else {
+      console.log("limitPrice: ", pair.base, pair.quote, 1 / pair.latest);
+
+      if (pair.latest === '0') {
+        setError("Unavailable to exchange these assets");
+        return;
+      }
+
+      setLimitPrice(1 / pair.latest);
+      setIsInputsEnabled(true);
+    }
   }, [pair]);
 
   useEffect(() => {
-    if (limitOrders && limitOrders.length > 0) {
-      calculateMarketPrice();
-    }
-  }, [limitOrders]);
+    const feeAsset = portfolio?.find((asset) => asset.name === "META1");
 
-  const calculateUsdPriceHandler = (e,lastPrice='', fromPercent = false) => {
-    const value = fromPercent ? e : e.target.value;
-    if (value.length != 0) {
-      let priceAsset = priceForAsset
-      if(lastPrice!=''){
-        priceAsset=lastPrice
+    if (!feeAsset) {
+      setError("Not enough FEE");
+    } else {
+      setError("");
+    }
+
+    if (Number(selectedFromAmount) <= 0 && clickedInputs) {
+      setError(
+        `The amount must be greater than ${(
+          0.003 * Number(userCurrencyState.split(" ")[2])
+        ).toFixed(4)} ${userCurrencyState.split(" ")[1]}`
+      );
+    } else {
+      setError("");
+    }
+  }, [selectedFromAmount]);
+
+  useEffect(() => {
+    setPasswordShouldBeProvided(false);
+  }, [tradeType, selectedFrom, selectedTo, selectedFromAmount, selectedToAmount]);
+
+  useEffect(() => {
+    setAmountPercent(0);
+    setInvalidEx(false);
+    setError(null);
+    setIsInputsEnabled(false);
+    setMarketPrice(0);
+    setLimitPrice(0);
+    setBlockPrice(NaN);
+    setSelectedFromAmount(NaN);
+    setSelectedToAmount(NaN);
+    setIsLoadingPrice(true);
+    fetchPair(selectedTo, selectedFrom);
+  }, [tradeType, selectedFrom, selectedTo]);
+
+  const performTradeSubmit = async () => {
+    const buyResult = await traderState.perform({
+      from: selectedFrom.value,
+      to: selectedTo?.value?.trim(),
+      amount: selectedToAmount,
+      password: password,
+      tradePrice: tradeType === 'limit' ? limitPrice : marketPrice
+    });
+    
+    if (buyResult.error) {
+      setTradeError(buyResult.error);
+    } else {
+      dispatch(saveBalanceRequest(accountState))
+      setModalOpened(true);
+    }
+
+    setPassword("");
+    setTradeInProgress(false);
+  }
+
+  const calculateSelectedToAmount = (fromAmount) => {
+    if (pair == null) return;
+    setInvalidEx(false);
+
+    const asssetPrice = tradeType === 'market' ? marketPrice : limitPrice;
+    const toAmount = (
+      Number(fromAmount) * asssetPrice / Number(userCurrencyState.split(" ")[2])
+    ).toFixed(selectedTo.label === "USDT" ? 3 : selectedTo.pre);
+    setSelectedToAmount(toAmount);
+  };
+
+  const calculateBlockPrice = (fromAmount) => {
+    if (fromAmount) {
+      const userCurrencySymbol = userCurrencyState.split(" ")[1];
+      let asssetPrice = baseAssetPrice;
+
+      if (tradeType === 'market' && userCurrencySymbol === 'USD' && (quoteAsset.symbol === 'USDT')) {
+        asssetPrice = marketPrice;
+      } else if (tradeType === 'limit') {
+        asssetPrice = limitPrice;
       }
-      let priceForOne = (Number(value) * priceAsset).toFixed(10);
+
+      const priceForOne = (Number(fromAmount) * asssetPrice).toFixed(10);
       setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
     } else {
       setBlockPrice(NaN);
     }
   };
 
-  const calculateCryptoPriceHandler = (e) => {
-    setBlockPrice(e.target.value);
-    let priceForOne = (
-      Number(e.target.value) /
-      priceForAsset /
-      Number(userCurrencyState.split(" ")[2])
-    ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
-    setSelectedFromAmount(priceForOne);
-  };
+  const calculateCryptoPrice = (e) => {
+    const _blockPrice = e.target.value;
+    setBlockPrice(_blockPrice);
+    const userCurrencySymbol = userCurrencyState.split(" ")[1];
 
-  const handleCalculateSelectedTo = (currentValue='') => {
-    if (pair == null) return;
-    if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
-      setInvalidEx(true);
-      setSelectedToAmount(NaN);
-      setSelectedFromAmount(NaN);
-      setBlockPrice(NaN);
-      return;
-    }
-    setInvalidEx(false);
-    const selectedAmount=currentValue?currentValue:selectedFromAmount
-
-    if (selectedAmount !== "" && selectedAmount) {
-      const amount = (selectedAmount / pair.latest).toString().substr(0, 11) * 1;
-      setSelectedToAmount(amount);
+    if (userCurrencySymbol === 'USD' && baseAsset.symbol === 'USDT') {
+      setSelectedFromAmount(_blockPrice);
+      calculateSelectedToAmount(_blockPrice);
     } else {
-      setSelectedToAmount(0);
+      let asssetPrice = baseAssetPrice;
+
+      if (tradeType === 'market' && userCurrencySymbol === 'USD' && (quoteAsset.symbol === 'USDT')) {
+        asssetPrice = marketPrice;
+      }  else if (tradeType === 'limit') {
+        asssetPrice = limitPrice;
+      }
+
+      const fromAmount = (
+        Number(_blockPrice) / asssetPrice / Number(userCurrencyState.split(" ")[2])
+      ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
+      setSelectedFromAmount(fromAmount);
+      calculateSelectedToAmount(fromAmount);
     }
   };
 
-  const handleCalculateSelectedFrom = () => {
-    if (pair == null) return;
-    if (pair.lowest_ask === "0" || parseFloat(pair.lowest_ask) === 0.0) {
-      setInvalidEx(true);
-      setSelectedFromAmount(0);
-      setBlockPrice("");
-      return;
+  function fetchPair(selectedTo, selectedFrom) {
+    if (
+      selectedTo != null &&
+      selectedFrom != null &&
+      selectedFrom.value !== undefined
+    ) {
+      const getPairPromise = Meta1.ticker(selectedFrom.value, selectedTo.value);
+      const getBaseAssetPricePromise = Meta1.ticker("USDT", selectedFrom.value);
+      const getQuoteAssetPricePromise = Meta1.ticker("USDT", selectedTo.value);
+      Promise.all([getPairPromise, getBaseAssetPricePromise, getQuoteAssetPricePromise])
+        .then(res => {
+          setPair(res[0]);
+          setBaseAssetPrice(res[1].latest === '0' ? 1 : res[1].latest);
+          setQuoteAssetPrice(res[2].latest);
+        });
     }
-    setInvalidEx(false);
-    const amount = selectedToAmount * pair.lowest_ask;
-    setSelectedFromAmount(amount);
-  };
-
-  useEffect(() => {
-    if (selectedFromAmount > 0) {
-      setSelectedToAmount(0);
-    }
-    if (selectedFromAmount?.length) {
-      handleCalculateSelectedTo();
-    }
-    if (selectedToAmount?.length) {
-      handleCalculateSelectedFrom();
-    }
-    if (selectedToAmount === "") {
-      setSelectedFromAmount("");
-    }
-  }, [selectedFromAmount, selectedToAmount]);
-
-  useEffect(() => {
-    setPasswordShouldBeProvided(false);
-  }, [selectedFrom, selectedTo, selectedFromAmount, selectedToAmount]);
-
-  useEffect(() => {
-    async function fetchPair(selectedTo, selectedFrom) {
-      if (
-        selectedTo != null &&
-        selectedFrom != null &&
-        selectedFrom.value !== undefined
-      ) {
-        const newPair = await Meta1.ticker(
-          selectedFrom.value,
-          selectedTo.value
-        );
-        setPair(newPair);
-      }
-    }
-    fetchPair(selectedTo, selectedFrom);
-  }, [selectedFrom, selectedTo]);
-
-  useEffect(() => {
-    if (amountPercent !== 0) {
-      setAmountPercent(0);
-    }
-    async function fetchPair(selectedTo, selectedFrom) {
-      if (
-        selectedTo != null &&
-        selectedFrom != null &&
-        selectedFrom.value !== undefined
-      ) {
-        const newPair = await Meta1.ticker(
-          selectedFrom.value,
-          selectedTo.value
-        );
-        let pairAmt = 0;
-        if (selectedFrom.value === "META1") {
-          pairAmt = newPair.latest;
-        } else if (selectedFrom.value === "USDT") {
-          pairAmt = newPair.latest;
-        } else {
-          pairAmt = newPair.lowest_ask;
-        }
-        setLimitPrice(pairAmt);
-      } else {
-        setIsLimitPriceSet(prev => !prev);
-      }
-    }
-    fetchPair(selectedTo, selectedFrom);
-  }, [isLimitPriceSet, tradeType]);
+  }
 
   const changeAssetHandler = async (val) => {
     if (val === "USDT") {
       setPriceForAsset(1);
     } else {
       Meta1.ticker("USDT", val).then((res) =>{
-        setPriceForAsset(Number(res.latest).toFixed(2))
-      }
-      );
-    }
-  };
-
-  const changeAssetHandlerSwap = async (val) => {
-    if (val.label === "USDT") {
-      setPriceForAsset(1);
-    } else {
-      Meta1.ticker("USDT", val.label).then((res) =>
-        setPriceForAsset(Number(res.latest).toFixed(2))
-      );
+        setPriceForAsset(Number(res.latest).toFixed(2));
+      });
     }
   };
 
@@ -341,9 +302,6 @@ export default function ExchangeForm(props) {
     setSelectedFrom(selectedTo);
     setSelectedTo(oldFrom);
   };
-
-  const { innerWidth: width } = window;
-  const isMobile = width <= 600;
 
   const prepareTrade = () => {
     const feeAsset = portfolio?.find((asset) => asset.name === "META1");
@@ -365,59 +323,36 @@ export default function ExchangeForm(props) {
     dispatch(passKeyRequestService({ login: accountState, password}));
   }
 
-  const setAssetMax = (e) => {
-    e.preventDefault();
-    if (amountPercent) {
-      setAmountPercent(null);
-    }
-    setSelectedFromAmount(selectedFrom.balance);
-    handleCalculateSelectedTo();
-    setTimeout(() => {
-      let priceForOne = (
-        Number(document.getElementById("inputAmount").value) * priceForAsset
-      ).toFixed(3);
-      setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
-    }, 25);
-  };
-  const ariaLabel = { "aria-label": "description" };
-
-  // const getAssets = (except) => options.filter((el) => el.value !== except);
   if (selectedFrom == null && selectedTo == null) return null;
-
   const getAssets = (except) => options.filter((el) => el.value !== except);
 
-  const inputChangeValuesHandler =(e,currentInput,lastPrice, fromPercent= false)=>{
-    const val = fromPercent ? e : e.target.value;
-    handleCalculateSelectedTo(val);
-    calculateUsdPriceHandler(e, lastPrice, fromPercent);
+  const inputChangeHandler = (fromAmount) => {
     setClickedInputs(true);
-  }
-
-  const inputChangeHandler = async (val,e, fromPercent = false)=>{
-    const currentInput = fromPercent ? e : e.target.value;
-    setSelectedFromAmount(prev=>{
-      return currentInput
-    });
-    if (val === "USDT") {
-      setPriceForAsset(1);
-      inputChangeValuesHandler(e,currentInput,'', fromPercent);
-    } else {
-      Meta1.ticker("USDT", val).then((res) =>{
-        setPriceForAsset(prev=>{
-          return Number(res.latest).toFixed(2)
-        })
-        inputChangeValuesHandler(e, currentInput,Number(res.latest).toFixed(2), fromPercent);
-      }
-      );
-    }
+    setSelectedFromAmount(fromAmount);
+    calculateBlockPrice(fromAmount);
+    calculateSelectedToAmount(fromAmount);
   }
 
   const changePercentageHandler = (val) => {
-    if (!invalidEx) {
-      setAmountPercent(val);
-      const value = String(Number(selectedFrom.balance)*(val/100));
-      setSelectedFromAmount(value);
-      inputChangeHandler(selectedFrom.label, value, true);
+    if (invalidEx) return;
+
+    const fromAmount = String(Number(selectedFrom.balance) * (val / 100));
+    setAmountPercent(val);
+    setSelectedFromAmount(fromAmount);
+    inputChangeHandler(fromAmount);
+  }
+
+  const setAssetMax = (e) => {
+    e.preventDefault();
+
+    setAmountPercent(100);
+    inputChangeHandler(selectedFrom.balance);
+  };
+
+  const onChangeLimitPrice = (val) => {
+    if (/^\d*\.?\d*$/.test(val)) {
+      setLimitPrice(val);
+      inputChangeHandler(selectedFromAmount);
     }
   }
 
@@ -425,37 +360,59 @@ export default function ExchangeForm(props) {
     Apis.instance()
       .db_api()
       .exec('lookup_asset_symbols', [
-        [pair.quote, pair.base]
+        [pair.base, pair.quote]
       ])
       .then(res => {
-        setQuoteAsset(res[0]);
-        setBaseAsset(res[1]);
+        const _baseAsset = res[0];
+        const _quoteAsset = res[1];
+        setBaseAsset(_baseAsset);
+        setQuoteAsset(_quoteAsset);
+
         Apis.instance()
           .db_api()
-          .exec('get_limit_orders', [
-            res[0].id,
-            res[1].id,
-            300,
-          ])
-          .then(res => {
-            setLimitOrders(res);
+          .exec(
+            'get_limit_orders', 
+            [_baseAsset.id, _quoteAsset.id, 300]
+          )
+          .then((_limitOrders) => {
+            setLimitOrders(_limitOrders);
+            setIsLoadingPrice(false);
+
+            if (_limitOrders && _limitOrders.length > 0) {
+              calculateMarketPrice(_limitOrders, _baseAsset, _quoteAsset);
+            }
           })
           .catch(err => {
             console.log('get_limit_orders error:', err);
+            setIsLoadingPrice(false);
           });
       })
       .catch(err => {
         console.log("lookup_asset_symbols error:", err);
+        setIsLoadingPrice(false);
       });
   }
 
-  const calculateMarketPrice = () => {
-    // for (let limitOrder of limitOrders) {
-    //   if (limitOrder.sell_price.base.asset_id === baseAsset.id) {
-    //     console.log("@1 - ", baseAsset.symbol, limitOrder)
-    //   }
-    // }
+  const calculateMarketPrice = (_limitOrders, baseAsset, quoteAsset) => {
+    let _marketPrice = 0;
+
+    for (let limitOrder of _limitOrders) {
+      if (limitOrder.sell_price.base.asset_id === baseAsset.id) {
+        const divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
+        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+        _marketPrice = _marketPrice > price ? _marketPrice : price;
+      }
+    }
+
+    console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
+    setMarketPrice(_marketPrice);
+
+    if (_marketPrice > 0) setIsInputsEnabled(true);
   }
+
+  const { innerWidth: width } = window;
+  const isMobile = width <= 600;
+  const ariaLabel = { "aria-label": "description" };
 
   return (
     <>
@@ -609,12 +566,22 @@ export default function ExchangeForm(props) {
         </Modal>
         <div className={"adaptForMainExchange"}>
           <div className={`${styles.mainBlock} marginBottomZero`}>
-            <div style={{ display: "none" }}>
-              <Button className={tradeType === 'market' ? 'custom-tab' : ''} onClick={() => setTradeType('market')}>Market</Button>
-              <Button className={tradeType === 'limit' ? 'custom-tab' : ''} onClick={() => {
-                setTradeType('limit');
-                setIsLimitPriceSet(prev => !prev);
-              }}>Limit Order</Button>
+            <div style={{ marginBottom: "20px" }}>
+              <Button
+                className={tradeType === 'market' ? 'custom-tab' : ''}
+                onClick={() => setTradeType('market')}
+              >
+                Market Order
+              </Button>
+              <Button
+                className={tradeType === 'limit' ? 'custom-tab' : ''}
+                onClick={() => {
+                  setTradeType('limit');
+                  setIsLimitPriceSet(prev => !prev);
+                }}
+              >
+                Limit Order
+              </Button>
             </div>
             <div className={styles.mainBlockExchange}>
               <div className={styles.leftBlockExchange}>
@@ -664,10 +631,8 @@ export default function ExchangeForm(props) {
                                       ) &&
                                       Number(e.target.value) >= 0
                                     ) {
-                                      if (amountPercent) {
-                                        setAmountPercent(null);
-                                      }
-                                      inputChangeHandler(selectedFrom.label,e)
+                                      setAmountPercent(null);
+                                      inputChangeHandler(e.target.value)
                                     }
                                   }}
                                   endAdornment={
@@ -677,7 +642,7 @@ export default function ExchangeForm(props) {
                                   }
                                   inputProps={ariaLabel}
                                   id={"inputAmount"}
-                                  disabled={invalidEx}
+                                  disabled={invalidEx || !isInputsEnabled}
                                   min="0"
                                   inputmode="numeric"
                                   pattern="\d*"
@@ -703,20 +668,17 @@ export default function ExchangeForm(props) {
                                         ) &&
                                         Number(e.target.value) >= 0
                                       ) {
-                                        if (amountPercent) {
-                                          setAmountPercent(null);
-                                        }
-                                        calculateCryptoPriceHandler(e);
+                                        setAmountPercent(null);
                                         setClickedInputs(true);
+                                        calculateCryptoPrice(e);
                                       }
                                     }}
                                     min="0"
                                     inputmode="numeric"
                                     pattern="\d*"
                                     type={"number"}
-                                    placeholder={`Amount ${userCurrencyState.split(" ")[1]
-                                      }`}
-                                    disabled={invalidEx}
+                                    placeholder={`Amount ${userCurrencyState.split(" ")[1]}`}
+                                    disabled={invalidEx || !isInputsEnabled}
                                     style={
                                       invalidEx ? { opacity: "0.5" } : null
                                     }
@@ -756,25 +718,23 @@ export default function ExchangeForm(props) {
                       <span className={`percentage-padding ${amountPercent === 100 ? 'active' : ''}`} onClick={() => changePercentageHandler(100)}>100%</span>
                     </div>
                   </Grid>
-                  {tradeType === 'limit' && <Grid className="limit-input-grid">
-                    <TextField
-                      id="outlined-textarea"
-                      label="Price"
-                      placeholder="Enter Price"
-                      className="input-price"
-                      value={limitPrice}
-                      onChange={(e) => {
-                        if (/^\d*\.?\d*$/.test(e.target.value)) {
-                          setLimitPrice(e.target.value);
-                        }
-                      }}
-                    />
-                  </Grid>}
+                  {tradeType === 'limit' &&
+                    <Grid className="limit-input-grid">
+                      <TextField
+                        id="outlined-textarea"
+                        label="Price"
+                        placeholder="Enter Price"
+                        className="input-price"
+                        value={limitPrice}
+                        onChange={(e) => onChangeLimitPrice(e.target.value)}
+                      />
+                    </Grid>
+                  }
                 </div>
               </div>
               <div
                 style={{ marginTop: "2.3rem", marginLeft: ".3rem" }}
-                className="padding-y-large text-center-s"
+                className="padding-y-large text-center-s aaaa"
               >
                 <Popup
                   content={helpSwap(selectedFrom?.value, selectedTo?.value)}
@@ -784,8 +744,6 @@ export default function ExchangeForm(props) {
                       className={styles.button}
                       style={{ width: "3rem", height: "3rem" }}
                       onClick={(e) => {
-                        setIsLimitPriceSet(prev => !prev);
-                        changeAssetHandlerSwap(selectedTo);
                         setSelectedToAmount(NaN);
                         setSelectedFromAmount(NaN);
                         setBlockPrice(NaN);
@@ -847,18 +805,8 @@ export default function ExchangeForm(props) {
                                 <Input
                                   style={isMobile ? { width: "100%" } : null}
                                   placeholder="Amount crypto"
-                                  value={
-                                    selectedFromAmount ? selectedToAmount : 0
-                                  }
+                                  value={selectedFromAmount ? selectedToAmount : 0}
                                   type={"number"}
-                                  onChange={(e) => {
-                                    setSelectedToAmount(
-                                      Number(e.target.value).toFixed(
-                                        selectedTo.pre
-                                      )
-                                    );
-                                    handleCalculateSelectedFrom();
-                                  }}
                                   endAdornment={
                                     <InputAdornment position="end">
                                       {selectedTo.label}
@@ -968,7 +916,7 @@ export default function ExchangeForm(props) {
                 </div>
               </div>
             </div>
-            {error && !invalidEx && selectedFromAmount ? (
+            {error ? (
               <Grid.Row centered style={{ marginBottom: "1rem" }}>
                 <h5 style={{ color: "red", textAlign: "center" }}>{error}</h5>
               </Grid.Row>
@@ -977,6 +925,13 @@ export default function ExchangeForm(props) {
               <Grid.Row centered style={{ marginBottom: "1rem" }}>
                 <h5 style={{ color: "red", textAlign: "center" }}>
                   You don't have enough crypto
+                </h5>
+              </Grid.Row>
+            ) : null}
+            {(tradeType === 'market' && !isLoadingPrice && marketPrice === 0) ? (
+              <Grid.Row centered style={{ marginBottom: "1rem" }}>
+                <h5 style={{ color: "red", textAlign: "center" }}>
+                  No liquidity
                 </h5>
               </Grid.Row>
             ) : null}
