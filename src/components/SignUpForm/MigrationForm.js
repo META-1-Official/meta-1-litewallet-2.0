@@ -15,7 +15,6 @@ export default function MigrationForm(props) {
       props.onClick(
         props.accountName,
         props.password,
-        props.phone,
         props.lastName,
         props.firstName
       );

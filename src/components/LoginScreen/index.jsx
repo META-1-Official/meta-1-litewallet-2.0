@@ -5,7 +5,7 @@ import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideH
 import { useDispatch, useSelector } from "react-redux";
 import { checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
 import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
-import { checkMigrationable, migrate, validateSignature } from "../../API/API";
+import { checkMigrationable, migrate, validateSignature, getUserKycProfileByAccount } from "../../API/API";
 
 import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
@@ -209,13 +209,43 @@ export default function LoginScreen(props) {
 
         setAuthData(data);
         setPrivKey(privKey);
-        setEmail(data?.email.toLowerCase());
+
+        if (data.verifierId.includes("+")) { // if verifier is phone number
+          const pn = data.name.replace("+", "").replace("-", ""); // remove phone number format
+          const userFromAcc = await getUserKycProfileByAccount(login);
+
+          if (!userFromAcc) {
+            alert("We can not find your account in our esignature database.");
+            return;
+          }
+
+          let pnArry = userFromAcc.phoneNumber.replace(" ", "").split(",");
+
+          if (pnArry.includes(pn)) {
+            setEmail(userFromAcc.email.toLowerCase());
+          } else {            
+            // if (pnArry.length === 1 && pnArry[0].includes(" ")) {
+            //   alert ("Phone Number is not belong to your account. Please try with email.");
+            //   return;
+            //   // setEmail(userFromAcc.email);
+            // } else {
+            //   alert ("Phone Number is not belong to your account.");
+            //   return;
+            // }
+            alert ("Phone Number is not belong to your account.");
+            return;
+          }
+        }
+        else { // if verifier is email address
+          setEmail(data?.email.toLowerCase());
+        }
         setLoader(false);
         setStep('faceki');
       }
     } catch (error) {
       console.log('Error in Torus Render', error);
       setLoader(false);
+      setStep("userform");
     }
   };
 
