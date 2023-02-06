@@ -194,13 +194,19 @@ export default function ExchangeForm(props) {
     fetchPair(selectedTo, selectedFrom);
   }, [tradeType, selectedFrom, selectedTo]);
 
+  useEffect(() => {
+    if (limitPrice && selectedFromAmount) {
+      inputChangeHandler(selectedFromAmount);
+    }
+  }, [limitPrice]);
+
   const performTradeSubmit = async () => {
     const buyResult = await traderState.perform({
       from: selectedFrom.value,
       to: selectedTo?.value?.trim(),
       amount: selectedToAmount,
       password: password,
-      tradePrice: tradeType === 'limit' ? limitPrice : marketPrice
+      tradePrice: 1 / (tradeType === 'limit' ? limitPrice : marketPrice)
     });
     
     if (buyResult.error) {
@@ -233,7 +239,7 @@ export default function ExchangeForm(props) {
       if (tradeType === 'market' && userCurrencySymbol === 'USD' && (quoteAsset.symbol === 'USDT')) {
         asssetPrice = marketPrice;
       } else if (tradeType === 'limit') {
-        asssetPrice = limitPrice;
+        asssetPrice = baseAssetPrice;
       }
 
       const priceForOne = (Number(fromAmount) * asssetPrice).toFixed(10);
@@ -258,7 +264,7 @@ export default function ExchangeForm(props) {
         asssetPrice = marketPrice;
       } else if (tradeType === 'limit') {
         asssetPrice = limitPrice;
-      } else if (tradeType === 'limit' && quoteAsset.symbol === 'USDT') {
+      } else if (tradeType === 'limit' && baseAsset.symbol === 'USDT') {
         asssetPrice = 1;
       }
 
@@ -355,7 +361,6 @@ export default function ExchangeForm(props) {
   const onChangeLimitPrice = (val) => {
     if (/^\d*\.?\d*$/.test(val)) {
       setLimitPrice(val);
-      inputChangeHandler(selectedFromAmount);
     }
   }
 
@@ -407,10 +412,11 @@ export default function ExchangeForm(props) {
       }
     }
 
-    console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
-    setMarketPrice(_marketPrice);
-
-    if (_marketPrice > 0) setIsInputsEnabled(true);
+    if (_marketPrice > 0) {
+      console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
+      setIsInputsEnabled(true);
+      setMarketPrice(_marketPrice);
+    }
   }
 
   const { innerWidth: width } = window;
