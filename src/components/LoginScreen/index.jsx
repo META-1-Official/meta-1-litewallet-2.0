@@ -210,8 +210,8 @@ export default function LoginScreen(props) {
         setAuthData(data);
         setPrivKey(privKey);
 
-        if (data.verifierId.includes("+")) {
-          const pn = data.name.replace("+", "").replace("-", "");
+        if (data.verifierId.includes("+")) { // if verifier is phone number
+          const pn = data.name.replace("+", "").replace("-", ""); // remove phone number format
           const userFromAcc = await getUserKycProfileByAccount(login);
 
           if (!userFromAcc) {
@@ -219,22 +219,24 @@ export default function LoginScreen(props) {
             return;
           }
 
-          let pnArry = userFromAcc.phoneNumber.split(",");
+          let pnArry = userFromAcc.phoneNumber.replace(" ", "").split(",");
 
           if (pnArry.includes(pn)) {
-            setEmail(userFromAcc.email);
+            setEmail(userFromAcc.email.toLowerCase());
           } else {            
-            if (pnArry.length === 1 && pnArry[0].includes(" ")) {
-              alert ("Phone Number is not belong to your account. Please try with email.");
-              return;
-              // setEmail(userFromAcc.email);
-            } else {
-              alert ("Phone Number is not belong to your account.");
-              return;
-            }
+            // if (pnArry.length === 1 && pnArry[0].includes(" ")) {
+            //   alert ("Phone Number is not belong to your account. Please try with email.");
+            //   return;
+            //   // setEmail(userFromAcc.email);
+            // } else {
+            //   alert ("Phone Number is not belong to your account.");
+            //   return;
+            // }
+            alert ("Phone Number is not belong to your account.");
+            return;
           }
         }
-        else {
+        else { // if verifier is email address
           setEmail(data?.email.toLowerCase());
         }
         setLoader(false);

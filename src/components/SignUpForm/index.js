@@ -364,7 +364,7 @@ export default function SignUpForm(props) {
         setAuthData(data);
         setPrivKey(privKey);
 
-        if (data.verifierId.includes("+")) { // means verifier is phone
+        if (data.verifierId.includes("+")) { // means verifier is phone number
           setEmail(null);
           setPhone(data.verifierId.replace("+", "").replace("-", ""));
           setTMode("phone");
