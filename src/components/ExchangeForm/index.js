@@ -206,7 +206,7 @@ export default function ExchangeForm(props) {
       to: selectedTo?.value?.trim(),
       amount: selectedToAmount,
       password: password,
-      tradePrice: tradeType === 'limit' ? limitPrice : marketPrice
+      tradePrice: 1 / (tradeType === 'limit' ? limitPrice : marketPrice)
     });
     
     if (buyResult.error) {
@@ -412,10 +412,11 @@ export default function ExchangeForm(props) {
       }
     }
 
-    console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
-    setMarketPrice(_marketPrice);
-
-    if (_marketPrice > 0) setIsInputsEnabled(true);
+    if (_marketPrice > 0) {
+      console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
+      setIsInputsEnabled(true);
+      setMarketPrice(_marketPrice);
+    }
   }
 
   const { innerWidth: width } = window;

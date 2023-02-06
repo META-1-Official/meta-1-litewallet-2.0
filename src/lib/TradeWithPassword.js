@@ -34,6 +34,7 @@ export default class TradeWithPassword {
         false,
         new Date(new Date().setYear(new Date().getFullYear()+1))
       );
+
       return { result: buyResult, error: null };
     } catch (e) {
       if (e.message === "The pair of login and password do not match!") {
