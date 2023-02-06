@@ -5,7 +5,7 @@ import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideH
 import { useDispatch, useSelector } from "react-redux";
 import { checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
 import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
-import { checkMigrationable, migrate, validateSignature, getUserKycProfileByAccount, getUserKycProfileByPhoneNumber } from "../../API/API";
+import { checkMigrationable, migrate, validateSignature, getUserKycProfileByAccount } from "../../API/API";
 
 import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
