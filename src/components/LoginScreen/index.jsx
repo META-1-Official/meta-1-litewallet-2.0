@@ -5,7 +5,7 @@ import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideH
 import { useDispatch, useSelector } from "react-redux";
 import { checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
 import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
-import { checkMigrationable, migrate, validateSignature } from "../../API/API";
+import { checkMigrationable, migrate, validateSignature, getUserKycProfileByAccount, getUserKycProfileByPhoneNumber } from "../../API/API";
 
 import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
@@ -210,7 +210,33 @@ export default function LoginScreen(props) {
         setAuthData(data);
         setPrivKey(privKey);
         console.log('@data', data)
-        setEmail(data?.email.toLowerCase());
+        if (data.email === "") {
+          const pn = data.name.replace("+", "").replace("-", "");
+          console.log('pn', pn, login);
+          const userFromAcc = await getUserKycProfileByAccount(login);
+          const userFromPN = await getUserKycProfileByPhoneNumber(pn);
+          console.log(userFromAcc, userFromPN);
+
+          if (!userFromAcc) {
+            alert("We can not find your account in our esignature database.");
+            return;
+          }
+
+          if (userFromAcc.email === userFromPN.email) {
+            setEmail(userFromAcc.email)
+          } else {
+            let pnArry = userFromAcc.phoneNumber.split(",");
+            if (pnArry.length === 1 && pnArry[0].includes(" ")) {
+              setEmail(userFromAcc.email)
+            } else {
+              alert ("Phone Number is not belong to your account.");
+              return;
+            }
+          }
+        }
+        else {
+          setEmail(data?.email.toLowerCase());
+        }
         setLoader(false);
         setStep('faceki');
       }
