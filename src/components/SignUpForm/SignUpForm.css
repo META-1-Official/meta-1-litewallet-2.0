@@ -427,6 +427,17 @@ video {
     width: 100% !important;
   }
 }
+
+@media (max-width: 768px) {
+  video {
+    position: absolute;
+  }
+  .oval-image {
+    height: 80% !important;
+    top: 10% !important;
+  }
+}
+
 @media screen and (max-width: 678px) {
   .webcam_div {
     width: 100% !important;
