@@ -1,3 +1,9 @@
+@media (max-width: 767px) {
+
+  .singup-grid,
+  .singup-grid .column {}
+}
+
 .signup-form {
   width: 100% !important;
 }
@@ -236,6 +242,17 @@ video {
   height: 100%;
 }
 
+@media (max-width: 768px) {
+  video {
+    position: absolute;
+  }
+
+  .oval-image {
+    height: 80% !important;
+    top: 10% !important;
+  }
+}
+
 .membership_head {
   display: flex;
   flex-direction: column;
@@ -410,17 +427,6 @@ video {
     width: 100% !important;
   }
 }
-
-@media (max-width: 768px) {
-  video {
-    position: absolute;
-  }
-  .oval-image {
-    height: 80% !important;
-    top: 10% !important;
-  }
-}
-
 @media screen and (max-width: 678px) {
   .webcam_div {
     width: 100% !important;
