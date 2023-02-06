@@ -1,9 +1,3 @@
-@media (max-width: 767px) {
-
-  .singup-grid,
-  .singup-grid .column {}
-}
-
 .signup-form {
   width: 100% !important;
 }
@@ -240,17 +234,6 @@ video {
   border-radius: 5px;
   width: 100%;
   height: 100%;
-}
-
-@media (max-width: 768px) {
-  video {
-    position: absolute;
-  }
-
-  .oval-image {
-    height: 80% !important;
-    top: 10% !important;
-  }
 }
 
 .membership_head {
