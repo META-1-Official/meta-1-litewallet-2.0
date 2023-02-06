@@ -209,25 +209,25 @@ export default function LoginScreen(props) {
 
         setAuthData(data);
         setPrivKey(privKey);
-        console.log('@data', data)
-        if (data.email === "") {
+
+        if (data.verifierId.includes("+")) {
           const pn = data.name.replace("+", "").replace("-", "");
-          console.log('pn', pn, login);
           const userFromAcc = await getUserKycProfileByAccount(login);
-          const userFromPN = await getUserKycProfileByPhoneNumber(pn);
-          console.log(userFromAcc, userFromPN);
 
           if (!userFromAcc) {
             alert("We can not find your account in our esignature database.");
             return;
           }
 
-          if (userFromAcc.email === userFromPN.email) {
-            setEmail(userFromAcc.email)
-          } else {
-            let pnArry = userFromAcc.phoneNumber.split(",");
+          let pnArry = userFromAcc.phoneNumber.split(",");
+
+          if (pnArry.includes(pn)) {
+            setEmail(userFromAcc.email);
+          } else {            
             if (pnArry.length === 1 && pnArry[0].includes(" ")) {
-              setEmail(userFromAcc.email)
+              alert ("Phone Number is not belong to your account. Please try with email.");
+              return;
+              // setEmail(userFromAcc.email);
             } else {
               alert ("Phone Number is not belong to your account.");
               return;
@@ -243,6 +243,7 @@ export default function LoginScreen(props) {
     } catch (error) {
       console.log('Error in Torus Render', error);
       setLoader(false);
+      setStep("userform");
     }
   };
 

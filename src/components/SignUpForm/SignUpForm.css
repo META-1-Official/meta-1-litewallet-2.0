@@ -44,6 +44,12 @@ input {
   color: var(--textBrown);
 }
 
+.disp-section {
+  padding-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
 .createWalletForm {
   margin: 1rem;
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { UserInformationForm } from "./UserInformationForm.js";
+import { AdditionalInformationForm } from "./AdditionalInformationForm.js";
 import SubmitForm from "./SubmitForm.js";
 import createAccountWithPassword, { generateKeyFromPassword } from "../../lib/createAccountWithPassword.js";
 import { Button } from "semantic-ui-react";
@@ -32,13 +33,11 @@ export default function SignUpForm(props) {
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [password, setPassword] = useState("");
-  const [phoneFormat, setPhoneFormat] = useState('');
-  const [country, setCountry] = useState("");
-  const [selectedCountryObj, setSelectedCountryObj] = useState(null);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [step, setStep] = useState('userform');
   const [authData, setAuthData] = useState(null);
+  const [tmode, setTMode] = useState("email");
   const [privKey, setPrivKey] = useState(null);
   const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false);
   const [copyPasskeyModal, setCopyPasskeyModal] = useState(false);
@@ -62,22 +61,14 @@ export default function SignUpForm(props) {
   const stepUserInfoSubmit = async (
     accName,
     pass,
-    newPhone,
     newLastName,
-    newFirstName,
-    newPhoneFormat,
-    newCountry,
-    newSelectedCountryObj
+    newFirstName
   ) => {
     setLoader(true);
     setAccountName(accName);
     setFirstName(newFirstName);
     setPassword(pass);
     setLastName(newLastName);
-    setPhone(newPhone);
-    setPhoneFormat(newPhoneFormat);
-    setCountry(newCountry);
-    setSelectedCountryObj(newSelectedCountryObj);
     localStorage.removeItem('access');
     localStorage.removeItem('recover');
     localStorage.removeItem('stored');
@@ -90,6 +81,15 @@ export default function SignUpForm(props) {
       setStep('migration');
     }
     else renderTorusStep();
+  };
+
+  const stepAdditionalInfoSubmit = async (
+    phone, email
+  ) => {
+    console.log(phone, email, accountName, firstName, lastName, password);
+    setPhone(phone);
+    setEmail(email);
+    setStep("faceki")
   };
 
   const stepGoToTorus = (
@@ -124,7 +124,6 @@ export default function SignUpForm(props) {
     if (!response_user) return;
 
     let member1Name = "";
-
     if (response_user.member1Name) {
       let nameArry = response_user.member1Name.split(',');
       if (nameArry.includes(accountName)) {
@@ -136,8 +135,20 @@ export default function SignUpForm(props) {
       member1Name = accountName;
     }
 
+    let phoneNumber = "";
+    if (response_user.phoneNumber) {
+      let pnArry = response_user.phoneNumber.replace(" ", "").split(',');
+      if (pnArry.includes(phone)) {
+        phoneNumber = response_user.phoneNumber;
+      } else {
+        phoneNumber = response_user.phoneNumber + "," + phone
+      }
+    } else {
+      phoneNumber = phoneNumber;
+    }
+
     try {
-      const res_update = await updateUserKycProfile(email, { member1Name }, token);
+      const res_update = await updateUserKycProfile(email, { member1Name, phoneNumber }, token);
       if (res_update.error === true) {
         return;
       } else if (res_update) {
@@ -258,11 +269,19 @@ export default function SignUpForm(props) {
           lastName={lastName}
           firstName={firstName}
           password={password}
-          phone={phone}
-          phoneFormat={phoneFormat}
-          country={country}
-          selectedCountryObj={selectedCountryObj}
         />
+        case 'additionalform':
+          return <AdditionalInformationForm
+            {...props}
+            onSubmit={stepAdditionalInfoSubmit}
+            accountName={accountName}
+            lastName={lastName}
+            firstName={firstName}
+            password={password}
+            phone={phone}
+            email={email}
+            tmode={tmode}
+          />
       case 'faceki':
         return <FaceKiForm
           {...props}
@@ -342,12 +361,21 @@ export default function SignUpForm(props) {
 
       if (privKey && typeof privKey === "string") {
         const data = await openLogin.getUserInfo();
-
         setAuthData(data);
         setPrivKey(privKey);
-        setEmail(data?.email.toLowerCase());
+
+        if (data.verifierId.includes("+")) { // means verifier is phone
+          setEmail(null);
+          setPhone(data.verifierId.replace("+", "").replace("-", ""));
+          setTMode("phone");
+        } 
+        else {
+          setEmail(data?.email.toLowerCase());
+          setPhone(null);
+          setTMode("email");
+        }
         setLoader(false);
-        setStep('faceki');
+        setStep('additionalform');
       }
     } catch (error) {
       console.log('Error in Torus Render', error);
