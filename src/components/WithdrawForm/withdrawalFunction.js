@@ -1,13 +1,52 @@
 import AccountUtils from "../../utils/account_utils";
-import { Axios } from "axios";
 import { assetsObj } from "../../utils/common";
-import { Asset } from "../../utils/MarketClasses";
 import Immutable from "immutable";
 import { Aes, ChainStore, FetchChain, PrivateKey, TransactionBuilder, TransactionHelper } from "meta1-vision-js";
 import { ChainConfig } from 'meta1-vision-ws';
-import Meta1 from "meta1-vision-dex";
 
-const broadcast = (transaction, resolve, reject, isSuccess) => {
+
+const pingGateway = (asset_symbol, block_number, trx_in_block, op_in_trx, accountName, isSuccess, resolve) => {
+
+    const url = `${process.env.REACT_APP_GATEWAY_META1_JS_URL}/api/withdraw/${asset_symbol}`
+
+    let payload = {
+        account: {
+            metaId: ChainStore.getAccount(
+                accountName
+            ).get('id'),
+        },
+        block_number: block_number,
+        trx_in_block: trx_in_block,
+        op_in_trx: op_in_trx,
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify(payload),
+    })
+        .then((res) => {
+            isSuccess(true, 'ok');
+            if (resolve) resolve();
+        })
+        .then((data) => {
+            if (data.txid === undefined)
+                isSuccess(false, "fail", `${data.error || 'Error validating withdrawal!'}\nIf you have not received this withdrawal yet please contact support!`);
+            else
+                isSuccess(true, 'ok');
+
+            if (resolve) resolve();
+        })
+        .catch((error) => {
+            isSuccess(false, 'fail', error.toString());
+        });
+}
+
+const broadcast = (transaction, resolve, reject, isSuccess, accountName, assetName) => {
     let broadcast_timeout = setTimeout(() => {
         return {
             broadcast: false,
@@ -24,18 +63,7 @@ const broadcast = (transaction, resolve, reject, isSuccess) => {
         })
         .then((res) => {
             clearTimeout(broadcast_timeout);
-            isSuccess(true, 'ok');
-            return {
-                error: null,
-                broadcasting: false,
-                broadcast: true,
-                included: true,
-                trx_id: res[0].id,
-                trx_block_num: res[0].block_num,
-                trx_in_block: res[0].trx_num,
-                broadcasted_transaction: true,
-            };
-            if (resolve) resolve();
+            pingGateway(assetName, res[0].block_num, res[0].trx_num, 0, accountName, isSuccess)
         })
         .catch((error) => {
             if (error && error?.message) {
@@ -57,8 +85,8 @@ const broadcast = (transaction, resolve, reject, isSuccess) => {
             if (reject) reject();
         });
 }
-const confirmTransaction = (transaction, resolve, reject, isSuccess) => {
-    broadcast(transaction, resolve, reject, isSuccess)
+const confirmTransaction = (transaction, resolve, reject, isSuccess, accountName, assetName) => {
+    broadcast(transaction, resolve, reject, isSuccess, accountName, assetName)
     return { transaction, resolve, reject };
 }
 const getPubkeys_having_PrivateKey = (pubkeys, addys = null) => {
@@ -70,7 +98,7 @@ const getPubkeys_having_PrivateKey = (pubkeys, addys = null) => {
     }
     return return_pubkeys;
 }
-const process_transaction = (tr, accountNameState, password, isSuccess, signer_pubkeys, broadcast, extra_keys = [],) => {
+const process_transaction = (tr, accountNameState, password, isSuccess, signer_pubkeys, assetName, broadcast, extra_keys = [],) => {
     return Promise.all([
         tr.set_required_fees(),
         tr.update_head_block(),
@@ -102,7 +130,7 @@ const process_transaction = (tr, accountNameState, password, isSuccess, signer_p
                 if (broadcast) {
                     if (true) {
                         let p = new Promise((resolve, reject) => {
-                            confirmTransaction(tr, resolve, reject,isSuccess);
+                            confirmTransaction(tr, resolve, reject, isSuccess, accountNameState, assetName);
                         });
                         return p.then(async (result) => {
                             return result
@@ -220,6 +248,8 @@ const create_transfer_op = async ({
                 chain_propose_account = chain_memo_sender;
             }
 
+            console.log(memo);
+
             let memo_object;
             if (memo) {
                 let memo_sender = _get_memo_keys(
@@ -229,6 +259,9 @@ const create_transfer_op = async ({
                     password
                 );
                 let memo_to = _get_memo_keys(chain_to, false, accountNameState, password);
+
+                console.log(memo_sender, memo_to);
+
                 if (!!memo_sender.public_key && !!memo_to.public_key) {
                     let nonce =
                         optional_nonce == null
@@ -300,7 +333,8 @@ const ApplicationApiTransfer = ({
     transactionBuilder = null,
     accountNameState,
     password,
-    isSuccess
+    isSuccess,
+    assetName
 }) => {
     if (transactionBuilder == null) {
         transactionBuilder = new TransactionBuilder();
@@ -336,6 +370,7 @@ const ApplicationApiTransfer = ({
                         password,
                         isSuccess,
                         null, //signer_private_keys,
+                        assetName,
                         broadcast,
                     );
                 })
@@ -348,7 +383,7 @@ const ApplicationApiTransfer = ({
 
 }
 
-export const transferHandler = (from_account, to_account, amount, asset, memo, propose_account = null, fee_asset_id = '1.3.0', accountNameState, password, isSuccess) => {
+export const transferHandler = (from_account, to_account, amount, asset, memo, propose_account = null, fee_asset_id = '1.3.0', accountNameState, password, isSuccess, assetName) => {
     fee_asset_id = AccountUtils.getFinalFeeAsset(
         propose_account || from_account,
         'transfer',
@@ -364,6 +399,7 @@ export const transferHandler = (from_account, to_account, amount, asset, memo, p
         fee_asset_id,
         accountNameState,
         password,
-        isSuccess
+        isSuccess,
+        assetName
     })
 }

@@ -3,7 +3,7 @@ import Select from "react-select";
 import "./ExchangeForm.css";
 
 export default function ExchangeSelect(props) {
-  const { selectedValue, options } = props;
+  const { selectedValue, options, isDisabled } = props;
 
   const MyOption = (props) => {
     const { innerProps, innerRef } = props;
@@ -62,6 +62,7 @@ export default function ExchangeSelect(props) {
       options={options}
       value={selectedValue}
       isSearchable={false}
+      isDisabled={props.isDisabled || false}
       className={`${props.from === 'withdrawal'? 'select-withdrawal' : ''}`}
     />
   );

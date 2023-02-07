@@ -35,8 +35,7 @@ export default function DepositForm(props) {
       }
       try {
         setIsLoading(true);
-        const fetchedAsset = asset === "USDT" ? "eth" : asset;
-        const resp = await fetcher(fetchedAsset);
+        const resp = await fetcher(asset);
         const body = await resp.body.getReader().read();
         if (resp.status === 200) {
           const addr = JSON.parse(

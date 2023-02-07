@@ -215,6 +215,17 @@ export async function getUserKycProfile(email) {
   }
 }
 
+export async function getUserKycProfileByAccount(acc) {
+  try {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/users/acc?acc=${acc}`
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+
 export async function updateUserKycProfile(email, payload, token) {
   try {
     const { data } = await axios.patch(

@@ -202,9 +202,9 @@ export function getActiveWallets(url) {
 }
 
 function getMeta1DepositAddressJSGateway(symbol, currentAccount) {
-	if (symbol === 'usdt') {
-		symbol = 'eth';
-	}
+	// if (symbol === 'usdt') {
+	// 	symbol = 'eth';
+	// }
 	return new Promise((resolve, reject) => {
 		fetch(
 			`${process.env.GATEWAY_META1_JS_URL}/api-gateways/` + symbol.toLowerCase()

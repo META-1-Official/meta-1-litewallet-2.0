@@ -2,11 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
 import { livenessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
-import { Button } from "semantic-ui-react";
 import OvalImage from '../../images/oval/oval19.png';
 import MobileOvalImage from '../../images/oval/oval19.png';
-import {isMobile} from "react-device-detect";
-import { Icon, Modal } from "semantic-ui-react";
+import { isMobile } from "react-device-detect";
 import QRCodeModal from "../../UI/loader/QRCodeModal";
 import "./SignUpForm.css";
 
@@ -16,11 +14,6 @@ export default function FaceKiForm(props) {
   const [verifying, setVerifying] = useState(false);
   const [device, setDevice] = React.useState({});
   const [qrOpen, setQrOpen] = useState(false);
-  const [mobileScreenSize, setMobileScreenSize] = useState({
-    width: '',
-    height: ''
-  });
-  const childDivRef = useRef();
 
   useEffect(() => {
     loadVideo(true);
@@ -78,10 +71,8 @@ export default function FaceKiForm(props) {
 
     setVerifying(true);
 
-    const imageSrc = webcamRef.current.getScreenshot({
-      width: 1280,
-      height: 720,
-    });
+    var sizeForSreenShot = isMobile && device.width ? { width: device.width, height: device.height } : { width: 1280, height: 720 };
+    const imageSrc = webcamRef.current.getScreenshot(sizeForSreenShot);
 
     if (!imageSrc) {
       alert('Please check your camera.');
@@ -92,7 +83,7 @@ export default function FaceKiForm(props) {
     const file = await dataURL2File(imageSrc, 'a.jpg');
     const response = await livenessCheck(file);
 
-    if (!response) {
+    if (!response || !response.data) {
       alert('Something went wrong from Biometric server.');
       setVerifying(false);
       return;
@@ -189,7 +180,7 @@ export default function FaceKiForm(props) {
                 <h6 style={{ fontSize: '24px' }}>Bio-Metric 2 Factor Authentication</h6>
                 <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
               </div>
-              <div className='child-div' ref={childDivRef} style={{ borderRadius: '5px', padding: '1px' }}>
+              <div className='child-div' style={{ borderRadius: '5px', padding: '1px' }}>
                 <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                   <div className="position-head color-black">{!isMobile ? 'Position your face in the oval' : ''}</div>
                   <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
@@ -206,11 +197,11 @@ export default function FaceKiForm(props) {
                   <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
                     Min camera resolution must be 720p
                   </span>
+                  <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+                    Verifying will take 10 seconds as maximum.
+                  </span>
                   <div className="btn-grp" style={{ marginTop: '5px' }}>
-                    {/* {!faceKISuccess && <button className='btn-1' onClick={photo ? resetPhoto : takePhoto} style={{ "marginRight": '20px' }} disabled={takingPhoto}>{photo ? "Reset Photo" : takingPhoto ? "Taking Photo..." : "Take Photo"}</button>} */}
-                    {/* {photo && <button className='btn-1' disabled={verifying && !faceKISuccess} onClick={faceKISuccess ? onClickNext : videoEnroll}>{verifying ? "Verifying..." : faceKISuccess ? "Next" : "Verify"}</button>} */}
                     <button className='btn-1' disabled={verifying} onClick={() => checkAndEnroll(0)}>{verifying ? "Verifying..." : "Verify"}</button>
-                    {/* {!photo && <button className='btn-1' style={{ "marginLeft": '20px' }} onClick={() => setQrOpen(true)}>Take Photo via Mobile</button>} */}
                   </div>
                 </div>
               </div>
@@ -218,13 +209,6 @@ export default function FaceKiForm(props) {
           </div>
         </div>
       </div>
-      {/* qrOpen && <QRCodeModal
-        open={qrOpen}
-        setOpen={(val) => setQrOpen(val)}
-        acc={props.accountName}
-        email={props.email}
-        setPhoto={(val) => setPhoto(val)}
-      />*/}
     </>
   )
 }

@@ -47,7 +47,7 @@ const openLogin = new OpenLogin({
   uxMode: 'popup',
   whiteLabel: {
     name: 'META1'
-  },
+  }
 });
 
 window.Meta1 = Meta1;
@@ -416,6 +416,7 @@ function Application(props) {
           onClickPortfolioHandler={(e) => {
             e.preventDefault();
             dispatch(getUserRequest(login));
+            refetchPortfolio();
             setActiveScreen("wallet");
             setIsSignatureProcessing(false);
           }}
@@ -475,6 +476,7 @@ function Application(props) {
             onClickPortfolioHandler={(e) => {
               e.preventDefault();
               dispatch(getUserRequest(login));
+              refetchPortfolio();
               setActiveScreen("wallet");
               setIsSignatureProcessing(false);
             }}
