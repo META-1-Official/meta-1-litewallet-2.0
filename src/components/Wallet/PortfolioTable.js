@@ -16,7 +16,7 @@ import { removeExponent } from "../../utils/commonFunction";
 import { userCurrencySelector } from "../../store/meta1/selector";
 import { useSelector } from "react-redux";
 
-const DEPOSIT_BTN_HIDE = ["META1", "BNB", "XLM", "EOS"];
+const DEPOSIT_BTN_HIDE = ["META1"];
 const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -245,7 +245,7 @@ const PortfolioTable = React.memo((props) => {
                 )}
               </StyledTableCell>
               <StyledTableCell align="left">
-                {(datas.name === "USDT" || datas.name === "ETH") && (
+                {(datas.name === "USDT" || datas.name === "ETH" || datas.name === "XLM" || datas.name === "EOS" || datas.name === "BNB") && (
                   <button
                     onClick={() => {
                       onWithdrawClick(datas.name);
