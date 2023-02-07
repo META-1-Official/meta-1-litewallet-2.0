@@ -70,10 +70,14 @@ export default function FaceKiForm(props) {
 
     setVerifying(true);
 
-    const imageSrc = webcamRef.current.getScreenshot({
+    var screenShotFormat = isMobile && device.width ? {
+      width: device.width,
+      height: device.height
+    } : {
       width: 1280,
-      height: 720,
-    });
+      height: 720
+    }
+    const imageSrc = webcamRef.current.getScreenshot(screenShotFormat);
 
     if (!imageSrc) {
       alert('Please check your camera.');
@@ -84,7 +88,7 @@ export default function FaceKiForm(props) {
     const file = await dataURL2File(imageSrc, 'a.jpg');
     const response = await livenessCheck(file);
 
-    if (!response) {
+    if (!response || !response.data) {
       alert('Something went wrong from Biometric server.');
       setVerifying(false);
       return;
@@ -163,6 +167,9 @@ export default function FaceKiForm(props) {
                   <p className={`span-class color-black margin-bottom-zero ${isMobile ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>
                   <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
                     Min camera resolution must be 720p
+                  </span>
+                  <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+                    Verifying will take 10 seconds as maximum.
                   </span>
                   <div className="btn-grp" style={{ "marginTop": '5px' }}>
                     <button className='btn-1' onClick={() => checkAndVerify(0)} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>
