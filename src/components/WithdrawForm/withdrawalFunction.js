@@ -63,6 +63,7 @@ const broadcast = (transaction, resolve, reject, isSuccess, accountName, assetNa
         })
         .then((res) => {
             clearTimeout(broadcast_timeout);
+            console.log(FetchChain('getAccount', accountName));
             pingGateway(assetName, res[0].block_num, res[0].trx_num, 0, accountName, isSuccess)
         })
         .catch((error) => {
