@@ -216,13 +216,16 @@ export default function LoginScreen(props) {
 
           if (!userFromAcc) {
             alert("We can not find your account in our esignature database.");
-            return;
+            setLoader(false);
+            setStep('userform');
           }
 
           let pnArry = userFromAcc.phoneNumber.replace(" ", "").split(",");
 
           if (pnArry.includes(pn)) {
             setEmail(userFromAcc.email.toLowerCase());
+            setLoader(false);
+            setStep('faceki');
           } else {            
             // if (pnArry.length === 1 && pnArry[0].includes(" ")) {
             //   alert ("Phone Number is not belong to your account. Please try with email.");
@@ -233,14 +236,15 @@ export default function LoginScreen(props) {
             //   return;
             // }
             alert ("Phone Number is not belong to your account.");
-            return;
+            setLoader(false);
+            setStep('userform');
           }
         }
         else { // if verifier is email address
           setEmail(data?.email.toLowerCase());
+          setLoader(false);
+          setStep('faceki');
         }
-        setLoader(false);
-        setStep('faceki');
       }
     } catch (error) {
       console.log('Error in Torus Render', error);
