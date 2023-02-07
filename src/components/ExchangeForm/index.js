@@ -415,17 +415,17 @@ export default function ExchangeForm(props) {
     let _marketPrice = 0;
 
     for (let limitOrder of _limitOrders) {
-      if (limitOrder.sell_price.base.asset_id === baseAsset.id) {
+      if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
         const divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
-        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount * divideby);
         _marketPrice = _marketPrice > price ? _marketPrice : price;
       }
     }
 
     if (_marketPrice > 0) {
-      console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
+      console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, 1 / _marketPrice);
       setIsInputsEnabled(true);
-      setMarketPrice(_marketPrice);
+      setMarketPrice(1 / _marketPrice);
     }
 
     setIsLoadingPrice(false);
