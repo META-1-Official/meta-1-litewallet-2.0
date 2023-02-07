@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./ExchangeForm.module.scss";
 import RightSideHelpMenuSecondType from "../RightSideHelpMenuSecondType/RightSideHelpMenuSecondType";
 import ExchangeSelect from "./ExchangeSelect.js";
@@ -67,6 +67,7 @@ export default function ExchangeForm(props) {
   const [isLimitPriceSet, setIsLimitPriceSet] = useState(false);
   const [amountPercent, setAmountPercent] = useState(null);
   const dispatch = useDispatch();
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (!isValidPasswordKeyState && passwordKeyErrorState) {
@@ -148,11 +149,13 @@ export default function ExchangeForm(props) {
 
       if (pair.latest === '0') {
         setError("Unavailable to exchange these assets");
+        setIsLoadingPrice(false);
         return;
       }
 
       setLimitPrice(1 / pair.latest);
       setIsInputsEnabled(true);
+      setIsLoadingPrice(false);
     }
   }, [pair]);
 
@@ -199,6 +202,12 @@ export default function ExchangeForm(props) {
       inputChangeHandler(selectedFromAmount);
     }
   }, [limitPrice]);
+
+  useEffect(() => {
+    if (isLoadingPrice) {
+      inputRef.current.focus();
+    }
+  }, [isLoadingPrice]);
 
   const performTradeSubmit = async () => {
     const buyResult = await traderState.perform({
@@ -384,10 +393,11 @@ export default function ExchangeForm(props) {
           )
           .then((_limitOrders) => {
             setLimitOrders(_limitOrders);
-            setIsLoadingPrice(false);
 
             if (_limitOrders && _limitOrders.length > 0) {
               calculateMarketPrice(_limitOrders, _baseAsset, _quoteAsset);
+            } else {
+              setIsLoadingPrice(false);
             }
           })
           .catch(err => {
@@ -417,6 +427,8 @@ export default function ExchangeForm(props) {
       setIsInputsEnabled(true);
       setMarketPrice(_marketPrice);
     }
+
+    setIsLoadingPrice(false);
   }
 
   const { innerWidth: width } = window;
@@ -588,6 +600,7 @@ export default function ExchangeForm(props) {
                   setTradeType('limit');
                   setIsLimitPriceSet(prev => !prev);
                 }}
+                ref={inputRef}
               >
                 Limit Order
               </Button>
@@ -611,6 +624,7 @@ export default function ExchangeForm(props) {
                           }}
                           options={getAssets(selectedTo.value)}
                           selectedValue={selectedFrom}
+                          isDisabled={isLoadingPrice}
                         />
                       </Grid.Column>
                       <Grid.Column>
@@ -752,6 +766,7 @@ export default function ExchangeForm(props) {
                     <Button
                       className={styles.button}
                       style={{ width: "3rem", height: "3rem" }}
+                      disabled={isLoadingPrice}
                       onClick={(e) => {
                         setSelectedToAmount(NaN);
                         setSelectedFromAmount(NaN);
@@ -792,6 +807,7 @@ export default function ExchangeForm(props) {
                           }}
                           options={getAssets(selectedFrom.value)}
                           selectedValue={selectedTo}
+                          isDisabled={isLoadingPrice}
                         />
                       </Grid.Column>
                       <Grid.Column>
