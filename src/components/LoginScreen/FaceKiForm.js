@@ -5,7 +5,7 @@ import { livenessCheck, verify, getUserKycProfile } from "../../API/API";
 import OvalImage from '../../images/oval/oval19.png';
 import MobileOvalImage from '../../images/oval/oval19.png';
 import QRCodeModal from "../../UI/loader/QRCodeModal";
-import {isMobile} from "react-device-detect";
+import { isMobile } from "react-device-detect";
 import "./login.css";
 
 export default function FaceKiForm(props) {
@@ -65,19 +65,13 @@ export default function FaceKiForm(props) {
   }
 
   const checkAndVerify = async (photoIndex) => {
-    const {privKey, email} = props;
+    const { privKey, email } = props;
     if (!email || !privKey) return;
 
     setVerifying(true);
 
-    var screenShotFormat = isMobile && device.width ? {
-      width: device.width,
-      height: device.height
-    } : {
-      width: 1280,
-      height: 720
-    }
-    const imageSrc = webcamRef.current.getScreenshot(screenShotFormat);
+    var sizeForSreenShot = isMobile && device.width ? { width: device.width, height: device.height } : { width: 1280, height: 720 };
+    const imageSrc = webcamRef.current.getScreenshot(sizeForSreenShot);
 
     if (!imageSrc) {
       alert('Please check your camera.');
