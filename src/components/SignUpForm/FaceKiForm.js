@@ -4,7 +4,7 @@ import Webcam from 'react-webcam';
 import { livenessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
 import OvalImage from '../../images/oval/oval19.png';
 import MobileOvalImage from '../../images/oval/oval19.png';
-import {isMobile} from "react-device-detect";
+import { isMobile } from "react-device-detect";
 import QRCodeModal from "../../UI/loader/QRCodeModal";
 import "./SignUpForm.css";
 
@@ -71,10 +71,8 @@ export default function FaceKiForm(props) {
 
     setVerifying(true);
 
-    const imageSrc = webcamRef.current.getScreenshot({
-      width: 1280,
-      height: 720,
-    });
+    var sizeForSreenShot = isMobile && device.width ? { width: device.width, height: device.height } : { width: 1280, height: 720 };
+    const imageSrc = webcamRef.current.getScreenshot(sizeForSreenShot);
 
     if (!imageSrc) {
       alert('Please check your camera.');
@@ -85,7 +83,7 @@ export default function FaceKiForm(props) {
     const file = await dataURL2File(imageSrc, 'a.jpg');
     const response = await livenessCheck(file);
 
-    if (!response) {
+    if (!response || !response.data) {
       alert('Something went wrong from Biometric server.');
       setVerifying(false);
       return;
@@ -198,6 +196,9 @@ export default function FaceKiForm(props) {
                   <p className='span-class color-black margin-bottom-zero'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
                   <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
                     Min camera resolution must be 720p
+                  </span>
+                  <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+                    Verifying will take 10 seconds as maximum.
                   </span>
                   <div className="btn-grp" style={{ marginTop: '5px' }}>
                     <button className='btn-1' disabled={verifying} onClick={() => checkAndEnroll(0)}>{verifying ? "Verifying..." : "Verify"}</button>
