@@ -235,7 +235,7 @@ export default function LoginScreen(props) {
             //   alert ("Phone Number is not belong to your account.");
             //   return;
             // }
-            alert ("Phone Number is not belong to your account.");
+            alert ("The phone number you entered does not match the one on record for this wallet.");
             setLoader(false);
             setStep('userform');
           }
