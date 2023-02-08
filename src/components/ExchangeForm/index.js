@@ -213,12 +213,12 @@ export default function ExchangeForm(props) {
     // Consider backing asset level
     if (backingAssetValue && (selectedFrom.value === 'META1' || selectedTo.value === "META1")) {
       if (backingAssetPolarity && backingAssetValue < limitPrice) {
-        setError(`Price should be bigger than ${backingAssetValue}`);
+        setError(`Price should be lower than ${backingAssetValue}`);
         setInvalidEx(true);
       }
 
       if (!backingAssetPolarity && backingAssetValue > limitPrice) {
-        setError(`Price should be lower than ${backingAssetValue}`);
+        setError(`Price should be bigger than ${backingAssetValue}`);
         setInvalidEx(true);
       }
     }
