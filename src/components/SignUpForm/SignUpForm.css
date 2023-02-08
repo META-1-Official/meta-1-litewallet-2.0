@@ -129,6 +129,7 @@ input {
   flex-direction: column;
   align-items: center;
   position: relative;
+  min-height: 445px;
 }
 
 .btn-div {
@@ -256,6 +257,10 @@ video {
   .oval-image {
     height: 80% !important;
     top: 10% !important;
+  }
+
+  .child-div {
+    min-height: unset;
   }
 }
 
