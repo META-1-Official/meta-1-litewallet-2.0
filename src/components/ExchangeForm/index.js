@@ -66,6 +66,8 @@ export default function ExchangeForm(props) {
   const [limitPrice, setLimitPrice] = useState(0);
   const [isLimitPriceSet, setIsLimitPriceSet] = useState(false);
   const [amountPercent, setAmountPercent] = useState(null);
+  const [backingAssetValue, setBackingAssetValue] = useState(0);
+  const [backingAssetPolarity, setBackingAssetPolarity] = useState(false);
   const dispatch = useDispatch();
   const inputRef = useRef(null);
 
@@ -194,12 +196,31 @@ export default function ExchangeForm(props) {
     setSelectedFromAmount(NaN);
     setSelectedToAmount(NaN);
     setIsLoadingPrice(true);
+    setBackingAssetValue(NaN);
     fetchPair(selectedTo, selectedFrom);
   }, [tradeType, selectedFrom, selectedTo]);
 
   useEffect(() => {
-    if (limitPrice && selectedFromAmount) {
+    if (!limitPrice) return;
+
+    setInvalidEx(false);
+    setError(null);
+
+    if (selectedFromAmount) {
       inputChangeHandler(selectedFromAmount);
+    }
+
+    // Consider backing asset level
+    if (backingAssetValue && (selectedFrom.value === 'META1' || selectedTo.value === "META1")) {
+      if (backingAssetPolarity && backingAssetValue < limitPrice) {
+        setError(`Price should be bigger than ${backingAssetValue}`);
+        setInvalidEx(true);
+      }
+
+      if (!backingAssetPolarity && backingAssetValue > limitPrice) {
+        setError(`Price should be lower than ${backingAssetValue}`);
+        setInvalidEx(true);
+      }
     }
   }, [limitPrice]);
 
@@ -286,6 +307,8 @@ export default function ExchangeForm(props) {
   };
 
   const fetchPair = (selectedTo, selectedFrom) => {
+    const LOG_ID = '[FetchPair]';
+
     if (
       selectedTo != null &&
       selectedFrom != null &&
@@ -294,11 +317,36 @@ export default function ExchangeForm(props) {
       const getPairPromise = Meta1.ticker(selectedFrom.value, selectedTo.value);
       const getBaseAssetPricePromise = Meta1.ticker("USDT", selectedFrom.value);
       const getQuoteAssetPricePromise = Meta1.ticker("USDT", selectedTo.value);
-      Promise.all([getPairPromise, getBaseAssetPricePromise, getQuoteAssetPricePromise])
+      const getAssetLimitationPromise = Apis.db.get_asset_limitation_value('META1');
+      Promise.all([getPairPromise, getBaseAssetPricePromise, getQuoteAssetPricePromise, getAssetLimitationPromise])
         .then(res => {
-          setPair(res[0]);
+          // Caculate backing asset value
+          const meta1_usdt = res[3] / 1000000000;
+          const isQuoting = selectedTo.value === 'META1';
+          console.log(LOG_ID, 'META1 Backing Asset($): ', meta1_usdt);
+          let asset_usdt;
+
+          if (selectedFrom.value === 'META1' || selectedTo.value === 'META1') {
+            asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
+            const ratio = isQuoting
+              ? asset_usdt / (meta1_usdt - 0.01)
+              : (meta1_usdt + 0.01) / asset_usdt;
+            console.log(
+              LOG_ID, isQuoting ? selectedFrom.value : selectedTo.value, ': USDT', asset_usdt
+            );
+            if (isQuoting) {
+              console.log(LOG_ID, 'BUY/SELL price should be lower than', ratio);
+            } else {
+              console.log(LOG_ID, 'BUY/SELL price should be bigger than', ratio);
+            }
+
+            setBackingAssetValue(ratio);
+            setBackingAssetPolarity(isQuoting)
+          }
+
           setBaseAssetPrice(res[1].latest === '0' ? 1 : res[1].latest);
           setQuoteAssetPrice(res[2].latest);
+          setPair(res[0]);
         });
     }
   }
@@ -423,9 +471,24 @@ export default function ExchangeForm(props) {
     }
 
     if (_marketPrice > 0) {
-      console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, 1 / _marketPrice);
+      _marketPrice = 1 / _marketPrice;
+
+      // Consider backing asset level
+      if (baseAsset.symbol === 'META1' || quoteAsset.symbol === "META1") {
+        if (backingAssetValue) {
+          if (backingAssetPolarity && backingAssetValue < _marketPrice) {
+            _marketPrice = backingAssetValue;
+          }
+
+          if (!backingAssetPolarity && backingAssetValue > _marketPrice) {
+            _marketPrice = backingAssetValue;
+          }
+        }
+      }
+
+      console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
       setIsInputsEnabled(true);
-      setMarketPrice(1 / _marketPrice);
+      setMarketPrice(_marketPrice);
     }
 
     setIsLoadingPrice(false);
