@@ -49,8 +49,15 @@ const Navbar = (props) => {
                 aria-label="Close"
               />
               <iframe
-                 src={`https://widget.onramper.com?color=ffc000&defaultAmount=1000&defaultFiat=USD&defaultCrypto=BTC&apiKey=${process.env.REACT_APP_ONRAMPER_API_KEY}`}
-                 title="Meta1 Onramper Interface"
+                src={`https://widget.onramper.com?color=ffc000&defaultAmount=1000&defaultFiat=USD&defaultCrypto=BTC&apiKey=${process.env.REACT_APP_ONRAMPER_API_KEY}`}
+                title="Meta1 Onramper Interface"
+                style={{ border: "0" }}
+                allowFullScreen=""
+                aria-hidden="false"
+                tabIndex="0"
+                width="100%"
+                height="600"
+                frameBorder="0"
               />
             </div>
           </div>
