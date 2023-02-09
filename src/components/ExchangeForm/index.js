@@ -329,8 +329,8 @@ export default function ExchangeForm(props) {
           if (selectedFrom.value === 'META1' || selectedTo.value === 'META1') {
             asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
             const ratio = isQuoting
-              ? asset_usdt / (meta1_usdt - 0.01)
-              : (meta1_usdt + 0.01) / asset_usdt;
+              ? asset_usdt / (meta1_usdt - 0.1)
+              : (meta1_usdt + 0.1) / asset_usdt;
             console.log(
               LOG_ID, isQuoting ? selectedFrom.value : selectedTo.value, ': USDT', asset_usdt
             );
@@ -471,7 +471,7 @@ export default function ExchangeForm(props) {
     }
 
     if (_marketPrice > 0) {
-      _marketPrice = 1 / _marketPrice;
+      _marketPrice = backingAssetPolarity ? _marketPrice : 1 / _marketPrice;
 
       // Consider backing asset level
       if (baseAsset.symbol === 'META1' || quoteAsset.symbol === "META1") {
@@ -486,7 +486,7 @@ export default function ExchangeForm(props) {
         }
       }
 
-      console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
+      console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
       setIsInputsEnabled(true);
       setMarketPrice(_marketPrice);
     }
