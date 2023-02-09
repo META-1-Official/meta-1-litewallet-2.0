@@ -329,11 +329,12 @@ export default function ExchangeForm(props) {
           if (selectedFrom.value === 'META1' || selectedTo.value === 'META1') {
             asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
             const ratio = isQuoting
-              ? asset_usdt / (meta1_usdt - 0.1)
-              : (meta1_usdt + 0.1) / asset_usdt;
+              ? asset_usdt / (meta1_usdt + 0.01)
+              : (meta1_usdt + 0.01) / asset_usdt;
             console.log(
               LOG_ID, isQuoting ? selectedFrom.value : selectedTo.value, ': USDT', asset_usdt
             );
+
             if (isQuoting) {
               console.log(LOG_ID, 'BUY/SELL price should be lower than', ratio);
             } else {
