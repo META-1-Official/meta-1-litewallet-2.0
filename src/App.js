@@ -250,17 +250,6 @@ function Application(props) {
     }
   }, [accountNameState, loginErrorState]);
 
-  // const loc = React.useMemo(() => {
-  //   if (
-  //     activeScreen !== "sendFunds" &&
-  //     activeScreen !== "login" &&
-  //     activeScreen != null
-  //   ) {
-  //     sessionStorage.setItem("location", activeScreen);
-  //   }
-  //   return true;
-  // }, [activeScreen]);
-
   useEffect(() => {
     if (userDataState?.message?.currency === "USD") {
     } else if (userDataState?.message?.currency) {
