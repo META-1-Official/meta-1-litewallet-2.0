@@ -23,7 +23,7 @@ export default function LoginScreen(props) {
     onClickExchangeUSDTHandler,
     setLoginDataError,
     onClickRedirectToPortfolio,
-    openLogin,
+    web3auth,
     onClickResetIsSignatureProcessing
   } = props;
   const [login, setLogin] = useState("");
@@ -192,26 +192,29 @@ export default function LoginScreen(props) {
 
   const renderTorusLogin = async () => {
     if (
-      !openLogin
+      !web3auth
     ) {
       return;
     }
 
     try {
-      const { privKey } = await openLogin.login({
-        loginProvider: "",
-        'mfaLevel?': "none",
-        'mfaLevel': "none"
-      });
+      // const { privKey } = await openLogin.login({
+      //   loginProvider: "",
+      //   'mfaLevel?': "none",
+      //   'mfaLevel': "none"
+      // });
+      const web3authProvider = await web3auth.connect();
+      console.log('auth-provider', web3authProvider);
 
-      if (privKey && typeof privKey === "string") {
-        const data = await openLogin.getUserInfo();
+      if (web3authProvider) {
+        const data = await web3auth.getUserInfo();
+        console.log('DATA', data);
 
-        setAuthData(data);
-        setPrivKey(privKey);
-        setEmail(data?.email.toLowerCase());
-        setLoader(false);
-        setStep('faceki');
+        // setAuthData(data);
+        // setPrivKey(privKey);
+        // setEmail(data?.email.toLowerCase());
+        // setLoader(false);
+        // setStep('faceki');
       }
     } catch (error) {
       console.log('Error in Torus Render', error);
