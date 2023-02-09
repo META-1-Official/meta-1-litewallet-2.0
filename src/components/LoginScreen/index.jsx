@@ -11,6 +11,7 @@ import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
 import AccountApi from "../../lib/AccountApi";
 import MetaLoader from "../../UI/loader/Loader";
+import LoginProvidersScreen from "./loginProvidersScreen";
 
 export default function LoginScreen(props) {
   const {
@@ -24,7 +25,8 @@ export default function LoginScreen(props) {
     setLoginDataError,
     onClickRedirectToPortfolio,
     openLogin,
-    onClickResetIsSignatureProcessing
+    onClickResetIsSignatureProcessing,
+    onClickLoginProviderScreen
   } = props;
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
@@ -144,6 +146,12 @@ export default function LoginScreen(props) {
     }
   };
 
+  const renderLoginProvidersScreen = () => {
+    return (
+        <LoginProvidersScreen />
+    );
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validationHandler()) {
@@ -158,8 +166,9 @@ export default function LoginScreen(props) {
               if (res[0][0] === login) {
                 localStorage.removeItem('isMigrationUser');
                 if (login.length !== 0) {
-                  setLoader(true);
-                  renderTorusLogin();
+                  setLoader(false);
+                  onClickLoginProviderScreen()
+                  /*renderTorusLogin();*/
                 }
               } else {
                 setErrorAttr(prev => {

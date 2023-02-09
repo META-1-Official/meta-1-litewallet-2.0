@@ -39,7 +39,8 @@ import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCu
 import OpenOrder from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
-import OpenLogin from 'openlogin';
+import OpenLogin from '@toruslabs/openlogin';
+import LoginProvidersScreen from "./components/LoginScreen/loginProvidersScreen";
 
 const openLogin = new OpenLogin({
   clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
@@ -48,6 +49,15 @@ const openLogin = new OpenLogin({
   whiteLabel: {
     name: 'META1'
   },
+  loginConfig: {
+    sms_passwordless: {
+      name: "sms_passwordless",
+      typeOfLogin: "sms_passwordless",
+      showOnModal: false,
+      showOnDesktop: false,
+      showOnMobile: false,
+    }
+  }
 });
 
 window.Meta1 = Meta1;
@@ -554,6 +564,24 @@ function Application(props) {
                   />
                 </div>
               )}
+              {activeScreen === "loginProviderScreen" && (
+                  <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        height: "100%",
+                      }}
+                  >
+                    <LoginProvidersScreen />
+                    <Footer
+                        onClickHomeHandler={(e) => {
+                          e.preventDefault();
+                          setActiveScreen("login");
+                        }}
+                    />
+                  </div>
+              )}
               {activeScreen === "settings" && (
                 <div
                   style={{
@@ -673,6 +701,9 @@ function Application(props) {
                     onClickResetIsSignatureProcessing={() => {
                       setIsSignatureProcessing(false);
                       setSignatureResult(null);
+                    }}
+                    onClickLoginProviderScreen={() => {
+                      setActiveScreen('loginProviderScreen')
                     }}
                     openLogin={openLogin}
                   />
