@@ -169,17 +169,19 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
+  }, [selectedFromAmount]);
 
-    if (Number(selectedFromAmount) <= 0 && clickedInputs) {
+  useEffect(() => {
+    if (Number(blockPrice) <= 0.003) {
       setError(
         `The amount must be greater than ${(
           0.003 * Number(userCurrencyState.split(" ")[2])
-        ).toFixed(4)} ${userCurrencyState.split(" ")[1]}`
+        ).toFixed(3)} ${userCurrencyState.split(" ")[1]}`
       );
     } else {
       setError("");
     }
-  }, [selectedFromAmount]);
+  }, [blockPrice])
 
   useEffect(() => {
     setPasswordShouldBeProvided(false);
