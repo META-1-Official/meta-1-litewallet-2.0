@@ -12,6 +12,8 @@ import { Button, Modal } from "semantic-ui-react";
 import AccountApi from "../../lib/AccountApi";
 import MetaLoader from "../../UI/loader/Loader";
 
+import {WALLET_ADAPTERS} from "@web3auth/base"
+
 export default function LoginScreen(props) {
   const {
     error,
@@ -198,23 +200,24 @@ export default function LoginScreen(props) {
     }
 
     try {
-      // const { privKey } = await openLogin.login({
-      //   loginProvider: "",
-      //   'mfaLevel?': "none",
-      //   'mfaLevel': "none"
-      // });
-      const web3authProvider = await web3auth.connect();
-      console.log('auth-provider', web3authProvider);
+      const web3authProvider = await web3auth.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+        mfaLevel: "none",
+        loginProvider: "email_passwordless",
+      });
 
       if (web3authProvider) {
         const data = await web3auth.getUserInfo();
+        // const privateKey = await web3authProvider.request({
+        //   method: "eth_private_key",
+        // });
+
         console.log('DATA', data);
 
-        // setAuthData(data);
-        // setPrivKey(privKey);
-        // setEmail(data?.email.toLowerCase());
-        // setLoader(false);
-        // setStep('faceki');
+        setAuthData(data);
+        setPrivKey("privateKey");
+        setEmail(data?.email.toLowerCase());
+        setLoader(false);
+        setStep('faceki');
       }
     } catch (error) {
       console.log('Error in Torus Render', error);

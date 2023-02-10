@@ -40,8 +40,21 @@ import OpenOrder from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
 import { Web3AuthCore } from "@web3auth/core";
-import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
-import OpenloginAdapter from "@web3auth/openlogin-adapter";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { OpenloginAdapter} from "@web3auth/openlogin-adapter";
+
+const openloginAdapter = new OpenloginAdapter({
+  adapterSettings: {
+    uxMode: "popup",
+    whiteLabel: {
+      name: "META1",
+      logoLight: "/static/media/Logo.e414080bb439e83ae772.png",
+      logoDark: "/static/media/Logo.e414080bb439e83ae772.png",
+      defaultLanguage: "en",
+      dark: false,
+    },
+  },
+});
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -110,7 +123,7 @@ function Application(props) {
   const [isFromMigration, setIsFromMigration] = useState(false);
   const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] = useState(false);
-  const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
+  const [web3auth, setWeb3auth] = useState(null);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
@@ -126,17 +139,6 @@ function Application(props) {
     refetchInterval: 20000
   });
 
-
-// const openLogin = new OpenLogin({
-//   clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
-//   network: process.env.REACT_APP_TORUS_NETWORK,
-//   uxMode: 'popup',
-//   whiteLabel: {
-//     name: 'META1'
-//   },
-  
-// });
-
   useEffect(() => {
     const init = async () => {
       try {
@@ -146,11 +148,14 @@ function Application(props) {
           chainConfig: {
             chainNamespace: CHAIN_NAMESPACES.EIP155,
             rpcTarget: "https://rpc.ankr.com/eth",
+            chainId: "0x1",
           }
         });
 
+        web3auth.configureAdapter(openloginAdapter);
+
         setWeb3auth(web3auth);
-        await web3auth.initModal();
+        await web3auth.init();
       } catch (error) {
         console.error(error);
       }
