@@ -474,7 +474,7 @@ export default function ExchangeForm(props) {
     }
 
     if (_marketPrice > 0) {
-      _marketPrice = backingAssetPolarity ? _marketPrice : 1 / _marketPrice;
+      _marketPrice = baseAsset.symbol === "META1" ? _marketPrice : 1 / _marketPrice;
 
       // Consider backing asset level
       if (baseAsset.symbol === 'META1' || quoteAsset.symbol === "META1") {
