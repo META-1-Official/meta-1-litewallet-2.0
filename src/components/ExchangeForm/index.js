@@ -464,28 +464,27 @@ export default function ExchangeForm(props) {
 
   const calculateMarketPrice = (_limitOrders, baseAsset, quoteAsset) => {
     let _marketPrice = 0;
+    const isQuoting = quoteAsset.symbol === "META1";
 
     for (let limitOrder of _limitOrders) {
       if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
-        const divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
-        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount * divideby);
+        const divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
         _marketPrice = _marketPrice > price ? _marketPrice : price;
       }
     }
 
     if (_marketPrice > 0) {
-      _marketPrice = baseAsset.symbol === "META1" ? _marketPrice : 1 / _marketPrice;
+      _marketPrice = 1 / _marketPrice;
 
       // Consider backing asset level
       if (baseAsset.symbol === 'META1' || quoteAsset.symbol === "META1") {
         if (backingAssetValue) {
-          if (backingAssetPolarity && backingAssetValue < _marketPrice) {
+          if (backingAssetPolarity && backingAssetValue < _marketPrice)
             _marketPrice = backingAssetValue;
-          }
 
-          if (!backingAssetPolarity && backingAssetValue > _marketPrice) {
+          if (!backingAssetPolarity && backingAssetValue > _marketPrice)
             _marketPrice = backingAssetValue;
-          }
         }
       }
 
