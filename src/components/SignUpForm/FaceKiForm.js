@@ -3,8 +3,7 @@ import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
 import { livenessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
 import OvalImage from '../../images/oval/oval19.png';
-import MobileOvalImage from '../../images/oval/oval19.png';
-import { isMobile } from "react-device-detect";
+import MobileOvalImage from '../../images/oval/oval12.png';
 import QRCodeModal from "../../UI/loader/QRCodeModal";
 import "./SignUpForm.css";
 
@@ -53,6 +52,10 @@ export default function FaceKiForm(props) {
     }
   }
 
+  const isMobile = () => {
+    return window.innerWidth < window.innerHeight;
+  }
+
   const dataURL2File = async (dataurl, filename) => {
     var arr = dataurl.split(','),
       mime = arr[0].match(/:(.*?);/)[1],
@@ -71,7 +74,7 @@ export default function FaceKiForm(props) {
 
     setVerifying(true);
 
-    var sizeForSreenShot = isMobile && device.width ? { width: device.width, height: device.height } : { width: 1280, height: 720 };
+    var sizeForSreenShot = isMobile() && device.width ? { width: device.width, height: device.height } : { width: 1280, height: 720 };
     const imageSrc = webcamRef.current.getScreenshot(sizeForSreenShot);
 
     if (!imageSrc) {
@@ -180,12 +183,12 @@ export default function FaceKiForm(props) {
                 <h6 style={{ fontSize: '24px' }}>Bio-Metric 2 Factor Authentication</h6>
                 <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
               </div>
-              <div className='child-div' style={{ borderRadius: '5px', padding: '1px' }}>
+              <div className='child-div' style={{ borderRadius: '5px'}}>
                 <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
-                  <div className="position-head color-black">{!isMobile ? 'Position your face in the oval' : ''}</div>
+                <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
                   <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
                 </div>
-                <img src={isMobile ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
+                <img src={isMobile() ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
                 <Webcam
                   audio={false}
                   ref={webcamRef}
@@ -193,11 +196,11 @@ export default function FaceKiForm(props) {
                   mirrored
                 />
                 <div className='btn-div'>
-                  <p className='span-class color-black margin-bottom-zero'>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
-                  <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+                  <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
+                  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
                     Min camera resolution must be 720p
                   </span>
-                  <span className={`span-class color-black margin-bottom-zero ${isMobile ? 'camera-text-font-size' : ''}`}>
+                  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
                     Verifying will take 10 seconds as maximum.
                   </span>
                   <div className="btn-grp" style={{ marginTop: '5px' }}>
