@@ -540,19 +540,6 @@ const SendForm = React.memo((props) => {
                       </div>
                     </div>
                   </div>
-                  <Grid.Column>
-                    <TextField
-                      InputProps={{ disableUnderline: true }}
-                      label="Passkey"
-                      className={styles.input}
-                      type={"password"}
-                      id="reddit-input pass"
-                      variant="filled"
-                      style={{ marginBottom: "1rem", borderRadius: "8px" }}
-                      value={password}
-                      onChange={({ target }) => setPassword(target.value)}
-                    />
-                  </Grid.Column>
                 </div>
                 <div
                   style={{
@@ -604,6 +591,19 @@ const SendForm = React.memo((props) => {
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className="passkey-wrapper">
+                  <TextField
+                    InputProps={{ disableUnderline: true }}
+                    label="Passkey"
+                    className={styles.input}
+                    type={"password"}
+                    id="reddit-input pass"
+                    variant="filled"
+                    style={{ marginBottom: "1rem", borderRadius: "8px" }}
+                    value={password}
+                    onChange={({ target }) => setPassword(target.value)}
+                  />
               </div>
               {!askForPassword && !inProgress && (
                 <Grid.Row className={"buttonSend"} columns={1}>
