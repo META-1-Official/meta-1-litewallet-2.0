@@ -296,9 +296,7 @@ export default function ExchangeForm(props) {
       if (tradeType === 'market' && userCurrencySymbol === 'USD' && quoteAsset.symbol === 'USDT') {
         asssetPrice = marketPrice;
       } else if (tradeType === 'limit') {
-        asssetPrice = limitPrice;
-      } else if (tradeType === 'limit' && baseAsset.symbol === 'USDT') {
-        asssetPrice = 1;
+        asssetPrice = baseAssetPrice;
       }
 
       const fromAmount = (
