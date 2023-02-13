@@ -711,13 +711,13 @@ export default function ExchangeForm(props) {
                                   value={selectedFromAmount}
                                   type={"number"}
                                   onChange={(e) => {
-                                    if (Number(e.target.value) <= 0) return;
+                                    if (Number(e.target.value) < 0) return;
                                     if (
                                       (
                                         e.target.value.length < 11 &&
                                         /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
                                       )
-                                      || selectedFromAmount?.length > e.target.value.length
+                                      || `${selectedFromAmount}`.length > e.target.value.length
                                     ) {
                                       setAmountPercent(null);
                                       inputChangeHandler(e.target.value)
@@ -749,14 +749,14 @@ export default function ExchangeForm(props) {
                                   <input
                                     className={styles.inputDollars}
                                     onChange={(e) => {
-                                      if (Number(e.target.value) <= 0) return;
+                                      if (Number(e.target.value) < 0) return;
+                                      console.log("@1 - ", blockPrice?.length, e.target.value.length)
                                       if (
                                         (
-                                          (
-                                            e.target.value.length < 11 &&
-                                            /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value))
-                                          )
-                                          || blockPrice?.length > e.target.value.length
+                                          e.target.value.length < 11 &&
+                                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                                        )
+                                        || `${blockPrice}`.length > e.target.value.length
                                       ) {
                                         setAmountPercent(null);
                                         setClickedInputs(true);
