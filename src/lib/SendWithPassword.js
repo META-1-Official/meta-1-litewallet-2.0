@@ -9,9 +9,8 @@ export default class SendWithPassword {
 
     try {
       const account = await this.metaApi.login(this.login, password);
-      if (!account) {
-        return { error: "Something went wrong " };
-      }
+      if (!account) return { error: "The pair of login and password do not match!" };
+
       const result = await account.transfer(
         to,
         asset,

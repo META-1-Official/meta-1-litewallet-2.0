@@ -48,11 +48,9 @@ const openloginAdapter = new OpenloginAdapter({
     uxMode: "popup",
     whiteLabel: {
       name: "META1",
-      logoLight: "/static/media/Logo.e414080bb439e83ae772.png",
-      logoDark: "/static/media/Logo.e414080bb439e83ae772.png",
       defaultLanguage: "en",
       dark: false,
-    },
+    }
   },
 });
 
@@ -153,7 +151,6 @@ function Application(props) {
         });
 
         web3auth.configureAdapter(openloginAdapter);
-
         setWeb3auth(web3auth);
         await web3auth.init();
       } catch (error) {

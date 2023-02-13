@@ -169,17 +169,19 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
+  }, [selectedFromAmount]);
 
-    if (Number(selectedFromAmount) <= 0 && clickedInputs) {
+  useEffect(() => {
+    if (Number(blockPrice) <= 0.003) {
       setError(
         `The amount must be greater than ${(
           0.003 * Number(userCurrencyState.split(" ")[2])
-        ).toFixed(4)} ${userCurrencyState.split(" ")[1]}`
+        ).toFixed(3)} ${userCurrencyState.split(" ")[1]}`
       );
     } else {
       setError("");
     }
-  }, [selectedFromAmount]);
+  }, [blockPrice]);
 
   useEffect(() => {
     setPasswordShouldBeProvided(false);
@@ -329,11 +331,12 @@ export default function ExchangeForm(props) {
           if (selectedFrom.value === 'META1' || selectedTo.value === 'META1') {
             asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
             const ratio = isQuoting
-              ? asset_usdt / (meta1_usdt - 0.1)
-              : (meta1_usdt + 0.1) / asset_usdt;
+              ? asset_usdt / (meta1_usdt + 0.01)
+              : (meta1_usdt + 0.01) / asset_usdt;
             console.log(
               LOG_ID, isQuoting ? selectedFrom.value : selectedTo.value, ': USDT', asset_usdt
             );
+
             if (isQuoting) {
               console.log(LOG_ID, 'BUY/SELL price should be lower than', ratio);
             } else {
@@ -461,28 +464,27 @@ export default function ExchangeForm(props) {
 
   const calculateMarketPrice = (_limitOrders, baseAsset, quoteAsset) => {
     let _marketPrice = 0;
+    const isQuoting = quoteAsset.symbol === "META1";
 
     for (let limitOrder of _limitOrders) {
       if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
-        const divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
-        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount * divideby);
+        const divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
         _marketPrice = _marketPrice > price ? _marketPrice : price;
       }
     }
 
     if (_marketPrice > 0) {
-      _marketPrice = backingAssetPolarity ? _marketPrice : 1 / _marketPrice;
+      _marketPrice = 1 / _marketPrice;
 
       // Consider backing asset level
       if (baseAsset.symbol === 'META1' || quoteAsset.symbol === "META1") {
         if (backingAssetValue) {
-          if (backingAssetPolarity && backingAssetValue < _marketPrice) {
+          if (backingAssetPolarity && backingAssetValue < _marketPrice)
             _marketPrice = backingAssetValue;
-          }
 
-          if (!backingAssetPolarity && backingAssetValue > _marketPrice) {
+          if (!backingAssetPolarity && backingAssetValue > _marketPrice)
             _marketPrice = backingAssetValue;
-          }
         }
       }
 
@@ -1032,6 +1034,7 @@ export default function ExchangeForm(props) {
                     placeholder="Passkey"
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
+                    style = {{width: 310}}
                   />
 
                   <Button
