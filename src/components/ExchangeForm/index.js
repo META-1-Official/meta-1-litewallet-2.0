@@ -287,6 +287,7 @@ export default function ExchangeForm(props) {
     if (userCurrencySymbol === 'USD' && baseAsset.symbol === 'USDT') {
       setSelectedFromAmount(_blockPrice)
       calculateSelectedToAmount(_blockPrice);
+      return;
     } else {
       let asssetPrice = baseAssetPrice;
 
