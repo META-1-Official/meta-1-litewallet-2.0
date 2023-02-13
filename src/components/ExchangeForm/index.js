@@ -189,6 +189,7 @@ export default function ExchangeForm(props) {
 
   useEffect(() => {
     setAmountPercent(0);
+    setIsLoadingPrice(true);
     setInvalidEx(false);
     setError(null);
     setIsInputsEnabled(false);
@@ -197,7 +198,6 @@ export default function ExchangeForm(props) {
     setBlockPrice(NaN);
     setSelectedFromAmount(NaN);
     setSelectedToAmount(NaN);
-    setIsLoadingPrice(true);
     setBackingAssetValue(NaN);
     fetchPair(selectedTo, selectedFrom);
   }, [tradeType, selectedFrom, selectedTo]);
@@ -654,13 +654,17 @@ export default function ExchangeForm(props) {
             <div style={{ marginBottom: "20px" }}>
               <Button
                 className={tradeType === 'market' ? 'custom-tab' : ''}
-                onClick={() => setTradeType('market')}
+                onClick={() => {
+                  setIsLoadingPrice(true);
+                  setTradeType('market');
+                }}
               >
                 Market Order
               </Button>
               <Button
                 className={tradeType === 'limit' ? 'custom-tab' : ''}
                 onClick={() => {
+                  setIsLoadingPrice(true);
                   setTradeType('limit');
                   setIsLimitPriceSet(prev => !prev);
                 }}
@@ -837,6 +841,7 @@ export default function ExchangeForm(props) {
                         setSelectedToAmount(NaN);
                         setSelectedFromAmount(NaN);
                         setBlockPrice(NaN);
+                        setIsLoadingPrice(true);
                         swapAssets(e);
                       }}
                     >
