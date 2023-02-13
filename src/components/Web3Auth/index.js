@@ -34,7 +34,7 @@ const ProvidersCount = ({ moreProviders, setMoreProviders }) => {
             <div className={styles.providersCount}>
                 <div onClick={changeProvidersCount}>
                     <p>{`View more options`}
-                        <img src={arrow} width={15} height={15} style={moreProviders ? { transform: 'rotate(180deg)' } : {}} />
+                        <img src={arrow} alt="" width={15} height={15} style={moreProviders ? { transform: 'rotate(180deg)' } : {}} />
                     </p>
                 </div>
             </div>
@@ -48,6 +48,7 @@ const LoginProvidersModal = (props) => {
     const [phoneNumber, setMobilePhoneNumber] = useState(props.phoneNumber || null);
     const [continueMode, setContinueMode] = useState(false);
     const [loader, setLoader] = useState(false);
+    const [emailError, setEmailError] = useState(null);
 
     const doAuth = async (provider) => {
         const { web3auth } = props;
@@ -112,6 +113,13 @@ const LoginProvidersModal = (props) => {
     const handleEmailChange = async (e) => {
         e.preventDefault();
         setEmail(e.target.value);
+        if (
+            !/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(e.target.value) && e.target.value.length !== 0
+        ) {
+            setEmailError("Invalid Email");
+        } else {
+            setEmailError(null);
+        }
     }
 
     const isMobile = () => {
@@ -159,7 +167,10 @@ const LoginProvidersModal = (props) => {
                                 <div className={styles.formContainer}>
                                     <div className={styles.emailProvider}>
                                         <input value={email} className={styles.providersInput} placeholder={"Email"} onChange={handleEmailChange} />
-                                        <button className={styles.providersButton} type={"submit"} onClick={handleContinueWithEmail} disabled={!email}>Continue with Email</button>
+                                        {emailError && (
+                                            <p className={styles.errorText}> {emailError}</p>
+                                        )}
+                                        <button className={styles.providersButton} type={"submit"} onClick={handleContinueWithEmail} disabled={!email || emailError}>Continue with Email</button>
                                     </div>
                                     <div className={styles.smsProvider} style={{ display: 'none' }}>
                                         <CountryNumber />
