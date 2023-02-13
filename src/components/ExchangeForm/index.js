@@ -711,12 +711,12 @@ export default function ExchangeForm(props) {
                                   value={selectedFromAmount}
                                   type={"number"}
                                   onChange={(e) => {
+                                    if (Number(e.target.value) <= 0) return;
                                     if (
                                       e.target.value.length < 11 &&
                                       /[-+]?[0-9]*\.?[0-9]*/.test(
                                         e.target.value
-                                      ) &&
-                                      Number(e.target.value) >= 0
+                                      ) || selectedFromAmount?.length > e.target.value.length
                                     ) {
                                       setAmountPercent(null);
                                       inputChangeHandler(e.target.value)
@@ -748,12 +748,12 @@ export default function ExchangeForm(props) {
                                   <input
                                     className={styles.inputDollars}
                                     onChange={(e) => {
+                                      if (Number(e.target.value) <= 0) return;
                                       if (
                                         e.target.value.length < 11 &&
                                         /[-+]?[0-9]*\.?[0-9]*/.test(
                                           e.target.value
-                                        ) &&
-                                        Number(e.target.value) >= 0
+                                        ) || blockPrice?.length > e.target.value.length
                                       ) {
                                         setAmountPercent(null);
                                         setClickedInputs(true);

@@ -462,11 +462,12 @@ const SendForm = React.memo((props) => {
                         </InputAdornment>
                       }
                       onChange={(e) => {
+                        if (Number(e.target.value) <= 0) return;
                         const amountOut = e.target.value;
                         if (
                           e.target.value.length < 11 &&
-                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value) &&
-                          Number(e.target.value) >= 0
+                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                          || amount?.length > e.target.value.length
                         ) {
                           setClickedInputs(true);
                           setAmount(amountOut);
