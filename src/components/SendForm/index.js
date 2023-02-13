@@ -462,7 +462,8 @@ const SendForm = React.memo((props) => {
                         </InputAdornment>
                       }
                       onChange={(e) => {
-                        if (Number(e.target.value) <= 0) return;
+                        if (Number(e.target.value) < 0) return;
+
                         const amountOut = e.target.value;
                         if (
                           (
