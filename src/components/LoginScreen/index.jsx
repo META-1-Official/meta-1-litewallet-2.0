@@ -11,6 +11,7 @@ import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
 import AccountApi from "../../lib/AccountApi";
 import MetaLoader from "../../UI/loader/Loader";
+import LoginProvidersModal from "../Web3Auth"
 
 export default function LoginScreen(props) {
   const {
@@ -23,7 +24,7 @@ export default function LoginScreen(props) {
     onClickExchangeUSDTHandler,
     setLoginDataError,
     onClickRedirectToPortfolio,
-    openLogin,
+    web3auth,
     onClickResetIsSignatureProcessing
   } = props;
   const [login, setLogin] = useState("");
@@ -51,6 +52,7 @@ export default function LoginScreen(props) {
   const isSignatureValidState = useSelector(isSignatureValidSelector);
   const loginErrorMsgState = useSelector(loginErrorMsgSelector);
   const dispatch = useDispatch();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   useEffect(() => {
     if (signatureErrorState) {
@@ -158,8 +160,8 @@ export default function LoginScreen(props) {
               if (res[0][0] === login) {
                 localStorage.removeItem('isMigrationUser');
                 if (login.length !== 0) {
-                  setLoader(true);
-                  renderTorusLogin();
+                  // renderTorusLogin();
+                  setAuthModalOpen(true);
                 }
               } else {
                 setErrorAttr(prev => {
@@ -190,217 +192,206 @@ export default function LoginScreen(props) {
     )
   }
 
-  const renderTorusLogin = async () => {
-    if (
-      !openLogin
-    ) {
-      return;
-    }
-
-    try {
-      const { privKey } = await openLogin.login({
-        loginProvider: "",
-        'mfaLevel?': "none",
-        'mfaLevel': "none"
-      });
-
-      if (privKey && typeof privKey === "string") {
-        const data = await openLogin.getUserInfo();
-
-        setAuthData(data);
-        setPrivKey(privKey);
-        setEmail(data?.email.toLowerCase());
-        setLoader(false);
-        setStep('faceki');
-      }
-    } catch (error) {
-      console.log('Error in Torus Render', error);
-      setLoader(false);
-    }
-  };
+  const goToFaceKi = (data) => {
+    setAuthData(data);
+    setPrivKey("web3authprivatekey");
+    setEmail(data?.email.toLowerCase());
+    setStep('faceki');
+  }
 
   const renderLoginScreen = () => {
     return (
-      <div className={styles.mainBlockContent}>
-        <div className={styles.leftBlockContent}>
-          <div className={styles.createMeta}>
-            <h5>
-              <strong>
-                This section provides access to your META Lite Wallet.
-              </strong>
-            </h5>
-            <span>
-              If you have not yet created a META wallet, please click the Get
-              Started button to on the right hand side of the screen. Then click
-              the 'Create META Wallet' button below to create your wallet
-            </span>
-            <br />
-            <button
-              onClick={handleSignUpClick}
-              style={{ marginTop: "1rem" }}
-              className={styles.Button}
-            >
-              Create {portfolio != null ? "new" : null} META Wallet
-            </button>
-          </div>
-
-          {portfolio === null || !isLoginState ? (
-            <div className={styles.linkMeta}>
+      <>
+        <div className={styles.mainBlockContent}>
+          <div className={styles.leftBlockContent}>
+            <div className={styles.createMeta}>
+              <h5>
+                <strong>
+                  This section provides access to your META Lite Wallet.
+                </strong>
+              </h5>
               <span>
-                For those already having a META Wallet, to enable functionality,
-                you must 'link' your wallet by typing in your wallet 'Wallet
-                Name' in the box below and clicking the 'Link META Wallet'
-                button.
+                If you have not yet created a META wallet, please click the Get
+                Started button to on the right hand side of the screen. Then click
+                the 'Create META Wallet' button below to create your wallet
               </span>
-              <form className={styles.FormLink}>
-                <input
-                  className={styles.input}
-                  onChange={(e) => {
-                    e.preventDefault();
-                    if (e.target.value.trim()) {
-                      setErrorAttr(prev => {
-                        return { ...prev, login: false, notFound: false };
-                      })
-                    }
-                    setLogin(e.target.value);
-                  }}
-                  placeholder={"Wallet Name"}
-                  value={login}
-                  type="text"
-                />
-                <p
-                  className={styles.ErrorP}
-                  style={error ? null : { display: "none" }}
-                >
-                  Invalid Account Name
-                </p>
-                <p
-                  className={styles.ErrorP}
-                  style={loginDataError ? null : { display: "none" }}
-                >
-                  {loginErrorMsgState}
-                </p>
-                {errorAttr.login ? <p className={styles.ErrorP}>Wallet Name can't be empty</p> : null}
-                {errorAttr.notFound && !errorAttr.login ? <p className={styles.ErrorP}>Invalid Wallet Name</p> : null}
+              <br />
+              <button
+                onClick={handleSignUpClick}
+                style={{ marginTop: "1rem" }}
+                className={styles.Button}
+              >
+                Create {portfolio != null ? "new" : null} META Wallet
+              </button>
+            </div>
+
+            {portfolio === null || !isLoginState ? (
+              <div className={styles.linkMeta}>
+                <span>
+                  For those already having a META Wallet, to enable functionality,
+                  you must 'link' your wallet by typing in your wallet 'Wallet
+                  Name' in the box below and clicking the 'Link META Wallet'
+                  button.
+                </span>
+                <form className={styles.FormLink}>
+                  <input
+                    className={styles.input}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      if (e.target.value.trim()) {
+                        setErrorAttr(prev => {
+                          return { ...prev, login: false, notFound: false };
+                        })
+                      }
+                      setLogin(e.target.value);
+                    }}
+                    placeholder={"Wallet Name"}
+                    value={login}
+                    type="text"
+                  />
+                  <p
+                    className={styles.ErrorP}
+                    style={error ? null : { display: "none" }}
+                  >
+                    Invalid Account Name
+                  </p>
+                  <p
+                    className={styles.ErrorP}
+                    style={loginDataError ? null : { display: "none" }}
+                  >
+                    {loginErrorMsgState}
+                  </p>
+                  {errorAttr.login ? <p className={styles.ErrorP}>Wallet Name can't be empty</p> : null}
+                  {errorAttr.notFound && !errorAttr.login ? <p className={styles.ErrorP}>Invalid Wallet Name</p> : null}
+                  <button
+                    className={styles.Button}
+                    style={{ fontSize: "100%", marginTop: "0" }}
+                    onClick={handleSubmit}
+                    type={"submit"}
+                  >
+                    Link META Wallet
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div className={styles.linkMeta}>
+                <h5>
+                  <strong>To unlink your wallet, click here</strong>
+                </h5>
+                <br />
                 <button
                   className={styles.Button}
-                  style={{ fontSize: "100%", marginTop: "0" }}
-                  onClick={handleSubmit}
-                  type={"submit"}
+                  onClick={() => {
+                    dispatch(logoutRequest());
+                    onClickResetIsSignatureProcessing();
+                  }}
+                  type={"button"}
+                  style={{ marginTop: "0" }}
                 >
-                  Link META Wallet
+                  Unlink META Wallet
                 </button>
-              </form>
-            </div>
-          ) : (
-            <div className={styles.linkMeta}>
+              </div>
+            )}
+
+            {isLoginState && oldUserState && migratable && <div className={styles.linkMeta}>
               <h5>
-                <strong>To unlink your wallet, click here</strong>
+                <strong>To complete the transfer of your funds from your original LEGACY Wallet, click the button below and enter your passkey from your LEGACY wallet.</strong>
               </h5>
               <br />
               <button
-                className={styles.Button}
+                className={`${styles.Button} ${styles.checkTransferButtonDisplay}`}
+                onClick={() => checkTransferStateHandler('showPasswordColumn', true)}
+                type={"button"}
+                style={{ marginTop: "0" }}
+              >
+                Claim Legacy Wallet
+              </button>
+              {checkTransfer.showPasswordColumn && <>
+                <input
+                  className={styles.input}
+                  onChange={(e) => {
+                    checkTransferStateHandler(e.target.name, e.target.value);
+                  }}
+                  name="password"
+                  placeholder={"original passkey"}
+                  value={checkTransfer.password}
+                  type="password"
+                />
+                <button
+                  className={`${styles.Button} ${styles.checkTransferPassword}`}
+                  onClick={() => checkTransferSubmitHandler()}
+                  type={"button"}
+                  style={{ marginTop: "0" }}
+                >
+                  Submit
+                </button>
+              </>
+              }
+              <span
+                className={styles.checkTransferError}
+                style={!isMigrationPasskeyValid ? null : { display: "none" }}
+              >
+                Private Key is Invalid
+              </span>
+              <span
+                className={styles.checkTransferError}
+                style={checkTransfer.error ? null : { display: "none" }}
+              >
+                {checkTransfer.errorMsg}
+              </span>
+            </div>}
+          </div>
+          <div className={styles.rightBlockContent}>
+            <RightSideHelpMenuFirstType
+              onClickExchangeEOSHandler={onClickExchangeEOSHandler}
+              onClickExchangeUSDTHandler={onClickExchangeUSDTHandler}
+              portfolio={portfolio}
+            />
+          </div>
+          <Modal
+            size="mini"
+            className="claim_wallet_modal"
+            onClose={() => {
+              setMigrationMsg("");
+              setOpenModal(false);
+              onClickRedirectToPortfolio();
+            }}
+            open={openModal}
+            id={"modalExch"}
+          >
+            <Modal.Content >
+              <div
+                className="migration-modal-div"
+              >
+                <h3 className="claim_model_content" style={{ color: '#330000', display: 'block' }}>
+                  Hello {accountState}
+                </h3>
+                <h3 className="text2">{migrationMsg}</h3>
+              </div>
+            </Modal.Content>
+            <Modal.Actions className="claim_modal-action">
+              <Button
+                className="claim_wallet_btn"
                 onClick={() => {
-                  dispatch(logoutRequest());
-                  onClickResetIsSignatureProcessing();
+                  setMigrationMsg("");
+                  setOpenModal(false);
+                  onClickRedirectToPortfolio();
                 }}
-                type={"button"}
-                style={{ marginTop: "0" }}
               >
-                Unlink META Wallet
-              </button>
-            </div>
-          )}
-
-          {isLoginState && oldUserState && migratable && <div className={styles.linkMeta}>
-            <h5>
-              <strong>To complete the transfer of your funds from your original LEGACY Wallet, click the button below and enter your passkey from your LEGACY wallet.</strong>
-            </h5>
-            <br />
-            <button
-              className={`${styles.Button} ${styles.checkTransferButtonDisplay}`}
-              onClick={() => checkTransferStateHandler('showPasswordColumn', true)}
-              type={"button"}
-              style={{ marginTop: "0" }}
-            >
-              Claim Legacy Wallet
-            </button>
-            {checkTransfer.showPasswordColumn && <>
-              <input
-                className={styles.input}
-                onChange={(e) => {
-                  checkTransferStateHandler(e.target.name, e.target.value);
-                }}
-                name="password"
-                placeholder={"original passkey"}
-                value={checkTransfer.password}
-                type="password"
-              />
-              <button
-                className={`${styles.Button} ${styles.checkTransferPassword}`}
-                onClick={() => checkTransferSubmitHandler()}
-                type={"button"}
-                style={{ marginTop: "0" }}
-              >
-                Submit
-              </button>
-            </>
-            }
-            <span
-              className={styles.checkTransferError}
-              style={!isMigrationPasskeyValid ? null : { display: "none" }}
-            >
-              Private Key is Invalid
-            </span>
-            <span
-              className={styles.checkTransferError}
-              style={checkTransfer.error ? null : { display: "none" }}
-            >
-              {checkTransfer.errorMsg}
-            </span>
-          </div>}
+                Ok</Button>
+            </Modal.Actions>
+          </Modal>
         </div>
-        <div className={styles.rightBlockContent}>
-          <RightSideHelpMenuFirstType
-            onClickExchangeEOSHandler={onClickExchangeEOSHandler}
-            onClickExchangeUSDTHandler={onClickExchangeUSDTHandler}
-            portfolio={portfolio}
+        {
+          authModalOpen && <LoginProvidersModal
+            open={authModalOpen}
+            setOpen={(val) => setAuthModalOpen(val)}
+            web3auth={web3auth}
+            authMode="login"
+            goToFaceKi={goToFaceKi}
           />
-        </div>
-        <Modal
-          size="mini"
-          className="claim_wallet_modal"
-          onClose={() => {
-            setMigrationMsg("");
-            setOpenModal(false);
-            onClickRedirectToPortfolio();
-          }}
-          open={openModal}
-          id={"modalExch"}
-        >
-          <Modal.Content >
-            <div
-              className="migration-modal-div"
-            >
-              <h3 className="claim_model_content" style={{ color: '#330000', display: 'block' }}>
-                Hello {accountState}
-              </h3>
-              <h3 className="text2">{migrationMsg}</h3>
-            </div>
-          </Modal.Content>
-          <Modal.Actions className="claim_modal-action">
-            <Button
-              className="claim_wallet_btn"
-              onClick={() => {
-                setMigrationMsg("");
-                setOpenModal(false);
-                onClickRedirectToPortfolio();
-              }}
-            >
-              Ok</Button>
-          </Modal.Actions>
-        </Modal>
-      </div>
+        }
+      </>
     )
   }
 

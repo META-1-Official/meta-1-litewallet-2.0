@@ -7,6 +7,7 @@
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@mui/material": "^5.0.3",
+    "@solana/web3.js": "^1.73.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -14,6 +15,9 @@
     "@types/node": "^16.10.3",
     "@types/react": "^17.0.27",
     "@types/react-dom": "^17.0.9",
+    "@web3auth/base": "^4.4.0",
+    "@web3auth/core": "^4.4.0",
+    "@web3auth/openlogin-adapter": "^4.5.0",
     "axios": "^0.23.0",
     "immutable": "^4.0.0-rc.12",
     "jquery": "^3.6.0",
@@ -24,7 +28,6 @@
     "moment": "^2.29.4",
     "multicoin-address-validator": "^0.5.9",
     "numeral": "^2.0.6",
-    "@toruslabs/openlogin": "2.0.0",
     "parcel-bundler": "^1.12.4",
     "prop-types": "^15.7.2",
     "qrcode": "^1.4.4",
@@ -40,7 +43,7 @@
     "react-query": "^3.34.16",
     "react-redux": "^8.0.2",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.1",
+    "react-scripts": "5.0.1",
     "react-select": "^3.1.1",
     "react-spinners": "^0.10.4",
     "react-webcam": "^7.0.1",
@@ -55,18 +58,18 @@
     "styled-components": "^5.2.1",
     "sweetalert": "^2.1.2",
     "typescript": "^4.4.3",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^3.1.1",
+    "web3": "^1.8.2"
   },
   "resolutions": {
     "//": "See https://github.com/facebook/create-react-app/issues/11773",
     "react-error-overlay": "6.0.9"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "build:widget": "parcel build src/index.js --public-url /assets/m1wallet/ --no-source-maps -d build"
+    "start": "react-app-rewired start",
+    "build": "GENERATE_SOURCEMAP=false react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -85,6 +88,19 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "eslint-config-react-app": "^7.0.1",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.0"
   },
   "engines": {
     "node": ">=15.0.0",
