@@ -1,0 +1,17 @@
+.dropDownContainer {
+  width: 30%;
+}
+
+.dropDownDivInput {
+  display: flex;
+  justify-content: center;
+}
+
+.dropDownCountryList {
+  max-height: 500px;
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+}
+
+/*# sourceMappingURL=dropDownCountry.module.css.map */
