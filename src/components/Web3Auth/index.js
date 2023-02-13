@@ -56,13 +56,13 @@ const LoginProvidersModal = (props) => {
             !web3auth
         ) {
             return;
-        }       
+        }
 
         try {
             if (web3auth.status === "connected") {
                 await web3auth.logout();
-            }           
-            
+            }
+
             const web3authProvider = await web3auth.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
                 mfaLevel: "none",
                 loginProvider: provider,
@@ -70,7 +70,6 @@ const LoginProvidersModal = (props) => {
                     login_hint: provider === "email_passwordless" ? email : phoneNumber,
                 } : {}
             });
-            
             if (web3authProvider) {
                 const data = await web3auth.getUserInfo();
                 setLoader(false);
@@ -115,6 +114,10 @@ const LoginProvidersModal = (props) => {
         setEmail(e.target.value);
     }
 
+    const isMobile = () => {
+        return window.innerWidth < window.innerHeight;
+    }
+
     return (
         <Modal
             closeOnEscape={false}
@@ -124,7 +127,7 @@ const LoginProvidersModal = (props) => {
             id="auth-modal"
             className={styles.containerProvider}
             centered
-            style={{ width: '520px' }}
+            style={isMobile() ? { width: '100%', margin: 0 } : { width: '30rem' }}
         >
             <div className={styles.containerProvider}>
                 {
@@ -155,7 +158,7 @@ const LoginProvidersModal = (props) => {
                                 <p style={{ margin: "auto", textAlign: 'center' }}>OR</p>
                                 <div className={styles.formContainer}>
                                     <div className={styles.emailProvider}>
-                                        <input value={email} className={styles.providersInput} placeholder={"Email"} onChange={handleEmailChange}/>
+                                        <input value={email} className={styles.providersInput} placeholder={"Email"} onChange={handleEmailChange} />
                                         <button className={styles.providersButton} type={"submit"} onClick={handleContinueWithEmail} disabled={!email}>Continue with Email</button>
                                     </div>
                                     <div className={styles.smsProvider} style={{ display: 'none' }}>
