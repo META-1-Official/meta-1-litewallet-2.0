@@ -750,7 +750,6 @@ export default function ExchangeForm(props) {
                                     className={styles.inputDollars}
                                     onChange={(e) => {
                                       if (Number(e.target.value) < 0) return;
-                                      console.log("@1 - ", blockPrice?.length, e.target.value.length)
                                       if (
                                         (
                                           e.target.value.length < 11 &&
