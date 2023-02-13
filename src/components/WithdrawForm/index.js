@@ -526,12 +526,12 @@ const WithdrawForm = (props) => {
                           value={selectedFromAmount}
                           type={"number"}
                           onChange={(e) => {
+                            if (Number(e.target.value) <= 0) return;
                             if (
-                              (e.target.value.length < 11 &&
-                                /[-+]?[0-9]*\.?[0-9]*/.test(
-                                  e.target.value
-                                ) &&
-                                Number(e.target.value) >= 0)
+                              (
+                                e.target.value.length < 11 &&
+                                /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                              )
                               || selectedFromAmount?.length > e.target.value.length
                             ) {
                               setSelectedFromAmount(e.target.value);
