@@ -15,6 +15,7 @@ import { sleepHandler } from "../../utils/common.js";
 import Meta1 from "meta1-vision-dex";
 import ModalTemplate from "./Modal.jsx";
 import MetaLoader from "../../UI/loader/Loader.js";
+import LoginProvidersModal from "../Web3Auth"
 
 export default function SignUpForm(props) {
   const {
@@ -25,7 +26,8 @@ export default function SignUpForm(props) {
     isSignatureProcessing,
     signatureResult,
     onBackClick,
-    openLogin
+    openLogin,
+    web3auth
   } = props;
 
   const [accountName, setAccountName] = useState("");
@@ -45,6 +47,7 @@ export default function SignUpForm(props) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { innerWidth: width } = window;
   const [loader, setLoader] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const isMobile = width <= 678;
 
   useEffect(() => {
@@ -69,7 +72,7 @@ export default function SignUpForm(props) {
     newCountry,
     newSelectedCountryObj
   ) => {
-    setLoader(true);
+    // setLoader(true);
     setAccountName(accName);
     setFirstName(newFirstName);
     setPassword(pass);
@@ -89,7 +92,9 @@ export default function SignUpForm(props) {
       setLoader(false);
       setStep('migration');
     }
-    else renderTorusStep();
+    else {
+      setAuthModalOpen(true)
+    }
   };
 
   const stepGoToTorus = (
@@ -104,8 +109,15 @@ export default function SignUpForm(props) {
     setPassword(pass);
     setLastName(newLastName);
     setPhone(newPhone);
-    renderTorusStep();
+    setAuthModalOpen(true);
   };
+
+  const stepGoToFaceKi = (data) => {
+    setAuthData(data);
+    setPrivKey("web3authprivatekey");
+    setEmail(data?.email.toLowerCase());
+    setStep('faceki');
+  }
 
   const stepGoToEsignature = () => {
     localStorage.removeItem('access');
@@ -326,35 +338,6 @@ export default function SignUpForm(props) {
     }
   }
 
-  const renderTorusStep = async () => {
-    if (
-      !openLogin
-    ) {
-      return;
-    }
-
-    try {
-      const { privKey } = await openLogin.login({
-        loginProvider: "",
-        'mfaLevel?': "none",
-        'mfaLevel': "none"
-      });
-
-      if (privKey && typeof privKey === "string") {
-        const data = await openLogin.getUserInfo();
-
-        setAuthData(data);
-        setPrivKey(privKey);
-        setEmail(data?.email.toLowerCase());
-        setLoader(false);
-        setStep('faceki');
-      }
-    } catch (error) {
-      console.log('Error in Torus Render', error);
-      setLoader(false);
-    }
-  }
-
   const handleBackBtn = (e) => {
     if (step == "userform") {
       onBackClick(e);
@@ -443,6 +426,14 @@ export default function SignUpForm(props) {
           className={`${!isMobile ? 'copy_passkey_modal' : 'copy_passkey_mobile_modal'}`}
           isCloseIcon={true}
         />
+        {
+          authModalOpen && <LoginProvidersModal
+            open={authModalOpen}
+            setOpen={(val) => setAuthModalOpen(val)}
+            web3auth={web3auth}
+            goToFaceKi={stepGoToFaceKi}
+          />
+        }
       </div>
     </>
   );

@@ -81,6 +81,10 @@ input::-webkit-inner-spin-button {
   width: 27%;
 }
 
+.passkey-wrapper {
+  padding: 32px;
+}
+
 @media (max-width: 1366px) {
   .widthh100 {
     width: 100%;
@@ -90,5 +94,9 @@ input::-webkit-inner-spin-button {
   }
   .bottomBlockAdapt {
     width: 100%;
+  }
+  .passkey-wrapper {
+    padding: 0;
+    margin-top: 30px;
   }
 }

@@ -125,7 +125,10 @@ const WithdrawForm = (props) => {
     } else {
       setSelectedFrom(newOptions.find((o) => o.value === selectedFrom.value));
     }
-  }, [props.assets, props.portfolio]);
+  }, 
+    // [props.assets, props.portfolio]
+    []
+  );
 
   useEffect(() => {
     if (selectedFrom) {
@@ -523,13 +526,13 @@ const WithdrawForm = (props) => {
                           value={selectedFromAmount}
                           type={"number"}
                           onChange={(e) => {
+                            if (Number(e.target.value) < 0) return;
                             if (
-                              (e.target.value.length < 11 &&
-                                /[-+]?[0-9]*\.?[0-9]*/.test(
-                                  e.target.value
-                                ) &&
-                                Number(e.target.value) >= 0)
-                              || selectedFromAmount?.length > e.target.value.length
+                              (
+                                e.target.value.length < 11 &&
+                                /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                              )
+                              || `${selectedFromAmount}`.length > e.target.value.length
                             ) {
                               setSelectedFromAmount(e.target.value);
                               calculateUsdPriceHandler(e);

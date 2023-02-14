@@ -22,9 +22,8 @@ export default class TradeWithPassword {
       }
       const newPairAmt = tradePrice ? tradePrice : pairAmt;
       const account = await this.metaApi.login(this.login, password);
-      if (!account) {
-        return { error: "Something went wrong" };
-      }
+
+      if (!account) return { error: "The pair of login and password do not match!" };
 
       const buyResult = await account.buy(
         to,
@@ -34,6 +33,7 @@ export default class TradeWithPassword {
         false,
         new Date(new Date().setYear(new Date().getFullYear()+1))
       );
+
       return { result: buyResult, error: null };
     } catch (e) {
       if (e.message === "The pair of login and password do not match!") {
