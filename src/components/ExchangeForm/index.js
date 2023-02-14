@@ -402,7 +402,7 @@ export default function ExchangeForm(props) {
   }
 
   const changePercentageHandler = (val) => {
-    if (invalidEx) return;
+    if (invalidEx || !isInputsEnabled) return;
 
     const fromAmount = String(Number(selectedFrom.balance) * (val / 100));
     setAmountPercent(val);
@@ -795,6 +795,7 @@ export default function ExchangeForm(props) {
                                   onClick={setAssetMax}
                                   floated="right"
                                   size="mini"
+                                  disabled={invalidEx || !isInputsEnabled}
                                 >
                                   MAX
                                 </Button>
