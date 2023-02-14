@@ -655,6 +655,7 @@ export default function ExchangeForm(props) {
               <Button
                 className={tradeType === 'market' ? 'custom-tab' : ''}
                 onClick={() => {
+                  if (tradeType === 'market') return;
                   setIsLoadingPrice(true);
                   setTradeType('market');
                 }}
@@ -664,6 +665,7 @@ export default function ExchangeForm(props) {
               <Button
                 className={tradeType === 'limit' ? 'custom-tab' : ''}
                 onClick={() => {
+                  if (tradeType === 'limit') return;
                   setIsLoadingPrice(true);
                   setTradeType('limit');
                   setIsLimitPriceSet(prev => !prev);
