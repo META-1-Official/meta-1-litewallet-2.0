@@ -245,7 +245,7 @@ const PortfolioTable = React.memo((props) => {
                 )}
               </StyledTableCell>
               <StyledTableCell align="left">
-                {(datas.name === "USDT" || datas.name === "ETH" || datas.name === "XLM" || datas.name === "EOS" || datas.name === "BNB") && (
+                {(datas.name === "USDT" || datas.name === "ETH") && (
                   <button
                     onClick={() => {
                       onWithdrawClick(datas.name);
