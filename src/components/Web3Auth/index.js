@@ -135,7 +135,7 @@ const LoginProvidersModal = (props) => {
             id="auth-modal"
             className={styles.containerProvider}
             centered
-            style={isMobile() ? { width: '100%', margin: 0 } : { width: '30rem' }}
+            style={isMobile() ? { width: '100%', margin: 0 } : { width: '25rem' }}
         >
             <div className={styles.containerProvider}>
                 {
@@ -149,9 +149,9 @@ const LoginProvidersModal = (props) => {
                                 <p className={styles.descriptionText}>Select how you would like to continue</p>
                             </div>
                             <div className={styles.contentWrapper}>
-                                <div className={styles.continueWithBtn} onClick={handleContinueWith}>
+                                {/* <div className={styles.continueWithBtn} onClick={handleContinueWith}>
                                     <div></div>
-                                </div>
+                                </div> */}
                                 <div className={moreProviders ? styles.providersBlockMP : styles.providersBlock}>
                                     {moreProviders ? providers.map(item => (
                                         <ProvidersBlock item={item} moreProviders={moreProviders} key={item.id} onClick={() => handleContinueWithProvider(item)} />
@@ -170,12 +170,20 @@ const LoginProvidersModal = (props) => {
                                         {emailError && (
                                             <p className={styles.errorText}> {emailError}</p>
                                         )}
-                                        <button className={styles.providersButton} type={"submit"} onClick={handleContinueWithEmail} disabled={!email || emailError}>Continue with Email</button>
+                                        <button
+                                            className={styles.providersButton}
+                                            type={"submit"}
+                                            onClick={handleContinueWithEmail}
+                                            disabled={!email || emailError}
+                                            style={(!email || emailError) ? {cursor: "not-allowed"} : {}}
+                                        >
+                                            Continue with Email
+                                        </button>
                                     </div>
-                                    <div className={styles.smsProvider} style={{ display: 'none' }}>
+                                    {/* <div className={styles.smsProvider} style={{ display: 'none' }}>
                                         <CountryNumber />
                                         <button className={styles.providersButton} type={"submit"} onClick={handleContinueWithSms} disabled={!phoneNumber}>Continue with Mobile</button>
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <ProvidersCount moreProviders={moreProviders} setMoreProviders={setMoreProviders} />
                             </div>

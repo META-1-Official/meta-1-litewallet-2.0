@@ -25,21 +25,21 @@ export const providers = [
         name: 'facebook',
         image: facebook
     },
-    {
-        id: 3,
-        name: 'reddit',
-        image: reddit
-    },
+    // {
+    //     id: 3,
+    //     name: 'reddit',
+    //     image: reddit
+    // },
     {
         id: 4,
         name: 'discord',
         image: discord
     },
-    {
-        id: 5,
-        name: 'twitch',
-        image: twitch
-    },
+    // {
+    //     id: 5,
+    //     name: 'twitch',
+    //     image: twitch
+    // },
     {
         id: 6,
         name: 'apple',
@@ -75,11 +75,11 @@ export const providers = [
         name: 'weibo',
         image: weibo
     },
-    {
-        id: 13,
-        name: 'wechat',
-        image: weixin
-    },
+    // {
+    //     id: 13,
+    //     name: 'wechat',
+    //     image: weixin
+    // },
     {
         id: 14,
         name: 'email_passwordless',
