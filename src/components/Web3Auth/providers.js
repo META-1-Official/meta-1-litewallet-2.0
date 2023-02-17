@@ -45,11 +45,11 @@ export const providers = [
         name: 'apple',
         image: apple
     },
-    {
-        id: 7,
-        name: 'line',
-        image: line
-    },
+    // {
+    //     id: 7,
+    //     name: 'line',
+    //     image: line
+    // },
     {
         id: 8,
         name: 'github',
