@@ -98,9 +98,7 @@ const UserInformationForm = (props) => {
 
   const phoneNumberChangeHandler = (event) => {
     if (!isNaN(event.target.value.replaceAll(' ', ''))) {
-      if (event.target.value === "0") {
-        setPhoneError(`Phone number can't start with 0`);
-      } else if (event.target.value !== "0" && !event.target.value.includes('.')) {
+      if (!event.target.value.includes('.')) {
         setPhoneError('');
         if (event.target.value === "") {
           setPhoneError(`Phone number can't be empty`);
