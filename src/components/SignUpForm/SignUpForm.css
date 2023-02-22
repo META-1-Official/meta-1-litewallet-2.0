@@ -129,6 +129,7 @@ input {
   flex-direction: column;
   align-items: center;
   position: relative;
+  min-height: 445px;
 }
 
 .btn-div {
@@ -245,7 +246,8 @@ input {
 video {
   border-radius: 5px;
   width: 100%;
-  height: 100%;
+  height: 98%;
+  top: 1%;
 }
 
 @media (max-width: 768px) {
@@ -253,9 +255,16 @@ video {
     position: absolute;
   }
 
-  .oval-image {
-    height: 80% !important;
-    top: 10% !important;
+  .child-div {
+    min-height: unset;
+  }
+
+  .createWalletForm {
+    margin: 0rem;
+  }
+
+  .ui.left {
+    margin-left: 18px;
   }
 }
 
@@ -456,7 +465,7 @@ video {
     width: 80px !important;
   }
   .mobileRegForm {
-    padding: 0.5rem 0.5rem;
+    padding: 0;
   }
   .totalSumBlock {
     padding: 0 !important;

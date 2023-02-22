@@ -40,16 +40,20 @@ import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCu
 import OpenOrder from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
-import OpenLogin from 'openlogin';
+import { Web3AuthCore } from "@web3auth/core";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { OpenloginAdapter} from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 
-const openLogin = new OpenLogin({
-  clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
-  network: process.env.REACT_APP_TORUS_NETWORK,
-  uxMode: 'popup',
-  whiteLabel: {
-    name: 'META1'
-  }
+const openloginAdapter = new OpenloginAdapter({
+  adapterSettings: {
+    uxMode: "popup",
+    whiteLabel: {
+      name: "META1",
+      defaultLanguage: "en",
+      dark: false,
+    }
+  },
 });
 
 window.Meta1 = Meta1;
@@ -119,6 +123,7 @@ function Application(props) {
   const [isFromMigration, setIsFromMigration] = useState(false);
   const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] = useState(false);
+  const [web3auth, setWeb3auth] = useState(null);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
@@ -133,6 +138,30 @@ function Application(props) {
   const newUpdatedBalance = useQuery(['updateBalance'], updateBalances, {
     refetchInterval: 20000
   });
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const web3auth = new Web3AuthCore({
+          clientId: process.env.REACT_APP_TORUS_PROJECT_ID, 
+          web3AuthNetwork: process.env.REACT_APP_TORUS_NETWORK,
+          chainConfig: {
+            chainNamespace: CHAIN_NAMESPACES.EIP155,
+            rpcTarget: "https://rpc.ankr.com/eth",
+            chainId: "0x1",
+          }
+        });
+
+        web3auth.configureAdapter(openloginAdapter);
+        setWeb3auth(web3auth);
+        await web3auth.init();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    init();
+  }, []);
 
   useEffect(() => {
     if (urlParams[0] === 'onMobile=true') {
@@ -156,22 +185,6 @@ function Application(props) {
     if (login !== null) {
       onLogin(login);
     }
-  }, []);
-
-  useEffect(() => {
-    const initializeOpenlogin = async () => {
-      try {
-        await openLogin.init();
-        if (openLogin.privKey) {
-          console.log(openLogin);
-        }
-      } catch (error) {
-        console.log("error while initialization", error);
-      } finally {
-        console.log("openlogin init sucess");
-      }
-    }
-    initializeOpenlogin();
   }, []);
 
   const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "") => {
@@ -242,17 +255,6 @@ function Application(props) {
       setActiveScreen("login");
     }
   }, [accountNameState, loginErrorState]);
-
-  // const loc = React.useMemo(() => {
-  //   if (
-  //     activeScreen !== "sendFunds" &&
-  //     activeScreen !== "login" &&
-  //     activeScreen != null
-  //   ) {
-  //     sessionStorage.setItem("location", activeScreen);
-  //   }
-  //   return true;
-  // }, [activeScreen]);
 
   useEffect(() => {
     if (userDataState?.message?.currency === "USD") {
@@ -551,7 +553,7 @@ function Application(props) {
                     portfolio={portfolio}
                     isSignatureProcessing={isSignatureProcessing}
                     signatureResult={signatureResult}
-                    openLogin={openLogin}
+                    web3auth={web3auth}
                   />
                   <Footer
                     onClickHomeHandler={(e) => {
@@ -702,7 +704,7 @@ function Application(props) {
                       setIsSignatureProcessing(false);
                       setSignatureResult(null);
                     }}
-                    openLogin={openLogin}
+                    web3auth={web3auth}
                   />
                   <Footer
                     onClickHomeHandler={(e) => {

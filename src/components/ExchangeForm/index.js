@@ -66,6 +66,8 @@ export default function ExchangeForm(props) {
   const [limitPrice, setLimitPrice] = useState(0);
   const [isLimitPriceSet, setIsLimitPriceSet] = useState(false);
   const [amountPercent, setAmountPercent] = useState(null);
+  const [backingAssetValue, setBackingAssetValue] = useState(0);
+  const [backingAssetPolarity, setBackingAssetPolarity] = useState(false);
   const dispatch = useDispatch();
   const inputRef = useRef(null);
 
@@ -167,17 +169,19 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
+  }, [selectedFromAmount]);
 
-    if (Number(selectedFromAmount) <= 0 && clickedInputs) {
+  useEffect(() => {
+    if (Number(blockPrice) <= 0.003) {
       setError(
         `The amount must be greater than ${(
           0.003 * Number(userCurrencyState.split(" ")[2])
-        ).toFixed(4)} ${userCurrencyState.split(" ")[1]}`
+        ).toFixed(3)} ${userCurrencyState.split(" ")[1]}`
       );
     } else {
       setError("");
     }
-  }, [selectedFromAmount]);
+  }, [blockPrice]);
 
   useEffect(() => {
     setPasswordShouldBeProvided(false);
@@ -185,6 +189,7 @@ export default function ExchangeForm(props) {
 
   useEffect(() => {
     setAmountPercent(0);
+    setIsLoadingPrice(true);
     setInvalidEx(false);
     setError(null);
     setIsInputsEnabled(false);
@@ -193,13 +198,31 @@ export default function ExchangeForm(props) {
     setBlockPrice(NaN);
     setSelectedFromAmount(NaN);
     setSelectedToAmount(NaN);
-    setIsLoadingPrice(true);
+    setBackingAssetValue(NaN);
     fetchPair(selectedTo, selectedFrom);
   }, [tradeType, selectedFrom, selectedTo]);
 
   useEffect(() => {
-    if (limitPrice && selectedFromAmount) {
+    if (!limitPrice) return;
+
+    setInvalidEx(false);
+    setError(null);
+
+    if (selectedFromAmount) {
       inputChangeHandler(selectedFromAmount);
+    }
+
+    // Consider backing asset level
+    if (backingAssetValue && (selectedFrom.value === 'META1' || selectedTo.value === "META1")) {
+      if (backingAssetPolarity && backingAssetValue < limitPrice) {
+        setError(`Price should be lower than ${backingAssetValue}`);
+        setInvalidEx(true);
+      }
+
+      if (!backingAssetPolarity && backingAssetValue > limitPrice) {
+        setError(`Price should be bigger than ${backingAssetValue}`);
+        setInvalidEx(true);
+      }
     }
   }, [limitPrice]);
 
@@ -266,15 +289,14 @@ export default function ExchangeForm(props) {
     if (userCurrencySymbol === 'USD' && baseAsset.symbol === 'USDT') {
       setSelectedFromAmount(_blockPrice)
       calculateSelectedToAmount(_blockPrice);
+      return;
     } else {
       let asssetPrice = baseAssetPrice;
 
       if (tradeType === 'market' && userCurrencySymbol === 'USD' && quoteAsset.symbol === 'USDT') {
         asssetPrice = marketPrice;
       } else if (tradeType === 'limit') {
-        asssetPrice = limitPrice;
-      } else if (tradeType === 'limit' && baseAsset.symbol === 'USDT') {
-        asssetPrice = 1;
+        asssetPrice = baseAssetPrice;
       }
 
       const fromAmount = (
@@ -286,6 +308,8 @@ export default function ExchangeForm(props) {
   };
 
   const fetchPair = (selectedTo, selectedFrom) => {
+    const LOG_ID = '[FetchPair]';
+
     if (
       selectedTo != null &&
       selectedFrom != null &&
@@ -294,11 +318,37 @@ export default function ExchangeForm(props) {
       const getPairPromise = Meta1.ticker(selectedFrom.value, selectedTo.value);
       const getBaseAssetPricePromise = Meta1.ticker("USDT", selectedFrom.value);
       const getQuoteAssetPricePromise = Meta1.ticker("USDT", selectedTo.value);
-      Promise.all([getPairPromise, getBaseAssetPricePromise, getQuoteAssetPricePromise])
+      const getAssetLimitationPromise = Apis.db.get_asset_limitation_value('META1');
+      Promise.all([getPairPromise, getBaseAssetPricePromise, getQuoteAssetPricePromise, getAssetLimitationPromise])
         .then(res => {
-          setPair(res[0]);
+          // Caculate backing asset value
+          const meta1_usdt = res[3] / 1000000000;
+          const isQuoting = selectedTo.value === 'META1';
+          console.log(LOG_ID, 'META1 Backing Asset($): ', meta1_usdt);
+          let asset_usdt;
+
+          if (selectedFrom.value === 'META1' || selectedTo.value === 'META1') {
+            asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
+            const ratio = isQuoting
+              ? asset_usdt / (meta1_usdt + 0.01)
+              : (meta1_usdt + 0.01) / asset_usdt;
+            console.log(
+              LOG_ID, isQuoting ? selectedFrom.value : selectedTo.value, ': USDT', asset_usdt
+            );
+
+            if (isQuoting) {
+              console.log(LOG_ID, 'BUY/SELL price should be lower than', ratio);
+            } else {
+              console.log(LOG_ID, 'BUY/SELL price should be bigger than', ratio);
+            }
+
+            setBackingAssetValue(ratio);
+            setBackingAssetPolarity(isQuoting)
+          }
+
           setBaseAssetPrice(res[1].latest === '0' ? 1 : res[1].latest);
           setQuoteAssetPrice(res[2].latest);
+          setPair(res[0]);
         });
     }
   }
@@ -352,7 +402,7 @@ export default function ExchangeForm(props) {
   }
 
   const changePercentageHandler = (val) => {
-    if (invalidEx) return;
+    if (invalidEx || !isInputsEnabled) return;
 
     const fromAmount = String(Number(selectedFrom.balance) * (val / 100));
     setAmountPercent(val);
@@ -413,19 +463,33 @@ export default function ExchangeForm(props) {
 
   const calculateMarketPrice = (_limitOrders, baseAsset, quoteAsset) => {
     let _marketPrice = 0;
+    const isQuoting = quoteAsset.symbol === "META1";
 
     for (let limitOrder of _limitOrders) {
       if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
-        const divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
-        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount * divideby);
+        const divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
         _marketPrice = _marketPrice > price ? _marketPrice : price;
       }
     }
 
     if (_marketPrice > 0) {
-      console.log("marketPrice: ", baseAsset.symbol, quoteAsset.symbol, 1 / _marketPrice);
+      _marketPrice = 1 / _marketPrice;
+
+      // Consider backing asset level
+      if (baseAsset.symbol === 'META1' || quoteAsset.symbol === "META1") {
+        if (backingAssetValue) {
+          if (backingAssetPolarity && backingAssetValue < _marketPrice)
+            _marketPrice = backingAssetValue;
+
+          if (!backingAssetPolarity && backingAssetValue > _marketPrice)
+            _marketPrice = backingAssetValue;
+        }
+      }
+
+      console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
       setIsInputsEnabled(true);
-      setMarketPrice(1 / _marketPrice);
+      setMarketPrice(_marketPrice);
     }
 
     setIsLoadingPrice(false);
@@ -590,13 +654,19 @@ export default function ExchangeForm(props) {
             <div style={{ marginBottom: "20px" }}>
               <Button
                 className={tradeType === 'market' ? 'custom-tab' : ''}
-                onClick={() => setTradeType('market')}
+                onClick={() => {
+                  if (tradeType === 'market') return;
+                  setIsLoadingPrice(true);
+                  setTradeType('market');
+                }}
               >
                 Market Order
               </Button>
               <Button
                 className={tradeType === 'limit' ? 'custom-tab' : ''}
                 onClick={() => {
+                  if (tradeType === 'limit') return;
+                  setIsLoadingPrice(true);
                   setTradeType('limit');
                   setIsLimitPriceSet(prev => !prev);
                 }}
@@ -647,12 +717,13 @@ export default function ExchangeForm(props) {
                                   value={selectedFromAmount}
                                   type={"number"}
                                   onChange={(e) => {
+                                    if (Number(e.target.value) < 0) return;
                                     if (
-                                      e.target.value.length < 11 &&
-                                      /[-+]?[0-9]*\.?[0-9]*/.test(
-                                        e.target.value
-                                      ) &&
-                                      Number(e.target.value) >= 0
+                                      (
+                                        e.target.value.length < 11 &&
+                                        /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                                      )
+                                      || `${selectedFromAmount}`.length > e.target.value.length
                                     ) {
                                       setAmountPercent(null);
                                       inputChangeHandler(e.target.value)
@@ -684,12 +755,13 @@ export default function ExchangeForm(props) {
                                   <input
                                     className={styles.inputDollars}
                                     onChange={(e) => {
+                                      if (Number(e.target.value) < 0) return;
                                       if (
-                                        e.target.value.length < 11 &&
-                                        /[-+]?[0-9]*\.?[0-9]*/.test(
-                                          e.target.value
-                                        ) &&
-                                        Number(e.target.value) >= 0
+                                        (
+                                          e.target.value.length < 11 &&
+                                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                                        )
+                                        || `${blockPrice}`.length > e.target.value.length
                                       ) {
                                         setAmountPercent(null);
                                         setClickedInputs(true);
@@ -723,6 +795,7 @@ export default function ExchangeForm(props) {
                                   onClick={setAssetMax}
                                   floated="right"
                                   size="mini"
+                                  disabled={invalidEx || !isInputsEnabled}
                                 >
                                   MAX
                                 </Button>
@@ -771,6 +844,7 @@ export default function ExchangeForm(props) {
                         setSelectedToAmount(NaN);
                         setSelectedFromAmount(NaN);
                         setBlockPrice(NaN);
+                        setIsLoadingPrice(true);
                         swapAssets(e);
                       }}
                     >
@@ -969,6 +1043,7 @@ export default function ExchangeForm(props) {
                     placeholder="Passkey"
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
+                    style = {{width: 310}}
                   />
 
                   <Button

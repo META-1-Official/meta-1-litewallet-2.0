@@ -332,138 +332,43 @@ const WithdrawForm = (props) => {
     }
   }, [isSuccess])
   const onClickWithdraw = async (e) => {
-    // e.preventDefault();
-    //
-    // console.log(password)
-    //
-    // setIsLoading(true);
-    // const emailType = "withdraw";
-    // const emailData = {
-    //   accountName: props.accountName,
-    //   name: trim(name),
-    //   emailAddress: trim(emailAddress),
-    //   asset: selectedFrom.value,
-    //   amount: selectedFromAmount,
-    //   toAddress: trim(toAddress)
-    // };
-    // sendEmail(emailType, emailData)
-    //   .then((res) => {
-    //     if (res.success === 'success') {
-    //       setIsLoading(false);
-    //       alert("Email sent, awesome!");
-    //       // Reset form inputs
-    //       setName('');
-    //       setEmailAddress('');
-    //       setSelectedFromAmount(NaN);
-    //       setBlockPrice(NaN);
-    //       setToAddress('');
-    //       setPassword('')
-    //       setIsValidPassword(false);
-    //       setIsPasswordTouched(false);
-    //       dispatch(passKeyResetService());
-    //     } else {
-    //       if (res.tokenExpired) {
-    //         props.setTokenModalMsg(res.responseMsg);
-    //         props.setTokenModalOpen(true);
-    //         return;
-    //       }
-    //       setIsLoading(false);
-    //       alert("Oops, something went wrong. Try again");
-    //     }
-    //   })
+    e.preventDefault();
 
-
-      setIsSuccessHandler(false, 'loading');
-      let assetName = !!gatewayStatus.assetWithdrawlAlias
-          ? gatewayStatus.assetWithdrawlAlias[selectedFrom.value.toLowerCase()] ||
-          selectedFrom.value.toLowerCase() : selectedFrom.value.toLowerCase();
-
-      const intermediateAccountNameOrId = getIntermediateAccount(
-          selectedFrom.value,
-          backedCoins
-      );
-
-      const intermediateAccounts = await getChainStore(accountNameState);
-
-      if (!WithdrawAddresses.has(assetName)) {
-          let withdrawals = [];
-          withdrawals.push(trim(toAddress));
-          WithdrawAddresses.set({ wallet: assetName, addresses: withdrawals });
-      } else {
-          let withdrawals = WithdrawAddresses.get(assetName);
-          if (withdrawals.indexOf(trim(toAddress)) == -1) {
-              withdrawals.push(trim(toAddress));
-              WithdrawAddresses.set({
-                  wallet: assetName,
-                  addresses: withdrawals,
-              });
+    setIsLoading(true);
+    const emailType = "withdraw";
+    const emailData = {
+      accountName: props.accountName,
+      name: trim(name),
+      emailAddress: trim(emailAddress),
+      asset: selectedFrom.value,
+      amount: selectedFromAmount,
+      toAddress: trim(toAddress)
+    };
+    sendEmail(emailType, emailData)
+      .then((res) => {
+        if (res.success === 'success') {
+          setIsLoading(false);
+          alert("Email sent, awesome!");
+          // Reset form inputs
+          setName('');
+          setEmailAddress('');
+          setSelectedFromAmount(NaN);
+          setBlockPrice(NaN);
+          setToAddress('');
+          setPassword('')
+          setIsValidPassword(false);
+          setIsPasswordTouched(false);
+          dispatch(passKeyResetService());
+        } else {
+          if (res.tokenExpired) {
+            props.setTokenModalMsg(res.responseMsg);
+            props.setTokenModalOpen(true);
+            return;
           }
-      }
-
-      WithdrawAddresses.setLast({ wallet: assetName, address: trim(toAddress) });
-
-      const assetData = selectedData();
-      // fee
-      const assetObj = assetData.find(data => data.id === selectedFrom.value)
-      const assets = await getAssetsObject(intermediateAccounts);
-      let withdrawalCurrencyObj;
-      let withdrawalCurrency = assets.find((item, index) => {
-          if (item.get(index) && item.get(index).symbol === selectedFrom.value) {
-              withdrawalCurrencyObj = { ...item.get(index) };
-              return item;
-          }
-      });
-      if (!withdrawalCurrencyObj) {
-          setIsSuccessHandler(false, "fail");
-      }
-      let sendAmount = new Asset({
-          asset_id: withdrawalCurrencyObj.id,
-          precision: withdrawalCurrencyObj.precision,
-          real: selectedFromAmount,
-      });
-
-      let balanceAmount = new Asset({
-          asset_id: withdrawalCurrencyObj.id,
-          precision: withdrawalCurrencyObj.precision,
-          real: 0,
-      });
-
-      if (Number(selectedFrom.balance) > 0) {
-          const precisionAmount = Number(1 + "0".repeat(selectedFrom.pre))
-          balanceAmount = sendAmount.clone(Number(selectedFrom.balance) * precisionAmount);
-      } else {
-          setIsSuccessHandler(false, "Not enough balance");
-          return;
-      }
-
-      const gateFeeAmount = new Asset({
-          asset_id: withdrawalCurrencyObj.id,
-          precision: withdrawalCurrencyObj.precision,
-          real: assetObj.gateFee,
-      });
-
-      sendAmount.plus(gateFeeAmount);
-      let descriptor = `${assetName}:${trim(toAddress)}`;
-      let feeAmount = new Asset({ amount: 0 })
-
-      let fromData = intermediateAccounts.get("id");
-      let args = [
-          fromData,
-          process.env.REACT_APP_GATEWAY_ACCOUNT_ID,
-          sendAmount.getAmount(),
-          withdrawalCurrencyObj.id,
-          descriptor,
-          null,
-          feeAmount ? feeAmount.asset_id : '1.3.0',
-          accountNameState,
-          password,
-          setIsSuccessHandler,
-          assetName
-      ];
-
-      console.log(args);
-
-      transferHandler(...args)
+          setIsLoading(false);
+          alert("Oops, something went wrong. Try again");
+        }
+      })
   }
 
   const resetState = () => {
@@ -621,13 +526,13 @@ const WithdrawForm = (props) => {
                           value={selectedFromAmount}
                           type={"number"}
                           onChange={(e) => {
+                            if (Number(e.target.value) < 0) return;
                             if (
-                              (e.target.value.length < 11 &&
-                                /[-+]?[0-9]*\.?[0-9]*/.test(
-                                  e.target.value
-                                ) &&
-                                Number(e.target.value) >= 0)
-                              || selectedFromAmount?.length > e.target.value.length
+                              (
+                                e.target.value.length < 11 &&
+                                /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                              )
+                              || `${selectedFromAmount}`.length > e.target.value.length
                             ) {
                               setSelectedFromAmount(e.target.value);
                               calculateUsdPriceHandler(e);
