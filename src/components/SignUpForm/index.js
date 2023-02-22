@@ -249,13 +249,19 @@ export default function SignUpForm(props) {
     await sleepHandler(5000);
     // Generate owner, memo and active Key
     await Meta1.login(accountName, password);
-    let keys = getPrivateKeys(accountName, password);
+    const keys = getPrivateKeys(accountName, password);
     createPaperWalletAsPDF(
       accountName,
       keys['owner'],
       keys['active'],
-      keys['memo']
+      keys['memo'],
+      (data) => {
+        localStorage.setItem('paperWalletData', data);
+        window.open(`${window.location.protocol}//${window.location.host}/?previewPDF=true`, '_blank');
+        setIsSubmitted(false);
+      }
     );
+
     onRegistration(accountName, password, email);
   }
 
