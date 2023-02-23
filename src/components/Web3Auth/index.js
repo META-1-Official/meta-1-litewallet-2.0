@@ -135,7 +135,7 @@ const LoginProvidersModal = (props) => {
             id="auth-modal"
             className={styles.containerProvider}
             centered
-            style={isMobile() ? { width: '100%', margin: 0 } : { width: '25rem' }}
+            style={isMobile() ? { width: '100%', margin: 0 } : { width: '20rem' }}
         >
             <div className={styles.containerProvider}>
                 {
