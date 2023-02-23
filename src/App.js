@@ -16,6 +16,7 @@ import SendForm from "./components/SendForm";
 import LoginScreen from "./components/LoginScreen";
 import Wallet from "./components/Wallet";
 import Settings from "./components/Settings/Settings";
+import PreviewPDF from "./components/PreviewPDF";
 import QRBioVerification from "./UI/loader/QRBioVerification";
 import logoNavbar from "./images/default-pic2.png";
 import logoDefalt from "./images/default-pic1.png";
@@ -42,6 +43,7 @@ import { useQuery } from "react-query";
 import { Web3AuthCore } from "@web3auth/core";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter} from "@web3auth/openlogin-adapter";
+import { Worker } from '@react-pdf-viewer/core';
 
 const openloginAdapter = new OpenloginAdapter({
   adapterSettings: {
@@ -174,6 +176,8 @@ function Application(props) {
       } else {
         alert("QR code is wrong or link has been edited. Try again.");
       }
+    } else if (urlParams[0] === 'previewPDF=true') {
+      setActiveScreen('previewPDF');
     }
   }, [urlParams])
 
@@ -323,7 +327,8 @@ function Application(props) {
               setActiveScreen('qr-bio');
             }
             else {
-              setActiveScreen("login");
+              if (urlParams[0] != 'previewPDF=true')
+                setActiveScreen("login");
             }
           } else {
             setActiveScreen(
@@ -558,6 +563,27 @@ function Application(props) {
                   />
                 </div>
               )}
+                {activeScreen === "previewPDF" && (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                    }}
+                  >
+                    <PreviewPDF/>
+                  </div>
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                    }}
+                  />
+                </>
+              )}
+
               {activeScreen === "settings" && (
                 <div
                   style={{
@@ -1176,6 +1202,7 @@ export function App({ domElement }) {
   const account = domElement.getAttribute("data-account");
 
   return (
+  <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
     <Application
       {...{
         metaUrl,
@@ -1187,7 +1214,9 @@ export function App({ domElement }) {
         account,
       }}
     />
+    </Worker>
   );
+
 }
 
 export default App;
