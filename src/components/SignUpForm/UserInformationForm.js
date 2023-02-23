@@ -114,6 +114,10 @@ const UserInformationForm = (props) => {
           }
           if (event.target.value.length !== selectedCountryObj?.patterns[0].length) {
             setPhoneError(`Phone number should be ${selectedCountryObj.patterns[0].replaceAll(' ', '').length} digits long`);
+          } else {
+            if (/^0*$/.test(event.target.value.replaceAll(' ', ''))) {
+              setPhoneError('Phone number can not be all zeros.')
+            }
           }
         }
       }
