@@ -3,9 +3,9 @@
   flex-direction: column;
   align-items: center;
   background-color: floralwhite;
-  height: 42rem;
+  height: 31rem;
   left: calc(50% - 12.5rem);
-  top: calc(50% - 21rem);
+  top: calc(50% - 15.5rem);
 
   @media (max-width: 650px) {
     height: 100%;
@@ -35,25 +35,25 @@
 }
 
 .welcomeText {
-  font-size: 1.9rem;
+  font-size: 1.5rem;
   font-weight: bold;
   line-height: 0.8;
   margin-bottom: 10px;
 }
 
 .descriptionText {
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .contentWrapper {
-  padding: 30px;
+  padding: 0.5rem;
   width: 100%;
 }
 
 .continueWithBtn {
   border-radius: 5px;
   background-color: #0464f1;
-  height: 85px;
+  height: 2rem;
   width: 100%;
   display: none;
 }
@@ -62,7 +62,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 0.5rem;
   flex-wrap: wrap;
   justify-content: space-between;
 }
@@ -71,15 +71,15 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 0.5rem;
   flex-wrap: wrap;
   justify-content: space-between;
 }
 
 .providerBlockWrapper {
   box-shadow: 2px 2px 10px -10px black;
-  width: 32%;
-  height: 80px;
+  width: 31%;
+  height: 70px;
   background-color: white;
   border-radius: 5px;
   margin-top: 5px;
@@ -88,8 +88,8 @@
 
 .providerBlockWrapperMP {
   box-shadow: 2px 2px 10px -10px black;
-  width: 18%;
-  height: 50px;
+  width: 23%;
+  height: 70px;
   background-color: white;
   border-radius: 5px;
   margin-top: 5px;
@@ -140,7 +140,7 @@
   border: none;
   color: #fff;
   background-color: #0464f1;
-  height: 70px;
+  height: 2rem;
   border-radius: 5px;
   font-size: 1rem;
 }
@@ -150,9 +150,9 @@
   border: none;
   border-radius: 5px;
   width: 100%;
-  height: 60px;
+  height: 2rem;
   box-shadow: inset 0 0 20px #eee;
-  padding: 20px;
+  padding: 0.5rem;
   font-size: 1rem;
 }
 
