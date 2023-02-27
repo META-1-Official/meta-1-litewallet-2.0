@@ -243,7 +243,7 @@ export default function LoginScreen(props) {
                           return { ...prev, login: false, notFound: false };
                         })
                       }
-                      setLogin(e.target.value);
+                      setLogin(e.target.value.toLowerCase());
                     }}
                     placeholder={"Wallet Name"}
                     value={login}
