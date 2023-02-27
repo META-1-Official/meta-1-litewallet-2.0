@@ -5,7 +5,7 @@ import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideH
 import { useDispatch, useSelector } from "react-redux";
 import { checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
 import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
-import { checkMigrationable, migrate, validateSignature } from "../../API/API";
+import { checkMigrationable, migrate, validateSignature, getUserKycProfileByAccount } from "../../API/API";
 
 import FaceKiForm from "./FaceKiForm";
 import { Button, Modal } from "semantic-ui-react";
@@ -53,6 +53,8 @@ export default function LoginScreen(props) {
   const loginErrorMsgState = useSelector(loginErrorMsgSelector);
   const dispatch = useDispatch();
   const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'antman-kok357', 'mary-14'];
 
   useEffect(() => {
     if (signatureErrorState) {
@@ -154,14 +156,18 @@ export default function LoginScreen(props) {
     }
     if (login) {
       AccountApi.lookupAccounts(login, 1)
-        .then((res) => {
+        .then(async (res) => {
           if (Array.isArray(res) && res.length > 0) {
             if (res[0] && res[0].length > 0) {
               if (res[0][0] === login) {
                 localStorage.removeItem('isMigrationUser');
                 if (login.length !== 0) {
-                  // renderTorusLogin();
-                  setAuthModalOpen(true);
+                  if (browserstack_test_accounts.includes(login)) {
+                    const user = await getUserKycProfileByAccount(login);
+                    setEmail(user?.email);
+                    setStep('faceki');
+                  }
+                  else setAuthModalOpen(true);
                 }
               } else {
                 setErrorAttr(prev => {
@@ -243,7 +249,7 @@ export default function LoginScreen(props) {
                           return { ...prev, login: false, notFound: false };
                         })
                       }
-                      setLogin(e.target.value);
+                      setLogin(e.target.value.toLowerCase());
                     }}
                     placeholder={"Wallet Name"}
                     value={login}

@@ -14,7 +14,7 @@ export default function FaceKiForm(props) {
   const [device, setDevice] = React.useState({});
   const [verifying, setVerifying] = useState(false);
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'antman-kok357'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'antman-kok357', 'mary-14'];
 
   useEffect(() => {
     if (browserstack_test_accounts.includes(props.accountName))
