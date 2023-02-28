@@ -33,7 +33,7 @@
     "multicoin-address-validator": "^0.5.9",
     "numeral": "^2.0.6",
     "parcel-bundler": "^1.12.4",
-    "pdfjs-dist": "^2.6.347",
+    "pdfjs-dist": "2.6.347",
     "postcss-normalize": "^10.0.1",
     "prop-types": "^15.7.2",
     "qrcode": "^1.4.4",
