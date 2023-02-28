@@ -28,7 +28,6 @@ export default function FaceKiForm(props) {
 
   const loadVideo = async (flag) => {
     const videoTag = document.querySelector('video');
-    console.log('[loadVideo]', flag, videoTag);
     const features = { audio: false, video: true };
 
     if (flag) {
@@ -186,7 +185,12 @@ export default function FaceKiForm(props) {
               <div className='child-div' style={{ borderRadius: '5px'}}>
                 <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
-                  <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
+                <button className='btn_x'
+                    onClick={() => {
+                      loadVideo(false).then(() => {
+                        props.setStep('userform');
+                      });
+                    }}>X</button>
                 </div>
                 <img src={isMobile() ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
                 <Webcam
