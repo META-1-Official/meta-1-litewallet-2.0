@@ -24,7 +24,7 @@
     "jspdf": "^1.4.1",
     "lodash": "^4.17.20",
     "material-ui-popup-state": "^4.0.2",
-    "meta1-vision-dex": "0.7.3",
+    "meta1-vision-dex": "0.7.9",
     "moment": "^2.29.4",
     "multicoin-address-validator": "^0.5.9",
     "numeral": "^2.0.6",
