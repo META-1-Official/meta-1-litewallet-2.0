@@ -13,9 +13,8 @@ const WidgetDivs = document.querySelectorAll(".meta_one_widget");
 
 const client = new QueryClient();
 
-console.log('*************************', process.env)
 Sentry.init({
-  dsn: process.env.SENTRY_DSN,
+  dsn: process.env.REACT_APP_SENTRY_DSN,
   integrations: [new BrowserTracing()],
 
   // Set tracesSampleRate to 1.0 to capture 100%

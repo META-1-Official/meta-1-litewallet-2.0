@@ -164,7 +164,6 @@ function Application(props) {
 
     init();
     _enablePersistingLog();
-    Sentry.captureMessage("_enablePersistingLog");
   }, []);
 
 
@@ -190,7 +189,6 @@ function Application(props) {
         else Sentry.captureMessage(errorMessage);
       }
       console[`str${type}`].apply(console, log);
-      console.strlog(log);
     };
 
     console.strlog = console.log.bind(console);
