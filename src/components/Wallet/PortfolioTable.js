@@ -16,7 +16,7 @@ import { removeExponent } from "../../utils/commonFunction";
 import { userCurrencySelector } from "../../store/meta1/selector";
 import { useSelector } from "react-redux";
 
-const DEPOSIT_BTN_HIDE = ["META1", "EOS", "XLM", "BNB"];
+const DEPOSIT_BTN_HIDE = ["META1"];
 const PortfolioTable = React.memo((props) => {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
