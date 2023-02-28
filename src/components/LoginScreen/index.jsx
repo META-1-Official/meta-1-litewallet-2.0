@@ -54,7 +54,7 @@ export default function LoginScreen(props) {
   const dispatch = useDispatch();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'antman-kok357', 'mary-14'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14'];
 
   useEffect(() => {
     if (signatureErrorState) {

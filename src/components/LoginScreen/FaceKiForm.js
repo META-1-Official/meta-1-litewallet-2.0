@@ -14,7 +14,7 @@ export default function FaceKiForm(props) {
   const [device, setDevice] = React.useState({});
   const [verifying, setVerifying] = useState(false);
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'antman-kok357', 'mary-14'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14'];
 
   useEffect(() => {
     if (browserstack_test_accounts.includes(props.accountName))
@@ -156,7 +156,13 @@ export default function FaceKiForm(props) {
               <div className='child-div' style={{ borderRadius: '5px' }}>
                 <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
-                  <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
+                  <button
+                    className='btn_x'
+                    onClick={() => {
+                      loadVideo(false).then(() => {
+                        props.setStep('userform');
+                      });
+                    }}>X</button>
                 </div>
                 <img src={isMobile() ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
                 <Webcam
