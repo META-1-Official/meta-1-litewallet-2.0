@@ -185,6 +185,11 @@ export default function LoginScreen(props) {
     onSubmit(login, true, email);
   }
 
+  const handleUnlink = () => {
+    dispatch(logoutRequest());
+    onClickResetIsSignatureProcessing();
+  }
+
   const renderFaceKi = () => {
     return (
       <FaceKiForm
@@ -287,10 +292,7 @@ export default function LoginScreen(props) {
                 <br />
                 <button
                   className={styles.Button}
-                  onClick={() => {
-                    dispatch(logoutRequest());
-                    onClickResetIsSignatureProcessing();
-                  }}
+                  onClick={handleUnlink}
                   type={"button"}
                   style={{ marginTop: "0" }}
                 >
