@@ -139,7 +139,7 @@ const LoginProvidersModal = (props) => {
         >
             <div className={styles.containerProvider}>
                 {
-                    loader ? <MetaLoader size={"large"} /> :
+                    loader ? <MetaLoader size={"small"} /> :
                         <>
                             <div className={styles.providerHeader}>
                                 <div className={styles.closeBtnWrapper}>
