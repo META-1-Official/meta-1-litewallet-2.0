@@ -104,6 +104,14 @@ const _createPaperWalletAsPDF = function (
         const blob = pdf.output('datauristring');
         if (callback)
             callback(blob);
+        else
+            pdf.save(
+                'meta' +
+                    '-paper-wallet-' +
+                    (locked ? 'public-' : 'private-') +
+                    accountName +
+                    '.pdf'
+            )
     })
 }
 
