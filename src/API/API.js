@@ -130,6 +130,17 @@ export async function saveBalance(login) {
   }
 }
 
+export async function signUp(acc) {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/signUp`, {
+      accountName: acc,
+    });
+    return data;
+  } catch (err) {
+    return { message: 'sign up failed' };
+  }
+}
+
 export async function getLastLocation(login) {
   const config = {
     headers: {

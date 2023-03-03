@@ -5,7 +5,7 @@ import createAccountWithPassword, { generateKeyFromPassword } from "../../lib/cr
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 import { PrivateKey, ChainStore } from "meta1-vision-js";
-import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken } from "../../API/API";
+import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken, signUp } from "../../API/API";
 
 import "./SignUpForm.css";
 import FaceKiForm from "./FaceKiForm.js";
@@ -165,6 +165,8 @@ export default function SignUpForm(props) {
           lastName,
           firstName
         );
+
+        await signUp(accountName);
 
         localStorage.removeItem('password');
         localStorage.removeItem('firstname');
