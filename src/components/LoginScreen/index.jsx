@@ -54,7 +54,7 @@ export default function LoginScreen(props) {
   const dispatch = useDispatch();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64'];
 
   useEffect(() => {
     if (signatureErrorState) {
@@ -185,11 +185,6 @@ export default function LoginScreen(props) {
     onSubmit(login, true, email);
   }
 
-  const handleUnlink = () => {
-    dispatch(logoutRequest());
-    onClickResetIsSignatureProcessing();
-  }
-
   const renderFaceKi = () => {
     return (
       <FaceKiForm
@@ -292,7 +287,10 @@ export default function LoginScreen(props) {
                 <br />
                 <button
                   className={styles.Button}
-                  onClick={handleUnlink}
+                  onClick={() => {
+                    dispatch(logoutRequest());
+                    onClickResetIsSignatureProcessing();
+                  }}
                   type={"button"}
                   style={{ marginTop: "0" }}
                 >
