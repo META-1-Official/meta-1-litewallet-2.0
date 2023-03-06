@@ -9,10 +9,11 @@ const isLocked = () => true
 
 const PreviewPDF = (props) => {
 	const [url, setUrl] = useState(null);
+	const [showHelp, setShowHelp] = useState(false);
 	const [pagesCount, setPagesCount] = useState(0);
     const [pageIndex, setPageIndex] = useState(0);
     const defaultLayoutPluginInstance = defaultLayoutPlugin();
-
+    
     const paperWalletData = localStorage.getItem('paperWalletData', null);
 
     const getPaperWalletUrl = () => {
@@ -32,8 +33,11 @@ const PreviewPDF = (props) => {
     }
 
 	useEffect(() => {
+		const isMobile = window.matchMedia("(pointer:coarse)").matches;
+		if (isMobile && (navigator.userAgent.indexOf("Edg") == -1 && navigator.userAgent.indexOf("CriOS") == -1)) {
+			setShowHelp(true);
+		}
 		setUrl(getPaperWalletUrl());
-		localStorage.removeItem('paperWalletData');
 	}, []);
 
 	const onPageChange = ({ currentPage }) => setPageIndex(currentPage);
@@ -45,6 +49,7 @@ const PreviewPDF = (props) => {
         const accountName = localStorage.getItem('account', '');
         alink.download = `meta-paper-wallet-${(isLocked() ? 'public-' : 'private-')}${accountName}.pdf`;
         alink.click();
+        localStorage.removeItem('paperWalletData');
     }
 
 	return (
@@ -52,6 +57,7 @@ const PreviewPDF = (props) => {
 		    style={{
 		        border: '1px solid rgba(0, 0, 0, 0.3)',
 		        height: '750px',
+		        marginBottom: showHelp?'70px':0,
 		    }}
 		>
             { url && <Viewer
@@ -61,18 +67,25 @@ const PreviewPDF = (props) => {
                 onPageChange={onPageChange}
                 onDocumentLoad={onDocumentLoad}
             />}
-           	{ url && <div style={{
-           		display: 'flex',
-           		justifyContent: 'center',
-           		marginTop: '10px'
-	    	}}>
-	    		<Button
-	                className="sbBtn"
-	                onClick={handleDownload}
-	                type="submit"
-	            >
-	                Download
-	            </Button>
+            
+           	{ url && <div style={{marginTop: '20px', position: 'relative'}}>
+           		{ showHelp && <p style={{fontSize:'12px', textAlign: 'center', marginLeft: '20%', marginRight: '20%' }}>
+		    		After tap download button, please tap the share button in preview window, which will bring up the Share Sheet and
+		    		Select Save to Files or Print menu.
+		    	</p>
+		    	}
+           		<div  style={{
+	           		display: 'flex',
+	           		justifyContent: 'center',
+		    	}}>
+		    		<Button
+		                className="sbBtn"
+		                onClick={handleDownload}
+		                type="submit"
+		            >
+		                Download
+		            </Button>
+		        </div>
 	    	</div>
 	    	}
 		</div>
