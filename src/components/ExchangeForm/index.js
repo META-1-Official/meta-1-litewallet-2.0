@@ -85,7 +85,7 @@ export default function ExchangeForm(props) {
     setAssets(props.assets);
 
     const getBalance = (symbol) => {
-      const assetInWallet = currentPortfolio.find((el) => el.symbol === symbol);
+      const assetInWallet = currentPortfolio.find((el) => el.name === symbol);
       return assetInWallet ? assetInWallet.qty : 0;
     };
 
@@ -139,7 +139,6 @@ export default function ExchangeForm(props) {
       return assetInWallet ? assetInWallet.qty : 0;
     };
     const newOptions = props.assets.map((_asset) => {
-      console.log("@1 - ", getBalance(_asset.symbol))
       return {
         image: _asset.image,
         value: _asset.symbol,
@@ -774,16 +773,8 @@ export default function ExchangeForm(props) {
               <div className={styles.centeredBlock}>
                 <div className={styles.leftBlockCrypt}>
                   <div className={styles.textBlockLeft}>
-                    <span>You will Receive</span>
-                    <h4>
-                      {selectedToAmount ? selectedToAmount : 0}{" "}
-                      {selectedTo.label}
-                    </h4>
-                    <span>
-                      {!invalidEx && blockPrice
-                        ? `${blockPrice}${userCurrencyState.split(" ")[0]}`
-                        : 0}
-                    </span>
+                    <span>You will receive</span>
+                    <h4>{selectedTo.label}</h4>
                   </div>
                   <div className={"imgToCenter"} style={{ display: "flex",  marginLeft: "1rem" }}>
                     <img
@@ -824,9 +815,7 @@ export default function ExchangeForm(props) {
                     style={{ marginRight: "1rem" }}
                   >
                     <span>You are exchanging</span>
-                    <h4>
-                      {selectedFrom.label}
-                    </h4>
+                    <h4>{selectedFrom.label}</h4>
                   </div>
                 </div>
               </div>
