@@ -133,18 +133,27 @@ export default function ExchangeForm(props) {
       );
     }
 
-    const newOptions = props.assets.map((asset) => {
+    const currentPortfolio = props.portfolio || [];
+    const getBalance = (symbol) => {
+      const assetInWallet = currentPortfolio.find((el) => el.name === symbol);
+      return assetInWallet ? assetInWallet.qty : 0;
+    };
+    const newOptions = props.assets.map((_asset) => {
+      console.log("@1 - ", getBalance(_asset.symbol))
       return {
-        image: asset.image,
-        value: asset.symbol,
-        label: asset.symbol,
-        pre: asset.precision
+        image: _asset.image,
+        value: _asset.symbol,
+        label: _asset.symbol,
+        pre: _asset.precision,
+        balance: getBalance(_asset.symbol) || 0,
       };
     });
     const quoteAssetSymbol = asset;
     const baseAssetSymbol = asset === 'META1' ? 'USDT' : 'META1';
     const quoteAsset = newOptions.find((el) => el.value === quoteAssetSymbol);
     const baseAsset = newOptions.find((el) => el.value === baseAssetSymbol);
+    setSelectedFrom(baseAsset);
+    setSelectedTo(quoteAsset);
     fetchPair(quoteAsset, baseAsset);
   }, [asset, portfolio]);
 
