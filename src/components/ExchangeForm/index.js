@@ -78,32 +78,17 @@ export default function ExchangeForm(props) {
       dispatch(passKeyResetService());
       performTradeSubmit();
     }
-  },[isValidPasswordKeyState, passwordKeyErrorState])
-
-  useEffect(() => {
-    async function getPriceForAsset() {
-      if (asset === "USDT") {
-        setPriceForAsset(1);
-      } else {
-        Meta1.ticker("USDT", asset).then((res) =>
-          setPriceForAsset(Number(res.latest).toFixed(2))
-        );
-      }
-    }
-    getPriceForAsset();
-  }, [asset, portfolio]);
+  },[isValidPasswordKeyState, passwordKeyErrorState]);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
     setAssets(props.assets);
+
     const getBalance = (symbol) => {
-      const assetInWallet = currentPortfolio.find((el) => el.name === symbol);
-      if (assetInWallet) {
-        return assetInWallet.qty;
-      } else {
-        return 0;
-      }
+      const assetInWallet = currentPortfolio.find((el) => el.symbol === symbol);
+      return assetInWallet ? assetInWallet.qty : 0;
     };
+
     const newOptions = assets.map((asset) => {
       return {
         image: asset.image,
@@ -113,8 +98,8 @@ export default function ExchangeForm(props) {
         balance: getBalance(asset.symbol) || 0,
       };
     });
-
     setOptions(newOptions);
+
     if ((selectedFrom == null || selectedTo == null) && options !== []) {
       const from = asset
         ? newOptions.find((el) => el.value === asset)
@@ -122,6 +107,7 @@ export default function ExchangeForm(props) {
       let to = asset
         ? newOptions.find((el) => el.value === "META1")
         : newOptions[1];
+
       if (asset === "META1") {
         to = newOptions.find((el) => el.value === "USDT");
       }
@@ -135,6 +121,32 @@ export default function ExchangeForm(props) {
       if (to.value !== selectedTo.value) setSelectedTo(to);
     }
   }, [props.assets, props.portfolio]);
+
+  useEffect(() => {
+    setIsLoadingPrice(true);
+
+    if (asset === "USDT") {
+      setPriceForAsset(1);
+    } else {
+      Meta1.ticker("USDT", asset).then((res) =>
+        setPriceForAsset(Number(res.latest).toFixed(2))
+      );
+    }
+
+    const newOptions = props.assets.map((asset) => {
+      return {
+        image: asset.image,
+        value: asset.symbol,
+        label: asset.symbol,
+        pre: asset.precision
+      };
+    });
+    const quoteAssetSymbol = asset;
+    const baseAssetSymbol = asset === 'META1' ? 'USDT' : 'META1';
+    const quoteAsset = newOptions.find((el) => el.value === quoteAssetSymbol);
+    const baseAsset = newOptions.find((el) => el.value === baseAssetSymbol);
+    fetchPair(quoteAsset, baseAsset);
+  }, [asset, portfolio]);
 
   useEffect(() => {
     if (pair == null) return;
@@ -551,28 +563,11 @@ export default function ExchangeForm(props) {
           }}
           id={"modalExch"}
         >
-          <Modal.Header>Trade Completed</Modal.Header>
+          <Modal.Header>Trade information</Modal.Header>
           <Modal.Content>
             <Grid verticalAlign="middle" centered>
-              <Grid.Row centered columns={3}>
-                <Grid.Column>
-                  <div className="asset-traded">
-                    <Image size="tiny" src={selectedFrom.image} />
-                  </div>
-                </Grid.Column>
-                <Grid.Column width={3} style={{ marginRight: '2.2rem', marginTop: '-2rem' }} >
-                  <Icon disabled name="arrow right" size="huge" />
-                </Grid.Column>
-                <Grid.Column>
-                  <div className="asset-traded">
-                    <Image size="tiny" src={selectedTo.image} />
-                    <p>
-                      {(localStorage.getItem("selectTo") * 1).toFixed(
-                        selectedTo.pre
-                      )}{" "}
-                    </p>
-                  </div>
-                </Grid.Column>
+              <Grid.Row centered columns={12}>
+                Your transaction(buy {localStorage.getItem("selectTo")} {selectedTo.label} with {selectedFrom.label}) will be completed soon.
               </Grid.Row>
             </Grid>
           </Modal.Content>
