@@ -74,6 +74,7 @@ export default function ExchangeForm(props) {
         setTradeInProgress(false);
         return;
     }
+
     if (isValidPasswordKeyState) {
       dispatch(passKeyResetService());
       performTradeSubmit();
@@ -196,6 +197,15 @@ export default function ExchangeForm(props) {
   }, [isLoadingPrice]);
 
   const performTradeSubmit = async () => {
+    const marketLiquidity = await calculateMarketLiquidity();
+
+    if (marketLiquidity < selectedToAmount) {
+      setError(`Current available liquidity is ${marketLiquidity} ${selectedTo.label}, please adjust amount to ${marketLiquidity} ${selectedTo.label} or below.`);
+      setPassword("");
+      setTradeInProgress(false);
+      return;
+    }
+
     const buyResult = await traderState.perform({
       from: selectedFrom.value,
       to: selectedTo?.value?.trim(),
@@ -310,12 +320,7 @@ export default function ExchangeForm(props) {
     const feeAsset = portfolio?.find((asset) => asset.name === "META1");
     localStorage.setItem("selectTo", selectedToAmount);
 
-    const marketLiquidity = await calculateMarketLiquidity();
-
-    if (marketLiquidity < selectedToAmount) {
-      setError(`Current available liquidity is ${marketLiquidity} ${selectedTo.label}, please adjust amount to ${marketLiquidity} ${selectedTo.label} or below.`);
-      return;
-    } else if (
+    if (
       selectedTo.label === "META1" &&
       Number(selectedToAmount) === Number(feeAsset.qty)
     ) {
@@ -427,7 +432,7 @@ export default function ExchangeForm(props) {
     }
 
     setIsLoadingPrice(false);
-    return parseFloat((_liquidity - 0.0001).toFixed(3));
+    return parseFloat(_liquidity.toFixed(6));
   }
 
   const calculateMarketPrice = (_limitOrders, baseAsset, quoteAsset) => {
@@ -505,7 +510,7 @@ export default function ExchangeForm(props) {
             setTradeError(null);
             dispatch(passKeyResetService());
           }}
-          id={"modalExch"}
+          id={"modal-1"}
         >
           <Modal.Header>Error occured</Modal.Header>
           <Modal.Content>
@@ -534,7 +539,7 @@ export default function ExchangeForm(props) {
           size="mini"
           open={feeAlert}
           onClose={() => setFeeAlert(false)}
-          id={"modalExch"}
+          id={"modal-1"}
         >
           <Modal.Header>All META1 transfer</Modal.Header>
           <Modal.Content style={{ height: "55%" }}>
