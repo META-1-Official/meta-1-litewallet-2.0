@@ -363,7 +363,7 @@ export default function LoginScreen(props) {
               onClickRedirectToPortfolio();
             }}
             open={openModal}
-            id={"modalExch"}
+            id={"modal-1"}
           >
             <Modal.Content >
               <div

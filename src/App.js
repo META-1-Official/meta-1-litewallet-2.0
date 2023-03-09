@@ -1105,7 +1105,7 @@ function Application(props) {
           onClose={() => {
             // setModalOpened(false);
           }}
-          id={"modalExch"}
+          id={"modal-1"}
         >
           <Modal.Header>Alert</Modal.Header>
           <Modal.Content style={{ height: "55%" }}>
@@ -1144,7 +1144,7 @@ function Application(props) {
             dispatch(checkAccountSignatureReset());
           }}
           open={checkTransferableModelState}
-          id={"modalExch"}
+          id={"modal-1"}
         >
 
           <Modal.Content >
@@ -1179,7 +1179,7 @@ function Application(props) {
             setIsFromMigration(false);
           }}
           open={isFromMigration}
-          id={"modalExch"}
+          id={"modal-1"}
         >
 
           <Modal.Content >
@@ -1214,7 +1214,7 @@ function Application(props) {
             setFetchAssetModalOpen(false);
           }}
           open={fetchAssetModalOpen}
-          id={"modalExch"}
+          id={"modal-1"}
         >
 
           <Modal.Content >

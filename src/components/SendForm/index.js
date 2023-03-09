@@ -335,7 +335,7 @@ const SendForm = React.memo((props) => {
           size="mini"
           open={feeAlert}
           onClose={() => setFeeAlert(false)}
-          id={"modalExch"}
+          id={"modal-1"}
         >
           <Modal.Header>All META1 transfer</Modal.Header>
           <Modal.Content style={{ height: "55%" }}>
