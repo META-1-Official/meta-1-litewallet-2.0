@@ -20,7 +20,7 @@ import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector 
 import { saveBalanceRequest } from "../../store/meta1/actions";
 import { passKeyRequestService, passKeyResetService } from "../../store/account/actions";
 import { TextField } from "@mui/material";
-import { ceilFloat } from "../../lib/math";
+import { ceilFloat, floorFloat } from "../../lib/math";
 
 export default function ExchangeForm(props) {
   const {
@@ -267,6 +267,7 @@ export default function ExchangeForm(props) {
       _selectedTo && _selectedTo.value != null &&
       _selectedFrom && _selectedFrom.value !== undefined
     ) {
+      const isQuoting = _selectedTo.value === 'META1';
       const getPairPromise = Meta1.ticker(_selectedFrom.value, _selectedTo.value);
       const getBaseAssetPricePromise = Meta1.ticker("USDT", _selectedFrom.value);
       const getQuoteAssetPricePromise = Meta1.ticker("USDT", _selectedTo.value);
@@ -275,13 +276,12 @@ export default function ExchangeForm(props) {
         .then(res => {
           // Caculate backing asset value
           const meta1_usdt = ceilFloat(res[3] / 1000000000, 2);
-          const isQuoting = _selectedTo.value === 'META1';
           console.log(LOG_ID, 'META1 Backing Asset($): ', meta1_usdt);
 
           if (_selectedFrom.value === 'META1' || _selectedTo.value === 'META1') {
             const asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
-            let ratio = !isQuoting ? asset_usdt / meta1_usdt : meta1_usdt / asset_usdt;
-            ratio = ceilFloat(ratio, _selectedTo.pre);
+            let ratio = isQuoting ? meta1_usdt / asset_usdt : asset_usdt / meta1_usdt;
+            ratio = isQuoting ? ceilFloat(ratio, _selectedTo.pre) : floorFloat(ratio, _selectedTo.pre);
             console.log(
               LOG_ID, isQuoting ? _selectedFrom.value : _selectedTo.value, ': USDT', asset_usdt
             );
