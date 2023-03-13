@@ -197,13 +197,15 @@ export default function ExchangeForm(props) {
   }, [isLoadingPrice]);
 
   const performTradeSubmit = async () => {
-    const marketLiquidity = await calculateMarketLiquidity();
+    if (backingAssetValue) {
+      const marketLiquidity = await calculateMarketLiquidity();
 
-    if (marketLiquidity < selectedToAmount) {
-      setError(`Current available liquidity is ${marketLiquidity} ${selectedTo.label}, please adjust amount to ${marketLiquidity} ${selectedTo.label} or below.`);
-      setPassword("");
-      setTradeInProgress(false);
-      return;
+      if (marketLiquidity < selectedToAmount) {
+        setError(`Current available liquidity is ${marketLiquidity} ${selectedTo.label}, please adjust amount to ${marketLiquidity} ${selectedTo.label} or below.`);
+        setPassword("");
+        setTradeInProgress(false);
+        return;
+      }
     }
 
     const buyResult = await traderState.perform({
@@ -640,9 +642,6 @@ export default function ExchangeForm(props) {
         </Modal>
         <div className={"adaptForMainExchange"}>
           <div className={`${styles.mainBlock} marginBottomZero`}>
-            <h5 style={{ color: "red" }}>
-              Market order rate is not guaranteed due to slippage. Click here to learn more" this is the message that needs to be added in red text to Lite Wallet UI.
-            </h5>
             <div style={{ marginBottom: "20px", display: 'hidden' }}>
               <Button
                 style={{ display: "none" }}
@@ -883,6 +882,9 @@ export default function ExchangeForm(props) {
                 </h5>
               </Grid.Row>
             ) : null}
+            <h5 style={{ color: "red", textAlign: "center" }}>
+              Market order rate is not guaranteed due to slippage. Click <a href='https://support.meta1coin.vision/how-to-trade-coins-in-the-meta-lite-wallet' style={{ color: "red" }}>here</a> to learn more.
+            </h5>
             <div className="hidden-pass ui input">
               {passwordShouldBeProvided && (
                 <>
@@ -906,9 +908,7 @@ export default function ExchangeForm(props) {
                   </Button>
                 </>
               )}
-
               {tradeInProgress && <MetaLoader size={"small"} />}
-
               {!passwordShouldBeProvided && !tradeInProgress && (
                 <Button
                   className={"btnExch"}
