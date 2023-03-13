@@ -640,6 +640,9 @@ export default function ExchangeForm(props) {
         </Modal>
         <div className={"adaptForMainExchange"}>
           <div className={`${styles.mainBlock} marginBottomZero`}>
+            <h5 style={{ color: "red" }}>
+              Market order rate is not guaranteed due to slippage. Click here to learn more" this is the message that needs to be added in red text to Lite Wallet UI.
+            </h5>
             <div style={{ marginBottom: "20px", display: 'hidden' }}>
               <Button
                 style={{ display: "none" }}
