@@ -20,6 +20,7 @@ import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector 
 import { saveBalanceRequest } from "../../store/meta1/actions";
 import { passKeyRequestService, passKeyResetService } from "../../store/account/actions";
 import { TextField } from "@mui/material";
+import { ceilFloat } from "../../lib/math";
 
 export default function ExchangeForm(props) {
   const {
@@ -63,7 +64,6 @@ export default function ExchangeForm(props) {
   const [tradeType, setTradeType] = useState('market');
   const [amountPercent, setAmountPercent] = useState(null);
   const [backingAssetValue, setBackingAssetValue] = useState(0);
-  const [backingAssetPolarity, setBackingAssetPolarity] = useState(false);
   const dispatch = useDispatch();
   const inputRef = useRef(null);
 
@@ -211,7 +211,7 @@ export default function ExchangeForm(props) {
       to: selectedTo?.value?.trim(),
       amount: selectedToAmount,
       password: password,
-      tradePrice: 1 / marketPrice
+      tradePrice: marketPrice
     });
     
     if (buyResult.error) {
@@ -243,9 +243,8 @@ export default function ExchangeForm(props) {
     if (userCurrencySymbol === 'USD' && quoteAsset.symbol === 'USDT') {
       setSelectedToAmount(_blockPrice)
     } else {
-      const toAmount = (
-        Number(_blockPrice) / quoteAssetPrice / Number(userCurrencyState.split(" ")[2])
-      ).toFixed(selectedTo.label === "USDT" ? 3 : selectedTo.pre);
+      let toAmount = Number(_blockPrice) / quoteAssetPrice / Number(userCurrencyState.split(" ")[2]);
+      toAmount = ceilFloat(toAmount, selectedTo.label === "USDT" ? 3 : selectedTo.pre);
       setSelectedToAmount(toAmount);
     }
   };
@@ -253,20 +252,20 @@ export default function ExchangeForm(props) {
   const calculateBlockPrice = (toAmount) => {
     if (!toAmount) {
       setBlockPrice(NaN);
-    } else {
-      const userCurrencySymbol = userCurrencyState.split(" ")[1];
-      const priceForOne = (Number(toAmount) * quoteAssetPrice).toFixed(10);
-      setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
+      return;
     }
+    
+    const userCurrencySymbol = userCurrencyState.split(" ")[1];
+    const priceForOne = (Number(toAmount) * quoteAssetPrice).toFixed(10);
+    setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
   };
 
   const fetchPair = (_selectedTo, _selectedFrom) => {
     const LOG_ID = '[FetchPair]';
 
     if (
-      _selectedTo != null &&
-      _selectedFrom != null &&
-      _selectedFrom.value !== undefined
+      _selectedTo && _selectedTo.value != null &&
+      _selectedFrom && _selectedFrom.value !== undefined
     ) {
       const getPairPromise = Meta1.ticker(_selectedFrom.value, _selectedTo.value);
       const getBaseAssetPricePromise = Meta1.ticker("USDT", _selectedFrom.value);
@@ -275,28 +274,25 @@ export default function ExchangeForm(props) {
       Promise.all([getPairPromise, getBaseAssetPricePromise, getQuoteAssetPricePromise, getAssetLimitationPromise])
         .then(res => {
           // Caculate backing asset value
-          const meta1_usdt = res[3] / 1000000000;
+          const meta1_usdt = ceilFloat(res[3] / 1000000000, 2);
           const isQuoting = _selectedTo.value === 'META1';
           console.log(LOG_ID, 'META1 Backing Asset($): ', meta1_usdt);
-          let asset_usdt;
 
           if (_selectedFrom.value === 'META1' || _selectedTo.value === 'META1') {
-            asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
-            const ratio = isQuoting
-              ? asset_usdt / (meta1_usdt + 0.01)
-              : (meta1_usdt + 0.01) / asset_usdt;
+            const asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
+            let ratio = !isQuoting ? asset_usdt / meta1_usdt : meta1_usdt / asset_usdt;
+            ratio = ceilFloat(ratio, _selectedTo.pre);
             console.log(
               LOG_ID, isQuoting ? _selectedFrom.value : _selectedTo.value, ': USDT', asset_usdt
             );
 
-            if (isQuoting) {
+            if (!isQuoting) {
               console.log(LOG_ID, 'BUY/SELL price should be lower than', ratio);
             } else {
               console.log(LOG_ID, 'BUY/SELL price should be bigger than', ratio);
             }
 
             setBackingAssetValue(ratio);
-            setBackingAssetPolarity(isQuoting)
           }
 
           setBaseAssetPrice(res[1].latest === '0' ? 1 : res[1].latest);
@@ -310,7 +306,7 @@ export default function ExchangeForm(props) {
     if (val === "USDT") {
       setPriceForAsset(1);
     } else {
-      Meta1.ticker("USDT", val).then((res) =>{
+      Meta1.ticker("USDT", val).then((res) => {
         setPriceForAsset(Number(res.latest).toFixed(2));
       });
     }
@@ -415,7 +411,9 @@ export default function ExchangeForm(props) {
 
   const calculateMarketLiquidity = async () => {
     let _liquidity = 0;
+    const isQuoting = selectedTo.value === 'META1';
     setIsLoadingPrice(true);
+
     const _limitOrders = await Apis.instance()
       .db_api()
       .exec(
@@ -426,7 +424,24 @@ export default function ExchangeForm(props) {
     if (_limitOrders && _limitOrders.length > 0) {
       for (let limitOrder of _limitOrders) {
         if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
-          _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+          let divideby;
+          let price;
+
+          if (!isQuoting) {
+            divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+            price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+          } else {
+            divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
+            price = Number(limitOrder.sell_price.base.amount / limitOrder.sell_price.quote.amount / divideby);
+            price = 1 / price;
+          }
+
+          // Consider backing asset level
+          if (!isQuoting && backingAssetValue > price) {
+            _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+          } else if (isQuoting && backingAssetValue < price) {
+            _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+          }
         }
       }
     }
@@ -437,26 +452,52 @@ export default function ExchangeForm(props) {
 
   const calculateMarketPrice = (_limitOrders, baseAsset, quoteAsset) => {
     let _marketPrice = 0;
+    const isQuoting = selectedTo.value === 'META1';
 
     for (let limitOrder of _limitOrders) {
       if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
-        const divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
-        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
-        _marketPrice = _marketPrice > price ? _marketPrice : price;
+        let divideby;
+        let price;
+
+        if (backingAssetValue) {
+          if (!isQuoting) {
+            divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+            price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+          } else {
+            divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
+            price = Number(limitOrder.sell_price.base.amount / limitOrder.sell_price.quote.amount / divideby);
+            price = 1 / price;
+          }
+
+          // Consider backing asset level
+          if (!isQuoting && backingAssetValue > price) {
+            if (!_marketPrice) {
+              _marketPrice = price;
+            } else {
+              _marketPrice = _marketPrice < price ? price : _marketPrice;
+            }
+          } else if (isQuoting && backingAssetValue < price) {
+            if (!_marketPrice) {
+              _marketPrice = price;
+            } else {
+              _marketPrice = _marketPrice > price ? _marketPrice : price;
+            }
+          }
+        } else {
+          divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+          price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+          _marketPrice = _marketPrice < price ? price : _marketPrice;
+        }
       }
     }
 
     if (_marketPrice > 0) {
-      _marketPrice = 1 / _marketPrice;
-
-      // Consider backing asset level
-      if (baseAsset.symbol === 'META1' || quoteAsset.symbol === "META1") {
-        if (backingAssetValue) {
-          if (backingAssetPolarity && backingAssetValue < _marketPrice)
-            _marketPrice = backingAssetValue;
-
-          if (!backingAssetPolarity && backingAssetValue > _marketPrice)
-            _marketPrice = backingAssetValue;
+      if (backingAssetValue) {
+        const diff = Math.abs(_marketPrice - backingAssetValue) / 2;
+        if (!isQuoting) {
+          _marketPrice = _marketPrice + diff;
+        } else {
+          _marketPrice = _marketPrice - diff;
         }
       }
 
@@ -685,7 +726,7 @@ export default function ExchangeForm(props) {
                                     display: "flex",
                                     flexDirection: "row",
                                     justifyContent: "space-between",
-                                    marginTop: ".1rem",
+                                    marginTop: "5px",
                                     fontSize: "1rem",
                                     color: "#505361",
                                     position:'relative'
@@ -712,7 +753,7 @@ export default function ExchangeForm(props) {
                                     type={"number"}
                                     placeholder={`Amount ${userCurrencyState.split(" ")[1]}`}
                                     disabled={invalidEx || !isInputsEnabled}
-                                    style={invalidEx ? { opacity: "0.5" } : null}
+                                    style={invalidEx ? { opacity: "0.5", paddingLeft: "0px" } : {paddingLeft: "0px"}}
                                     value={blockPrice}
                                   />
                                   <span className={styles['abs-sp']} >{userCurrencyState.split(" ")[0]}</span>
@@ -795,12 +836,14 @@ export default function ExchangeForm(props) {
                 </div>
                 <div className={styles.centeredBlockCrypt}>
                   <div className={styles.iconBlock}>
-                    <i
-                      style={{ color: "#fff" }}
-                      className={
-                        isMobile ? "far fa-arrow-down" : "far fa-arrow-right"
-                      }
-                    />
+                    <p style={{
+                      color: "white",
+                      fontSize: "30px",
+                      marginTop: "-15px",
+                      marginLeft: "-3px"
+                    }}>
+                      ≈
+                    </p>
                   </div>
                 </div>
                 <div className={styles.rightBlockCrypt}>

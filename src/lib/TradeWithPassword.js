@@ -12,17 +12,16 @@ export default class TradeWithPassword {
       if (!pair) {
         return { error: "Something went wrong" };
       }
-      let pairAmt;
+
+      let pairAmt = pair.lowest_ask;
       if (from === "META1") {
         pairAmt = pair.latest;
       } else if (from === "USDT") {
         pairAmt = pair.latest;
-      } else {
-        pairAmt = pair.lowest_ask;
       }
+
       const newPairAmt = tradePrice ? tradePrice : pairAmt;
       const account = await this.metaApi.login(this.login, password);
-
       if (!account) return { error: "The pair of login and password do not match!" };
 
       const buyResult = await account.buy(
