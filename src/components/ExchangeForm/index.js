@@ -197,15 +197,13 @@ export default function ExchangeForm(props) {
   }, [isLoadingPrice]);
 
   const performTradeSubmit = async () => {
-    if (backingAssetValue) {
-      const marketLiquidity = await calculateMarketLiquidity();
+    const marketLiquidity = await calculateMarketLiquidity();
 
-      if (marketLiquidity < selectedToAmount) {
-        setError(`Current available liquidity is ${marketLiquidity} ${selectedTo.label}, please adjust amount to ${marketLiquidity} ${selectedTo.label} or below.`);
-        setPassword("");
-        setTradeInProgress(false);
-        return;
-      }
+    if (marketLiquidity < selectedToAmount) {
+      setError(`Current available liquidity is ${marketLiquidity} ${selectedTo.label}, please adjust amount to ${marketLiquidity} ${selectedTo.label} or below.`);
+      setPassword("");
+      setTradeInProgress(false);
+      return;
     }
 
     const buyResult = await traderState.perform({
@@ -413,7 +411,6 @@ export default function ExchangeForm(props) {
 
   const calculateMarketLiquidity = async () => {
     let _liquidity = 0;
-    const isQuoting = selectedTo.value === 'META1';
     setIsLoadingPrice(true);
 
     const _limitOrders = await Apis.instance()
@@ -429,19 +426,25 @@ export default function ExchangeForm(props) {
           let divideby;
           let price;
 
-          if (!isQuoting) {
-            divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
-            price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
-          } else {
-            divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
-            price = Number(limitOrder.sell_price.base.amount / limitOrder.sell_price.quote.amount / divideby);
-            price = 1 / price;
-          }
+          if (backingAssetValue) {
+            const isQuoting = selectedTo.value === 'META1';
 
-          // Consider backing asset level
-          if (!isQuoting && backingAssetValue > price) {
-            _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
-          } else if (isQuoting && backingAssetValue < price) {
+            if (!isQuoting) {
+              divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+              price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+            } else {
+              divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
+              price = Number(limitOrder.sell_price.base.amount / limitOrder.sell_price.quote.amount / divideby);
+              price = 1 / price;
+            }
+
+            // Consider backing asset level
+            if (!isQuoting && backingAssetValue > price) {
+              _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+            } else if (isQuoting && backingAssetValue < price) {
+              _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+            }
+          } else {
             _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
           }
         }
@@ -462,6 +465,7 @@ export default function ExchangeForm(props) {
         let price;
 
         if (backingAssetValue) {
+
           if (!isQuoting) {
             divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
             price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
@@ -473,17 +477,11 @@ export default function ExchangeForm(props) {
 
           // Consider backing asset level
           if (!isQuoting && backingAssetValue > price) {
-            if (!_marketPrice) {
-              _marketPrice = price;
-            } else {
-              _marketPrice = _marketPrice < price ? price : _marketPrice;
-            }
+            if (!_marketPrice) _marketPrice = price;
+            else _marketPrice = _marketPrice < price ? price : _marketPrice;
           } else if (isQuoting && backingAssetValue < price) {
-            if (!_marketPrice) {
-              _marketPrice = price;
-            } else {
-              _marketPrice = _marketPrice > price ? _marketPrice : price;
-            }
+            if (!_marketPrice) _marketPrice = price;
+            else _marketPrice = _marketPrice > price ? _marketPrice : price;
           }
         } else {
           divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
