@@ -836,14 +836,10 @@ export default function ExchangeForm(props) {
                 </div>
                 <div className={styles.centeredBlockCrypt}>
                   <div className={styles.iconBlock}>
-                    <p style={{
-                      color: "white",
-                      fontSize: "30px",
-                      marginTop: "-15px",
-                      marginLeft: "-3px"
-                    }}>
-                      ≈
-                    </p>
+                    <i
+                      style={{ color: "#fff" }}
+                      className={"far fa-exchange"}
+                    />
                   </div>
                 </div>
                 <div className={styles.rightBlockCrypt}>
@@ -880,9 +876,6 @@ export default function ExchangeForm(props) {
                 </h5>
               </Grid.Row>
             ) : null}
-            <h5 style={{ color: "red", textAlign: "center" }}>
-              Market order rate is not guaranteed due to slippage. Click <a href='https://support.meta1coin.vision/how-to-trade-coins-in-the-meta-lite-wallet' style={{ color: "red" }}>here</a> to learn more.
-            </h5>
             <div className="hidden-pass ui input">
               {passwordShouldBeProvided && (
                 <>
@@ -908,22 +901,42 @@ export default function ExchangeForm(props) {
               )}
               {tradeInProgress && <MetaLoader size={"small"} />}
               {!passwordShouldBeProvided && !tradeInProgress && (
-                <Button
-                  className={"btnExch"}
-                  disabled={
-                    tradeInProgress ||
-                    !selectedToAmount ||
-                    selectedToAmount === 0.0 ||
-                    selectedTo.balance === 0 ||
-                    Number(selectedTo.balance) < Number(selectedToAmount) ||
-                    error
-                  }
-                  onClick={prepareTrade}
-                  color="yellow"
-                  size="large"
-                >
-                  Exchange
-                </Button>
+                <div>
+                  <Button
+                    className={"btnExch"}
+                    disabled={
+                      tradeInProgress ||
+                      !selectedToAmount ||
+                      selectedToAmount === 0.0 ||
+                      selectedTo.balance === 0 ||
+                      Number(selectedTo.balance) < Number(selectedToAmount) ||
+                      error
+                    }
+                    onClick={prepareTrade}
+                    color="yellow"
+                    size="large"
+                  >
+                    Exchange
+                  </Button>
+                  <div style={{
+                      position: "absolute",
+                      display: "inline-block",
+                      borderRadius: "50%",
+                      padding: "4px 12px",
+                      marginTop: "8px",
+                      backgroundColor: "#fbbd08",
+                      marginLeft: "1rem"
+                    }}
+                  >
+                    <i
+                      className="fa fa-info"
+                      style={{ color: "#FFF" }}
+                    />
+                  </div>
+                  <span style={{ color: "lightcoral", textAlign: "left", position: "absolute", marginLeft: "50px" }}>
+                    Market order rate is not guaranteed due to slippage. Click <a href='https://support.meta1coin.vision/how-to-trade-coins-in-the-meta-lite-wallet' style={{ color: "lightcoral", textDecoration: "underline" }}>here</a> to learn more.
+                  </span>
+                </div>
               )}
             </div>
           </div>
