@@ -245,7 +245,9 @@ export default function ExchangeForm(props) {
     } else {
       let toAmount = Number(_blockPrice) / quoteAssetPrice / Number(userCurrencyState.split(" ")[2]);
       toAmount = ceilFloat(toAmount, selectedTo.label === "USDT" ? 3 : selectedTo.pre);
-      setSelectedToAmount(expFloatToFixed(toAmount));
+      toAmount = expFloatToFixed(toAmount).toString();
+      toAmount = toAmount.substring(0, (selectedTo.label === "USDT" ? 3 : selectedTo.pre) + 1);
+      setSelectedToAmount(toAmount);
     }
   };
 
