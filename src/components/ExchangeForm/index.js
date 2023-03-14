@@ -471,7 +471,6 @@ export default function ExchangeForm(props) {
 
     for (let limitOrder of _limitOrders) {
       if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
-        console.log('@1 - ', limitOrder)
         let divideby;
         let price;
 
