@@ -11,7 +11,7 @@ export default function FaceKiForm(props) {
   const [device, setDevice] = React.useState({});
   const [verifying, setVerifying] = useState(false);
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'bond-02'];
   const errorCase = {
     "Camera Not Found": "Please check your camera.",
     "Not Matched": "Email and wallet name are not matched.",
