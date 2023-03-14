@@ -200,7 +200,15 @@ export default function ExchangeForm(props) {
     const marketLiquidity = await calculateMarketLiquidity();
 
     if (marketLiquidity < selectedToAmount) {
-      setError(`Current available liquidity is ${marketLiquidity} ${selectedTo.label}, please adjust amount to ${marketLiquidity} ${selectedTo.label} or below.`);
+      var msg;
+
+      if (marketLiquidity == 0) {
+        msg = 'No liquidity'
+      } else {
+        msg = `Current available liquidity is ${marketLiquidity} ${selectedTo.label}, please adjust amount to ${marketLiquidity} ${selectedTo.label} or below.`
+      }
+
+      setError(msg);
       setPassword("");
       setTradeInProgress(false);
       return;
