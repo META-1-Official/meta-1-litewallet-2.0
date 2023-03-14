@@ -20,7 +20,7 @@ import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector 
 import { saveBalanceRequest } from "../../store/meta1/actions";
 import { passKeyRequestService, passKeyResetService } from "../../store/account/actions";
 import { TextField } from "@mui/material";
-import { ceilFloat, floorFloat } from "../../lib/math";
+import { ceilFloat, floorFloat, expFloatToFixed } from "../../lib/math";
 
 export default function ExchangeForm(props) {
   const {
@@ -245,7 +245,7 @@ export default function ExchangeForm(props) {
     } else {
       let toAmount = Number(_blockPrice) / quoteAssetPrice / Number(userCurrencyState.split(" ")[2]);
       toAmount = ceilFloat(toAmount, selectedTo.label === "USDT" ? 3 : selectedTo.pre);
-      setSelectedToAmount(toAmount);
+      setSelectedToAmount(expFloatToFixed(toAmount));
     }
   };
 
@@ -934,7 +934,7 @@ export default function ExchangeForm(props) {
                     />
                   </div>
                   <span style={{ color: "lightcoral", textAlign: "left", position: "absolute", marginLeft: "50px" }}>
-                    Market order rate is not guaranteed due to slippage. Click <a href='https://support.meta1coin.vision/how-to-trade-coins-in-the-meta-lite-wallet' style={{ color: "lightcoral", textDecoration: "underline" }}>here</a> to learn more.
+                    Market order rate is not guaranteed due to slippage. Click <a href='https://support.meta1coin.vision/how-to-trade-coins-in-the-meta-lite-wallet' style={{ color: "lightcoral", textDecoration: "underline" }} target="_blank">here</a> to learn more.
                   </span>
                 </div>
               )}
