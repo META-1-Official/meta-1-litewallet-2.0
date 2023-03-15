@@ -161,7 +161,7 @@ export default function ExchangeForm(props) {
     if (pair == null) return;
 
     console.log("pair change:", pair.base, pair.quote, "trade type:", tradeType);
-    getLimitOrders(pair);
+    getPairs(pair);
   }, [pair]);
 
   useEffect(() => {
@@ -198,6 +198,7 @@ export default function ExchangeForm(props) {
 
   const performTradeSubmit = async () => {
     const marketLiquidity = await calculateMarketLiquidity();
+    const marketPrice = await calculateMarketPrice(baseAsset, quoteAsset);
 
     if (marketLiquidity < selectedToAmount) {
       var msg;
@@ -381,7 +382,7 @@ export default function ExchangeForm(props) {
     }
   }
 
-  const getLimitOrders = (pair) => {
+  const getPairs = (pair) => {
     Apis.instance()
       .db_api()
       .exec('lookup_asset_symbols', [
@@ -392,26 +393,7 @@ export default function ExchangeForm(props) {
         const _quoteAsset = res[1];
         setBaseAsset(_baseAsset);
         setQuoteAsset(_quoteAsset);
-
-        Apis.instance()
-          .db_api()
-          .exec(
-            'get_limit_orders', 
-            [_baseAsset.id, _quoteAsset.id, 300]
-          )
-          .then((_limitOrders) => {
-            setLimitOrders(_limitOrders);
-
-            if (_limitOrders && _limitOrders.length > 0) {
-              calculateMarketPrice(_limitOrders, _baseAsset, _quoteAsset);
-            } else {
-              setIsLoadingPrice(false);
-            }
-          })
-          .catch(err => {
-            console.log('get_limit_orders error:', err);
-            setIsLoadingPrice(false);
-          });
+        calculateMarketPrice(_baseAsset, _quoteAsset);
       })
       .catch(err => {
         console.log("lookup_asset_symbols error:", err);
@@ -465,17 +447,25 @@ export default function ExchangeForm(props) {
     return parseFloat(_liquidity.toFixed(6));
   }
 
-  const calculateMarketPrice = (_limitOrders, baseAsset, quoteAsset) => {
+  const calculateMarketPrice = async (baseAsset, quoteAsset) => {
     let _marketPrice = 0;
     const isQuoting = selectedTo.value === 'META1';
+    const isTradingMETA1 = selectedFrom.value === 'META1' || selectedTo.value === 'META1';
+
+    const _limitOrders = await Apis.instance()
+      .db_api()
+      .exec(
+        'get_limit_orders', 
+        [baseAsset.id, quoteAsset.id, 300]
+      );
+    setLimitOrders(_limitOrders);
 
     for (let limitOrder of _limitOrders) {
       if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
         let divideby;
         let price;
 
-        if (backingAssetValue) {
-
+        if (isTradingMETA1 && backingAssetValue) {
           if (!isQuoting) {
             divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
             price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
@@ -502,13 +492,15 @@ export default function ExchangeForm(props) {
     }
 
     if (_marketPrice > 0) {
-      if (backingAssetValue) {
+      if (isTradingMETA1 && backingAssetValue) {
         const diff = Math.abs(_marketPrice - backingAssetValue) / 2;
         if (!isQuoting) {
           _marketPrice = _marketPrice + diff;
         } else {
           _marketPrice = _marketPrice - diff;
         }
+      } else {
+        _marketPrice += 1;
       }
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
@@ -517,6 +509,7 @@ export default function ExchangeForm(props) {
     }
 
     setIsLoadingPrice(false);
+    return _marketPrice;
   }
 
   const { innerWidth: width } = window;
