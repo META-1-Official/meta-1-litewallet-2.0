@@ -500,7 +500,7 @@ export default function ExchangeForm(props) {
           _marketPrice = _marketPrice - diff;
         }
       } else {
-        _marketPrice += 1;
+        _marketPrice += _marketPrice / 10;
       }
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
