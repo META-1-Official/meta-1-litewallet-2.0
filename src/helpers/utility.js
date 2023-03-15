@@ -1,5 +1,6 @@
 import UseAccount from "./UseAccount";
 import UseAsset from "./useAssets";
+import { expFloatToFixed } from '../lib/math';
 
 export const formatNumber = (x) => {
   try {
@@ -415,7 +416,8 @@ export const opText = (operation_type, operation) => {
           var sell_asset_precision = response_asset1.data.precision;
 
           var divideby = Math.pow(10, sell_asset_precision);
-          var sell_amount = Number(amount_to_sell_amount / divideby);
+          var sell_amount = expFloatToFixed(Number(amount_to_sell_amount / divideby));
+          sell_amount = expFloatToFixed(sell_amount).toString().substring(0, sell_asset_precision + 1);
 
           return UseAsset(min_to_receive_asset_id).then((response_asset2) => {
             var receive_asset_name = response_asset2.data.symbol;
@@ -423,6 +425,7 @@ export const opText = (operation_type, operation) => {
 
             var divideby = Math.pow(10, receive_asset_precision);
             var receive_amount = Number(min_to_receive_amount / divideby);
+            receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
 
             operation_text = response_name;
             operation_text =
@@ -494,8 +497,8 @@ export const opText = (operation_type, operation) => {
           var pays_asset_precision = response_asset1.data.precision;
 
           var divideby = Math.pow(10, pays_asset_precision);
-
           var p_amount = parseFloat(pays_amount / divideby);
+          p_amount = expFloatToFixed(p_amount).toString().substring(0, pays_asset_precision + 1);
 
           return UseAsset(receives_asset_id).then((response_asset2) => {
             var receive_asset_name = response_asset2.data.symbol;
@@ -503,6 +506,7 @@ export const opText = (operation_type, operation) => {
 
             var divideby = Math.pow(10, receive_asset_precision);
             var receive_amount = Number(receives_amount / divideby);
+            receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
 
             operation_text = response_name;
             operation_text =
