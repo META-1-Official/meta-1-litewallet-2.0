@@ -494,13 +494,14 @@ export default function ExchangeForm(props) {
     if (_marketPrice > 0) {
       if (isTradingMETA1 && backingAssetValue) {
         const diff = Math.abs(_marketPrice - backingAssetValue) / 2;
+
         if (!isQuoting) {
           _marketPrice = _marketPrice + diff;
         } else {
-          _marketPrice = _marketPrice - diff;
+          _marketPrice += _marketPrice / 100;
         }
       } else {
-        _marketPrice += _marketPrice / 10;
+        _marketPrice += _marketPrice / 100;
       }
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
