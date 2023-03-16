@@ -492,16 +492,22 @@ export default function ExchangeForm(props) {
     }
 
     if (_marketPrice > 0) {
+      const percentDiff = _marketPrice + _marketPrice / 1000;
+
       if (isTradingMETA1 && backingAssetValue) {
         const diff = Math.abs(_marketPrice - backingAssetValue) / 2;
 
         if (!isQuoting) {
-          _marketPrice = _marketPrice + diff;
+          if (percentDiff >= backingAssetValue) {
+            _marketPrice = _marketPrice + diff;
+          } else {
+            _marketPrice = percentDiff;
+          }
         } else {
-          _marketPrice += _marketPrice / 100;
+          _marketPrice = percentDiff;
         }
       } else {
-        _marketPrice += _marketPrice / 100;
+        _marketPrice = percentDiff;
       }
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
