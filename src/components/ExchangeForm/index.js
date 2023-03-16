@@ -912,8 +912,8 @@ export default function ExchangeForm(props) {
                       tradeInProgress ||
                       !selectedToAmount ||
                       selectedToAmount === 0.0 ||
-                      selectedTo.balance === 0 ||
-                      Number(selectedTo.balance) < Number(selectedToAmount) ||
+                      selectedFrom.balance === 0 ||
+                      Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice ||
                       error
                     }
                     onClick={prepareTrade}
