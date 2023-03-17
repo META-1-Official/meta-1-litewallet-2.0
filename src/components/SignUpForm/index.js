@@ -14,6 +14,7 @@ import { createPaperWalletAsPDF } from "../PaperWalletLogin/CreatePdfWallet.js";
 import { sleepHandler } from "../../utils/common.js";
 import Meta1 from "meta1-vision-dex";
 import ModalTemplate from "./Modal.jsx";
+import PreviewPDFModal from "./PreviewPDFModal.jsx";
 import MetaLoader from "../../UI/loader/Loader.js";
 import LoginProvidersModal from "../Web3Auth"
 
@@ -43,6 +44,8 @@ export default function SignUpForm(props) {
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
   const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false);
+  const [previewPaperWalletModal, setPreviewPaperWalletModal] = useState(false);
+  const [paperWalletData, setPaperWalletData] = useState('');
   const [copyPasskeyModal, setCopyPasskeyModal] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { innerWidth: width } = window;
@@ -259,9 +262,8 @@ export default function SignUpForm(props) {
       keys['active'],
       keys['memo'],
       (data) => {
-        localStorage.setItem('paperWalletData', data);
-        window.open(`${window.location.protocol}//${window.location.host}/?previewPDF=true`, '_blank');
-        setIsSubmitted(false);
+        setPaperWalletData(data);
+        setPreviewPaperWalletModal(true);
       }
     );
 
@@ -433,6 +435,17 @@ export default function SignUpForm(props) {
           text='If you forget your passkey you will NOT be able to access your wallet or your funds. We are NO LONGER able to restore, reset, or redistribute lost coins, or help with lost passkeys. Please MAKE SURE you copy your wallet name and passkey on to your computer and then transfer it to an offline storage location for easy access like a USB drive! Check our passkey storage tips knowledge article for more info <a target="__blank" href="https://support.meta1coin.vision/password-storage-tips">here</a>'
           className={`${!isMobile ? 'copy_passkey_modal' : 'copy_passkey_mobile_modal'}`}
           isCloseIcon={true}
+        />
+        <PreviewPDFModal
+          onOpen={previewPaperWalletModal}
+          onClose={() => {
+            setPaperWalletData('');
+            setPreviewPaperWalletModal(false);
+          }}
+          accountName={accountName}
+          className="preview_paper_wallet_modal"
+          isCloseIcon={true}
+          paperWalletData={paperWalletData}
         />
         {
           authModalOpen && <LoginProvidersModal
