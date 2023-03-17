@@ -492,8 +492,8 @@ export default function ExchangeForm(props) {
     }
 
     if (_marketPrice > 0) {
-      // const percentDiff = _marketPrice + Math.pow(10, quoteAsset.precision + 2);
-      const percentDiff = _marketPrice;
+      const percentDiff = _marketPrice + _marketPrice / Math.pow(10, quoteAsset.precision - 2);
+      // const percentDiff = _marketPrice;
 
       if (isTradingMETA1 && backingAssetValue) {
         const diff = Math.abs(_marketPrice - backingAssetValue) / 2;
