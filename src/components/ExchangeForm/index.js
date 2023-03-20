@@ -164,13 +164,24 @@ export default function ExchangeForm(props) {
     getPairs(pair);
   }, [pair]);
 
-  useEffect(() => {
+  useEffect(async () => {
     const feeAsset = portfolio?.find((asset) => asset.name === "META1");
 
     if (!feeAsset) {
       setError("Not enough FEE");
     } else {
       setError("");
+    }
+
+    if (Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
+      setIsLoadingPrice(true);
+      const newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedFrom.balance);
+
+      if (newMarketPrice * selectedToAmount > selectedFrom.balance) {
+        const amountToSell = floorFloat(selectedFrom.balance / newMarketPrice, 3);
+        setError(`Maximum ${selectedTo.label} amount you can buy is ${amountToSell} with your ${selectedFrom.label} balance ${selectedFrom.balance}`);
+      }
+      setIsLoadingPrice(false);
     }
   }, [selectedToAmount]);
 
@@ -198,7 +209,7 @@ export default function ExchangeForm(props) {
 
   const performTradeSubmit = async () => {
     const marketLiquidity = await calculateMarketLiquidity();
-    const marketPrice = await calculateMarketPrice(baseAsset, quoteAsset);
+    const marketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedFrom.balance);
 
     if (marketLiquidity < selectedToAmount) {
       var msg;
@@ -447,8 +458,10 @@ export default function ExchangeForm(props) {
     return parseFloat(_liquidity.toFixed(6));
   }
 
-  const calculateMarketPrice = async (baseAsset, quoteAsset) => {
+  const calculateMarketPrice = async (baseAsset, quoteAsset, selectedFromBalance) => {
     let _marketPrice = 0;
+    let amount = 0;
+    let estSellAmount = 0;
     const isQuoting = selectedTo.value === 'META1';
     const isTradingMETA1 = selectedFrom.value === 'META1' || selectedTo.value === 'META1';
 
@@ -483,10 +496,22 @@ export default function ExchangeForm(props) {
             if (!_marketPrice) _marketPrice = price;
             else _marketPrice = _marketPrice > price ? _marketPrice : price;
           }
+
+          if (selectedFromBalance) {
+            amount = Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+            estSellAmount += _marketPrice * amount;
+            if (estSellAmount > selectedFromBalance) break;
+          }
         } else {
           divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
           price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
           _marketPrice = _marketPrice < price ? price : _marketPrice;
+
+          if (selectedFromBalance) {
+            amount = Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+            estSellAmount += _marketPrice * amount;
+            if (estSellAmount > selectedFromBalance) break;
+          }
         }
       }
     }
@@ -916,11 +941,11 @@ export default function ExchangeForm(props) {
                   <Button
                     className={"btnExch"}
                     disabled={
+                      isLoadingPrice ||
                       tradeInProgress ||
                       !selectedToAmount ||
                       selectedToAmount === 0.0 ||
                       selectedFrom.balance === 0 ||
-                      Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice ||
                       error
                     }
                     onClick={prepareTrade}
