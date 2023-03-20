@@ -1,6 +1,6 @@
 import UseAccount from "./UseAccount";
 import UseAsset from "./useAssets";
-import { expFloatToFixed } from '../lib/math';
+import { expFloatToFixed, ceilFloat, floorFloat } from '../lib/math';
 
 export const formatNumber = (x) => {
   try {
@@ -426,6 +426,7 @@ export const opText = (operation_type, operation) => {
             var divideby = Math.pow(10, receive_asset_precision);
             var receive_amount = Number(min_to_receive_amount / divideby);
             receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
+            var price = floorFloat(sell_amount / receive_amount, 6);
 
             operation_text = response_name;
             operation_text =
@@ -440,6 +441,7 @@ export const opText = (operation_type, operation) => {
               formatNumber(sell_amount) +
               " " +
               sell_asset_name;
+            operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
             return { op_text: operation_text, symbol: receive_asset_name, amount: formatNumber(receive_amount) };
           });
         });
@@ -507,6 +509,7 @@ export const opText = (operation_type, operation) => {
             var divideby = Math.pow(10, receive_asset_precision);
             var receive_amount = Number(receives_amount / divideby);
             receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
+            var price = floorFloat(p_amount / receive_amount, 6);
 
             operation_text = response_name;
             operation_text =
@@ -521,6 +524,7 @@ export const opText = (operation_type, operation) => {
               formatNumber(receive_amount) +
               " " +
               receive_asset_name;
+            operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
             return { op_text: operation_text, symbol: pays_asset_name, amount: formatNumber(p_amount) };
           });
         });
