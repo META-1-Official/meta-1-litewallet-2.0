@@ -121,7 +121,7 @@ export const OrdersTable = (props) => {
             label="Search"
             className="search-filter"
           >
-            <MenuItem value='-1' >Show All</MenuItem>
+            <MenuItem value='-1'>Show All</MenuItem>
             {searchFilterListing.map((option, index) => {
               return <MenuItem key={index} value={option.value}>{option.name}</MenuItem>
             })}

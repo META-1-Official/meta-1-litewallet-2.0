@@ -691,7 +691,7 @@ const WithdrawForm = (props) => {
           resetState();
         }}
         open={(isSuccess.status && isSuccess.text === 'ok') || (!isSuccess.status && isSuccess.text === 'fail')}
-        id={"modalExch"}
+        id={"modal-1"}
       >
 
         <Modal.Content >
