@@ -266,8 +266,6 @@ export default function SignUpForm(props) {
         setPreviewPaperWalletModal(true);
       }
     );
-
-    onRegistration(accountName, password, email);
   }
 
   const renderStep = () => {
@@ -443,9 +441,12 @@ export default function SignUpForm(props) {
             setPreviewPaperWalletModal(false);
           }}
           accountName={accountName}
+          password={password}
+          email={email}
           className="preview_paper_wallet_modal"
           isCloseIcon={true}
           paperWalletData={paperWalletData}
+          onRegistration={onRegistration}
         />
         {
           authModalOpen && <LoginProvidersModal

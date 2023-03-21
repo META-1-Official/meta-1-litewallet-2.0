@@ -8,6 +8,13 @@ import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 const isLocked = () => true
 
 const PreviewPDFModal = (props) => {
+  const {
+    onRegistration,
+    accountName,
+    password,
+    email
+  } = props;
+
   const [url, setUrl] = useState(null);
   const [showHelp, setShowHelp] = useState(false);
   const [pagesCount, setPagesCount] = useState(0);
@@ -52,6 +59,8 @@ const PreviewPDFModal = (props) => {
     alink.download = `meta-paper-wallet-${(isLocked() ? 'public-' : 'private-')}${accountName}.pdf`;
     alink.click();
     localStorage.removeItem('paperWalletData');
+
+    onRegistration(accountName, password, email);
   }
 
   return <Modal
