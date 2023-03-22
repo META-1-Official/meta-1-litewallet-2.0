@@ -17,6 +17,7 @@ import ModalTemplate from "./Modal.jsx";
 import PreviewPDFModal from "./PreviewPDFModal.jsx";
 import MetaLoader from "../../UI/loader/Loader.js";
 import LoginProvidersModal from "../Web3Auth"
+import sendXApi from '../../API/sendXApi';
 
 export default function SignUpForm(props) {
   const {
@@ -88,6 +89,7 @@ export default function SignUpForm(props) {
     localStorage.removeItem('recover');
     localStorage.removeItem('stored');
     localStorage.removeItem('living');
+    localStorage.removeItem('subscription');
     localStorage.removeItem('isMigrationUser');
     const response = await checkOldUser(accName);
 
@@ -127,6 +129,7 @@ export default function SignUpForm(props) {
     localStorage.removeItem('recover');
     localStorage.removeItem('stored');
     localStorage.removeItem('living');
+    localStorage.removeItem('subscription');
     setStep('submit');
   };
 
@@ -153,6 +156,20 @@ export default function SignUpForm(props) {
 
     try {
       const res_update = await updateUserKycProfile(email, { member1Name }, token);
+      //
+      if (localStorage.getItem('subscription') === 'true') {
+        sendXApi
+          .subscribe({
+            email,
+            first_name: firstName,
+            last_name: lastName,
+            phone,
+            tags: ['webWallet'],
+          })
+          .then(() => {
+            console.log('Subscription completed!');
+          });
+      }
       if (res_update.error === true) {
         return;
       } else if (res_update) {
@@ -180,6 +197,7 @@ export default function SignUpForm(props) {
         localStorage.removeItem('recover');
         localStorage.removeItem('stored');
         localStorage.removeItem('living');
+        localStorage.removeItem('subscription');
         setDownloadPaperWalletModal(true);
       } else {
         return;
