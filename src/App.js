@@ -448,7 +448,14 @@ function Application(props) {
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
     onLogin(acc, true, pass, true, regEmail);
-    setActiveScreen("wallet");
+
+    if (window.location.search.includes('?signature=success')) {
+      setTimeout(() => {
+        localStorage.removeItem('isSignature');
+        window.location.href = window.location.href.split('?')[0];
+      }, 1000);
+    } else
+      setActiveScreen("wallet");
   };
 
   async function chngLastLocation(location) {
