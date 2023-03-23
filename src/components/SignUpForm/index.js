@@ -28,7 +28,6 @@ export default function SignUpForm(props) {
     isSignatureProcessing,
     signatureResult,
     onBackClick,
-    openLogin,
     web3auth
   } = props;
 
@@ -228,7 +227,7 @@ export default function SignUpForm(props) {
         ['active', 'owner', 'memo'].forEach((role) => {
           if (acc) {
             if (role === 'memo') {
-              if (acc.getIn(['options', 'memo_key']) == key.pubKey)
+              if (acc.getIn(['options', 'memo_key']) === key.pubKey)
                 passwordKeys[role] = key;
               else {
                 passwordKeys[role] = {
@@ -237,7 +236,7 @@ export default function SignUpForm(props) {
               }
             } else {
               acc.getIn([role, 'key_auths']).forEach((auth) => {
-                if (auth.get(0) == key.pubKey)
+                if (auth.get(0) === key.pubKey)
                   passwordKeys[role] = key;
                 else {
                   passwordKeys[role] = {
@@ -365,9 +364,9 @@ export default function SignUpForm(props) {
   }
 
   const handleBackBtn = (e) => {
-    if (step == "userform") {
+    if (step === "userform") {
       onBackClick(e);
-    } else if (step == "migration") {
+    } else if (step === "migration") {
       setStep("userform");
     } else {
       setStep("userform");

@@ -14,9 +14,6 @@ import {
 } from "semantic-ui-react";
 
 export default function SubmitForm(props) {
-  const { innerWidth: width } = window;
-  const isMobile = width <= 600;
-
   const [access, setAccess] = useState(localStorage.getItem('access') === 'true' ? true : false);
   const [recover, setRecover] = useState(localStorage.getItem('recover') === 'true' ? true : false);
   const [stored, setStored] = useState(localStorage.getItem('stored') === 'true' ? true : false);
@@ -30,14 +27,18 @@ export default function SubmitForm(props) {
 
   const isAllChecked = access && recover && stored && living && signed && paid;
 
-  useEffect(async () => {
-    const response = await getUserKycProfile(email);
-    if (response && response?.status?.isPayed === true ) setPaid(true);
-    if (response && response?.status?.isPaidByCrypto === true ) setPaid(true);
-    if (response && response?.status?.isSign === true) setSigned(true);
-    if (response && response?.status?.isSign === true && response?.status?.isPayed === true) {
-      props.setStep('signature');
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getUserKycProfile(email);
+      if (response && response?.status?.isPayed === true ) setPaid(true);
+      if (response && response?.status?.isPaidByCrypto === true ) setPaid(true);
+      if (response && response?.status?.isSign === true) setSigned(true);
+      if (response && response?.status?.isSign === true && response?.status?.isPayed === true) {
+        props.setStep('signature');
+      }
     }
+
+    fetchData();
   }, [])
 
   const handleSign = async (e) => {
