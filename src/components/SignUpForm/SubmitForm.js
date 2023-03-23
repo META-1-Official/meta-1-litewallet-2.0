@@ -23,6 +23,7 @@ export default function SubmitForm(props) {
   const [living, setLiving] = useState(localStorage.getItem('living') === 'true' ? true : false);
   const [signed, setSigned] = useState(props.signatureResult !== 'success' ? false : true);
   const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
+  const [subscription, setSubscription] = useState(localStorage.getItem('subscription') === 'true' ? true : false);
 
   const {isSubmitted, setIsSubmitted, email} = props;
   const { phone, firstName, lastName, accountName, password } = props;
@@ -71,6 +72,7 @@ export default function SubmitForm(props) {
           localStorage.setItem('recover', recover);
           localStorage.setItem('stored', stored);
           localStorage.setItem('living', living);
+          localStorage.setItem('subscription', subscription);
 
           window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL
             }/e-sign?email=${encodeURIComponent(
@@ -176,6 +178,17 @@ export default function SubmitForm(props) {
                 onChange={(e) => handleSign(e)}
                 checked={signed && paid}
                 label="Sign META Association Membership Agreement"
+              />
+            </Form.Field>
+
+            <Form.Field>
+              <Checkbox
+                onChange={(e) => {
+                  setSubscription(!subscription);
+                  localStorage.setItem('subscription', !subscription);
+                }}
+                checked={subscription}
+                label="Subscribe for exclusive news and offers"
               />
             </Form.Field>
 
