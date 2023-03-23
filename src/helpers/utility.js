@@ -426,7 +426,10 @@ export const opText = (operation_type, operation) => {
             var divideby = Math.pow(10, receive_asset_precision);
             var receive_amount = Number(min_to_receive_amount / divideby);
             receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
-            var price = floorFloat(sell_amount / receive_amount, 6);
+            divideby = Math.pow(10, Math.abs(response_asset1.data.precision - response_asset2.data.precision));
+            var direction = (response_asset1.data.precision - response_asset2.data.precision) > 0;
+            divideby = direction ? divideby : 1 / divideby
+            var price = floorFloat(amount_to_sell_amount / min_to_receive_amount / divideby, 6);
 
             operation_text = response_name;
             operation_text =
@@ -509,7 +512,10 @@ export const opText = (operation_type, operation) => {
             var divideby = Math.pow(10, receive_asset_precision);
             var receive_amount = Number(receives_amount / divideby);
             receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
-            var price = floorFloat(p_amount / receive_amount, 6);
+            divideby = Math.pow(10, Math.abs(response_asset2.data.precision - response_asset1.data.precision));
+            var direction = (response_asset2.data.precision - response_asset1.data.precision) > 0;
+            divideby = direction ? divideby : 1 / divideby
+            var price = floorFloat(pays_amount / receives_amount * divideby, 6);
 
             operation_text = response_name;
             operation_text =
