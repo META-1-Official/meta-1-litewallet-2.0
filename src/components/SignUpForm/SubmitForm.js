@@ -183,7 +183,10 @@ export default function SubmitForm(props) {
 
             <Form.Field>
               <Checkbox
-                onChange={(e) => setSubscription(!living)}
+                onChange={(e) => {
+                  setSubscription(!subscription);
+                  localStorage.setItem('subscription', !subscription);
+                }}
                 checked={subscription}
                 label="Subscribe for exclusive news and offers"
               />

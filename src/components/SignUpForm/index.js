@@ -161,10 +161,10 @@ export default function SignUpForm(props) {
         sendXApi
           .subscribe({
             email,
-            first_name: firstName,
-            last_name: lastName,
-            phone,
-            tags: ['webWallet'],
+            tags: ['MEMBERS'],
+            firstName,
+            lastName,
+            customFields: { mobile: phone }
           })
           .then(() => {
             console.log('Subscription completed!');
