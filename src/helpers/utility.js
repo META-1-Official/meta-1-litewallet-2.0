@@ -359,7 +359,7 @@ export const operationType = (_opType) => {
 };
 
 
-export const opText = (operation_type, operation) => {
+export const opText = (operation_type, operation, result) => {
   var operation_account = 0;
   var operation_text;
   var fee_paying_account;
@@ -410,6 +410,8 @@ export const opText = (operation_type, operation) => {
       var min_to_receive_asset_id = operation.min_to_receive.asset_id;
       var min_to_receive_amount = operation.min_to_receive.amount;
 
+      
+
       return UseAccount(operation_account).then((response_name) => {
         return UseAsset(amount_to_sell_asset_id).then((response_asset1) => {
           var sell_asset_name = response_asset1.data.symbol;
@@ -430,20 +432,22 @@ export const opText = (operation_type, operation) => {
             var direction = (response_asset1.data.precision - response_asset2.data.precision) > 0;
             divideby = direction ? divideby : 1 / divideby
             var price = floorFloat(amount_to_sell_amount / min_to_receive_amount / divideby, 6);
+            var order_id = result
+                  ? typeof result[1] == 'string'
+                    ? '#' + result[1].substring(4)
+                    : ''
+                  : '';
 
             operation_text = response_name;
             operation_text =
               operation_text +
-              ' wants ' +
+              ' placed order ' +
+              order_id +
+              ' to buy ' +
               formatNumber(receive_amount) +
               " " +
-              receive_asset_name +
-              ' for ';
-            operation_text =
-              operation_text +
-              formatNumber(sell_amount) +
-              " " +
-              sell_asset_name;
+              receive_asset_name;
+
             operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
             return { op_text: operation_text, symbol: receive_asset_name, amount: formatNumber(receive_amount) };
           });
@@ -453,11 +457,13 @@ export const opText = (operation_type, operation) => {
     case 2:
       fee_paying_account = operation.fee_paying_account;
       operation_account = fee_paying_account;
-
+      var order_id = operation.order? `#${operation.order.substring(4)}`: '';
+      console.log('order_id', order_id);
       return UseAccount(operation_account).then((response_name) => {
         operation_text =
           response_name +
-          ' cancelled order ';
+          ' cancelled order ' 
+          + order_id;
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -516,6 +522,7 @@ export const opText = (operation_type, operation) => {
             var direction = (response_asset2.data.precision - response_asset1.data.precision) > 0;
             divideby = direction ? divideby : 1 / divideby
             var price = floorFloat(pays_amount / receives_amount * divideby, 6);
+            var order_id = operation.order_id? `#${operation.order_id.substring(4)}`: '';
 
             operation_text = response_name;
             operation_text =
@@ -523,14 +530,10 @@ export const opText = (operation_type, operation) => {
               ' paid ' +
               formatNumber(p_amount) +
               " " +
-              pays_asset_name +
-              ' for ';
-            operation_text =
-              operation_text +
-              formatNumber(receive_amount) +
-              " " +
-              receive_asset_name;
+              pays_asset_name;
+
             operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
+            operation_text += ' for order ' + order_id;
             return { op_text: operation_text, symbol: pays_asset_name, amount: formatNumber(p_amount) };
           });
         });

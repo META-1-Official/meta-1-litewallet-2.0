@@ -39,7 +39,9 @@ async function getHistory(event) {
       count: response.count,
       transactionHash
     };
-    const {op_text, symbol, amount} = await opText(value.operation_type, parsed_op);
+
+    const result = JSON.parse(value.operation_history.operation_result);
+    const {op_text, symbol, amount} = await opText(value.operation_type, parsed_op, result);
     operation.operation_text = op_text;
     operation.symbol = symbol;
     operation.amount = amount;
