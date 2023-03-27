@@ -358,6 +358,17 @@ export const operationType = (_opType) => {
   return results;
 };
 
+export const getMarketName = (base, quote) => {
+    if (!base || !quote) return {marketName: '_'};
+    let baseID = parseInt(base.id.split('.')[2], 10);
+    let quoteID = parseInt(quote.id.split('.')[2], 10);
+
+    let first = quoteID > baseID ? quote : base;
+    let second = quoteID > baseID ? base : quote;
+
+    const marketName = `${first.symbol}_${second.symbol}`;
+    return {baseID, quoteID, marketName, first, second};
+};
 
 export const opText = (operation_type, operation, result) => {
   var operation_account = 0;
@@ -458,7 +469,6 @@ export const opText = (operation_type, operation, result) => {
       fee_paying_account = operation.fee_paying_account;
       operation_account = fee_paying_account;
       var order_id = operation.order? `#${operation.order.substring(4)}`: '';
-      console.log('order_id', order_id);
       return UseAccount(operation_account).then((response_name) => {
         operation_text =
           response_name +
