@@ -534,10 +534,27 @@ export const opText = (operation_type, operation, result) => {
             var price = floorFloat(pays_amount / receives_amount * divideby, 6);
             var order_id = operation.order_id? `#${operation.order_id.substring(4)}`: '';
 
+            const {marketName, first, second} = getMarketName(
+              response_asset2.data,
+              response_asset1.data
+            );
+            const inverted = false;
+            const isBid =
+              operation.pays.asset_id ===
+              (inverted ? first.id : second.id);
+            let priceBase = isBid ? operation.fill_price.base : operation.fill_price.quote;
+            let priceQuote = isBid ? operation.fill_price.quote : operation.fill_price.base;
+            let amount = isBid ? operation.receives : operation.pays;
+            let receivedAmount =
+              operation.fee.asset_id === amount.asset_id
+                ? amount.amount - operation.fee.amount
+                : amount.amount;
+
             operation_text = response_name;
             operation_text =
               operation_text +
-              ' paid ' +
+              // ' paid ' +
+               (isBid? ' bought ': ' sold ') +
               formatNumber(p_amount) +
               " " +
               pays_asset_name;
