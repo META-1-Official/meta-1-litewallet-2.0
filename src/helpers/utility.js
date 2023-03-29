@@ -592,8 +592,27 @@ export const opText = (operation_type, operation, result) => {
               })
             .format(priceQuote.amount / priceBase.amount * divideby);
 
-            operation_text = `${response_name} ${isBid? ' bought ': ' sold '} ${receivedAmount} ${assetName} `;
-            operation_text += `at ${price} ${marketName} for order ${order_id}`;
+
+            operation_text = (
+              <div>
+                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <span>
+                  &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
+                </span>
+
+                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${assetName}`}>{assetName}</a>
+
+                <span>
+                  &nbsp;at {price}&nbsp;
+                </span>
+
+                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${first.symbol}/${second.symbol}`}>{first.symbol}/{second.symbol}</a>
+
+                <span>
+                  &nbsp;for order {order_id}&nbsp;
+                </span>
+              </div>
+            );
 
             return { op_text: operation_text, symbol: pays_asset_name, amount: receivedAmount };
           });
