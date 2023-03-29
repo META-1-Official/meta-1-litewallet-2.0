@@ -1,6 +1,5 @@
 import UseAccount from "./UseAccount";
 import UseAsset from "./useAssets";
-import { expFloatToFixed, ceilFloat, floorFloat } from '../lib/math';
 
 export const formatNumber = (x) => {
   try {
@@ -405,13 +404,13 @@ export const opText = (operation_type, operation, result) => {
             operation_text =
               operation_text +
               ' sent ' +
-              formatNumber(amount) +
+              amount +
               " " +
               asset_name +
               ' to ' +
               to_name;
 
-            return { op_text: operation_text, symbol: asset_name, amount: formatNumber(amount) };
+            return { op_text: operation_text, symbol: asset_name, amount: amount };
           });
         });
       });
@@ -463,7 +462,7 @@ export const opText = (operation_type, operation, result) => {
               response_asset1.data
             );
 
-            const isBid = operation.amount_to_sell.asset_id === second.id;
+            const isBid = operation.amount_to_sell.asset_id === first.id;
             operation_text = `${response_name} placed order ${order_id} to ${isBid? 'buy': 'sell'} ${receive_amount} ${receive_asset_name}`
             operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
             return { op_text: operation_text, symbol: receive_asset_name, amount: receive_amount };
