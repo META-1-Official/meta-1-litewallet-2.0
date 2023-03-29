@@ -88,7 +88,7 @@ export const opMapping = {
   57: 'PROPERTY DELETE',
   58: 'ASSET PRICE PUBLISH',
 };
-export const trxTypes =	{
+export const trxTypes = {
   "amount": "Amount",
   "date": "Date",
   "time": "Time",
@@ -401,16 +401,22 @@ export const opText = (operation_type, operation, result) => {
               })
             .format(amount_amount / divideby);
 
-            operation_text = response_name;
-            operation_text =
-              operation_text +
-              ' sent ' +
-              amount +
-              " " +
-              asset_name +
-              ' to ' +
-              to_name;
+            operation_text = (
+              <div>
+                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <span>
+                  &nbsp;sent {amount}&nbsp;
+                </span>
 
+                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+
+                <span>
+                  &nbsp;to&nbsp;
+                </span>
+
+                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${to_name}`}>{to_name}</a>
+              </div>
+            );
             return { op_text: operation_text, symbol: asset_name, amount: amount };
           });
         });
