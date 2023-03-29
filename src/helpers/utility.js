@@ -497,10 +497,14 @@ export const opText = (operation_type, operation, result) => {
       operation_account = fee_paying_account;
       var order_id = operation.order? `#${operation.order.substring(4)}`: '';
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' cancelled order ' 
-          + order_id;
+        operation_text = (
+          <div>
+            <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <span>
+              &nbsp;cancelled order {order_id}
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
