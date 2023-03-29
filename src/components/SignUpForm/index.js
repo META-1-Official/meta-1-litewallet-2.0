@@ -438,6 +438,7 @@ export default function SignUpForm(props) {
           onClose={() => {
             setPaperWalletData('');
             setPreviewPaperWalletModal(false);
+            setIsSubmitted(false);
           }}
           accountName={accountName}
           password={password}
