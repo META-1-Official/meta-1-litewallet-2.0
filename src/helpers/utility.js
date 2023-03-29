@@ -395,7 +395,11 @@ export const opText = (operation_type, operation, result) => {
             var asset_precision = response_asset.data.precision;
 
             var divideby = Math.pow(10, asset_precision);
-            var amount = Number(amount_amount / divideby);
+            var amount = new Intl.NumberFormat('en',
+              { minimumFractionDigits: 6,
+                maximumFractionDigits: 6
+              })
+            .format(amount_amount / divideby);
 
             operation_text = response_name;
             operation_text =
@@ -421,16 +425,10 @@ export const opText = (operation_type, operation, result) => {
       var min_to_receive_asset_id = operation.min_to_receive.asset_id;
       var min_to_receive_amount = operation.min_to_receive.amount;
 
-      
-
       return UseAccount(operation_account).then((response_name) => {
         return UseAsset(amount_to_sell_asset_id).then((response_asset1) => {
           var sell_asset_name = response_asset1.data.symbol;
           var sell_asset_precision = response_asset1.data.precision;
-
-          var divideby = Math.pow(10, sell_asset_precision);
-          var sell_amount = expFloatToFixed(Number(amount_to_sell_amount / divideby));
-          sell_amount = expFloatToFixed(sell_amount).toString().substring(0, sell_asset_precision + 1);
 
           return UseAsset(min_to_receive_asset_id).then((response_asset2) => {
             var receive_asset_name = response_asset2.data.symbol;
@@ -438,29 +436,37 @@ export const opText = (operation_type, operation, result) => {
 
             var divideby = Math.pow(10, receive_asset_precision);
             var receive_amount = Number(min_to_receive_amount / divideby);
-            receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
+            receive_amount = new Intl.NumberFormat('en',
+              { minimumFractionDigits: 6,
+                maximumFractionDigits: 6
+              })
+            .format(receive_amount);
+
             divideby = Math.pow(10, Math.abs(response_asset1.data.precision - response_asset2.data.precision));
             var direction = (response_asset1.data.precision - response_asset2.data.precision) > 0;
-            divideby = direction ? divideby : 1 / divideby
-            var price = floorFloat(amount_to_sell_amount / min_to_receive_amount / divideby, 6);
+            divideby = direction ? divideby : 1 / divideby;
+
+            var price = new Intl.NumberFormat('en',
+              { minimumFractionDigits: 6,
+                maximumFractionDigits: 6
+              })
+            .format(amount_to_sell_amount / min_to_receive_amount / divideby);
+
             var order_id = result
                   ? typeof result[1] == 'string'
                     ? '#' + result[1].substring(4)
                     : ''
                   : '';
 
-            operation_text = response_name;
-            operation_text =
-              operation_text +
-              ' placed order ' +
-              order_id +
-              ' to buy ' +
-              formatNumber(receive_amount) +
-              " " +
-              receive_asset_name;
+            const {marketName, first, second, baseID} = getMarketName(
+              response_asset2.data,
+              response_asset1.data
+            );
 
+            const isBid = operation.amount_to_sell.asset_id === second.id;
+            operation_text = `${response_name} placed order ${order_id} to ${isBid? 'buy': 'sell'} ${receive_amount} ${receive_asset_name}`
             operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
-            return { op_text: operation_text, symbol: receive_asset_name, amount: formatNumber(receive_amount) };
+            return { op_text: operation_text, symbol: receive_asset_name, amount: receive_amount };
           });
         });
       });
@@ -507,61 +513,64 @@ export const opText = (operation_type, operation, result) => {
       operation_account = account_id;
 
       var pays_asset_id = operation.pays.asset_id;
-      var pays_amount = operation.pays.amount;
-
       var receives_asset_id = operation.receives.asset_id;
-      var receives_amount = operation.receives.amount;
 
       return UseAccount(operation_account).then((response_name) => {
         return UseAsset(pays_asset_id).then((response_asset1) => {
           var pays_asset_name = response_asset1.data.symbol;
           var pays_asset_precision = response_asset1.data.precision;
 
-          var divideby = Math.pow(10, pays_asset_precision);
-          var p_amount = parseFloat(pays_amount / divideby);
-          p_amount = expFloatToFixed(p_amount).toString().substring(0, pays_asset_precision + 1);
-
           return UseAsset(receives_asset_id).then((response_asset2) => {
             var receive_asset_name = response_asset2.data.symbol;
             var receive_asset_precision = response_asset2.data.precision;
 
-            var divideby = Math.pow(10, receive_asset_precision);
-            var receive_amount = Number(receives_amount / divideby);
-            receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
-            divideby = Math.pow(10, Math.abs(response_asset2.data.precision - response_asset1.data.precision));
+            var divideby = Math.pow(10, Math.abs(response_asset2.data.precision - response_asset1.data.precision));
             var direction = (response_asset2.data.precision - response_asset1.data.precision) > 0;
-            divideby = direction ? divideby : 1 / divideby
-            var price = floorFloat(pays_amount / receives_amount * divideby, 6);
+            divideby = direction ? divideby : 1 / divideby;
+
             var order_id = operation.order_id? `#${operation.order_id.substring(4)}`: '';
 
-            const {marketName, first, second} = getMarketName(
+            const {marketName, first, second, baseID} = getMarketName(
               response_asset2.data,
               response_asset1.data
             );
-            const inverted = false;
-            const isBid =
-              operation.pays.asset_id ===
-              (inverted ? first.id : second.id);
+            const isBid = operation.pays.asset_id === first.id;
+
             let priceBase = isBid ? operation.fill_price.base : operation.fill_price.quote;
             let priceQuote = isBid ? operation.fill_price.quote : operation.fill_price.base;
             let amount = isBid ? operation.receives : operation.pays;
+
+            if (priceBase.asset_id !== second.id) {
+              let tempAmount = priceBase;
+              priceBase = priceQuote;
+              priceQuote = tempAmount;
+              divideby = 1 / divideby;
+            }
+
+            let precision = isBid? receive_asset_precision: pays_asset_precision;
             let receivedAmount =
               operation.fee.asset_id === amount.asset_id
                 ? amount.amount - operation.fee.amount
                 : amount.amount;
 
-            operation_text = response_name;
-            operation_text =
-              operation_text +
-              // ' paid ' +
-               (isBid? ' bought ': ' sold ') +
-              formatNumber(p_amount) +
-              " " +
-              pays_asset_name;
+            receivedAmount = new Intl.NumberFormat('en',
+              { minimumFractionDigits: 6,
+                maximumFractionDigits: 6
+              })
+            .format(receivedAmount / Math.pow(10, precision));
 
-            operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
-            operation_text += ' for order ' + order_id;
-            return { op_text: operation_text, symbol: pays_asset_name, amount: formatNumber(p_amount) };
+            let assetName = isBid ? receive_asset_name: pays_asset_name;
+
+            var price = new Intl.NumberFormat('en',
+              { minimumFractionDigits: 6,
+                maximumFractionDigits: 6
+              })
+            .format(priceQuote.amount / priceBase.amount * divideby);
+
+            operation_text = `${response_name} ${isBid? ' bought ': ' sold '} ${receivedAmount} ${assetName} `;
+            operation_text += `at ${price} ${marketName} for order ${order_id}`;
+
+            return { op_text: operation_text, symbol: pays_asset_name, amount: receivedAmount };
           });
         });
       });
