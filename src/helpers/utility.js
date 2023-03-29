@@ -1,5 +1,6 @@
 import UseAccount from "./UseAccount";
 import UseAsset from "./useAssets";
+import {Link} from 'react-router-dom';
 
 export const formatNumber = (x) => {
   try {
@@ -463,8 +464,23 @@ export const opText = (operation_type, operation, result) => {
             );
 
             const isBid = operation.amount_to_sell.asset_id === first.id;
-            operation_text = `${response_name} placed order ${order_id} to ${isBid? 'buy': 'sell'} ${receive_amount} ${receive_asset_name}`
-            operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
+            operation_text = (
+              <div>
+                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <span>
+                  &nbsp;placed order {order_id} to {isBid? 'buy': 'sell'} {receive_amount}&nbsp;
+                </span>
+
+                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${receive_asset_name}`}>{receive_asset_name}</a>
+
+                <span>
+                  &nbsp;at {price}&nbsp;
+                </span>
+
+                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${response_asset1.data.symbol}/${response_asset2.data.symbol}`}>{response_asset1.data.symbol}/{response_asset2.data.symbol}</a>
+              </div>
+            );
+
             return { op_text: operation_text, symbol: receive_asset_name, amount: receive_amount };
           });
         });
