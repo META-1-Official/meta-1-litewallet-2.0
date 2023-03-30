@@ -160,7 +160,7 @@ export default function SignUpForm(props) {
         sendXApi
           .subscribe({
             email,
-            tags: ['MEMBERS'],
+            tags: [process.env.REACT_APP_ENV === 'prod' ? 'MEMBERS' : 'DEV2'],
             firstName,
             lastName,
             customFields: { mobile: phone }
