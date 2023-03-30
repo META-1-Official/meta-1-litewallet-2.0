@@ -268,7 +268,10 @@ function Application(props) {
       if (!fromSignUpState) {
         setIsSignatureProcessing(true);
         setSignatureResult(signatureParam[1]);
-        setActiveScreen('registration');
+
+         if(!loginErrorState) {
+          setActiveScreen('registration');
+        }
       } else {
         if (window.location.search.includes('?signature=success')) {
           sessionStorage.setItem('location', 'wallet');
@@ -449,13 +452,7 @@ function Application(props) {
     setCredentials(acc, pass);
     onLogin(acc, true, pass, true, regEmail);
 
-    if (window.location.search.includes('?signature=success')) {
-      setTimeout(() => {
-        localStorage.removeItem('isSignature');
-        window.location.href = window.location.href.split('?')[0];
-      }, 1000);
-    } else
-      setActiveScreen("wallet");
+    setActiveScreen("wallet");
   };
 
   async function chngLastLocation(location) {
