@@ -406,18 +406,18 @@ export const opText = (operation_type, operation, result) => {
 
             operation_text = (
               <div>
-                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
                 <span>
                   &nbsp;sent {amount}&nbsp;
                 </span>
 
-                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
 
                 <span>
                   &nbsp;to&nbsp;
                 </span>
 
-                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${to_name}`}>{to_name}</a>
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${to_name}`}>{to_name}</a>
               </div>
             );
             return { op_text: operation_text, symbol: asset_name, amount: amount };
@@ -563,14 +563,17 @@ export const opText = (operation_type, operation, result) => {
           return UseAsset(delta_debt_asset_id).then((response_asset2) => {
             var asset2 = response_asset2.data.symbol;
 
-            operation_text =
-              response_name +
-              ' update debt/collateral for ';
-            operation_text =
-              operation_text +
-              asset1 +
-              '/' +
-              asset2;
+            operation_text = (
+              <div>
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <span>
+                  &nbsp;update debt/collateral for&nbsp;
+                </span>
+
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset1}/${asset2}`}>{asset1}/{asset2}</a>
+              </div>
+            );
+
             return { op_text: operation_text, symbol: asset1, amount: 0 };
           });
         });
@@ -711,17 +714,31 @@ export const opText = (operation_type, operation, result) => {
       operation_account = registrar;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' register ' +
-          name;
+        operation_text = (
+          <div>
+            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <span>
+              &nbsp;register&nbsp;
+            </span>
+
+            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${name}`}>{name}</a>
+          </div>
+        );
 
         if (registrar !== referrer) {
           return UseAccount(referrer).then((response_name2) => {
-            operation_text =
-              operation_text +
-              ' thanks to ' +
-              response_name2;
+
+            operation_text = (
+              <div>
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <span>
+                  &nbsp;thanks to&nbsp;
+                </span>
+
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name2}`}>{response_name2}</a>
+              </div>
+            );
+
             return { op_text: operation_text, symbol: null, amount: 0 };
           });
         } else {
@@ -732,9 +749,14 @@ export const opText = (operation_type, operation, result) => {
       operation_account = operation.account;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' updated their wallet data change ';
+        operation_text = (
+            <div>
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <span>
+                &nbsp;updated their wallet data change&nbsp;
+              </span>
+            </div>
+          );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -747,11 +769,17 @@ export const opText = (operation_type, operation, result) => {
 
       return UseAccount(operation_account).then((response_name) => {
         return UseAccount(account_to_list).then((response_name2) => {
-          operation_text =
-            response_name +
-            type +
-            ' the wallet ' +
-            response_name2;
+          operation_text = (
+            <div>
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <span>
+                &nbsp;{type} the wallet&nbsp;
+              </span>
+
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name2}`}>{response_name2}</a>
+            </div>
+          );
+
           return { op_text: operation_text, symbol: null, amount: 0 };
         });
       });
@@ -761,6 +789,15 @@ export const opText = (operation_type, operation, result) => {
         operation_text =
           response +
           ' upgraded the wallet ';
+
+        operation_text = (
+            <div>
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response}`}>{response}</a>
+              <span>
+                &nbsp;upgraded the wallet&nbsp;
+              </span>
+            </div>
+          );
 
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
@@ -779,18 +816,23 @@ export const opText = (operation_type, operation, result) => {
           var amount = Number(asset_to_issue_amount / divideby);
 
           return UseAccount(issue_to_account).then((response_name2) => {
-            operation_text =
-              response_name +
-              ' issued ' +
-              amount;
-            operation_text =
-              operation_text +
-              " " +
-              response_asset.data.symbol;
-            operation_text =
-              operation_text +
-              ' to ' +
-              response_name2;
+            operation_text = (
+              <div>
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <span>
+                  &nbsp;issued {amount}&nbsp;
+                </span>
+
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${response_asset.data.symbol}`}>{response_asset.data.symbol}</a>
+
+                <span>
+                  &nbsp;to&nbsp;
+                </span>
+
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name2}`}>{response_name2}</a>
+              </div>
+            );
+
             return { op_text: operation_text, symbol: response_asset.data.symbol, amount: 0 };
           });
         });
@@ -809,11 +851,16 @@ export const opText = (operation_type, operation, result) => {
           var divideby = Math.pow(10, asset_precision);
           var amount = Number(amount_to_reserve_amount / divideby);
 
-          operation_text =
-            response_name +
-            ' burned(reserved) ' +
-            formatNumber(amount) +
-            asset_name;
+          operation_text = (
+            <div>
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <span>
+                &nbsp;burned(reserved){formatNumber(amount)}&nbsp;
+              </span>
+
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+            </div>
+          );
           return { op_text: operation_text, symbol: null, amount: formatNumber(amount) };
         });
       });
@@ -825,12 +872,16 @@ export const opText = (operation_type, operation, result) => {
 
       return UseAccount(operation_account).then((response_name) => {
         return UseAsset(asset_id).then((response_asset) => {
-          operation_text =
-            response_name +
-            ' published feed for ';
-          operation_text =
-            operation_text +
-            response_asset.data.symbol;
+          operation_text = (
+            <div>
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <span>
+                &nbsp;published feed for&nbsp;
+              </span>
+
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${response_asset.data.symbol}`}>{response_asset.data.symbol}</a>
+            </div>
+          );
           return { op_text: operation_text, symbol: response_asset.data.symbol, amount: 0 };
         });
       });
@@ -852,13 +903,14 @@ export const opText = (operation_type, operation, result) => {
       operation_account = fee_paying_account;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          '  updated ';
-        operation_text =
-          operation_text +
-          ' proposal ' +
-          proposal;
+        operation_text = (
+          <div>
+            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <span>
+              &nbsp;updated proposal {proposal}&nbsp;
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -867,9 +919,14 @@ export const opText = (operation_type, operation, result) => {
       operation_account = fee_paying_account;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' deleted a proposal';
+         operation_text = (
+          <div>
+            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <span>
+              &nbsp;deleted a proposal
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
     });
 
@@ -886,12 +943,17 @@ export const opText = (operation_type, operation, result) => {
           var divideby = Math.pow(10, asset_precision);
           var amount = Number(amount_amount / divideby);
 
-          operation_text =
-            response_name +
-            ' withdrew vesting balance of ' +
-            formatNumber(amount) +
-            " " +
-            asset_name;
+          operation_text = (
+            <div>
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <span>
+                &nbsp;withdrew vesting balance of {formatNumber(amount)}&nbsp;
+              </span>
+
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+            </div>
+          );
+
           return { op_text: operation_text, symbol: asset_name, amount: 0 };
         });
       });
@@ -909,12 +971,17 @@ export const opText = (operation_type, operation, result) => {
           var divideby = Math.pow(10, asset_precision);
           var amount = Number(total_claimed_amount / divideby);
 
-          operation_text =
-            response_name +
-            ' claimed a balance of ' +
-            formatNumber(amount) +
-            " " +
-            asset_name;
+          operation_text = (
+            <div>
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <span>
+                &nbsp;claimed a balance of {formatNumber(amount)}&nbsp;
+              </span>
+
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+            </div>
+          );
+
           return { op_text: operation_text, symbol: asset_name, amount: 0 };
         });
       });
@@ -944,16 +1011,23 @@ export const opText = (operation_type, operation, result) => {
                 var divideby2 = Math.pow(10, asset_precision2);
                 var amount2 = Number(debt_covered_amount / divideby2);
 
-                operation_text =
-                  response_name +
-                  ' bid' +
-                  formatNumber(amount1) +
-                  " " +
-                  asset_name1 +
-                  ' for ' +
-                  formatNumber(amount2) +
-                  " " +
-                  asset_name2;
+                operation_text = (
+                  <div>
+                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                    <span>
+                      &nbsp;bid {formatNumber(amount1)}&nbsp;
+                    </span>
+
+                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name1}`}>{asset_name1}</a>
+
+                    <span>
+                      &nbsp;for {formatNumber(amount2)}&nbsp;
+                    </span>
+
+                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name2}`}>{asset_name2}</a>
+                  </div>
+                );
+
                 return { op_text: operation_text, symbol: asset_name1, amount: formatNumber(amount1) };
               },
             );
@@ -977,14 +1051,23 @@ export const opText = (operation_type, operation, result) => {
           var amount = Number(amount_ / divideby);
 
           return UseAccount(to).then((response_name2) => {
-            operation_text =
-              response_name +
-              ' create HTLC to ' +
-              response_name2 +
-              ' to transfer ' +
-              formatNumber(amount) +
-              " " +
-              asset_name;
+            operation_text = (
+              <div>
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <span>
+                  &nbsp;create HTLC to&nbsp;
+                </span>
+
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name2}`}>{response_name2}</a>
+
+                <span>
+                  &nbsp;to transfer {formatNumber(amount)}&nbsp;
+                </span>
+
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+              </div>
+            );
+
             return { op_text: operation_text, symbol: asset_name, amount: formatNumber(amount) };
           });
         });
@@ -994,9 +1077,15 @@ export const opText = (operation_type, operation, result) => {
       operation_account = operation.redeemer;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' redeem HTLC ';
+        operation_text = (
+          <div>
+            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <span>
+              &nbsp;redeem HTLC&nbsp;
+            </span>
+          </div>
+        );
+
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -1004,9 +1093,15 @@ export const opText = (operation_type, operation, result) => {
       operation_account = operation.from;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' redeemed HTLC ';
+        operation_text = (
+          <div>
+            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <span>
+              &nbsp;redeemed HTLC&nbsp;
+            </span>
+          </div>
+        );
+
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -1014,9 +1109,14 @@ export const opText = (operation_type, operation, result) => {
       operation_account = operation.update_issuer;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' extend HTLC ';
+        operation_text = (
+          <div>
+            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <span>
+              &nbsp;extend HTLC&nbsp;
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -1024,9 +1124,14 @@ export const opText = (operation_type, operation, result) => {
       operation_account = operation.to;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' refund HTLC ';
+        operation_text = (
+          <div>
+            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <span>
+              &nbsp;refund HTLC&nbsp;
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -1072,17 +1177,23 @@ export const opText = (operation_type, operation, result) => {
             operation.usd_price.numerator / Math.pow(10, 6),
           );
 
-          operation_text =
-            response_name +
-            ' published price ';
-          operation_text =
-            operation_text +
-            usd_amount / symbol_amount +
-            ' ' +
-            'USD' +
-            '/' +
-            asset_name +
-            ' ';
+          operation_text = (
+            <div>
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <span>
+                &nbsp;published price {operation_text} {usd_amount} / {symbol_amount}&nbsp;
+              </span>
+
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/USD`}>USD</a>
+
+              <span>
+                /
+              </span>
+
+              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+            </div>
+          );
+
           return { op_text: operation_text, symbol: asset_name, amount: usd_amount / symbol_amount };
         });
       });
