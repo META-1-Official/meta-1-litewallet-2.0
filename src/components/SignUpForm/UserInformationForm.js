@@ -18,7 +18,7 @@ const useDebounce = (value, timeout) => {
 
   return state;
 };
-const ALLOW_PHONE_NUMBER_KEY = ["Backspace" , "Tab", "ArrowRight", "ArrowLeft"];
+const ALLOW_PHONE_NUMBER_KEY = ["Backspace", "Tab", "ArrowRight", "ArrowLeft"];
 
 const UserInformationForm = (props) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -81,7 +81,7 @@ const UserInformationForm = (props) => {
         .catch((err) => console.log(err));
     }
   }, [accountName]);
-  
+
   const hasNumber = (myString) => {
     return /\d/.test(myString);
   }
@@ -98,9 +98,7 @@ const UserInformationForm = (props) => {
 
   const phoneNumberChangeHandler = (event) => {
     if (!isNaN(event.target.value.replaceAll(' ', ''))) {
-      if (event.target.value === "0") {
-        setPhoneError(`Phone number can't start with 0`);
-      } else if (event.target.value !== "0" && !event.target.value.includes('.')) {
+      if (!event.target.value.includes('.')) {
         setPhoneError('');
         if (event.target.value === "") {
           setPhoneError(`Phone number can't be empty`);
@@ -116,6 +114,10 @@ const UserInformationForm = (props) => {
           }
           if (event.target.value.length !== selectedCountryObj?.patterns[0].length) {
             setPhoneError(`Phone number should be ${selectedCountryObj.patterns[0].replaceAll(' ', '').length} digits long`);
+          } else {
+            if (/^0*$/.test(event.target.value.replaceAll(' ', ''))) {
+              setPhoneError('Phone number can not be all zeros.')
+            }
           }
         }
       }
@@ -216,6 +218,10 @@ const UserInformationForm = (props) => {
                             setFirstNameError(
                               "Numbers are not allowed."
                             );
+                          } else if (event.target.value.length > 64) {
+                            setFirstNameError(
+                              "Your First Name is too long."
+                            );
                           } else {
                             setFirstNameError(
                               "Your First Name must not contain special characters."
@@ -279,9 +285,9 @@ const UserInformationForm = (props) => {
                         className="phone-number-input"
                         onChange={(e) => phoneNumberChangeHandler(e)}
                         onKeyDown={(event) => {
-                          if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
+                          if (!ALLOW_PHONE_NUMBER_KEY.includes(event.key) && !selectedCountryObj.patterns && phoneFormat.length === 15) {
                             event.preventDefault();
-                          } else if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
+                          } else if (!ALLOW_PHONE_NUMBER_KEY.includes(event.key) && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length) {
                             event.preventDefault();
                           } else if (event.key === " ") {
                             event.preventDefault();
@@ -309,6 +315,10 @@ const UserInformationForm = (props) => {
                           } else if (/\d/.test(event.target.value)) {
                             setLastNameError(
                               "Numbers are not allowed."
+                            );
+                          } else if (event.target.value.length > 64) {
+                            setLastNameError(
+                              "Your Last Name is too long."
                             );
                           } else {
                             setLastNameError(
@@ -343,6 +353,10 @@ const UserInformationForm = (props) => {
                           } else if (/\d/.test(event.target.value)) {
                             setLastNameError(
                               "Numbers are not allowed."
+                            );
+                          } else if (event.target.value.length > 64) {
+                            setLastNameError(
+                              "Last Name is too long."
                             );
                           } else {
                             setLastNameError(
@@ -406,9 +420,9 @@ const UserInformationForm = (props) => {
                         className="phone-number-input"
                         onChange={(e) => phoneNumberChangeHandler(e)}
                         onKeyDown={(event) => {
-                          if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && !selectedCountryObj.patterns && phoneFormat.length === 15 ) {
+                          if (!ALLOW_PHONE_NUMBER_KEY.includes(event.key) && !selectedCountryObj.patterns && phoneFormat.length === 15) {
                             event.preventDefault();
-                          } else if ( !ALLOW_PHONE_NUMBER_KEY.includes(event.key) && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length ) {
+                          } else if (!ALLOW_PHONE_NUMBER_KEY.includes(event.key) && selectedCountryObj?.patterns && phoneFormat.length === selectedCountryObj.patterns[0].length) {
                             event.preventDefault();
                           } else if (event.key === " ") {
                             event.preventDefault();

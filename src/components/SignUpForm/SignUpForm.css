@@ -395,6 +395,11 @@ video {
   height: 14rem !important;
 }
 
+.preview_paper_wallet_modal {
+  height: 90vh !important;
+  padding: 1rem auto !important;
+}
+
 .copy_passkey_paper_wallet_modal_div {
   width: 100%;
   height: 100%;

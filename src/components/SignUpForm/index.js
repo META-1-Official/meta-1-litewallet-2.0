@@ -5,7 +5,7 @@ import createAccountWithPassword, { generateKeyFromPassword } from "../../lib/cr
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 import { PrivateKey, ChainStore } from "meta1-vision-js";
-import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken } from "../../API/API";
+import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken, signUp } from "../../API/API";
 
 import "./SignUpForm.css";
 import FaceKiForm from "./FaceKiForm.js";
@@ -14,8 +14,10 @@ import { createPaperWalletAsPDF } from "../PaperWalletLogin/CreatePdfWallet.js";
 import { sleepHandler } from "../../utils/common.js";
 import Meta1 from "meta1-vision-dex";
 import ModalTemplate from "./Modal.jsx";
+import PreviewPDFModal from "./PreviewPDFModal.jsx";
 import MetaLoader from "../../UI/loader/Loader.js";
 import LoginProvidersModal from "../Web3Auth"
+import sendXApi from '../../API/sendXApi';
 
 export default function SignUpForm(props) {
   const {
@@ -26,7 +28,6 @@ export default function SignUpForm(props) {
     isSignatureProcessing,
     signatureResult,
     onBackClick,
-    openLogin,
     web3auth
   } = props;
 
@@ -43,6 +44,8 @@ export default function SignUpForm(props) {
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
   const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false);
+  const [previewPaperWalletModal, setPreviewPaperWalletModal] = useState(false);
+  const [paperWalletData, setPaperWalletData] = useState('');
   const [copyPasskeyModal, setCopyPasskeyModal] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { innerWidth: width } = window;
@@ -85,6 +88,7 @@ export default function SignUpForm(props) {
     localStorage.removeItem('recover');
     localStorage.removeItem('stored');
     localStorage.removeItem('living');
+    localStorage.removeItem('subscription');
     localStorage.removeItem('isMigrationUser');
     const response = await checkOldUser(accName);
 
@@ -124,6 +128,7 @@ export default function SignUpForm(props) {
     localStorage.removeItem('recover');
     localStorage.removeItem('stored');
     localStorage.removeItem('living');
+    localStorage.removeItem('subscription');
     setStep('submit');
   };
 
@@ -150,6 +155,20 @@ export default function SignUpForm(props) {
 
     try {
       const res_update = await updateUserKycProfile(email, { member1Name }, token);
+      //
+      if (localStorage.getItem('subscription') === 'true') {
+        sendXApi
+          .subscribe({
+            email,
+            tags: [process.env.REACT_APP_ENV === 'prod' ? 'MEMBERS' : 'DEV2'],
+            firstName,
+            lastName,
+            customFields: { mobile: phone }
+          })
+          .then(() => {
+            console.log('Subscription completed!');
+          });
+      }
       if (res_update.error === true) {
         return;
       } else if (res_update) {
@@ -166,6 +185,8 @@ export default function SignUpForm(props) {
           firstName
         );
 
+        await signUp(accountName);
+
         localStorage.removeItem('password');
         localStorage.removeItem('firstname');
         localStorage.removeItem('lastname');
@@ -175,6 +196,7 @@ export default function SignUpForm(props) {
         localStorage.removeItem('recover');
         localStorage.removeItem('stored');
         localStorage.removeItem('living');
+        localStorage.removeItem('subscription');
         setDownloadPaperWalletModal(true);
       } else {
         return;
@@ -205,7 +227,7 @@ export default function SignUpForm(props) {
         ['active', 'owner', 'memo'].forEach((role) => {
           if (acc) {
             if (role === 'memo') {
-              if (acc.getIn(['options', 'memo_key']) == key.pubKey)
+              if (acc.getIn(['options', 'memo_key']) === key.pubKey)
                 passwordKeys[role] = key;
               else {
                 passwordKeys[role] = {
@@ -214,7 +236,7 @@ export default function SignUpForm(props) {
               }
             } else {
               acc.getIn([role, 'key_auths']).forEach((auth) => {
-                if (auth.get(0) == key.pubKey)
+                if (auth.get(0) === key.pubKey)
                   passwordKeys[role] = key;
                 else {
                   passwordKeys[role] = {
@@ -250,14 +272,17 @@ export default function SignUpForm(props) {
     await sleepHandler(5000);
     // Generate owner, memo and active Key
     await Meta1.login(accountName, password);
-    let keys = getPrivateKeys(accountName, password);
+    const keys = getPrivateKeys(accountName, password);
     createPaperWalletAsPDF(
       accountName,
       keys['owner'],
       keys['active'],
-      keys['memo']
+      keys['memo'],
+      (data) => {
+        setPaperWalletData(data);
+        setPreviewPaperWalletModal(true);
+      }
     );
-    onRegistration(accountName, password, email);
   }
 
   const renderStep = () => {
@@ -339,9 +364,9 @@ export default function SignUpForm(props) {
   }
 
   const handleBackBtn = (e) => {
-    if (step == "userform") {
+    if (step === "userform") {
       onBackClick(e);
-    } else if (step == "migration") {
+    } else if (step === "migration") {
       setStep("userform");
     } else {
       setStep("userform");
@@ -425,6 +450,21 @@ export default function SignUpForm(props) {
           text='If you forget your passkey you will NOT be able to access your wallet or your funds. We are NO LONGER able to restore, reset, or redistribute lost coins, or help with lost passkeys. Please MAKE SURE you copy your wallet name and passkey on to your computer and then transfer it to an offline storage location for easy access like a USB drive! Check our passkey storage tips knowledge article for more info <a target="__blank" href="https://support.meta1coin.vision/password-storage-tips">here</a>'
           className={`${!isMobile ? 'copy_passkey_modal' : 'copy_passkey_mobile_modal'}`}
           isCloseIcon={true}
+        />
+        <PreviewPDFModal
+          onOpen={previewPaperWalletModal}
+          onClose={() => {
+            setPaperWalletData('');
+            setPreviewPaperWalletModal(false);
+            setIsSubmitted(false);
+          }}
+          accountName={accountName}
+          password={password}
+          email={email}
+          className="preview_paper_wallet_modal"
+          isCloseIcon={true}
+          paperWalletData={paperWalletData}
+          onRegistration={onRegistration}
         />
         {
           authModalOpen && <LoginProvidersModal
