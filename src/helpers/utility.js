@@ -1,10 +1,8 @@
 import UseAccount from "./UseAccount";
 import UseAsset from "./useAssets";
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import { Button, Popover, Typography } from "@mui/material";
-import React, {useState} from "react";
 import AssetName from "./AssetName";
 import AccountName from "./AccountName";
+import FormattedPrice from "./FormattedPrice";
 
 export const formatNumber = (x) => {
   try {
@@ -466,69 +464,29 @@ export const opText = (operation_type, operation, result) => {
 
             const isBid = operation.amount_to_sell.asset_id === first.id;
 
-            const MarketSymbol = () => {
-                const [inverted, setInverted] = useState(false);
+            operation_text = (
+              <div>
+                <AccountName name={response_name} style={{float:'left'}}/>
 
-                let price = new Intl.NumberFormat('en',
-                  { minimumFractionDigits: 6,
-                    maximumFractionDigits: 6
-                  })
-                .format(inverted? (min_to_receive_amount / amount_to_sell_amount * divideby) : (amount_to_sell_amount / min_to_receive_amount / divideby));
+                <span className="float-left">
+                  &nbsp;placed order {order_id} to {isBid? 'buy': 'sell'} {receive_amount}&nbsp;
+                </span>
 
-                let marketName = inverted?`${response_asset2.data.symbol}/${response_asset1.data.symbol}`:`${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
+                <AssetName name={receive_asset_name} style={{float:'left'}}/>
 
-                return (
-                  <div>
-                    <AccountName name={response_name}/>
-                    
-                    <span className="float-left">
-                      &nbsp;placed order {order_id} to {isBid? 'buy': 'sell'} {receive_amount}&nbsp;
-                    </span>
+                <FormattedPrice
+                  priceBase={amount_to_sell_amount}
+                  priceQuote={min_to_receive_amount}
+                  baseAsset={response_asset1.data.symbol}
+                  quoteAsset={response_asset2.data.symbol}
+                  divideby={divideby}
+                />
 
-                    <AssetName name={receive_asset_name}/>
-
-                    <span className="float-left">
-                      &nbsp;at {price}
-                    </span>
-
-                    <PopupState variant="popover" popupId="demo-popup-popover">
-                      {(popupState) => (
-                        <span className="float-left">
-                          <h6 className="order-table-column-padding" {...bindTrigger(popupState)} style={{ margin: "0" }}> 
-                          <span className="price_symbol">{marketName}</span></h6>
-                          <Popover
-                            className="price_symbol_model"
-                            {...bindPopover(popupState)}
-                            anchorOrigin={{
-                              vertical: 'top',
-                              horizontal: 'center',
-                            }}
-                            transformOrigin={{
-                              vertical: 'bottom',
-                              horizontal: 'center',
-                            }}
-                          >
-                            <Typography className="price_symbol_model" sx={{ p: 2 }}>
-                              <Button className="inside_model_btn" onClick={() => {setInverted(!inverted)}} >Invert the price</Button>
-                              <Button className="inside_model_btn" onClick={() => {
-                                window.location.href = `${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${marketName}`;
-                              }}>
-                              Go to market
-                              </Button>
-                            </Typography>
-                          </Popover>
-                        </span>
-                      )}
-                    </PopupState>
-
-                    <span>
-                      &nbsp;for order {order_id}&nbsp;
-                    </span>
+                <span className="float-left">
+                  &nbsp;for order {order_id}&nbsp;
+                </span>
               </div>
-                );
-            };
-
-            operation_text = (<MarketSymbol></MarketSymbol>)
+            )
 
             return { op_text: operation_text, symbol: receive_asset_name, amount: receive_amount };
           });
@@ -633,76 +591,29 @@ export const opText = (operation_type, operation, result) => {
 
             let assetName = isBid ? receive_asset_name: pays_asset_name;
 
-          
-            let price = new Intl.NumberFormat('en',
-                  { minimumFractionDigits: 6,
-                    maximumFractionDigits: 6
-                  })
-                .format(priceQuote.amount / priceBase.amount * divideby);
+            operation_text = (
+              <div>
+                <AccountName name={response_name} style={{float:'left'}}/>
 
-            const MarketSymbol = () => {
-                const [inverted, setInverted] = useState(false);
+                <span className="float-left">
+                  &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
+                </span>
 
-                let price = new Intl.NumberFormat('en',
-                  { minimumFractionDigits: 6,
-                    maximumFractionDigits: 6
-                  })
-                .format(inverted? (priceBase.amount / priceQuote.amount * 1/divideby) : (priceQuote.amount / priceBase.amount * divideby));
+                <AssetName name={assetName} style={{float:'left'}}/>
 
-                let marketName = inverted?`${second.symbol}/${first.symbol}`:`${first.symbol}/${second.symbol}`;
+                <FormattedPrice
+                  priceBase={priceBase.amount}
+                  priceQuote={priceQuote.amount}
+                  baseAsset={first.symbol}
+                  quoteAsset={second.symbol}
+                  divideby={divideby}
+                />
 
-                return (
-                  <div className="d-flex float-left">
-                    <AccountName name={response_name}/>
-
-                    <span className="float-left">
-                      &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
-                    </span>
-
-                    <AssetName name={assetName}/>
-
-                    <span className="float-left">
-                      &nbsp;at {price}
-                    </span>
-
-                    <PopupState variant="popover" popupId="demo-popup-popover">
-                      {(popupState) => (
-                        <span className="float-left">
-                          <h6 className="order-table-column-padding" {...bindTrigger(popupState)} style={{ margin: "0" }}> 
-                          <span className="price_symbol">{marketName}</span></h6>
-                          <Popover
-                            className="price_symbol_model"
-                            {...bindPopover(popupState)}
-                            anchorOrigin={{
-                              vertical: 'top',
-                              horizontal: 'center',
-                            }}
-                            transformOrigin={{
-                              vertical: 'bottom',
-                              horizontal: 'center',
-                            }}
-                          >
-                            <Typography className="price_symbol_model" sx={{ p: 2 }}>
-                              <Button className="inside_model_btn" onClick={() => {setInverted(!inverted)}} >Invert the price</Button>
-                              <Button className="inside_model_btn" onClick={() => {
-                                window.location.href = `${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${marketName}`;
-                              }}>
-                              Go to market
-                              </Button>
-                            </Typography>
-                          </Popover>
-                        </span>
-                      )}
-                    </PopupState>
-
-                    <span>
-                      &nbsp;for order {order_id}&nbsp;
-                    </span>
+                <span className="float-left">
+                  &nbsp;for order {order_id}&nbsp;
+                </span>
               </div>
-                );
-            };
-
-            operation_text = (<MarketSymbol></MarketSymbol>)
+            )
 
             return { op_text: operation_text, symbol: pays_asset_name, amount: receivedAmount };
           });
@@ -775,7 +686,7 @@ export const opText = (operation_type, operation, result) => {
             <div>
               <AccountName name={response_name}/>
               <span>
-                &nbsp;{type} the wallet&nbsp;
+                {type} the wallet&nbsp;
               </span>
 
               <AccountName name={response_name2}/>
