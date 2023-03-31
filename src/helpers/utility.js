@@ -652,7 +652,9 @@ export const opText = (operation_type, operation, result) => {
                   { minimumFractionDigits: 6,
                     maximumFractionDigits: 6
                   })
-                .format(inverted? (priceBase.amount / priceQuote.amount) : (priceQuote.amount / priceBase.amount) * divideby);
+                .format(inverted? (priceBase.amount / priceQuote.amount * 1/divideby) : (priceQuote.amount / priceBase.amount * divideby));
+
+                let marketName = inverted?`${second.symbol}/${first.symbol}`:`${first.symbol}/${second.symbol}`;
 
                 return (
                   <div className="d-flex">
@@ -670,7 +672,8 @@ export const opText = (operation_type, operation, result) => {
                     <PopupState variant="popover" popupId="demo-popup-popover">
                       {(popupState) => (
                         <span>
-                          <h6 className="order-table-column-padding" {...bindTrigger(popupState)} style={{ margin: "0" }}> <span className="price_symbol">{first.symbol}/{second.symbol}</span></h6>
+                          <h6 className="order-table-column-padding" {...bindTrigger(popupState)} style={{ margin: "0" }}> 
+                          <span className="price_symbol">{marketName}</span></h6>
                           <Popover
                             className="price_symbol_model"
                             {...bindPopover(popupState)}
@@ -684,9 +687,9 @@ export const opText = (operation_type, operation, result) => {
                             }}
                           >
                             <Typography className="price_symbol_model" sx={{ p: 2 }}>
-                              <Button className="inside_model_btn" onClick={() => {setInverted(true)}} >Invert the price</Button>
+                              <Button className="inside_model_btn" onClick={() => {setInverted(!inverted)}} >Invert the price</Button>
                               <Button className="inside_model_btn" onClick={() => {
-                                window.location.href = `${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${first.symbol}/${second.symbol}`;
+                                window.location.href = `${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${marketName}`;
                               }}>
                               Go to market
                               </Button>
