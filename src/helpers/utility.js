@@ -648,21 +648,21 @@ export const opText = (operation_type, operation, result) => {
                 let marketName = inverted?`${second.symbol}/${first.symbol}`:`${first.symbol}/${second.symbol}`;
 
                 return (
-                  <div className="d-flex">
-                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
-                    <span>
+                  <div className="d-flex float-left">
+                    <a className="price_symbol float-left" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                    <span className="float-left">
                       &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
                     </span>
 
-                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${assetName}`}>{assetName}</a>
+                    <a className="price_symbol float-left" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${assetName}`}>{assetName}</a>
 
-                    <span>
+                    <span className="float-left">
                       &nbsp;at {price}
                     </span>
 
                     <PopupState variant="popover" popupId="demo-popup-popover">
                       {(popupState) => (
-                        <span>
+                        <span className="float-left">
                           <h6 className="order-table-column-padding" {...bindTrigger(popupState)} style={{ margin: "0" }}> 
                           <span className="price_symbol">{marketName}</span></h6>
                           <Popover
