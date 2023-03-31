@@ -645,7 +645,7 @@ export const opText = (operation_type, operation, result) => {
               </div>
             );
 
-            const OpComponent = () => {
+            const MarketSymbol = () => {
                 const [inverted, setInverted] = useState(false);
 
                 let price = new Intl.NumberFormat('en',
@@ -654,18 +654,17 @@ export const opText = (operation_type, operation, result) => {
                   })
                 .format(inverted? (priceBase.amount / priceQuote.amount) : (priceQuote.amount / priceBase.amount) * divideby);
 
-                console.log('price', price)
                 return (
-                  <div>
-                    <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                  <div className="d-flex">
+                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
                     <span>
                       &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
                     </span>
 
-                    <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${assetName}`}>{assetName}</a>
+                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${assetName}`}>{assetName}</a>
 
                     <span>
-                      &nbsp;at {price}&nbsp;
+                      &nbsp;at {price}
                     </span>
 
                     <PopupState variant="popover" popupId="demo-popup-popover">
@@ -704,7 +703,7 @@ export const opText = (operation_type, operation, result) => {
                 );
             };
 
-            operation_text = (<OpComponent></OpComponent>)
+            operation_text = (<MarketSymbol></MarketSymbol>)
 
             return { op_text: operation_text, symbol: pays_asset_name, amount: receivedAmount };
           });
