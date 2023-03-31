@@ -1,6 +1,9 @@
 import UseAccount from "./UseAccount";
 import UseAsset from "./useAssets";
-import {Link} from 'react-router-dom';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import { Button, Popover, Typography } from "@mui/material";
+import React, {useState} from "react";
+
 
 export const formatNumber = (x) => {
   try {
@@ -586,14 +589,15 @@ export const opText = (operation_type, operation, result) => {
 
             let assetName = isBid ? receive_asset_name: pays_asset_name;
 
-            var price = new Intl.NumberFormat('en',
-              { minimumFractionDigits: 6,
-                maximumFractionDigits: 6
-              })
-            .format(priceQuote.amount / priceBase.amount * divideby);
-
+          
+            let price = new Intl.NumberFormat('en',
+                  { minimumFractionDigits: 6,
+                    maximumFractionDigits: 6
+                  })
+                .format(priceQuote.amount / priceBase.amount * divideby);
 
             operation_text = (
+
               <div>
                 <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
                 <span>
@@ -606,13 +610,101 @@ export const opText = (operation_type, operation, result) => {
                   &nbsp;at {price}&nbsp;
                 </span>
 
-                <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${first.symbol}/${second.symbol}`}>{first.symbol}/{second.symbol}</a>
+                <PopupState variant="popover" popupId="demo-popup-popover">
+                  {(popupState) => (
+                    <span>
+                      <h6 className="order-table-column-padding" {...bindTrigger(popupState)} style={{ margin: "0" }}> <span className="price_symbol">{first.symbol}/{second.symbol}</span></h6>
+                      <Popover
+                        className="price_symbol_model"
+                        {...bindPopover(popupState)}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'center',
+                        }}
+                        transformOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center',
+                        }}
+                      >
+                        <Typography className="price_symbol_model" sx={{ p: 2 }}>
+                          <Button className="inside_model_btn" onClick={() => {}} >Invert the price</Button>
+                          <Button className="inside_model_btn" onClick={() => {
+                            window.location.href = `${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${first.symbol}/${second.symbol}`;
+                          }}>
+                          Go to market
+                          </Button>
+                        </Typography>
+                      </Popover>
+                    </span>
+                  )}
+                </PopupState>
 
                 <span>
                   &nbsp;for order {order_id}&nbsp;
                 </span>
               </div>
             );
+
+            const OpComponent = () => {
+                const [inverted, setInverted] = useState(false);
+
+                let price = new Intl.NumberFormat('en',
+                  { minimumFractionDigits: 6,
+                    maximumFractionDigits: 6
+                  })
+                .format(inverted? (priceBase.amount / priceQuote.amount) : (priceQuote.amount / priceBase.amount) * divideby);
+
+                console.log('price', price)
+                return (
+                  <div>
+                    <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                    <span>
+                      &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
+                    </span>
+
+                    <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${assetName}`}>{assetName}</a>
+
+                    <span>
+                      &nbsp;at {price}&nbsp;
+                    </span>
+
+                    <PopupState variant="popover" popupId="demo-popup-popover">
+                      {(popupState) => (
+                        <span>
+                          <h6 className="order-table-column-padding" {...bindTrigger(popupState)} style={{ margin: "0" }}> <span className="price_symbol">{first.symbol}/{second.symbol}</span></h6>
+                          <Popover
+                            className="price_symbol_model"
+                            {...bindPopover(popupState)}
+                            anchorOrigin={{
+                              vertical: 'top',
+                              horizontal: 'center',
+                            }}
+                            transformOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'center',
+                            }}
+                          >
+                            <Typography className="price_symbol_model" sx={{ p: 2 }}>
+                              <Button className="inside_model_btn" onClick={() => {setInverted(true)}} >Invert the price</Button>
+                              <Button className="inside_model_btn" onClick={() => {
+                                window.location.href = `${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${first.symbol}/${second.symbol}`;
+                              }}>
+                              Go to market
+                              </Button>
+                            </Typography>
+                          </Popover>
+                        </span>
+                      )}
+                    </PopupState>
+
+                    <span>
+                      &nbsp;for order {order_id}&nbsp;
+                    </span>
+              </div>
+                );
+            };
+
+            operation_text = (<OpComponent></OpComponent>)
 
             return { op_text: operation_text, symbol: pays_asset_name, amount: receivedAmount };
           });

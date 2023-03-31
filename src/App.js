@@ -181,6 +181,10 @@ function Application(props) {
     if (login !== null) {
       onLogin(login);
     }
+
+    // localStorage.setItem("login", "jin124");
+    // localStorage.setItem("accountName", "jin124");
+    // localStorage.setItem("accessToken", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNpamVyMzMxNTk5QG91dGxvb2suY29tIiwiYWNjb3VudE5hbWUiOiJqaW4xMjQiLCJpYXQiOjE2ODAyMDQ0MjMsImV4cCI6MTY4MDI5MDgyM30.Do9Qvg3OvwAXpefejLvleE3cILDXO4c2Cloo17wHRB4");
   }, []);
 
   const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "") => {
