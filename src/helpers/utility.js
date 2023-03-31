@@ -3,7 +3,8 @@ import UseAsset from "./useAssets";
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { Button, Popover, Typography } from "@mui/material";
 import React, {useState} from "react";
-
+import AssetName from "./AssetName";
+import AccountName from "./AccountName";
 
 export const formatNumber = (x) => {
   try {
@@ -406,18 +407,15 @@ export const opText = (operation_type, operation, result) => {
 
             operation_text = (
               <div>
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <AccountName name={response_name} />
                 <span>
                   &nbsp;sent {amount}&nbsp;
                 </span>
-
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
-
+                <AssetName name={asset_name}/>
                 <span>
                   &nbsp;to&nbsp;
                 </span>
-
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${to_name}`}>{to_name}</a>
+                <AccountName name={to_name} />
               </div>
             );
             return { op_text: operation_text, symbol: asset_name, amount: amount };
@@ -481,12 +479,14 @@ export const opText = (operation_type, operation, result) => {
 
                 return (
                   <div>
-                    <a className="price_symbol float-left" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                    <AccountName name={response_name}/>
+                    
                     <span className="float-left">
                       &nbsp;placed order {order_id} to {isBid? 'buy': 'sell'} {receive_amount}&nbsp;
                     </span>
 
-                    <a className="price_symbol float-left" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${receive_asset_name}`}>{receive_asset_name}</a>
+                    <AssetName name={receive_asset_name}/>
+
                     <span className="float-left">
                       &nbsp;at {price}
                     </span>
@@ -542,7 +542,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <a style={{color: '#ffc000'}} href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <AccountName name={response_name}/>
             <span>
               &nbsp;cancelled order {order_id}
             </span>
@@ -565,12 +565,13 @@ export const opText = (operation_type, operation, result) => {
 
             operation_text = (
               <div>
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <AccountName name={response_name}/>
+
                 <span>
                   &nbsp;update debt/collateral for&nbsp;
                 </span>
 
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset1}/${asset2}`}>{asset1}/{asset2}</a>
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${asset1}/${asset2}`}>{asset1}/{asset2}</a>
               </div>
             );
 
@@ -652,12 +653,13 @@ export const opText = (operation_type, operation, result) => {
 
                 return (
                   <div className="d-flex float-left">
-                    <a className="price_symbol float-left" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                    <AccountName name={response_name}/>
+
                     <span className="float-left">
                       &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
                     </span>
 
-                    <a className="price_symbol float-left" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${assetName}`}>{assetName}</a>
+                    <AssetName name={assetName}/>
 
                     <span className="float-left">
                       &nbsp;at {price}
@@ -716,12 +718,12 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <AccountName name={response_name}/>
             <span>
               &nbsp;register&nbsp;
             </span>
 
-            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${name}`}>{name}</a>
+            <AccountName name={name}/>
           </div>
         );
 
@@ -730,12 +732,12 @@ export const opText = (operation_type, operation, result) => {
 
             operation_text = (
               <div>
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <AccountName name={response_name}/>
                 <span>
                   &nbsp;thanks to&nbsp;
                 </span>
 
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name2}`}>{response_name2}</a>
+                <AccountName name={response_name2}/>
               </div>
             );
 
@@ -751,7 +753,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
             <div>
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <AccountName name={response_name}/>
               <span>
                 &nbsp;updated their wallet data change&nbsp;
               </span>
@@ -771,12 +773,12 @@ export const opText = (operation_type, operation, result) => {
         return UseAccount(account_to_list).then((response_name2) => {
           operation_text = (
             <div>
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <AccountName name={response_name}/>
               <span>
                 &nbsp;{type} the wallet&nbsp;
               </span>
 
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name2}`}>{response_name2}</a>
+              <AccountName name={response_name2}/>
             </div>
           );
 
@@ -792,7 +794,7 @@ export const opText = (operation_type, operation, result) => {
 
         operation_text = (
             <div>
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response}`}>{response}</a>
+              <AccountName name={response}/>
               <span>
                 &nbsp;upgraded the wallet&nbsp;
               </span>
@@ -818,18 +820,18 @@ export const opText = (operation_type, operation, result) => {
           return UseAccount(issue_to_account).then((response_name2) => {
             operation_text = (
               <div>
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <AccountName name={response_name}/>
                 <span>
                   &nbsp;issued {amount}&nbsp;
                 </span>
 
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${response_asset.data.symbol}`}>{response_asset.data.symbol}</a>
+                <AssetName name={response_asset.data.symbol}/>
 
                 <span>
                   &nbsp;to&nbsp;
                 </span>
 
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name2}`}>{response_name2}</a>
+                <AccountName name={response_name2}/>
               </div>
             );
 
@@ -853,12 +855,12 @@ export const opText = (operation_type, operation, result) => {
 
           operation_text = (
             <div>
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <AccountName name={response_name}/>
               <span>
                 &nbsp;burned(reserved){formatNumber(amount)}&nbsp;
               </span>
 
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+              <AssetName name={asset_name}/>
             </div>
           );
           return { op_text: operation_text, symbol: null, amount: formatNumber(amount) };
@@ -874,12 +876,12 @@ export const opText = (operation_type, operation, result) => {
         return UseAsset(asset_id).then((response_asset) => {
           operation_text = (
             <div>
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <AccountName name={response_name}/>
               <span>
                 &nbsp;published feed for&nbsp;
               </span>
 
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${response_asset.data.symbol}`}>{response_asset.data.symbol}</a>
+              <AssetName name={response_asset.data.symbol}/>
             </div>
           );
           return { op_text: operation_text, symbol: response_asset.data.symbol, amount: 0 };
@@ -891,9 +893,14 @@ export const opText = (operation_type, operation, result) => {
       operation_account = fee_paying_account;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' created a proposal ';
+        operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;created a proposal&nbsp;
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -905,7 +912,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <AccountName name={response_name}/>
             <span>
               &nbsp;updated proposal {proposal}&nbsp;
             </span>
@@ -921,7 +928,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
          operation_text = (
           <div>
-            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <AccountName name={response_name}/>
             <span>
               &nbsp;deleted a proposal
             </span>
@@ -945,12 +952,12 @@ export const opText = (operation_type, operation, result) => {
 
           operation_text = (
             <div>
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <AccountName name={response_name}/>
               <span>
                 &nbsp;withdrew vesting balance of {formatNumber(amount)}&nbsp;
               </span>
 
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+              <AssetName name={asset_name}/>
             </div>
           );
 
@@ -973,12 +980,12 @@ export const opText = (operation_type, operation, result) => {
 
           operation_text = (
             <div>
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <AccountName name={response_name}/>
               <span>
                 &nbsp;claimed a balance of {formatNumber(amount)}&nbsp;
               </span>
 
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+              <AssetName name={asset_name}/>
             </div>
           );
 
@@ -1013,18 +1020,18 @@ export const opText = (operation_type, operation, result) => {
 
                 operation_text = (
                   <div>
-                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                    <AccountName name={response_name}/>
                     <span>
                       &nbsp;bid {formatNumber(amount1)}&nbsp;
                     </span>
 
-                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name1}`}>{asset_name1}</a>
+                    <AssetName name={asset_name1}/>
 
                     <span>
                       &nbsp;for {formatNumber(amount2)}&nbsp;
                     </span>
 
-                    <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name2}`}>{asset_name2}</a>
+                    <AssetName name={asset_name2}/>
                   </div>
                 );
 
@@ -1053,18 +1060,17 @@ export const opText = (operation_type, operation, result) => {
           return UseAccount(to).then((response_name2) => {
             operation_text = (
               <div>
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+                <AccountName name={response_name}/>
                 <span>
                   &nbsp;create HTLC to&nbsp;
                 </span>
-
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name2}`}>{response_name2}</a>
+                <AccountName name={response_name2}/>
 
                 <span>
                   &nbsp;to transfer {formatNumber(amount)}&nbsp;
                 </span>
 
-                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+                <AssetName name={asset_name}/>
               </div>
             );
 
@@ -1079,7 +1085,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <AccountName name={response_name}/>
             <span>
               &nbsp;redeem HTLC&nbsp;
             </span>
@@ -1095,7 +1101,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <AccountName name={response_name}/>
             <span>
               &nbsp;redeemed HTLC&nbsp;
             </span>
@@ -1111,7 +1117,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <AccountName name={response_name}/>
             <span>
               &nbsp;extend HTLC&nbsp;
             </span>
@@ -1126,7 +1132,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+            <AccountName name={response_name}/>
             <span>
               &nbsp;refund HTLC&nbsp;
             </span>
@@ -1179,18 +1185,18 @@ export const opText = (operation_type, operation, result) => {
 
           operation_text = (
             <div>
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/accounts/${response_name}`}>{response_name}</a>
+              <AccountName name={response_name}/>
               <span>
                 &nbsp;published price {operation_text} {usd_amount} / {symbol_amount}&nbsp;
               </span>
 
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/USD`}>USD</a>
+              <AssetName name={'USD'}/>
 
               <span>
                 /
               </span>
 
-              <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/assets/${asset_name}`}>{asset_name}</a>
+              <AssetName name={asset_name}/>
             </div>
           );
 
