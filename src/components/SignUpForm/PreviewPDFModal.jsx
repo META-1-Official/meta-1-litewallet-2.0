@@ -55,7 +55,6 @@ const PreviewPDFModal = (props) => {
   const handleDownload = () => {
     let alink = document.createElement('a');
     alink.href = url;
-    const accountName = localStorage.getItem('account', '');
     alink.download = `meta-paper-wallet-${(isLocked() ? 'public-' : 'private-')}${accountName}.pdf`;
     alink.click();
     localStorage.removeItem('paperWalletData');
