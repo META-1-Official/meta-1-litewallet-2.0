@@ -481,10 +481,6 @@ export const opText = (operation_type, operation, result) => {
                   quoteAsset={response_asset2.data.symbol}
                   divideby={divideby}
                 />
-
-                <span className="float-left">
-                  &nbsp;for order {order_id}&nbsp;
-                </span>
               </div>
             )
 
