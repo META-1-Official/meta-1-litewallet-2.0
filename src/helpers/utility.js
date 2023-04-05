@@ -385,8 +385,7 @@ export const opText = (operation_type, operation, result) => {
         });
       });
     case 1:
-      var seller = operation.seller;
-      operation_account = seller;
+      operation_account = operation.seller;
 
       var amount_to_sell_asset_id = operation.amount_to_sell.asset_id;
       var amount_to_sell_amount = operation.amount_to_sell.amount;
@@ -505,8 +504,7 @@ export const opText = (operation_type, operation, result) => {
       });
 
     case 4:
-      var account_id = operation.account_id;
-      operation_account = account_id;
+      operation_account = operation.account_id;
 
       var pays_asset_id = operation.pays.asset_id;
       var receives_asset_id = operation.receives.asset_id;
