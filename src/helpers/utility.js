@@ -3,31 +3,7 @@ import UseAsset from "./useAssets";
 import AssetName from "./AssetName";
 import AccountName from "./AccountName";
 import FormattedPrice from "./FormattedPrice";
-
-export const formatNumber = (x) => {
-  try {
-    var parts = x.toString().split('.');
-
-    if (x < 1) {
-      // parts[1] = parts[1];
-    } else if (x > 1 && x < 100) {
-      parts[1] = parts[1].substr(0, 2);
-    } else if (x > 100 && x < 1000) {
-      parts[1] = parts[1].substr(0, 1);
-    } else if (x > 1000) {
-      parts[1] = '';
-    }
-
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    if (x > 1000) {
-      return parts[0];
-    } else {
-      return parts.join('.');
-    }
-  } catch (err) {
-    return x;
-  }
-};
+import { formatNumber, getMarketName } from "./common";
 
 export const opMapping = {
   0: 'TRANSFER',
@@ -360,18 +336,6 @@ export const operationType = (_opType) => {
   return results;
 };
 
-export const getMarketName = (base, quote) => {
-    if (!base || !quote) return {marketName: '_'};
-    let baseID = parseInt(base.id.split('.')[2], 10);
-    let quoteID = parseInt(quote.id.split('.')[2], 10);
-
-    let first = quoteID > baseID ? quote : base;
-    let second = quoteID > baseID ? base : quote;
-
-    const marketName = `${first.symbol}_${second.symbol}`;
-    return {baseID, quoteID, marketName, first, second};
-};
-
 export const opText = (operation_type, operation, result) => {
   var operation_account = 0;
   var operation_text;
@@ -421,8 +385,7 @@ export const opText = (operation_type, operation, result) => {
         });
       });
     case 1:
-      var seller = operation.seller;
-      operation_account = seller;
+      operation_account = operation.seller;
 
       var amount_to_sell_asset_id = operation.amount_to_sell.asset_id;
       var amount_to_sell_amount = operation.amount_to_sell.amount;
@@ -439,53 +402,55 @@ export const opText = (operation_type, operation, result) => {
             var receive_asset_name = response_asset2.data.symbol;
             var receive_asset_precision = response_asset2.data.precision;
 
-            var divideby = Math.pow(10, receive_asset_precision);
-            var receive_amount = Number(min_to_receive_amount / divideby);
-            receive_amount = new Intl.NumberFormat('en',
-              { minimumFractionDigits: 6,
-                maximumFractionDigits: 6
-              })
-            .format(receive_amount);
-
-            divideby = Math.pow(10, Math.abs(response_asset1.data.precision - response_asset2.data.precision));
-            var direction = (response_asset1.data.precision - response_asset2.data.precision) > 0;
-            divideby = direction ? divideby : 1 / divideby;
-
             var order_id = result
                   ? typeof result[1] == 'string'
                     ? '#' + result[1].substring(4)
                     : ''
                   : '';
 
-            const {first} = getMarketName(
+            const {first, second, marketName} = getMarketName(
               response_asset2.data,
               response_asset1.data
             );
 
-            const isBid = operation.amount_to_sell.asset_id === first.id;
+            const isBid = operation.amount_to_sell.asset_id === second.id;
+
+            var receive_amount = isBid? 
+              Number(min_to_receive_amount / Math.pow(10, receive_asset_precision))
+              :
+              Number(amount_to_sell_amount / Math.pow(10, sell_asset_precision));
+            receive_amount = new Intl.NumberFormat('en',
+              { minimumFractionDigits: 6,
+                maximumFractionDigits: 6
+              })
+            .format(receive_amount);
+
+            let priceBase = amount_to_sell_amount;
+            let priceQuote = min_to_receive_amount;
+
+            if (amount_to_sell_asset_id !== second.id) {
+              let tempAmount = priceBase;
+              priceBase = priceQuote;
+              priceQuote = tempAmount;
+            }
 
             operation_text = (
-              <div>
+              <>
                 <AccountName name={response_name} style={{float:'left'}}/>
 
                 <span className="float-left">
                   &nbsp;placed order {order_id} to {isBid? 'buy': 'sell'} {receive_amount}&nbsp;
                 </span>
 
-                <AssetName name={receive_asset_name} style={{float:'left'}}/>
+                <AssetName name={first.symbol} style={{float:'left'}}/>
 
                 <FormattedPrice
-                  priceBase={amount_to_sell_amount}
-                  priceQuote={min_to_receive_amount}
-                  baseAsset={response_asset1.data.symbol}
-                  quoteAsset={response_asset2.data.symbol}
-                  divideby={divideby}
+                  priceBase={priceBase}
+                  priceQuote={priceQuote}
+                  baseAsset={response_asset2.data}
+                  quoteAsset={response_asset1.data}
                 />
-
-                <span className="float-left">
-                  &nbsp;for order {order_id}&nbsp;
-                </span>
-              </div>
+              </>
             )
 
             return { op_text: operation_text, symbol: receive_asset_name, amount: receive_amount };
@@ -539,8 +504,7 @@ export const opText = (operation_type, operation, result) => {
       });
 
     case 4:
-      var account_id = operation.account_id;
-      operation_account = account_id;
+      operation_account = operation.account_id;
 
       var pays_asset_id = operation.pays.asset_id;
       var receives_asset_id = operation.receives.asset_id;
@@ -554,17 +518,13 @@ export const opText = (operation_type, operation, result) => {
             var receive_asset_name = response_asset2.data.symbol;
             var receive_asset_precision = response_asset2.data.precision;
 
-            var divideby = Math.pow(10, Math.abs(response_asset2.data.precision - response_asset1.data.precision));
-            var direction = (response_asset2.data.precision - response_asset1.data.precision) > 0;
-            divideby = direction ? divideby : 1 / divideby;
-
             var order_id = operation.order_id? `#${operation.order_id.substring(4)}`: '';
 
-            const {marketName, first, second, baseID} = getMarketName(
+            const {marketName, first, second} = getMarketName(
               response_asset2.data,
               response_asset1.data
             );
-            const isBid = operation.pays.asset_id === first.id;
+            const isBid = operation.pays.asset_id === second.id;
 
             let priceBase = isBid ? operation.fill_price.base : operation.fill_price.quote;
             let priceQuote = isBid ? operation.fill_price.quote : operation.fill_price.base;
@@ -574,7 +534,6 @@ export const opText = (operation_type, operation, result) => {
               let tempAmount = priceBase;
               priceBase = priceQuote;
               priceQuote = tempAmount;
-              divideby = 1 / divideby;
             }
 
             let precision = isBid? receive_asset_precision: pays_asset_precision;
@@ -589,8 +548,6 @@ export const opText = (operation_type, operation, result) => {
               })
             .format(receivedAmount / Math.pow(10, precision));
 
-            let assetName = isBid ? receive_asset_name: pays_asset_name;
-
             operation_text = (
               <div>
                 <AccountName name={response_name} style={{float:'left'}}/>
@@ -599,14 +556,13 @@ export const opText = (operation_type, operation, result) => {
                   &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
                 </span>
 
-                <AssetName name={assetName} style={{float:'left'}}/>
+                <AssetName name={first.symbol} style={{float:'left'}}/>
 
                 <FormattedPrice
                   priceBase={priceBase.amount}
                   priceQuote={priceQuote.amount}
-                  baseAsset={first.symbol}
-                  quoteAsset={second.symbol}
-                  divideby={divideby}
+                  baseAsset={response_asset2.data}
+                  quoteAsset={response_asset1.data}
                 />
 
                 <span className="float-left">
