@@ -1,19 +1,25 @@
 import React, {useState} from "react";
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { Button, Popover, Typography } from "@mui/material";
+import { getMarketName } from "./common";
 
 const FormattedPrice = (props) => {
 	const [inverted, setInverted] = useState(false);
-	const {priceBase, priceQuote, baseAsset, quoteAsset, divideby} = props;
+	const {priceBase, priceQuote, baseAsset, quoteAsset} = props;
+  const {first, second} = getMarketName(baseAsset, quoteAsset);
 
-    let price = new Intl.NumberFormat('en',
-      { minimumFractionDigits: 6,
-        maximumFractionDigits: 6
-      })
-    .format(inverted? (priceQuote / priceBase * divideby) : (priceBase / priceQuote / divideby));
+  let divideby = Math.pow(10, Math.abs(first.precision - second.precision));
+  const direction = (first.precision - second.precision) > 0;
+  divideby = direction ? divideby : 1 / divideby;
 
-    let marketName = inverted?`${quoteAsset}/${baseAsset}`:`${baseAsset}/${quoteAsset}`;
- 
+  const price = new Intl.NumberFormat('en',
+    { minimumFractionDigits: 6,
+      maximumFractionDigits: 6
+    })
+  .format(inverted? (priceQuote / priceBase / divideby) : (priceBase / priceQuote * divideby));
+
+  const marketName = inverted?`${first.symbol}/${second.symbol}`:`${second.symbol}/${first.symbol}`;
+
 	return (
 		<span className="float-left">
 			<span className="float-left">
