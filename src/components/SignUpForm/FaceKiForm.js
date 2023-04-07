@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
+import MetaLoader from "../../UI/loader/Loader";
 import Webcam from 'react-webcam';
 import { livenessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
 import OvalImage from '../../images/oval/oval19.png';
 import MobileOvalImage from '../../images/oval/oval12.png';
+import QRCodeModal from "../../UI/loader/QRCodeModal";
 import "./SignUpForm.css";
 
 export default function FaceKiForm(props) {
@@ -10,18 +12,7 @@ export default function FaceKiForm(props) {
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [device, setDevice] = React.useState({});
-
-  const errorCase = {
-    "Already Enrolled": "You already enrolled and verified successfully.",
-    "Camera Not Found": "Please check your camera.",
-    "Spoof Detected": "Spoof detected. Are you trying with your real live face?",
-    "Face not Detected": "Face not detected. Try again by changing position or background.",
-    "Not Proper Condition": "Try again by changing position or background.",
-    "Biometic Server Error": "Something went wrong from Biometric server.",
-    "ESignature Server Error": "Something went wrong from ESignature server.",
-    "Email Already Used": "This email already has been used for another user.",
-    "New Name Generation Fail": "Can not generate new name!"
-  }
+  const [qrOpen, setQrOpen] = useState(false);
 
   useEffect(() => {
     loadVideo(true);
@@ -37,6 +28,7 @@ export default function FaceKiForm(props) {
 
   const loadVideo = async (flag) => {
     const videoTag = document.querySelector('video');
+    console.log('[loadVideo]', flag, videoTag);
     const features = { audio: false, video: true };
 
     if (flag) {
@@ -86,7 +78,7 @@ export default function FaceKiForm(props) {
     const imageSrc = webcamRef.current.getScreenshot(sizeForSreenShot);
 
     if (!imageSrc) {
-      alert(errorCase['Camera Not Found']);
+      alert('Please check your camera.');
       setVerifying(false);
       return;
     }
@@ -95,13 +87,13 @@ export default function FaceKiForm(props) {
     const response = await livenessCheck(file);
 
     if (!response || !response.data) {
-      alert(errorCase['Biometic Server Error']);
+      alert('Something went wrong from Biometric server.');
       setVerifying(false);
       return;
     }
 
     if (response.data.liveness !== 'Genuine' && photoIndex === 5) {
-      alert(errorCase['Not Proper Condition']);
+      alert('Try again by changing position or background.');
       setVerifying(false);
     } else if (response.data.liveness === 'Genuine') {
       await faceEnroll(file);
@@ -118,41 +110,36 @@ export default function FaceKiForm(props) {
       const nameArry = response_verify.name.split(',');
 
       if (nameArry.includes(email)) {
-        alert(errorCase['Already Enrolled']);
+        alert('You already enrolled and verified successfully.');
         setFaceKISuccess(true);
       } else {
         const response_user = await getUserKycProfile(email);
         if (response_user.error === true) {
-          alert(errorCase['ESignature Server Error']);
+          alert('Something went wrong.');
           setVerifying(false);
         } else if (response_user) {
-          alert(errorCase['Email Already Used']);
+          alert('This email already has been used for another user.');
           setVerifying(false);
         } else {
           const newName = response_verify.name + "," + email;
 
           if (!newName) {
-            alert(errorCase['New Name Generation Fail']);
+            alert('Can not generate new name!');
             setVerifying(false);
           } else {
             const response_enroll = await enroll(file, newName);
-            if (!response_enroll) {
-              alert(errorCase['ESignature Server Error']);
-              setVerifying(false);
-            } else {
-              if (response_enroll.status === 'Enroll OK') {
-                await remove(response_verify.name);
-                const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
-                if (add_response.result) {
-                  setFaceKISuccess(true);
-                } else {
-                  alert(errorCase['ESignature Server Error']);
-                  setVerifying(false);
-                }
+            if (response_enroll.status === 'Enroll OK') {
+              await remove(response_verify.name);
+              const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
+              if (add_response.result) {
+                setFaceKISuccess(true);
               } else {
-                alert(errorCase[response_enroll.status]);
+                alert('Something went wrong.');
                 setVerifying(false);
               }
+            } else {
+              alert('Something went wrong.');
+              setVerifying(false);
             }
           }
         }
@@ -160,10 +147,10 @@ export default function FaceKiForm(props) {
     } else if (response_verify.status === 'Verify Failed' || response_verify.status === 'No Users') {
       const response_user = await getUserKycProfile(email);
       if (response_user.error === true) {
-        alert(errorCase['ESignature Server Error']);
+        alert('Something went wrong.');
         setVerifying(false);
       } else if (response_user) {
-        alert(errorCase['Email Already Used']);
+        alert('This email already has been used for another user.');
         setVerifying(false);
       } else {
         const response_enroll = await enroll(file, email);
@@ -175,7 +162,7 @@ export default function FaceKiForm(props) {
           }
           else {
             await remove(email);
-            alert(errorCase['ESignature Server Error']);
+            alert('Something went wrong.');
             setVerifying(false);
           }
         }
@@ -199,12 +186,7 @@ export default function FaceKiForm(props) {
               <div className='child-div' style={{ borderRadius: '5px'}}>
                 <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
-                <button className='btn_x'
-                    onClick={() => {
-                      loadVideo(false).then(() => {
-                        props.setStep('userform');
-                      });
-                    }}>X</button>
+                  <button className='btn_x' onClick={() => props.setStep('userform')}>X</button>
                 </div>
                 <img src={isMobile() ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
                 <Webcam

@@ -42,9 +42,6 @@ import { useQuery } from "react-query";
 import { Web3AuthCore } from "@web3auth/core";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter} from "@web3auth/openlogin-adapter";
-import { Worker } from '@react-pdf-viewer/core';
-import * as Sentry from '@sentry/react';
-
 
 const openloginAdapter = new OpenloginAdapter({
   adapterSettings: {
@@ -162,60 +159,7 @@ function Application(props) {
     };
 
     init();
-    _enablePersistingLog();
   }, []);
-
-
-  const _enablePersistingLog = () => {
-    const thiz = this;
-    const saveLog = (type, log) => {
-      if (typeof log[0] === 'object') Sentry.captureException(log[0]);
-      else if (typeof log[0] === 'string') {
-        const errorMessage = JSON.stringify(
-          Array.from(log).join(' ')
-        ).replaceAll('"', '');
-        if (
-          type === 'error' ||
-          log[0].toLowerCase().indexOf('error') > -1 ||
-          log[0].toLowerCase().indexOf('err') > -1 ||
-          log[0].toLowerCase().indexOf('fail') > -1
-        )
-          if (log.length > 1)
-            if (typeof log[1] === 'object') {
-              Sentry.captureException(log[1]);
-            } else Sentry.captureMessage(errorMessage, 'error');
-          else Sentry.captureMessage(errorMessage, 'error');
-        else Sentry.captureMessage(errorMessage);
-      }
-      console[`str${type}`].apply(console, log);
-    };
-
-    console.strlog = console.log.bind(console);
-    console.strerror = console.error.bind(console);
-    console.strwarn = console.warn.bind(console);
-    console.strinfo = console.info.bind(console);
-    console.strtimeEnd = console.timeEnd.bind(console);
-    console.strdebug = console.debug.bind(console);
-
-    console.log = function () {
-      saveLog('log', arguments);
-    };
-    console.warn = function () {
-      saveLog('warn', arguments);
-    };
-    console.error = function () {
-      saveLog('error', arguments);
-    };
-    console.info = function () {
-      saveLog('info', arguments);
-    };
-    console.timeEnd = function () {
-      saveLog('timeEnd', arguments);
-    };
-    console.debug = function () {
-      saveLog('debug', arguments);
-    };
-  }
 
   useEffect(() => {
     if (urlParams[0] === 'onMobile=true') {
@@ -268,10 +212,7 @@ function Application(props) {
       if (!fromSignUpState) {
         setIsSignatureProcessing(true);
         setSignatureResult(signatureParam[1]);
-
-         if(!loginErrorState) {
-          setActiveScreen('registration');
-        }
+        setActiveScreen('registration');
       } else {
         if (window.location.search.includes('?signature=success')) {
           sessionStorage.setItem('location', 'wallet');
@@ -451,7 +392,6 @@ function Application(props) {
     localStorage.setItem("login", acc);
     setCredentials(acc, pass);
     onLogin(acc, true, pass, true, regEmail);
-
     setActiveScreen("wallet");
   };
 
@@ -1236,7 +1176,6 @@ export function App({ domElement }) {
   const account = domElement.getAttribute("data-account");
 
   return (
-  <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
     <Application
       {...{
         metaUrl,
@@ -1248,9 +1187,7 @@ export function App({ domElement }) {
         account,
       }}
     />
-    </Worker>
   );
-
 }
 
 export default App;

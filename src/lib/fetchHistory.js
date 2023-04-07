@@ -1,7 +1,6 @@
 import Meta1 from "meta1-vision-dex";
 import { operationType, opText } from "../helpers/utility";
 import { getHistoryData } from "../API/API";
-import moment from "moment";
 
 async function getHistory(event) {
   const numberOfRecords = event?.queryKey[0] === "history" ? 10000 : 3;
@@ -25,23 +24,22 @@ async function getHistory(event) {
     const transactionHash = value?.block_data?.trx_id || '';
     const op_type = op[0];
     const op_color = op[1];
-
+    const time = new Date(value.block_data.block_time);
+    timestamp = time.toLocaleString();
     witness = value.witness;
     const parsed_op = value.operation_history.op_object;
     const operation = {
       operation_id: value.account_history.operation_id,
       block_num: value.block_data.block_num,
       operation_id_num: value.operation_id_num,
-      time: moment.utc(value.block_data.block_time).toDate().toLocaleString(),
+      time: timestamp,
       witness: witness,
       op_type: value.operation_type,
       op_color: op_color,
       count: response.count,
       transactionHash
     };
-
-    const result = JSON.parse(value.operation_history.operation_result);
-    const {op_text, symbol, amount} = await opText(value.operation_type, parsed_op, result);
+    const {op_text, symbol, amount} = await opText(value.operation_type, parsed_op);
     operation.operation_text = op_text;
     operation.symbol = symbol;
     operation.amount = amount;
