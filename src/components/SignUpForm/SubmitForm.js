@@ -14,31 +14,29 @@ import {
 } from "semantic-ui-react";
 
 export default function SubmitForm(props) {
+  const { innerWidth: width } = window;
+  const isMobile = width <= 600;
+
   const [access, setAccess] = useState(localStorage.getItem('access') === 'true' ? true : false);
   const [recover, setRecover] = useState(localStorage.getItem('recover') === 'true' ? true : false);
   const [stored, setStored] = useState(localStorage.getItem('stored') === 'true' ? true : false);
   const [living, setLiving] = useState(localStorage.getItem('living') === 'true' ? true : false);
   const [signed, setSigned] = useState(props.signatureResult !== 'success' ? false : true);
   const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
-  const [subscription, setSubscription] = useState(localStorage.getItem('subscription') === 'true' ? true : false);
 
   const {isSubmitted, setIsSubmitted, email} = props;
   const { phone, firstName, lastName, accountName, password } = props;
 
   const isAllChecked = access && recover && stored && living && signed && paid;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getUserKycProfile(email);
-      if (response && response?.status?.isPayed === true ) setPaid(true);
-      if (response && response?.status?.isPaidByCrypto === true ) setPaid(true);
-      if (response && response?.status?.isSign === true) setSigned(true);
-      if (response && response?.status?.isSign === true && response?.status?.isPayed === true) {
-        props.setStep('signature');
-      }
+  useEffect(async () => {
+    const response = await getUserKycProfile(email);
+    if (response && response?.status?.isPayed === true ) setPaid(true);
+    if (response && response?.status?.isPaidByCrypto === true ) setPaid(true);
+    if (response && response?.status?.isSign === true) setSigned(true);
+    if (response && response?.status?.isSign === true && response?.status?.isPayed === true) {
+      props.setStep('signature');
     }
-
-    fetchData();
   }, [])
 
   const handleSign = async (e) => {
@@ -73,7 +71,6 @@ export default function SubmitForm(props) {
           localStorage.setItem('recover', recover);
           localStorage.setItem('stored', stored);
           localStorage.setItem('living', living);
-          localStorage.setItem('subscription', subscription);
 
           window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL
             }/e-sign?email=${encodeURIComponent(
@@ -179,17 +176,6 @@ export default function SubmitForm(props) {
                 onChange={(e) => handleSign(e)}
                 checked={signed && paid}
                 label="Sign META Association Membership Agreement"
-              />
-            </Form.Field>
-
-            <Form.Field>
-              <Checkbox
-                onChange={(e) => {
-                  setSubscription(!subscription);
-                  localStorage.setItem('subscription', !subscription);
-                }}
-                checked={subscription}
-                label="Subscribe for exclusive news and offers"
               />
             </Form.Field>
 

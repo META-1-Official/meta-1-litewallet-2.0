@@ -122,8 +122,8 @@ const LoginProvidersModal = (props) => {
         }
     }
 
-    const isPhone = () => {
-        return window.innerWidth < 540;
+    const isMobile = () => {
+        return window.innerWidth < window.innerHeight;
     }
 
     return (
@@ -135,11 +135,11 @@ const LoginProvidersModal = (props) => {
             id="auth-modal"
             className={styles.containerProvider}
             centered
-            style={isPhone() ? { width: '100%', margin: 0 } : { width: '25rem', margin: 0 }}
+            style={isMobile() ? { width: '100%', margin: 0 } : { width: '25rem' }}
         >
             <div className={styles.containerProvider}>
                 {
-                    loader ? <MetaLoader size={"small"} /> :
+                    loader ? <MetaLoader size={"large"} /> :
                         <>
                             <div className={styles.providerHeader}>
                                 <div className={styles.closeBtnWrapper}>
