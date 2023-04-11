@@ -45,11 +45,11 @@ export const providers = [
         name: 'apple',
         image: apple
     },
-    {
-        id: 7,
-        name: 'line',
-        image: line
-    },
+    // {
+    //     id: 7,
+    //     name: 'line',
+    //     image: line
+    // },
     {
         id: 8,
         name: 'github',
@@ -70,24 +70,24 @@ export const providers = [
         name: 'twitter',
         image: twitter
     },
-    {
-        id: 12,
-        name: 'weibo',
-        image: weibo
-    },
+    // {
+    //     id: 12,
+    //     name: 'weibo',
+    //     image: weibo
+    // },
     // {
     //     id: 13,
     //     name: 'wechat',
     //     image: weixin
     // },
-    {
-        id: 14,
-        name: 'email_passwordless',
-        image: email
-    },
-    {
-        id: 15,
-        name: 'jwt',
-        image: jwt
-    }
+    // {
+    //     id: 14,
+    //     name: 'email_passwordless',
+    //     image: email
+    // },
+    // {
+    //     id: 15,
+    //     name: 'jwt',
+    //     image: jwt
+    // }
 ];
