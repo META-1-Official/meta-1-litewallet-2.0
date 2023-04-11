@@ -1,31 +1,9 @@
 import UseAccount from "./UseAccount";
 import UseAsset from "./useAssets";
-import { expFloatToFixed, ceilFloat, floorFloat } from '../lib/math';
-
-export const formatNumber = (x) => {
-  try {
-    var parts = x.toString().split('.');
-
-    if (x < 1) {
-      // parts[1] = parts[1];
-    } else if (x > 1 && x < 100) {
-      parts[1] = parts[1].substr(0, 2);
-    } else if (x > 100 && x < 1000) {
-      parts[1] = parts[1].substr(0, 1);
-    } else if (x > 1000) {
-      parts[1] = '';
-    }
-
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    if (x > 1000) {
-      return parts[0];
-    } else {
-      return parts.join('.');
-    }
-  } catch (err) {
-    return x;
-  }
-};
+import AssetName from "./AssetName";
+import AccountName from "./AccountName";
+import FormattedPrice from "./FormattedPrice";
+import { formatNumber, getMarketName } from "./common";
 
 export const opMapping = {
   0: 'TRANSFER',
@@ -88,7 +66,7 @@ export const opMapping = {
   57: 'PROPERTY DELETE',
   58: 'ASSET PRICE PUBLISH',
 };
-export const trxTypes =	{
+export const trxTypes = {
   "amount": "Amount",
   "date": "Date",
   "time": "Time",
@@ -358,8 +336,7 @@ export const operationType = (_opType) => {
   return results;
 };
 
-
-export const opText = (operation_type, operation) => {
+export const opText = (operation_type, operation, result) => {
   var operation_account = 0;
   var operation_text;
   var fee_paying_account;
@@ -384,25 +361,31 @@ export const opText = (operation_type, operation) => {
             var asset_precision = response_asset.data.precision;
 
             var divideby = Math.pow(10, asset_precision);
-            var amount = Number(amount_amount / divideby);
+            var amount = new Intl.NumberFormat('en',
+              { minimumFractionDigits: 6,
+                maximumFractionDigits: 6
+              })
+            .format(amount_amount / divideby);
 
-            operation_text = response_name;
-            operation_text =
-              operation_text +
-              ' sent ' +
-              formatNumber(amount) +
-              " " +
-              asset_name +
-              ' to ' +
-              to_name;
-
-            return { op_text: operation_text, symbol: asset_name, amount: formatNumber(amount) };
+            operation_text = (
+              <div>
+                <AccountName name={response_name} />
+                <span>
+                  &nbsp;sent {amount}&nbsp;
+                </span>
+                <AssetName name={asset_name}/>
+                <span>
+                  &nbsp;to&nbsp;
+                </span>
+                <AccountName name={to_name} />
+              </div>
+            );
+            return { op_text: operation_text, symbol: asset_name, amount: amount };
           });
         });
       });
     case 1:
-      var seller = operation.seller;
-      operation_account = seller;
+      operation_account = operation.seller;
 
       var amount_to_sell_asset_id = operation.amount_to_sell.asset_id;
       var amount_to_sell_amount = operation.amount_to_sell.amount;
@@ -415,34 +398,62 @@ export const opText = (operation_type, operation) => {
           var sell_asset_name = response_asset1.data.symbol;
           var sell_asset_precision = response_asset1.data.precision;
 
-          var divideby = Math.pow(10, sell_asset_precision);
-          var sell_amount = expFloatToFixed(Number(amount_to_sell_amount / divideby));
-          sell_amount = expFloatToFixed(sell_amount).toString().substring(0, sell_asset_precision + 1);
-
           return UseAsset(min_to_receive_asset_id).then((response_asset2) => {
             var receive_asset_name = response_asset2.data.symbol;
             var receive_asset_precision = response_asset2.data.precision;
 
-            var divideby = Math.pow(10, receive_asset_precision);
-            var receive_amount = Number(min_to_receive_amount / divideby);
-            receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
-            var price = floorFloat(sell_amount / receive_amount, 6);
+            var order_id = result
+                  ? typeof result[1] == 'string'
+                    ? '#' + result[1].substring(4)
+                    : ''
+                  : '';
 
-            operation_text = response_name;
-            operation_text =
-              operation_text +
-              ' wants ' +
-              formatNumber(receive_amount) +
-              " " +
-              receive_asset_name +
-              ' for ';
-            operation_text =
-              operation_text +
-              formatNumber(sell_amount) +
-              " " +
-              sell_asset_name;
-            operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
-            return { op_text: operation_text, symbol: receive_asset_name, amount: formatNumber(receive_amount) };
+            const {first, second, marketName} = getMarketName(
+              response_asset2.data,
+              response_asset1.data
+            );
+
+            const isBid = operation.amount_to_sell.asset_id === second.id;
+
+            var receive_amount = isBid? 
+              Number(min_to_receive_amount / Math.pow(10, receive_asset_precision))
+              :
+              Number(amount_to_sell_amount / Math.pow(10, sell_asset_precision));
+            receive_amount = new Intl.NumberFormat('en',
+              { minimumFractionDigits: 6,
+                maximumFractionDigits: 6
+              })
+            .format(receive_amount);
+
+            let priceBase = amount_to_sell_amount;
+            let priceQuote = min_to_receive_amount;
+
+            if (amount_to_sell_asset_id !== second.id) {
+              let tempAmount = priceBase;
+              priceBase = priceQuote;
+              priceQuote = tempAmount;
+            }
+
+            operation_text = (
+              <>
+                <AccountName name={response_name} style={{float:'left'}}/>
+
+                <span className="float-left">
+                  &nbsp;placed order {order_id} to {isBid? 'buy': 'sell'} {receive_amount}&nbsp;
+                </span>
+
+                <AssetName name={first.symbol} style={{float:'left'}}/>
+
+                <FormattedPrice
+                  priceBase={priceBase}
+                  priceQuote={priceQuote}
+                  baseAsset={response_asset2.data}
+                  quoteAsset={response_asset1.data}
+                />
+              </>
+            )
+
+            return { op_text: operation_text, symbol: receive_asset_name, amount: receive_amount };
           });
         });
       });
@@ -450,11 +461,16 @@ export const opText = (operation_type, operation) => {
     case 2:
       fee_paying_account = operation.fee_paying_account;
       operation_account = fee_paying_account;
-
+      var order_id = operation.order? `#${operation.order.substring(4)}`: '';
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' cancelled order ';
+        operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;cancelled order {order_id}
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -470,62 +486,92 @@ export const opText = (operation_type, operation) => {
           return UseAsset(delta_debt_asset_id).then((response_asset2) => {
             var asset2 = response_asset2.data.symbol;
 
-            operation_text =
-              response_name +
-              ' update debt/collateral for ';
-            operation_text =
-              operation_text +
-              asset1 +
-              '/' +
-              asset2;
+            operation_text = (
+              <div>
+                <AccountName name={response_name}/>
+
+                <span>
+                  &nbsp;update debt/collateral for&nbsp;
+                </span>
+
+                <a className="price_symbol" href={`${process.env.REACT_APP_EXPLORER_META1_URL}/markets/${asset1}/${asset2}`}>{asset1}/{asset2}</a>
+              </div>
+            );
+
             return { op_text: operation_text, symbol: asset1, amount: 0 };
           });
         });
       });
 
     case 4:
-      var account_id = operation.account_id;
-      operation_account = account_id;
+      operation_account = operation.account_id;
 
       var pays_asset_id = operation.pays.asset_id;
-      var pays_amount = operation.pays.amount;
-
       var receives_asset_id = operation.receives.asset_id;
-      var receives_amount = operation.receives.amount;
 
       return UseAccount(operation_account).then((response_name) => {
         return UseAsset(pays_asset_id).then((response_asset1) => {
           var pays_asset_name = response_asset1.data.symbol;
           var pays_asset_precision = response_asset1.data.precision;
 
-          var divideby = Math.pow(10, pays_asset_precision);
-          var p_amount = parseFloat(pays_amount / divideby);
-          p_amount = expFloatToFixed(p_amount).toString().substring(0, pays_asset_precision + 1);
-
           return UseAsset(receives_asset_id).then((response_asset2) => {
             var receive_asset_name = response_asset2.data.symbol;
             var receive_asset_precision = response_asset2.data.precision;
 
-            var divideby = Math.pow(10, receive_asset_precision);
-            var receive_amount = Number(receives_amount / divideby);
-            receive_amount = expFloatToFixed(receive_amount).toString().substring(0, receive_asset_precision + 1);
-            var price = floorFloat(p_amount / receive_amount, 6);
+            var order_id = operation.order_id? `#${operation.order_id.substring(4)}`: '';
 
-            operation_text = response_name;
-            operation_text =
-              operation_text +
-              ' paid ' +
-              formatNumber(p_amount) +
-              " " +
-              pays_asset_name +
-              ' for ';
-            operation_text =
-              operation_text +
-              formatNumber(receive_amount) +
-              " " +
-              receive_asset_name;
-            operation_text += ` at ${price} ${response_asset1.data.symbol}/${response_asset2.data.symbol}`;
-            return { op_text: operation_text, symbol: pays_asset_name, amount: formatNumber(p_amount) };
+            const {marketName, first, second} = getMarketName(
+              response_asset2.data,
+              response_asset1.data
+            );
+            const isBid = operation.pays.asset_id === second.id;
+
+            let priceBase = isBid ? operation.fill_price.base : operation.fill_price.quote;
+            let priceQuote = isBid ? operation.fill_price.quote : operation.fill_price.base;
+            let amount = isBid ? operation.receives : operation.pays;
+
+            if (priceBase.asset_id !== second.id) {
+              let tempAmount = priceBase;
+              priceBase = priceQuote;
+              priceQuote = tempAmount;
+            }
+
+            let precision = isBid? receive_asset_precision: pays_asset_precision;
+            let receivedAmount =
+              operation.fee.asset_id === amount.asset_id
+                ? amount.amount - operation.fee.amount
+                : amount.amount;
+
+            receivedAmount = new Intl.NumberFormat('en',
+              { minimumFractionDigits: 6,
+                maximumFractionDigits: 6
+              })
+            .format(receivedAmount / Math.pow(10, precision));
+
+            operation_text = (
+              <div>
+                <AccountName name={response_name} style={{float:'left'}}/>
+
+                <span className="float-left">
+                  &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
+                </span>
+
+                <AssetName name={first.symbol} style={{float:'left'}}/>
+
+                <FormattedPrice
+                  priceBase={priceBase.amount}
+                  priceQuote={priceQuote.amount}
+                  baseAsset={response_asset2.data}
+                  quoteAsset={response_asset1.data}
+                />
+
+                <span className="float-left">
+                  &nbsp;for order {order_id}&nbsp;
+                </span>
+              </div>
+            )
+
+            return { op_text: operation_text, symbol: pays_asset_name, amount: receivedAmount };
           });
         });
       });
@@ -537,17 +583,31 @@ export const opText = (operation_type, operation) => {
       operation_account = registrar;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' register ' +
-          name;
+        operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;register&nbsp;
+            </span>
+
+            <AccountName name={name}/>
+          </div>
+        );
 
         if (registrar !== referrer) {
           return UseAccount(referrer).then((response_name2) => {
-            operation_text =
-              operation_text +
-              ' thanks to ' +
-              response_name2;
+
+            operation_text = (
+              <div>
+                <AccountName name={response_name}/>
+                <span>
+                  &nbsp;thanks to&nbsp;
+                </span>
+
+                <AccountName name={response_name2}/>
+              </div>
+            );
+
             return { op_text: operation_text, symbol: null, amount: 0 };
           });
         } else {
@@ -558,9 +618,14 @@ export const opText = (operation_type, operation) => {
       operation_account = operation.account;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' updated their wallet data change ';
+        operation_text = (
+            <div>
+              <AccountName name={response_name}/>
+              <span>
+                &nbsp;updated their wallet data change&nbsp;
+              </span>
+            </div>
+          );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -573,11 +638,17 @@ export const opText = (operation_type, operation) => {
 
       return UseAccount(operation_account).then((response_name) => {
         return UseAccount(account_to_list).then((response_name2) => {
-          operation_text =
-            response_name +
-            type +
-            ' the wallet ' +
-            response_name2;
+          operation_text = (
+            <div>
+              <AccountName name={response_name}/>
+              <span>
+                {type} the wallet&nbsp;
+              </span>
+
+              <AccountName name={response_name2}/>
+            </div>
+          );
+
           return { op_text: operation_text, symbol: null, amount: 0 };
         });
       });
@@ -587,6 +658,15 @@ export const opText = (operation_type, operation) => {
         operation_text =
           response +
           ' upgraded the wallet ';
+
+        operation_text = (
+            <div>
+              <AccountName name={response}/>
+              <span>
+                &nbsp;upgraded the wallet&nbsp;
+              </span>
+            </div>
+          );
 
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
@@ -605,18 +685,23 @@ export const opText = (operation_type, operation) => {
           var amount = Number(asset_to_issue_amount / divideby);
 
           return UseAccount(issue_to_account).then((response_name2) => {
-            operation_text =
-              response_name +
-              ' issued ' +
-              amount;
-            operation_text =
-              operation_text +
-              " " +
-              response_asset.data.symbol;
-            operation_text =
-              operation_text +
-              ' to ' +
-              response_name2;
+            operation_text = (
+              <div>
+                <AccountName name={response_name}/>
+                <span>
+                  &nbsp;issued {amount}&nbsp;
+                </span>
+
+                <AssetName name={response_asset.data.symbol}/>
+
+                <span>
+                  &nbsp;to&nbsp;
+                </span>
+
+                <AccountName name={response_name2}/>
+              </div>
+            );
+
             return { op_text: operation_text, symbol: response_asset.data.symbol, amount: 0 };
           });
         });
@@ -635,11 +720,16 @@ export const opText = (operation_type, operation) => {
           var divideby = Math.pow(10, asset_precision);
           var amount = Number(amount_to_reserve_amount / divideby);
 
-          operation_text =
-            response_name +
-            ' burned(reserved) ' +
-            formatNumber(amount) +
-            asset_name;
+          operation_text = (
+            <div>
+              <AccountName name={response_name}/>
+              <span>
+                &nbsp;burned(reserved){formatNumber(amount)}&nbsp;
+              </span>
+
+              <AssetName name={asset_name}/>
+            </div>
+          );
           return { op_text: operation_text, symbol: null, amount: formatNumber(amount) };
         });
       });
@@ -651,12 +741,16 @@ export const opText = (operation_type, operation) => {
 
       return UseAccount(operation_account).then((response_name) => {
         return UseAsset(asset_id).then((response_asset) => {
-          operation_text =
-            response_name +
-            ' published feed for ';
-          operation_text =
-            operation_text +
-            response_asset.data.symbol;
+          operation_text = (
+            <div>
+              <AccountName name={response_name}/>
+              <span>
+                &nbsp;published feed for&nbsp;
+              </span>
+
+              <AssetName name={response_asset.data.symbol}/>
+            </div>
+          );
           return { op_text: operation_text, symbol: response_asset.data.symbol, amount: 0 };
         });
       });
@@ -666,9 +760,14 @@ export const opText = (operation_type, operation) => {
       operation_account = fee_paying_account;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' created a proposal ';
+        operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;created a proposal&nbsp;
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -678,13 +777,14 @@ export const opText = (operation_type, operation) => {
       operation_account = fee_paying_account;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          '  updated ';
-        operation_text =
-          operation_text +
-          ' proposal ' +
-          proposal;
+        operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;updated proposal {proposal}&nbsp;
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -693,9 +793,14 @@ export const opText = (operation_type, operation) => {
       operation_account = fee_paying_account;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' deleted a proposal';
+         operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;deleted a proposal
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
     });
 
@@ -712,12 +817,17 @@ export const opText = (operation_type, operation) => {
           var divideby = Math.pow(10, asset_precision);
           var amount = Number(amount_amount / divideby);
 
-          operation_text =
-            response_name +
-            ' withdrew vesting balance of ' +
-            formatNumber(amount) +
-            " " +
-            asset_name;
+          operation_text = (
+            <div>
+              <AccountName name={response_name}/>
+              <span>
+                &nbsp;withdrew vesting balance of {formatNumber(amount)}&nbsp;
+              </span>
+
+              <AssetName name={asset_name}/>
+            </div>
+          );
+
           return { op_text: operation_text, symbol: asset_name, amount: 0 };
         });
       });
@@ -735,12 +845,17 @@ export const opText = (operation_type, operation) => {
           var divideby = Math.pow(10, asset_precision);
           var amount = Number(total_claimed_amount / divideby);
 
-          operation_text =
-            response_name +
-            ' claimed a balance of ' +
-            formatNumber(amount) +
-            " " +
-            asset_name;
+          operation_text = (
+            <div>
+              <AccountName name={response_name}/>
+              <span>
+                &nbsp;claimed a balance of {formatNumber(amount)}&nbsp;
+              </span>
+
+              <AssetName name={asset_name}/>
+            </div>
+          );
+
           return { op_text: operation_text, symbol: asset_name, amount: 0 };
         });
       });
@@ -770,16 +885,23 @@ export const opText = (operation_type, operation) => {
                 var divideby2 = Math.pow(10, asset_precision2);
                 var amount2 = Number(debt_covered_amount / divideby2);
 
-                operation_text =
-                  response_name +
-                  ' bid' +
-                  formatNumber(amount1) +
-                  " " +
-                  asset_name1 +
-                  ' for ' +
-                  formatNumber(amount2) +
-                  " " +
-                  asset_name2;
+                operation_text = (
+                  <div>
+                    <AccountName name={response_name}/>
+                    <span>
+                      &nbsp;bid {formatNumber(amount1)}&nbsp;
+                    </span>
+
+                    <AssetName name={asset_name1}/>
+
+                    <span>
+                      &nbsp;for {formatNumber(amount2)}&nbsp;
+                    </span>
+
+                    <AssetName name={asset_name2}/>
+                  </div>
+                );
+
                 return { op_text: operation_text, symbol: asset_name1, amount: formatNumber(amount1) };
               },
             );
@@ -803,14 +925,22 @@ export const opText = (operation_type, operation) => {
           var amount = Number(amount_ / divideby);
 
           return UseAccount(to).then((response_name2) => {
-            operation_text =
-              response_name +
-              ' create HTLC to ' +
-              response_name2 +
-              ' to transfer ' +
-              formatNumber(amount) +
-              " " +
-              asset_name;
+            operation_text = (
+              <div>
+                <AccountName name={response_name}/>
+                <span>
+                  &nbsp;create HTLC to&nbsp;
+                </span>
+                <AccountName name={response_name2}/>
+
+                <span>
+                  &nbsp;to transfer {formatNumber(amount)}&nbsp;
+                </span>
+
+                <AssetName name={asset_name}/>
+              </div>
+            );
+
             return { op_text: operation_text, symbol: asset_name, amount: formatNumber(amount) };
           });
         });
@@ -820,9 +950,15 @@ export const opText = (operation_type, operation) => {
       operation_account = operation.redeemer;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' redeem HTLC ';
+        operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;redeem HTLC&nbsp;
+            </span>
+          </div>
+        );
+
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -830,9 +966,15 @@ export const opText = (operation_type, operation) => {
       operation_account = operation.from;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' redeemed HTLC ';
+        operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;redeemed HTLC&nbsp;
+            </span>
+          </div>
+        );
+
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -840,9 +982,14 @@ export const opText = (operation_type, operation) => {
       operation_account = operation.update_issuer;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' extend HTLC ';
+        operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;extend HTLC&nbsp;
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -850,9 +997,14 @@ export const opText = (operation_type, operation) => {
       operation_account = operation.to;
 
       return UseAccount(operation_account).then((response_name) => {
-        operation_text =
-          response_name +
-          ' refund HTLC ';
+        operation_text = (
+          <div>
+            <AccountName name={response_name}/>
+            <span>
+              &nbsp;refund HTLC&nbsp;
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -898,17 +1050,23 @@ export const opText = (operation_type, operation) => {
             operation.usd_price.numerator / Math.pow(10, 6),
           );
 
-          operation_text =
-            response_name +
-            ' published price ';
-          operation_text =
-            operation_text +
-            usd_amount / symbol_amount +
-            ' ' +
-            'USD' +
-            '/' +
-            asset_name +
-            ' ';
+          operation_text = (
+            <div>
+              <AccountName name={response_name}/>
+              <span>
+                &nbsp;published price {operation_text} {usd_amount} / {symbol_amount}&nbsp;
+              </span>
+
+              <AssetName name={'USD'}/>
+
+              <span>
+                /
+              </span>
+
+              <AssetName name={asset_name}/>
+            </div>
+          );
+
           return { op_text: operation_text, symbol: asset_name, amount: usd_amount / symbol_amount };
         });
       });
