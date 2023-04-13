@@ -7,7 +7,7 @@ const ModalTemplate = (props) => {
         props.onClose();
     }}
     open={props.onOpen}
-    id={"modalExch"}
+    id={"modal-1"}
   >
     <Modal.Content >
         <div

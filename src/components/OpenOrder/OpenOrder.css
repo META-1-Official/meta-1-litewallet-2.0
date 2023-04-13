@@ -9,7 +9,7 @@
 }
 
 .price_symbol{
-    color: #ffc000;
+    color: #ffc000 !important;
     cursor: pointer;
 }
 
@@ -47,11 +47,6 @@
     color: #f04124 !important;
     font-weight: 700;
     padding-left: 8px;
-}
-
-.price_symbol {
-    color: #ffc000;
-    cursor: pointer;
 }
 
 .price_symbol_model button {
@@ -127,4 +122,8 @@
     .openOrder-table {
         padding-left: 0;
     }
+}
+
+.float-left {
+    float: left;
 }

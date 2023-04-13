@@ -139,7 +139,7 @@ const Settings = (props) => {
           setModalOpened(false);
           dispatch(saveUserCurrencyReset())
         }}
-        id={"modalExch"}
+        id={"modal-1"}
       >
         <Modal.Header>Currency change</Modal.Header>
         <Modal.Content style={{ height: "55%" }}>
@@ -331,7 +331,7 @@ const Settings = (props) => {
             dispatch(uploadAvatarReset());
           }
         }}
-        id={"modalExch"}
+        id={"modal-1"}
       >
         <Modal.Header>Error occured</Modal.Header>
         <Modal.Content>

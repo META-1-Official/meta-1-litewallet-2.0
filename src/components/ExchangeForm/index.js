@@ -20,6 +20,7 @@ import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector 
 import { saveBalanceRequest } from "../../store/meta1/actions";
 import { passKeyRequestService, passKeyResetService } from "../../store/account/actions";
 import { TextField } from "@mui/material";
+import { ceilFloat, floorFloat, expFloatToFixed } from "../../lib/math";
 
 export default function ExchangeForm(props) {
   const {
@@ -40,7 +41,6 @@ export default function ExchangeForm(props) {
   const [options, setOptions] = useState([]);
   const [selectedFrom, setSelectedFrom] = useState(props.selectedFrom);
   const [selectedTo, setSelectedTo] = useState(props.selectedTo);
-  const [selectedFromAmount, setSelectedFromAmount] = useState("");
   const [selectedToAmount, setSelectedToAmount] = useState(0);
   const [pair, setPair] = useState(null);
   const [quoteAsset, setQuoteAsset] = useState(null);
@@ -57,17 +57,13 @@ export default function ExchangeForm(props) {
   const [tradeInProgress, setTradeInProgress] = useState(false);
   const [priceForAsset, setPriceForAsset] = useState(0);
   const [blockPrice, setBlockPrice] = useState();
-  const [clickedInputs, setClickedInputs] = useState(false);
   const [error, setError] = useState();
   const [feeAlert, setFeeAlert] = useState(false);
   const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
   const [tradeType, setTradeType] = useState('market');
-  const [limitPrice, setLimitPrice] = useState(0);
-  const [isLimitPriceSet, setIsLimitPriceSet] = useState(false);
   const [amountPercent, setAmountPercent] = useState(null);
   const [backingAssetValue, setBackingAssetValue] = useState(0);
-  const [backingAssetPolarity, setBackingAssetPolarity] = useState(false);
   const dispatch = useDispatch();
   const inputRef = useRef(null);
 
@@ -78,36 +74,22 @@ export default function ExchangeForm(props) {
         setTradeInProgress(false);
         return;
     }
+
     if (isValidPasswordKeyState) {
       dispatch(passKeyResetService());
       performTradeSubmit();
     }
-  },[isValidPasswordKeyState, passwordKeyErrorState])
-
-  useEffect(() => {
-    async function getPriceForAsset() {
-      if (asset === "USDT") {
-        setPriceForAsset(1);
-      } else {
-        Meta1.ticker("USDT", asset).then((res) =>
-          setPriceForAsset(Number(res.latest).toFixed(2))
-        );
-      }
-    }
-    getPriceForAsset();
-  }, [asset, portfolio]);
+  },[isValidPasswordKeyState, passwordKeyErrorState]);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
     setAssets(props.assets);
+
     const getBalance = (symbol) => {
       const assetInWallet = currentPortfolio.find((el) => el.name === symbol);
-      if (assetInWallet) {
-        return assetInWallet.qty;
-      } else {
-        return 0;
-      }
+      return assetInWallet ? assetInWallet.qty : 0;
     };
+
     const newOptions = assets.map((asset) => {
       return {
         image: asset.image,
@@ -117,8 +99,8 @@ export default function ExchangeForm(props) {
         balance: getBalance(asset.symbol) || 0,
       };
     });
-
     setOptions(newOptions);
+
     if ((selectedFrom == null || selectedTo == null) && options !== []) {
       const from = asset
         ? newOptions.find((el) => el.value === asset)
@@ -126,6 +108,7 @@ export default function ExchangeForm(props) {
       let to = asset
         ? newOptions.find((el) => el.value === "META1")
         : newOptions[1];
+
       if (asset === "META1") {
         to = newOptions.find((el) => el.value === "USDT");
       }
@@ -141,27 +124,47 @@ export default function ExchangeForm(props) {
   }, [props.assets, props.portfolio]);
 
   useEffect(() => {
-    if (pair == null) return;
-    console.log("pair change:", pair.base, pair.quote, "trade type:", tradeType);
+    setIsLoadingPrice(true);
 
-    if (tradeType === 'market') {
-      getLimitOrders(pair);
+    if (asset === "USDT") {
+      setPriceForAsset(1);
     } else {
-      console.log("limitPrice: ", pair.base, pair.quote, 1 / pair.latest);
-
-      if (pair.latest === '0') {
-        setError("Unavailable to exchange these assets");
-        setIsLoadingPrice(false);
-        return;
-      }
-
-      setLimitPrice(1 / pair.latest);
-      setIsInputsEnabled(true);
-      setIsLoadingPrice(false);
+      Meta1.ticker("USDT", asset).then((res) =>
+        setPriceForAsset(Number(res.latest).toFixed(2))
+      );
     }
-  }, [pair]);
+
+    const currentPortfolio = props.portfolio || [];
+    const getBalance = (symbol) => {
+      const assetInWallet = currentPortfolio.find((el) => el.name === symbol);
+      return assetInWallet ? assetInWallet.qty : 0;
+    };
+    const newOptions = props.assets.map((_asset) => {
+      return {
+        image: _asset.image,
+        value: _asset.symbol,
+        label: _asset.symbol,
+        pre: _asset.precision,
+        balance: getBalance(_asset.symbol) || 0,
+      };
+    });
+    const quoteAssetSymbol = asset;
+    const baseAssetSymbol = asset === 'META1' ? 'USDT' : 'META1';
+    const quoteAsset = newOptions.find((el) => el.value === quoteAssetSymbol);
+    const baseAsset = newOptions.find((el) => el.value === baseAssetSymbol);
+    setSelectedFrom(baseAsset);
+    setSelectedTo(quoteAsset);
+    fetchPair(quoteAsset, baseAsset);
+  }, [asset, portfolio]);
 
   useEffect(() => {
+    if (pair == null) return;
+
+    console.log("pair change:", pair.base, pair.quote, "trade type:", tradeType);
+    getPairs(pair);
+  }, [pair]);
+
+  useEffect(async () => {
     const feeAsset = portfolio?.find((asset) => asset.name === "META1");
 
     if (!feeAsset) {
@@ -169,7 +172,18 @@ export default function ExchangeForm(props) {
     } else {
       setError("");
     }
-  }, [selectedFromAmount]);
+
+    if (Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
+      setIsLoadingPrice(true);
+      const newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedFrom.balance);
+
+      if (newMarketPrice * selectedToAmount > selectedFrom.balance) {
+        const amountToSell = floorFloat(selectedFrom.balance / newMarketPrice, 3);
+        setError(`Maximum ${selectedTo.label} amount you can buy is ${amountToSell} with your ${selectedFrom.label} balance ${selectedFrom.balance}`);
+      }
+      setIsLoadingPrice(false);
+    }
+  }, [selectedToAmount]);
 
   useEffect(() => {
     if (Number(blockPrice) <= 0.003) {
@@ -185,46 +199,7 @@ export default function ExchangeForm(props) {
 
   useEffect(() => {
     setPasswordShouldBeProvided(false);
-  }, [tradeType, selectedFrom, selectedTo, selectedFromAmount, selectedToAmount]);
-
-  useEffect(() => {
-    setAmountPercent(0);
-    setIsLoadingPrice(true);
-    setInvalidEx(false);
-    setError(null);
-    setIsInputsEnabled(false);
-    setMarketPrice(0);
-    setLimitPrice(0);
-    setBlockPrice(NaN);
-    setSelectedFromAmount(NaN);
-    setSelectedToAmount(NaN);
-    setBackingAssetValue(NaN);
-    fetchPair(selectedTo, selectedFrom);
-  }, [tradeType, selectedFrom, selectedTo]);
-
-  useEffect(() => {
-    if (!limitPrice) return;
-
-    setInvalidEx(false);
-    setError(null);
-
-    if (selectedFromAmount) {
-      inputChangeHandler(selectedFromAmount);
-    }
-
-    // Consider backing asset level
-    if (backingAssetValue && (selectedFrom.value === 'META1' || selectedTo.value === "META1")) {
-      if (backingAssetPolarity && backingAssetValue < limitPrice) {
-        setError(`Price should be lower than ${backingAssetValue}`);
-        setInvalidEx(true);
-      }
-
-      if (!backingAssetPolarity && backingAssetValue > limitPrice) {
-        setError(`Price should be bigger than ${backingAssetValue}`);
-        setInvalidEx(true);
-      }
-    }
-  }, [limitPrice]);
+  }, [tradeType, selectedFrom, selectedTo, selectedToAmount]);
 
   useEffect(() => {
     if (isLoadingPrice) {
@@ -233,12 +208,35 @@ export default function ExchangeForm(props) {
   }, [isLoadingPrice]);
 
   const performTradeSubmit = async () => {
+    const marketLiquidity = await calculateMarketLiquidity();
+    const marketPrice = await calculateMarketPrice(baseAsset, quoteAsset);
+
+    let newMarketPrice = marketPrice;
+    if (Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
+      newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedFrom.balance);
+    }
+
+    if (marketLiquidity < selectedToAmount) {
+      var msg;
+
+      if (marketLiquidity == 0) {
+        msg = 'No liquidity'
+      } else {
+        msg = `Current available liquidity is ${marketLiquidity} ${selectedTo.label}, please adjust amount to ${marketLiquidity} ${selectedTo.label} or below.`
+      }
+
+      setError(msg);
+      setPassword("");
+      setTradeInProgress(false);
+      return;
+    }
+
     const buyResult = await traderState.perform({
       from: selectedFrom.value,
       to: selectedTo?.value?.trim(),
       amount: selectedToAmount,
       password: password,
-      tradePrice: 1 / (tradeType === 'limit' ? limitPrice : marketPrice)
+      tradePrice: newMarketPrice
     });
     
     if (buyResult.error) {
@@ -256,29 +254,10 @@ export default function ExchangeForm(props) {
     if (pair == null) return;
     setInvalidEx(false);
 
-    const asssetPrice = tradeType === 'market' ? marketPrice : limitPrice;
     const toAmount = (
-      Number(fromAmount) * asssetPrice / Number(userCurrencyState.split(" ")[2])
+      Number(fromAmount) * marketPrice / Number(userCurrencyState.split(" ")[2])
     ).toFixed(selectedTo.label === "USDT" ? 3 : selectedTo.pre);
     setSelectedToAmount(toAmount);
-  };
-
-  const calculateBlockPrice = (fromAmount) => {
-    if (fromAmount) {
-      const userCurrencySymbol = userCurrencyState.split(" ")[1];
-      let asssetPrice = baseAssetPrice;
-
-      if (tradeType === 'market' && userCurrencySymbol === 'USD' && (quoteAsset.symbol === 'USDT')) {
-        asssetPrice = marketPrice;
-      } else if (tradeType === 'limit') {
-        asssetPrice = baseAssetPrice;
-      }
-
-      const priceForOne = (Number(fromAmount) * asssetPrice).toFixed(10);
-      setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
-    } else {
-      setBlockPrice(NaN);
-    }
   };
 
   const calculateCryptoPrice = (e) => {
@@ -286,68 +265,65 @@ export default function ExchangeForm(props) {
     setBlockPrice(_blockPrice);
     const userCurrencySymbol = userCurrencyState.split(" ")[1];
 
-    if (userCurrencySymbol === 'USD' && baseAsset.symbol === 'USDT') {
-      setSelectedFromAmount(_blockPrice)
-      calculateSelectedToAmount(_blockPrice);
-      return;
+    if (userCurrencySymbol === 'USD' && quoteAsset.symbol === 'USDT') {
+      setSelectedToAmount(_blockPrice)
     } else {
-      let asssetPrice = baseAssetPrice;
-
-      if (tradeType === 'market' && userCurrencySymbol === 'USD' && quoteAsset.symbol === 'USDT') {
-        asssetPrice = marketPrice;
-      } else if (tradeType === 'limit') {
-        asssetPrice = baseAssetPrice;
-      }
-
-      const fromAmount = (
-        Number(_blockPrice) / asssetPrice / Number(userCurrencyState.split(" ")[2])
-      ).toFixed(selectedFrom.label === "USDT" ? 3 : selectedFrom.pre);
-      setSelectedFromAmount(fromAmount);
-      calculateSelectedToAmount(fromAmount);
+      let toAmount = Number(_blockPrice) / quoteAssetPrice / Number(userCurrencyState.split(" ")[2]);
+      toAmount = ceilFloat(toAmount, selectedTo.label === "USDT" ? 3 : selectedTo.pre);
+      toAmount = expFloatToFixed(toAmount).toString();
+      toAmount = toAmount.substring(0, (selectedTo.label === "USDT" ? 3 : selectedTo.pre) + 1);
+      setSelectedToAmount(toAmount);
     }
   };
 
-  const fetchPair = (selectedTo, selectedFrom) => {
+  const calculateBlockPrice = (toAmount) => {
+    if (!toAmount) {
+      setBlockPrice(NaN);
+      return;
+    }
+    
+    const userCurrencySymbol = userCurrencyState.split(" ")[1];
+    const priceForOne = (Number(toAmount) * quoteAssetPrice).toFixed(10);
+    setBlockPrice(priceForOne * Number(userCurrencyState.split(" ")[2]));
+  };
+
+  const fetchPair = (_selectedTo, _selectedFrom) => {
     const LOG_ID = '[FetchPair]';
 
     if (
-      selectedTo != null &&
-      selectedFrom != null &&
-      selectedFrom.value !== undefined
+      _selectedTo && _selectedTo.value != null &&
+      _selectedFrom && _selectedFrom.value !== undefined
     ) {
-      const getPairPromise = Meta1.ticker(selectedFrom.value, selectedTo.value);
-      const getBaseAssetPricePromise = Meta1.ticker("USDT", selectedFrom.value);
-      const getQuoteAssetPricePromise = Meta1.ticker("USDT", selectedTo.value);
+      const isQuoting = _selectedTo.value === 'META1';
+      const getPairPromise = Meta1.ticker(_selectedFrom.value, _selectedTo.value);
+      const getBaseAssetPricePromise = Meta1.ticker("USDT", _selectedFrom.value);
+      const getQuoteAssetPricePromise = Meta1.ticker("USDT", _selectedTo.value);
       const getAssetLimitationPromise = Apis.db.get_asset_limitation_value('META1');
       Promise.all([getPairPromise, getBaseAssetPricePromise, getQuoteAssetPricePromise, getAssetLimitationPromise])
         .then(res => {
           // Caculate backing asset value
-          const meta1_usdt = res[3] / 1000000000;
-          const isQuoting = selectedTo.value === 'META1';
+          const meta1_usdt = ceilFloat(res[3] / 1000000000, 2);
           console.log(LOG_ID, 'META1 Backing Asset($): ', meta1_usdt);
-          let asset_usdt;
 
-          if (selectedFrom.value === 'META1' || selectedTo.value === 'META1') {
-            asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
-            const ratio = isQuoting
-              ? asset_usdt / (meta1_usdt + 0.01)
-              : (meta1_usdt + 0.01) / asset_usdt;
+          if (_selectedFrom.value === 'META1' || _selectedTo.value === 'META1') {
+            const asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
+            let ratio = isQuoting ? meta1_usdt / asset_usdt : asset_usdt / meta1_usdt;
+            ratio = isQuoting ? ceilFloat(ratio, _selectedTo.pre) : floorFloat(ratio, _selectedTo.pre);
             console.log(
-              LOG_ID, isQuoting ? selectedFrom.value : selectedTo.value, ': USDT', asset_usdt
+              LOG_ID, isQuoting ? _selectedFrom.value : _selectedTo.value, ': USDT', asset_usdt
             );
 
-            if (isQuoting) {
+            if (!isQuoting) {
               console.log(LOG_ID, 'BUY/SELL price should be lower than', ratio);
             } else {
               console.log(LOG_ID, 'BUY/SELL price should be bigger than', ratio);
             }
 
             setBackingAssetValue(ratio);
-            setBackingAssetPolarity(isQuoting)
           }
 
           setBaseAssetPrice(res[1].latest === '0' ? 1 : res[1].latest);
-          setQuoteAssetPrice(res[2].latest);
+          setQuoteAssetPrice(res[2].latest === '0' ? 1 : res[2].latest);
           setPair(res[0]);
         });
     }
@@ -357,27 +333,19 @@ export default function ExchangeForm(props) {
     if (val === "USDT") {
       setPriceForAsset(1);
     } else {
-      Meta1.ticker("USDT", val).then((res) =>{
+      Meta1.ticker("USDT", val).then((res) => {
         setPriceForAsset(Number(res.latest).toFixed(2));
       });
     }
   };
 
-  const swapAssets = (e) => {
-    e.preventDefault();
-    const oldFrom = selectedFrom;
-    setSelectedFrom(selectedTo);
-    setSelectedTo(oldFrom);
-  };
-
-  const prepareTrade = () => {
+  const prepareTrade = async () => {
     const feeAsset = portfolio?.find((asset) => asset.name === "META1");
-    localStorage.setItem("selectFrom", selectedFromAmount);
     localStorage.setItem("selectTo", selectedToAmount);
 
     if (
-      selectedFrom.label === "META1" &&
-      Number(selectedFromAmount) === Number(feeAsset.qty)
+      selectedTo.label === "META1" &&
+      Number(selectedToAmount) === Number(feeAsset.qty)
     ) {
       setFeeAlert(true);
     } else {
@@ -385,7 +353,7 @@ export default function ExchangeForm(props) {
     }
   };  
 
-  const performTrade = async () => {
+  const onClickExchange = async () => {
     setTradeInProgress(true);
     setPasswordShouldBeProvided(false);
     dispatch(passKeyRequestService({ login: accountState, password }));
@@ -394,36 +362,43 @@ export default function ExchangeForm(props) {
   if (selectedFrom == null && selectedTo == null) return null;
   const getAssets = (except) => options.filter((el) => el.value !== except);
 
-  const inputChangeHandler = (fromAmount) => {
-    setClickedInputs(true);
-    setSelectedFromAmount(fromAmount);
-    calculateBlockPrice(fromAmount);
-    calculateSelectedToAmount(fromAmount);
+  const inputChangeHandler = (toAmount) => {
+    setSelectedToAmount(toAmount);
+    calculateBlockPrice(toAmount);
+    // calculateSelectedToAmount(fromAmount);
   }
 
-  const changePercentageHandler = (val) => {
-    if (invalidEx || !isInputsEnabled) return;
+  const onChangeAsset = (val, src) => {
+    let _selectedTo = selectedTo;
+    let _selectedFrom = selectedFrom;
 
-    const fromAmount = String(Number(selectedFrom.balance) * (val / 100));
-    setAmountPercent(val);
-    setSelectedFromAmount(fromAmount);
-    inputChangeHandler(fromAmount);
-  }
+    setIsLoadingPrice(true);
+    setIsInputsEnabled(false);
+    setSelectedToAmount(NaN);
+    setMarketPrice(0);
+    setBackingAssetValue(NaN);
+    setBlockPrice(NaN);
+    setError(null);
+    setInvalidEx(false);
 
-  const setAssetMax = (e) => {
-    e.preventDefault();
-
-    setAmountPercent(100);
-    inputChangeHandler(selectedFrom.balance);
-  };
-
-  const onChangeLimitPrice = (val) => {
-    if (/^\d*\.?\d*$/.test(val)) {
-      setLimitPrice(val);
+    if (src === 'from') {
+      _selectedFrom = val;
+      setSelectedFrom(_selectedFrom);
+      changeAssetHandler(_selectedFrom.value);
+      fetchPair(_selectedTo, _selectedFrom);
+    } else if (src === 'to') {
+      _selectedTo = val;
+      setSelectedTo(_selectedTo);
+      fetchPair(_selectedTo, _selectedFrom);
+    } else if (src === 'swap') {
+      val.preventDefault();
+      setSelectedFrom(_selectedTo);
+      setSelectedTo(_selectedFrom);
+      fetchPair(_selectedFrom, _selectedTo);
     }
   }
 
-  const getLimitOrders = (pair) => {
+  const getPairs = (pair) => {
     Apis.instance()
       .db_api()
       .exec('lookup_asset_symbols', [
@@ -434,26 +409,7 @@ export default function ExchangeForm(props) {
         const _quoteAsset = res[1];
         setBaseAsset(_baseAsset);
         setQuoteAsset(_quoteAsset);
-
-        Apis.instance()
-          .db_api()
-          .exec(
-            'get_limit_orders', 
-            [_baseAsset.id, _quoteAsset.id, 300]
-          )
-          .then((_limitOrders) => {
-            setLimitOrders(_limitOrders);
-
-            if (_limitOrders && _limitOrders.length > 0) {
-              calculateMarketPrice(_limitOrders, _baseAsset, _quoteAsset);
-            } else {
-              setIsLoadingPrice(false);
-            }
-          })
-          .catch(err => {
-            console.log('get_limit_orders error:', err);
-            setIsLoadingPrice(false);
-          });
+        calculateMarketPrice(_baseAsset, _quoteAsset);
       })
       .catch(err => {
         console.log("lookup_asset_symbols error:", err);
@@ -461,30 +417,127 @@ export default function ExchangeForm(props) {
       });
   }
 
-  const calculateMarketPrice = (_limitOrders, baseAsset, quoteAsset) => {
+  const calculateMarketLiquidity = async () => {
+    let _liquidity = 0;
+    setIsLoadingPrice(true);
+
+    const _limitOrders = await Apis.instance()
+      .db_api()
+      .exec(
+        'get_limit_orders', 
+        [baseAsset.id, quoteAsset.id, 300]
+      );
+
+    if (_limitOrders && _limitOrders.length > 0) {
+      for (let limitOrder of _limitOrders) {
+        if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
+          let divideby;
+          let price;
+
+          if (backingAssetValue) {
+            const isQuoting = selectedTo.value === 'META1';
+
+            if (!isQuoting) {
+              divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+              price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+            } else {
+              divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
+              price = Number(limitOrder.sell_price.base.amount / limitOrder.sell_price.quote.amount / divideby);
+              price = 1 / price;
+            }
+
+            // Consider backing asset level
+            if (!isQuoting && backingAssetValue > price) {
+              _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+            } else if (isQuoting && backingAssetValue < price) {
+              _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+            }
+          } else {
+            _liquidity += Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+          }
+        }
+      }
+    }
+
+    setIsLoadingPrice(false);
+    return parseFloat(_liquidity.toFixed(6));
+  }
+
+  const calculateMarketPrice = async (baseAsset, quoteAsset, selectedFromBalance) => {
     let _marketPrice = 0;
-    const isQuoting = quoteAsset.symbol === "META1";
+    let amount = 0;
+    let estSellAmount = 0;
+    const isQuoting = selectedTo.value === 'META1';
+    const isTradingMETA1 = selectedFrom.value === 'META1' || selectedTo.value === 'META1';
+
+    const _limitOrders = await Apis.instance()
+      .db_api()
+      .exec(
+        'get_limit_orders', 
+        [baseAsset.id, quoteAsset.id, 300]
+      );
+    setLimitOrders(_limitOrders);
 
     for (let limitOrder of _limitOrders) {
       if (limitOrder.sell_price.quote.asset_id === baseAsset.id) {
-        const divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
-        const price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
-        _marketPrice = _marketPrice > price ? _marketPrice : price;
+        let divideby;
+        let price;
+
+        if (isTradingMETA1 && backingAssetValue) {
+          if (!isQuoting) {
+            divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+            price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+          } else {
+            divideby = Math.pow(10, quoteAsset.precision - baseAsset.precision);
+            price = Number(limitOrder.sell_price.base.amount / limitOrder.sell_price.quote.amount / divideby);
+            price = 1 / price;
+          }
+
+          // Consider backing asset level
+          if (!isQuoting && backingAssetValue > price) {
+            if (!_marketPrice) _marketPrice = price;
+            else _marketPrice = _marketPrice < price ? price : _marketPrice;
+          } else if (isQuoting && backingAssetValue < price) {
+            if (!_marketPrice) _marketPrice = price;
+            else _marketPrice = _marketPrice > price ? _marketPrice : price;
+          }
+
+          if (selectedFromBalance) {
+            amount = Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+            estSellAmount += _marketPrice * amount;
+            if (estSellAmount > selectedFromBalance) break;
+          }
+        } else {
+          divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
+          price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
+          _marketPrice = _marketPrice < price ? price : _marketPrice;
+
+          if (selectedFromBalance) {
+            amount = Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
+            estSellAmount += _marketPrice * amount;
+            if (estSellAmount > selectedFromBalance) break;
+          }
+        }
       }
     }
 
     if (_marketPrice > 0) {
-      _marketPrice = 1 / _marketPrice;
+      const percentDiff = _marketPrice + _marketPrice / Math.pow(10, 3);
 
-      // Consider backing asset level
-      if (baseAsset.symbol === 'META1' || quoteAsset.symbol === "META1") {
-        if (backingAssetValue) {
-          if (backingAssetPolarity && backingAssetValue < _marketPrice)
-            _marketPrice = backingAssetValue;
+      if (isTradingMETA1 && backingAssetValue) {
+        const diff = Math.abs(_marketPrice - backingAssetValue) / 2;
 
-          if (!backingAssetPolarity && backingAssetValue > _marketPrice)
-            _marketPrice = backingAssetValue;
+        if (!isQuoting) {
+          if (percentDiff >= backingAssetValue) {
+            _marketPrice = _marketPrice + diff;
+          } else {
+            _marketPrice = percentDiff;
+          }
+        } else {
+          _marketPrice = percentDiff;
         }
+      } else {
+        _marketPrice = percentDiff;
       }
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
@@ -493,6 +546,7 @@ export default function ExchangeForm(props) {
     }
 
     setIsLoadingPrice(false);
+    return _marketPrice;
   }
 
   const { innerWidth: width } = window;
@@ -537,7 +591,7 @@ export default function ExchangeForm(props) {
             setTradeError(null);
             dispatch(passKeyResetService());
           }}
-          id={"modalExch"}
+          id={"modal-1"}
         >
           <Modal.Header>Error occured</Modal.Header>
           <Modal.Content>
@@ -566,7 +620,7 @@ export default function ExchangeForm(props) {
           size="mini"
           open={feeAlert}
           onClose={() => setFeeAlert(false)}
-          id={"modalExch"}
+          id={"modal-1"}
         >
           <Modal.Header>All META1 transfer</Modal.Header>
           <Modal.Content style={{ height: "55%" }}>
@@ -603,35 +657,11 @@ export default function ExchangeForm(props) {
           }}
           id={"modalExch"}
         >
-          <Modal.Header>Trade Completed</Modal.Header>
+          <Modal.Header>Trade information</Modal.Header>
           <Modal.Content>
             <Grid verticalAlign="middle" centered>
-              <Grid.Row centered columns={3}>
-                <Grid.Column>
-                  <div className="asset-traded">
-                    <Image size="tiny" src={selectedFrom.image} />
-                    <p>
-                      {" "}
-                      {(localStorage.getItem("selectFrom") * 1).toFixed(
-                        selectedFrom.pre
-                      )}{" "}
-                    </p>
-                  </div>
-                </Grid.Column>
-                <Grid.Column width={3} style={{ marginRight: '2.2rem', marginTop: '-2rem' }} >
-                  <Icon disabled name="arrow right" size="huge" />
-                </Grid.Column>
-
-                <Grid.Column>
-                  <div className="asset-traded">
-                    <Image size="tiny" src={selectedTo.image} />
-                    <p>
-                      {(localStorage.getItem("selectTo") * 1).toFixed(
-                        selectedTo.pre
-                      )}{" "}
-                    </p>
-                  </div>
-                </Grid.Column>
+              <Grid.Row centered columns={12}>
+                Your transaction(buy {localStorage.getItem("selectTo")} {selectedTo.label} with {selectedFrom.label}) will be completed soon.
               </Grid.Row>
             </Grid>
           </Modal.Content>
@@ -641,7 +671,6 @@ export default function ExchangeForm(props) {
               onClick={() => {
                 onSuccessModal();
                 setModalOpened(false);
-                // setRefreshData(prev => !prev)
                 onSuccessTrade()
               }}
             >
@@ -651,8 +680,9 @@ export default function ExchangeForm(props) {
         </Modal>
         <div className={"adaptForMainExchange"}>
           <div className={`${styles.mainBlock} marginBottomZero`}>
-            <div style={{ marginBottom: "20px" }}>
+            <div style={{ marginBottom: "20px", display: 'hidden' }}>
               <Button
+                style={{ display: "none" }}
                 className={tradeType === 'market' ? 'custom-tab' : ''}
                 onClick={() => {
                   if (tradeType === 'market') return;
@@ -663,12 +693,12 @@ export default function ExchangeForm(props) {
                 Market Order
               </Button>
               <Button
+                style={{ display: "none" }}
                 className={tradeType === 'limit' ? 'custom-tab' : ''}
                 onClick={() => {
                   if (tradeType === 'limit') return;
                   setIsLoadingPrice(true);
                   setTradeType('limit');
-                  setIsLimitPriceSet(prev => !prev);
                 }}
                 ref={inputRef}
               >
@@ -677,208 +707,13 @@ export default function ExchangeForm(props) {
             </div>
             <div className={styles.mainBlockExchange}>
               <div className={styles.leftBlockExchange}>
-                <h2 style={{ textAlign: "center" }}>Exchange</h2>
-                <div id="from">
-                  <Grid stackable>
-                    <Grid.Column columns={2} className="flex-middle">
-                      <Grid.Column>
-                        <ExchangeSelect
-                          onChange={(val) => {
-                            setIsLimitPriceSet(prev => !prev);
-                            setSelectedFrom(val);
-                            changeAssetHandler(val.value);
-                            setSelectedFromAmount(NaN);
-                            setSelectedToAmount(NaN);
-                            setBlockPrice(NaN);
-                            setInvalidEx(false);
-                          }}
-                          options={getAssets(selectedTo.value)}
-                          selectedValue={selectedFrom}
-                          isDisabled={isLoadingPrice}
-                        />
-                      </Grid.Column>
-                      <Grid.Column>
-                        <div>
-                          <h1> </h1>
-                        </div>
-                      </Grid.Column>
-                      <Grid.Column>
-                        <div className="wallet-input">
-                          <Popup
-                            content={helpInput(
-                              selectedFrom?.value,
-                              selectedTo?.value
-                            )}
-                            position="bottom center"
-                            trigger={
-                              <div className={styles.inputForAmount}>
-                                <Input
-                                  placeholder="Amount crypto"
-                                  value={selectedFromAmount}
-                                  type={"number"}
-                                  onChange={(e) => {
-                                    if (Number(e.target.value) < 0) return;
-                                    if (
-                                      (
-                                        e.target.value.length < 11 &&
-                                        /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
-                                      )
-                                      || `${selectedFromAmount}`.length > e.target.value.length
-                                    ) {
-                                      setAmountPercent(null);
-                                      inputChangeHandler(e.target.value)
-                                    }
-                                  }}
-                                  endAdornment={
-                                    <InputAdornment position="end">
-                                      {selectedFrom.label}
-                                    </InputAdornment>
-                                  }
-                                  inputProps={ariaLabel}
-                                  id={"inputAmount"}
-                                  disabled={invalidEx || !isInputsEnabled}
-                                  min="0"
-                                  inputmode="numeric"
-                                  pattern="\d*"
-                                />
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    marginTop: ".1rem",
-                                    fontSize: "1rem",
-                                    color: "#505361",
-                                    position:'relative'
-                                  }}
-                                >
-                                  <input
-                                    className={styles.inputDollars}
-                                    onChange={(e) => {
-                                      if (Number(e.target.value) < 0) return;
-                                      if (
-                                        (
-                                          e.target.value.length < 11 &&
-                                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
-                                        )
-                                        || `${blockPrice}`.length > e.target.value.length
-                                      ) {
-                                        setAmountPercent(null);
-                                        setClickedInputs(true);
-                                        calculateCryptoPrice(e);
-                                      }
-                                    }}
-                                    min="0"
-                                    inputmode="numeric"
-                                    pattern="\d*"
-                                    type={"number"}
-                                    placeholder={`Amount ${userCurrencyState.split(" ")[1]}`}
-                                    disabled={invalidEx || !isInputsEnabled}
-                                    style={
-                                      invalidEx ? { opacity: "0.5" } : null
-                                    }
-                                    value={blockPrice}
-                                  />
-                                  <span className={styles['abs-sp']} >{userCurrencyState.split(" ")[0]}</span>
-                                </div>
-                              </div>
-                            }
-                          />
-                          <div className="max-button">
-                            <Popup
-                              content={helpMax1(selectedFrom?.value)}
-                              position="bottom center"
-                              trigger={
-                                <Button
-                                  secondary
-                                  className={"btn"}
-                                  onClick={setAssetMax}
-                                  floated="right"
-                                  size="mini"
-                                  disabled={invalidEx || !isInputsEnabled}
-                                >
-                                  MAX
-                                </Button>
-                              }
-                            />
-                          </div>
-                        </div>
-                      </Grid.Column>
-                    </Grid.Column>
-                  </Grid>
-                  <Grid>
-                    <div className="percentage-container">
-                      <span className={`percentage-padding ${amountPercent === 25 ? 'active' : ''}`} onClick={() => changePercentageHandler(25)}>25%</span>
-                      <span className={`percentage-padding ${amountPercent === 50 ? 'active' : ''}`} onClick={() => changePercentageHandler(50)}>50%</span>
-                      <span className={`percentage-padding ${amountPercent === 75 ? 'active' : ''}`} onClick={() => changePercentageHandler(75)}>75%</span>
-                      <span className={`percentage-padding ${amountPercent === 100 ? 'active' : ''}`} onClick={() => changePercentageHandler(100)}>100%</span>
-                    </div>
-                  </Grid>
-                  {tradeType === 'limit' &&
-                    <Grid className="limit-input-grid">
-                      <TextField
-                        id="outlined-textarea"
-                        label="Price"
-                        placeholder="Enter Price"
-                        className="input-price"
-                        value={limitPrice}
-                        onChange={(e) => onChangeLimitPrice(e.target.value)}
-                      />
-                    </Grid>
-                  }
-                </div>
-              </div>
-              <div
-                style={{ marginTop: "2.3rem", marginLeft: ".3rem" }}
-                className="padding-y-large text-center-s aaaa"
-              >
-                <Popup
-                  content={helpSwap(selectedFrom?.value, selectedTo?.value)}
-                  position="top center"
-                  trigger={
-                    <Button
-                      className={styles.button}
-                      style={{ width: "3rem", height: "3rem" }}
-                      disabled={isLoadingPrice}
-                      onClick={(e) => {
-                        setSelectedToAmount(NaN);
-                        setSelectedFromAmount(NaN);
-                        setBlockPrice(NaN);
-                        setIsLoadingPrice(true);
-                        swapAssets(e);
-                      }}
-                    >
-                      <div className={styles.blockArrows}>
-                        <img
-                          src={leftArrow}
-                          className={styles.leftArrow}
-                          alt=""
-                        />
-                        <img
-                          src={rightArrow}
-                          className={styles.rightArrow}
-                          alt=""
-                        />
-                      </div>
-                    </Button>
-                  }
-                />
-              </div>
-              <div className={styles.rightBlockExchange}>
-                <h2 style={{ textAlign: "center" }}>Receive</h2>
+                <h2 style={{ textAlign: "center" }}>Buy</h2>
                 <div id="to">
                   <Grid stackable>
                     <Grid.Column columns={2} className="flex-middle">
                       <Grid.Column>
                         <ExchangeSelect
-                          onChange={(val) => {
-                            setIsLimitPriceSet(prev => !prev);
-                            setSelectedTo(val);
-                            setSelectedFromAmount(NaN);
-                            setSelectedToAmount(NaN);
-                            setBlockPrice(NaN);
-                            setInvalidEx(false);
-                          }}
+                          onChange={(val) => onChangeAsset(val, 'to')}
                           options={getAssets(selectedFrom.value)}
                           selectedValue={selectedTo}
                           isDisabled={isLoadingPrice}
@@ -904,45 +739,116 @@ export default function ExchangeForm(props) {
                                 <Input
                                   style={isMobile ? { width: "100%" } : null}
                                   placeholder="Amount crypto"
-                                  value={selectedFromAmount ? selectedToAmount : 0}
+                                  value={selectedToAmount}
                                   type={"number"}
+                                  onChange={(e) => {
+                                    if (Number(e.target.value) < 0) return;
+                                    if (
+                                      (
+                                        e.target.value.length < 11 &&
+                                        /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                                      )
+                                      || `${selectedToAmount}`.length > e.target.value.length
+                                    ) {
+                                      inputChangeHandler(e.target.value)
+                                    }
+                                  }}
                                   endAdornment={
                                     <InputAdornment position="end">
                                       {selectedTo.label}
                                     </InputAdornment>
                                   }
                                   inputProps={ariaLabel}
-                                  disabled
+                                  disabled={invalidEx || !isInputsEnabled}
                                 />
                                 <div
                                   style={{
                                     display: "flex",
                                     flexDirection: "row",
                                     justifyContent: "space-between",
-                                    marginTop: ".1rem",
+                                    marginTop: "5px",
                                     fontSize: "1rem",
                                     color: "#505361",
                                     position:'relative'
                                   }}
                                 >
-                                  <span>
-                                    {!invalidEx && selectedFromAmount
-                                      ? blockPrice
-                                      : 0}
-                                  </span>
-                                  <span className={styles['abs-sp']}>{userCurrencyState.split(" ")[0]}</span>
+                                  <input
+                                    className={styles.inputDollars}
+                                    onChange={(e) => {
+                                      if (Number(e.target.value) < 0) return;
+                                      if (
+                                        (
+                                          e.target.value.length < 11 &&
+                                          /[-+]?[0-9]*\.?[0-9]*/.test(e.target.value)
+                                        )
+                                        || `${blockPrice}`.length > e.target.value.length
+                                      ) {
+                                        setAmountPercent(null);
+                                        calculateCryptoPrice(e);
+                                      }
+                                    }}
+                                    min="0"
+                                    inputmode="numeric"
+                                    pattern="\d*"
+                                    type={"number"}
+                                    placeholder={`Amount ${userCurrencyState.split(" ")[1]}`}
+                                    disabled={invalidEx || !isInputsEnabled}
+                                    style={invalidEx ? { opacity: "0.5", paddingLeft: "0px" } : {paddingLeft: "0px"}}
+                                    value={blockPrice}
+                                  />
+                                  <span className={styles['abs-sp']} >{userCurrencyState.split(" ")[0]}</span>
                                 </div>
                               </div>
                             }
                           />
                         </div>
-                        <div style={{ marginTop: "1px" }}>
-                          {invalidEx && (
-                            <Label pointing color="red">
-                              Trade is currently unavailable
-                            </Label>
-                          )}
-                        </div>
+                      </Grid.Column>
+                    </Grid.Column>
+                  </Grid>
+                </div>
+              </div>
+              <div
+                style={{ marginTop: "2.3rem", marginLeft: ".3rem" }}
+                className="padding-y-large text-center-s"
+              >
+                <Popup
+                  content={helpSwap(selectedFrom?.value, selectedTo?.value)}
+                  position="top center"
+                  trigger={
+                    <Button
+                      className={styles.button}
+                      style={{ width: "3rem", height: "3rem" }}
+                      disabled={isLoadingPrice}
+                      onClick={(e) => onChangeAsset(e, 'swap')}
+                    >
+                      <div className={styles.blockArrows}>
+                        <img
+                          src={leftArrow}
+                          className={styles.leftArrow}
+                          alt=""
+                        />
+                        <img
+                          src={rightArrow}
+                          className={styles.rightArrow}
+                          alt=""
+                        />
+                      </div>
+                    </Button>
+                  }
+                />
+              </div>
+              <div className={styles.rightBlockExchange}>
+                <h2 style={{ textAlign: "center" }}>Sell</h2>
+                <div id="from">
+                  <Grid stackable>
+                    <Grid.Column columns={2} className="flex-middle">
+                      <Grid.Column>
+                        <ExchangeSelect
+                          onChange={(val) => onChangeAsset(val, 'from')}
+                          options={getAssets(selectedTo.value)}
+                          selectedValue={selectedFrom}
+                          isDisabled={isLoadingPrice}
+                        />
                       </Grid.Column>
                     </Grid.Column>
                   </Grid>
@@ -952,20 +858,31 @@ export default function ExchangeForm(props) {
             <div className={styles.absoluteBottomBlock}>
               <div className={styles.centeredBlock}>
                 <div className={styles.leftBlockCrypt}>
-                  <div
-                    className={styles.textBlockLeft}
-                    style={{ marginRight: "1rem" }}
-                  >
-                    <span>You are exchanging</span>
-                    <h4>
-                      {selectedFromAmount || 0} {selectedFrom.label}
-                    </h4>
-                    <span>
-                      {!invalidEx && blockPrice
-                        ? `${blockPrice}${userCurrencyState.split(" ")[0]}`
-                        : 0}
-                    </span>
+                  <div className={styles.textBlockLeft}>
+                    <span>You will receive</span>
+                    <h4>{selectedTo.label}</h4>
                   </div>
+                  <div className={"imgToCenter"} style={{ display: "flex",  marginLeft: "1rem" }}>
+                    <img
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        margin: "0 auto",
+                      }}
+                      src={selectedTo.image}
+                      alt=""
+                    />
+                  </div>
+                </div>
+                <div className={styles.centeredBlockCrypt}>
+                  <div className={styles.iconBlock}>
+                    <i
+                      style={{ color: "#fff" }}
+                      className={"far fa-exchange"}
+                    />
+                  </div>
+                </div>
+                <div className={styles.rightBlockCrypt}>
                   <div style={{ display: "flex" }}>
                     <img
                       style={{
@@ -977,40 +894,12 @@ export default function ExchangeForm(props) {
                       alt=""
                     />
                   </div>
-                </div>
-                <div className={styles.centeredBlockCrypt}>
-                  <div className={styles.iconBlock}>
-                    <i
-                      style={{ color: "#fff" }}
-                      className={
-                        isMobile ? "far fa-arrow-down" : "far fa-arrow-right"
-                      }
-                    />
-                  </div>
-                </div>
-                <div className={styles.rightBlockCrypt}>
-                  <div className={"imgToCenter"} style={{ display: "flex" }}>
-                    <img
-                      style={{
-                        width: "80px",
-                        height: "80px",
-                        margin: "0 auto",
-                      }}
-                      src={selectedTo.image}
-                      alt=""
-                    />
-                  </div>
-                  <div className={styles.textBlockRight}>
-                    <span>You will Receive</span>
-                    <h4>
-                      {selectedFromAmount ? selectedToAmount : 0}{" "}
-                      {selectedTo.label}
-                    </h4>
-                    <span>
-                      {!invalidEx && blockPrice
-                        ? `${blockPrice}${userCurrencyState.split(" ")[0]}`
-                        : 0}
-                    </span>
+                  <div
+                    className={styles.textBlockRight}
+                    style={{ marginRight: "1rem" }}
+                  >
+                    <span>You are exchanging</span>
+                    <h4>{selectedFrom.label}</h4>
                   </div>
                 </div>
               </div>
@@ -1018,13 +907,6 @@ export default function ExchangeForm(props) {
             {error ? (
               <Grid.Row centered style={{ marginBottom: "1rem" }}>
                 <h5 style={{ color: "red", textAlign: "center" }}>{error}</h5>
-              </Grid.Row>
-            ) : null}
-            {Number(selectedFrom.balance) < Number(selectedFromAmount) ? (
-              <Grid.Row centered style={{ marginBottom: "1rem" }}>
-                <h5 style={{ color: "red", textAlign: "center" }}>
-                  You don't have enough crypto
-                </h5>
               </Grid.Row>
             ) : null}
             {(tradeType === 'market' && !isLoadingPrice && marketPrice === 0) ? (
@@ -1048,7 +930,7 @@ export default function ExchangeForm(props) {
 
                   <Button
                     disabled={password.length === 0}
-                    onClick={performTrade}
+                    onClick={onClickExchange}
                     size="medium"
                     color="yellow"
                     ui
@@ -1057,30 +939,44 @@ export default function ExchangeForm(props) {
                   </Button>
                 </>
               )}
-
               {tradeInProgress && <MetaLoader size={"small"} />}
-
               {!passwordShouldBeProvided && !tradeInProgress && (
-                <Button
-                  className={"btnExch"}
-                  disabled={
-                    tradeInProgress ||
-                    selectedToAmount == null ||
-                    selectedToAmount == 0 ||
-                    selectedToAmount === 0.0 ||
-                    selectedFrom.balance === 0 ||
-                    Number(selectedFrom.balance) < Number(selectedFromAmount) ||
-                    !selectedFromAmount ||
-                    !selectedToAmount ||
-                    // blockPrice == 0 ||
-                    error
-                  }
-                  onClick={prepareTrade}
-                  color="yellow"
-                  size="large"
-                >
-                  Exchange
-                </Button>
+                <div>
+                  <Button
+                    className={"btnExch"}
+                    disabled={
+                      isLoadingPrice ||
+                      tradeInProgress ||
+                      !selectedToAmount ||
+                      selectedToAmount === 0.0 ||
+                      selectedFrom.balance === 0 ||
+                      error
+                    }
+                    onClick={prepareTrade}
+                    color="yellow"
+                    size="large"
+                  >
+                    Exchange
+                  </Button>
+                  <div style={{
+                      position: "absolute",
+                      display: "inline-block",
+                      borderRadius: "50%",
+                      padding: "4px 12px",
+                      marginTop: "8px",
+                      backgroundColor: "#fbbd08",
+                      marginLeft: "1rem"
+                    }}
+                  >
+                    <i
+                      className="fa fa-info"
+                      style={{ color: "#FFF" }}
+                    />
+                  </div>
+                  <span style={{ color: "lightcoral", textAlign: "left", position: "absolute", marginLeft: "50px" }}>
+                    Market order rate is not guaranteed due to slippage. Click <a href='https://support.meta1coin.vision/how-to-trade-coins-in-the-meta-lite-wallet' style={{ color: "lightcoral", textDecoration: "underline" }} target="_blank">here</a> to learn more.
+                  </span>
+                </div>
               )}
             </div>
           </div>
