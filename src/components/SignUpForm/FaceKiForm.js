@@ -46,11 +46,10 @@ export default function FaceKiForm(props) {
 
   const loadVideo = async (flag) => {
     const videoTag = document.querySelector('video');
-    const features = { audio: false, video: true };
 
     if (flag) {
       return navigator.mediaDevices
-        .enumerateDevices(features)
+        .enumerateDevices()
         .then((devices) => {
           const videoDevices = devices.filter((i) => i.kind == 'videoinput');
           setDevices(videoDevices);
