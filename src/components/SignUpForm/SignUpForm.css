@@ -129,7 +129,6 @@ input {
   flex-direction: column;
   align-items: center;
   position: relative;
-  min-height: 445px;
 }
 
 .btn-div {
@@ -146,6 +145,7 @@ input {
   align-items: center;
   justify-content: center;
   margin-bottom: 0;
+  margin-top: 5px;
 }
 
 .btn-1 {
@@ -178,8 +178,6 @@ input {
   border: none;
 }
 .under-div {
-  height: 600px;
-  width: 600px;
   padding: 1rem;
   margin: 0 auto;
 }
@@ -215,11 +213,11 @@ input {
 }
 
 .header_tag {
-  height: 550px;
-  width: 550px;
-  background-color: rgb(210, 205, 205);
   margin: auto;
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .header_head {
@@ -245,20 +243,18 @@ input {
 
 video {
   border-radius: 5px;
+}
+
+select {
   width: 100%;
-  height: 98%;
-  top: 1%;
+  max-width: 250px;
+  height: 40px;
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+  margin-top: 5px;
 }
 
 @media (max-width: 768px) {
-  video {
-    position: absolute;
-  }
-
-  .child-div {
-    min-height: unset;
-  }
-
   .createWalletForm {
     margin: 0rem;
   }
@@ -291,9 +287,6 @@ video {
 @media screen and (max-width: 600px) {
   .options-height {
     margin-left: 0 !important;
-  }
-  .child-div {
-    height: 400px;
   }
 }
 
@@ -433,8 +426,7 @@ video {
   padding-bottom: 0.4rem  !important;
 }
 .webcam_div {
-  width: 550px I !important;
-  height: 600px  !important;
+  width: 100%;
   background: #fff  !important;  
 }
 @media screen and (max-width: 1024px) {
@@ -458,7 +450,7 @@ video {
   }
   .header_tag {
     width: 100% !important;
-    height: 100%  !important;  
+    height: unset;  
   }
   .btn-1 {
     width: 80px !important;
@@ -478,11 +470,11 @@ video {
   .camera-text-font-size {
     font-size: 13px !important;
   }
-  .span-class {
-    line-height: 1.4285em !important;
-    text-shadow: 1px 1px #000 !important;
-    font-weight: 700 !important;
-    color: #fff !important;
+  .btn-drp {
+    margin-top: 0px;
+  }
+  select {
+    max-width: unset;
   }
 }
 

@@ -1,15 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
-import Webcam from 'react-webcam';
 import { livenessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
-import OvalImage from '../../images/oval/oval19.png';
-import MobileOvalImage from '../../images/oval/oval12.png';
+import OvalImage from '../../images/oval/oval.png';
 import "./SignUpForm.css";
+import { Camera } from 'react-camera-pro';
+import useWidth from '../../lib/useWidth';
 
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const [verifying, setVerifying] = useState(false);
-  const [device, setDevice] = React.useState({});
+  const [devices, setDevices] = useState([]);
+  const [activeDeviceId, setActiveDeviceId] = useState('');
+  const [numberOfCameras, setNumberOfCameras] = useState(0);
+
+  const width = useWidth();
 
   const errorCase = {
     "Already Enrolled": "You already enrolled and verified successfully.",
@@ -20,7 +24,12 @@ export default function FaceKiForm(props) {
     "Biometic Server Error": "Something went wrong from Biometric server.",
     "ESignature Server Error": "Something went wrong from ESignature server.",
     "Email Already Used": "This email already has been used for another user.",
-    "New Name Generation Fail": "Can not generate new name!"
+    "New Name Generation Fail": "Can not generate new name!",
+    noCameraAccessible: 'No camera device accessible. Please connect your camera or try a different browser.',
+    permissionDenied: 'Permission denied. Please refresh and give camera permission.',
+    switchCamera:
+      'It is not possible to switch camera to different one because there is only one video device accessible.',
+    canvas: 'Canvas is not supported.',
   }
 
   useEffect(() => {
@@ -37,13 +46,14 @@ export default function FaceKiForm(props) {
 
   const loadVideo = async (flag) => {
     const videoTag = document.querySelector('video');
-    const features = { audio: false, video: true };
 
     if (flag) {
       return navigator.mediaDevices
-        .getUserMedia(features)
-        .then((display) => {
-          setDevice(display?.getVideoTracks()[0]?.getSettings());
+        .enumerateDevices()
+        .then((devices) => {
+          const videoDevices = devices.filter((i) => i.kind == 'videoinput');
+          setDevices(videoDevices);
+          setActiveDeviceId(videoDevices[0]?.deviceId);
         })
         .finally(() => {
           return true;
@@ -82,8 +92,7 @@ export default function FaceKiForm(props) {
 
     setVerifying(true);
 
-    var sizeForSreenShot = isMobile() && device.width ? { width: device.width, height: device.height } : { width: 1280, height: 720 };
-    const imageSrc = webcamRef.current.getScreenshot(sizeForSreenShot);
+    const imageSrc = webcamRef.current.takePhoto();
 
     if (!imageSrc) {
       alert(errorCase['Camera Not Found']);
@@ -186,6 +195,9 @@ export default function FaceKiForm(props) {
     }
   }
 
+  const camWidth = width > 576 ? 600 : width - 30;
+  const camHeight = camWidth / 1.07;
+
   return (
     <>
       <div style={{ marginLeft: "3rem" }} className={"totalSumBlock"}>
@@ -196,7 +208,7 @@ export default function FaceKiForm(props) {
                 <h6 style={{ fontSize: '24px' }}>Bio-Metric 2 Factor Authentication</h6>
                 <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
               </div>
-              <div className='child-div' style={{ borderRadius: '5px'}}>
+              <div className='child-div' style={{ width: camWidth, height: camHeight }}>
                 <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
                 <button className='btn_x'
@@ -206,13 +218,19 @@ export default function FaceKiForm(props) {
                       });
                     }}>X</button>
                 </div>
-                <img src={isMobile() ? MobileOvalImage : OvalImage} alt='oval-image' className='oval-image' />
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  mirrored
-                />
+                <img src={OvalImage} alt='oval-image' className='oval-image' />
+                <Camera
+                ref={webcamRef}
+                aspectRatio="cover"
+                numberOfCamerasCallback={(i) => setNumberOfCameras(i)}
+                videoSourceDeviceId={activeDeviceId}
+                errorMessages={{
+                  noCameraAccessible: errorCase.noCameraAccessible,
+                  permissionDenied: errorCase.permissionDenied,
+                  switchCamera: errorCase.switchCamera,
+                  canvas: errorCase.canvas,
+                }}
+              />
                 <div className='btn-div'>
                   <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
                   <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
@@ -221,12 +239,23 @@ export default function FaceKiForm(props) {
                   <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
                     Verifying will take 10 seconds as maximum.
                   </span>
-                  <div className="btn-grp" style={{ marginTop: '5px' }}>
+                  <div className="btn-grp">
                     <button className='btn-1' disabled={verifying} onClick={() => checkAndEnroll(0)}>{verifying ? "Verifying..." : "Verify"}</button>
                   </div>
                 </div>
               </div>
             </div>
+            <select
+            onChange={(event) => {
+              setActiveDeviceId(event.target.value);
+            }}
+          >
+            {devices.map((d) => (
+              <option key={d.deviceId} value={d.deviceId}>
+                {d.label}
+              </option>
+            ))}
+          </select>
           </div>
         </div>
       </div>
