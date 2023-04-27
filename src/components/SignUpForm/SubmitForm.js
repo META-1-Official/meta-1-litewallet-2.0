@@ -20,7 +20,7 @@ export default function SubmitForm(props) {
   const [living, setLiving] = useState(localStorage.getItem('living') === 'true' ? true : false);
   const [signed, setSigned] = useState(props.signatureResult !== 'success' ? false : true);
   const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
-  const [subscription, setSubscription] = useState(localStorage.getItem('subscription') === 'true' ? true : false);
+  const [subscription, setSubscription] = useState(localStorage.getItem('subscription') === 'false' ? false : true);
 
   const {isSubmitted, setIsSubmitted, email} = props;
   const { phone, firstName, lastName, accountName, password } = props;
@@ -189,7 +189,7 @@ export default function SubmitForm(props) {
                   localStorage.setItem('subscription', !subscription);
                 }}
                 checked={subscription}
-                label="Subscribe for exclusive news and offers"
+                label="I consent to receive emails about member events, platform news and other information from META Membership Association"
               />
             </Form.Field>
 

@@ -1,8 +1,7 @@
 import axios from 'axios';
+import { getAccessToken } from '../utils/localstorage';
 
-const SENDX_BASE_URL = process.env.REACT_APP_SENDX_API_URL;
-const SENDX_API_KEY = process.env.REACT_APP_SENDX_API_KEY;
-const SENDX_TEAM_ID = process.env.REACT_APP_SENDX_TEAM_ID;
+const LITE_WALLET_BACKEND_URL = process.env.REACT_APP_BACK_URL;
 
 // interface SubscribeParams {
 //   email: string;
@@ -20,9 +19,9 @@ class SendXApi {
 
   constructor() {
     this.api = axios.create({
-      baseURL: SENDX_BASE_URL,
+      baseURL: LITE_WALLET_BACKEND_URL,
       headers: {
-        api_key: SENDX_API_KEY,
+        'Authorization': 'Bearer ' + getAccessToken()
       },
     });
   }
@@ -30,7 +29,7 @@ class SendXApi {
   // subscribe = async (payload: SubscribeParams) => {
   subscribe = async (payload) => {
     const { data } = await this.api.post(
-      `/contact/identify?team_id=${SENDX_TEAM_ID}`,
+      `/sendx/subscribe`,
       payload,
     );
     return data;
