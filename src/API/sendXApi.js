@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { getAccessToken } from '../utils/localstorage';
 
 const LITE_WALLET_BACKEND_URL = process.env.REACT_APP_BACK_URL;
 
@@ -20,9 +19,6 @@ class SendXApi {
   constructor() {
     this.api = axios.create({
       baseURL: LITE_WALLET_BACKEND_URL,
-      headers: {
-        'Authorization': 'Bearer ' + getAccessToken()
-      },
     });
   }
 
