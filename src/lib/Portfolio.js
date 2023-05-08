@@ -5,6 +5,11 @@ import eos from '../images/assets/EOS.svg'
 import metaone from '../images/assets/META1.svg'
 import usdt from '../images/assets/USDT.svg'
 import xlm from '../images/assets/XLM.svg'
+import doge from '../images/assets/DOGE.svg'
+import sol from '../images/assets/SOL.png'
+import trx from '../images/assets/TRX.svg'
+import xrp from '../images/assets/XRP.png'
+
 const btc = 'https://cdn.byte-trade.com/token/icon6/btc.png'
 const assetImages = {
     ETH: eth,
@@ -14,7 +19,11 @@ const assetImages = {
     META1: metaone,
     BNB: bnb,
     LTC: ltc,
-    USDT: usdt
+    USDT: usdt,
+    DOGE: doge,
+    SOL: sol,
+    TRX: trx,
+    XRP: xrp
 }
 
 export default class Portfolio {
