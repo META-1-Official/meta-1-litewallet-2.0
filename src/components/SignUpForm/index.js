@@ -156,7 +156,7 @@ export default function SignUpForm(props) {
     try {
       const res_update = await updateUserKycProfile(email, { member1Name }, token);
       //
-      if (localStorage.getItem('subscription') === 'true') {
+      if (localStorage.getItem('subscription') !== 'false') {
         sendXApi
           .subscribe({
             email,
