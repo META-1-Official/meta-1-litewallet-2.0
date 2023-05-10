@@ -173,7 +173,7 @@ export default function ExchangeForm(props) {
       setError("");
     }
 
-    if (Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
+    if (selectedFrom && Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
       setIsLoadingPrice(true);
       const newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedFrom.balance);
 
@@ -296,8 +296,12 @@ export default function ExchangeForm(props) {
     ) {
       const isQuoting = _selectedTo.value === 'META1';
       const getPairPromise = Meta1.ticker(_selectedFrom.value, _selectedTo.value);
-      const getBaseAssetPricePromise = Meta1.ticker("USDT", _selectedFrom.value);
-      const getQuoteAssetPricePromise = Meta1.ticker("USDT", _selectedTo.value);
+      const getBaseAssetPricePromise = _selectedFrom.value !== 'META1'
+        ? Apis.db.get_published_asset_price(_selectedFrom.value)
+        : Promise.resolve()
+      const getQuoteAssetPricePromise =  _selectedTo.value !== 'META1'
+        ? Apis.db.get_published_asset_price(_selectedTo.value)
+        : Promise.resolve()
       const getAssetLimitationPromise = Apis.db.get_asset_limitation_value('META1');
       Promise.all([getPairPromise, getBaseAssetPricePromise, getQuoteAssetPricePromise, getAssetLimitationPromise])
         .then(res => {
@@ -305,8 +309,11 @@ export default function ExchangeForm(props) {
           const meta1_usdt = ceilFloat(res[3] / 1000000000, 2);
           console.log(LOG_ID, 'META1 Backing Asset($): ', meta1_usdt);
 
+          const baseAssetPrice = res[1] ? (res[1].numerator / res[1].denominator) : meta1_usdt;
+          const quoteAssetPrice = res[2] ? (res[2].numerator / res[2].denominator) : meta1_usdt;
+
           if (_selectedFrom.value === 'META1' || _selectedTo.value === 'META1') {
-            const asset_usdt = parseFloat(isQuoting ? res[1].latest : res[2].latest) || 1;
+            const asset_usdt = isQuoting ? baseAssetPrice : quoteAssetPrice;
             let ratio = isQuoting ? meta1_usdt / asset_usdt : asset_usdt / meta1_usdt;
             ratio = isQuoting ? ceilFloat(ratio, _selectedTo.pre) : floorFloat(ratio, _selectedTo.pre);
             console.log(
@@ -322,9 +329,12 @@ export default function ExchangeForm(props) {
             setBackingAssetValue(ratio);
           }
 
-          setBaseAssetPrice(res[1].latest === '0' ? 1 : res[1].latest);
-          setQuoteAssetPrice(res[2].latest === '0' ? 1 : res[2].latest);
+          setBaseAssetPrice(baseAssetPrice);
+          setQuoteAssetPrice(quoteAssetPrice);
           setPair(res[0]);
+        })
+        .catch(err => {
+          console.info(LOG_ID, error);
         });
     }
   }
@@ -788,7 +798,7 @@ export default function ExchangeForm(props) {
                                       }
                                     }}
                                     min="0"
-                                    inputmode="numeric"
+                                    inputMode="numeric"
                                     pattern="\d*"
                                     type={"number"}
                                     placeholder={`Amount ${userCurrencyState.split(" ")[1]}`}

@@ -118,9 +118,9 @@ export default function SubmitForm(props) {
                         <button
                           name="copyToken"
                           style={{ color: "#240000" }}
-                          class="ui yellow right icon button"
+                          className="ui yellow right icon button"
                         >
-                          <i class="copy icon" />
+                          <i className="copy icon" />
                         </button>
                       </CopyToClipboard>
                       <span className="copy_text copy_text_passkey">Copy</span>

@@ -199,7 +199,7 @@ export const OrdersTable = (props) => {
             </div>}
           </Stack>
         </Grid>
-        <Grid item md={1.5}  class='grid-css' >
+        <Grid item md={1.5}  className='grid-css' >
           <Stack spacing={2}>
           <FormControl variant="standard">
             <Select
