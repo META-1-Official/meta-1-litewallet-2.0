@@ -157,13 +157,15 @@ export default function SignUpForm(props) {
       const res_update = await updateUserKycProfile(email, { member1Name }, token);
       //
       if (localStorage.getItem('subscription') !== 'false') {
+        const name = response_user.name.split(' ');
+        const mobile = response_user.phoneNumber;
         sendXApi
           .subscribe({
             email,
             tags: [process.env.REACT_APP_ENV === 'prod' ? 'MEMBERS' : 'DEV2'],
-            firstName,
-            lastName,
-            customFields: { mobile: phone }
+            firstName: name[0],
+            lastName: name[1],
+            customFields: { mobile }
           })
           .then(() => {
             console.log('Subscription completed!');
