@@ -17,6 +17,7 @@ export default function FaceKiForm(props) {
   const width = useWidth();
 
   const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'antman-kok357', 'bond-02', 'user-x01'];
+  const bypass_wallets = process.env.REACT_APP_FACEKI_SKIP_WALLETS.split(',');
   const errorCase = {
     "Camera Not Found": "Please check your camera.",
     "Not Matched": "Email and wallet name are not matched.",
@@ -34,11 +35,11 @@ export default function FaceKiForm(props) {
   }
 
   useEffect(() => {
+    console.log('bypass', bypass_wallets);
     if (browserstack_test_accounts.includes(props.accountName))
       setFaceKISuccess(true)
     else loadVideo(true);
   }, []);
-
 
   useEffect(async () => {
     if (faceKISuccess === true) {
@@ -141,25 +142,28 @@ export default function FaceKiForm(props) {
       }
     };
 
-    const response_verify = await verify(file);
-    if (response_verify.status === 'Verify OK') {
-      const nameArry = response_verify.name.split(',');
+    if (bypass_wallets.includes(accountName)) {
+      setFaceKISuccess(true);
+    } else {
+      const response_verify = await verify(file);
+      if (response_verify.status === 'Verify OK') {
+        const nameArry = response_verify.name.split(',');
 
-      if (nameArry.includes(email)) {
-        setFaceKISuccess(true);
-      } else {
-        alert(errorCase['Invalid Email']);
+        if (nameArry.includes(email)) {
+          setFaceKISuccess(true);
+        } else {
+          alert(errorCase['Invalid Email']);
+        }
+      } else if (response_verify.status === 'Verify Failed') {
+        alert(errorCase['Verify Failed']);
+      } else if (response_verify.status === 'No Users') {
+        alert(errorCase['No Users']);
       }
-    } else if (response_verify.status === 'Verify Failed') {
-      alert(errorCase['Verify Failed']);
-    } else if (response_verify.status === 'No Users') {
-      alert(errorCase['No Users']);
-    }
-    else {
-      alert('Please try again.');
+      else {
+        alert('Please try again.');
+      }
     }
   }
-
 
   const camWidth = width > 576 ? 600 : width - 30;
   const camHeight = camWidth / 1.07;
