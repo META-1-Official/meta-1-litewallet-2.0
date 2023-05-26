@@ -687,7 +687,6 @@ const SendForm = React.memo((props) => {
           <div className={"bottomBlockAdapt"}>
             <RightSideHelpMenuSecondType
               onClickExchangeAssetHandler={onClickExchangeAssetHandler}
-              assets={assets}
             />
           </div>
         </div>

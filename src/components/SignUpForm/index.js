@@ -28,7 +28,6 @@ export default function SignUpForm(props) {
     signatureResult,
     onBackClick,
     web3auth,
-    assets
   } = props;
 
   const [accountName, setAccountName] = useState("");
@@ -421,7 +420,6 @@ export default function SignUpForm(props) {
             <div className={"adaptThing"}>
               <RightSideHelpMenuFirstType
                 onClickExchangeAssetHandler={onClickExchangeAssetHandler}
-                assets={assets}
                 portfolio={portfolio}
               />
             </div>

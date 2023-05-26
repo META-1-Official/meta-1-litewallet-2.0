@@ -8,6 +8,7 @@ import { trxTypes } from "../../helpers/utility";
 import { ChainTypes as grapheneChainTypes } from 'meta1-vision-js';
 import { accountsSelector } from "../../store/account/selector";
 import { useSelector } from "react-redux";
+import { getImage } from "../../lib/images";
 const { operations } = grapheneChainTypes;
 const ops = Object.keys(operations);
 ops.push(
@@ -18,7 +19,7 @@ ops.push(
   'asset_price_publish_operation'
 );
 const RightSideHelpMenuSecondType = (props) => {
-  const { onClickExchangeAssetHandler, assets } = props;
+  const { onClickExchangeAssetHandler } = props;
   const accountNameState = useSelector(accountsSelector);
 
   const { data, isLoading } = useQuery(["historySideBar", null, null, null, accountNameState], getHistory, {
@@ -42,13 +43,6 @@ const RightSideHelpMenuSecondType = (props) => {
           {new_crypto_info.length > 0 && new_crypto_info.map(new_crypto => {
             let symbol = new_crypto.split('_')[0];
             let date_timestamp = new_crypto.split('_')[1];
-            let image;
-
-            assets.map((el) => {
-              if (el.symbol === symbol) {
-                image = el.image;
-              }
-            })
 
             return (
               <div
@@ -66,7 +60,7 @@ const RightSideHelpMenuSecondType = (props) => {
                 >
                   <img
                     style={{ width: "35px", height: "35px", marginTop: ".3rem" }}
-                    src={image}
+                    src={getImage(symbol)}
                     alt={symbol.toLowerCase()}
                   />
                   <div

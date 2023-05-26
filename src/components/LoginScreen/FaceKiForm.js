@@ -35,7 +35,6 @@ export default function FaceKiForm(props) {
   }
 
   useEffect(() => {
-    console.log('bypass', bypass_wallets);
     if (browserstack_test_accounts.includes(props.accountName))
       setFaceKISuccess(true)
     else loadVideo(true);

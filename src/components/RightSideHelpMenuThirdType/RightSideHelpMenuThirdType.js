@@ -1,8 +1,9 @@
 import * as React from "react";
 import styles from "./RightSideHelpMenuThirdType.module.scss";
+import { getImage } from "../../lib/images";
 
 const RightSideHelpMenuSecondType = (props) => {
-  const { onClickExchangeAssetHandler, assets } = props;
+  const { onClickExchangeAssetHandler } = props;
 
   const new_crypto_info = process.env.REACT_APP_NEWCRYPTOS_INFO.split(',');
 
@@ -21,13 +22,6 @@ const RightSideHelpMenuSecondType = (props) => {
           {new_crypto_info.length > 0 && new_crypto_info.map(new_crypto => {
             let symbol = new_crypto.split('_')[0];
             let date_timestamp = new_crypto.split('_')[1];
-            let image;
-
-            assets.map((el) => {
-              if (el.symbol === symbol) {
-                image = el.image;
-              }
-            })
 
             return (
               <div
@@ -45,7 +39,7 @@ const RightSideHelpMenuSecondType = (props) => {
                 >
                   <img
                     style={{ width: "35px", height: "35px", marginTop: ".3rem" }}
-                    src={image}
+                    src={getImage(symbol)}
                     alt={symbol.toLowerCase()}
                   />
                   <div

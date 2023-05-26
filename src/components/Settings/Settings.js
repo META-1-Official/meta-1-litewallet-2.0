@@ -315,7 +315,6 @@ const Settings = (props) => {
           <div className={styles.helpBlockAdapt} style={{ width: "30%" }}>
             <RightSideHelpMenuThirdType
               onClickExchangeAssetHandler={onClickExchangeAssetHandler}
-              assets={assets}
             />
           </div>
         </div>

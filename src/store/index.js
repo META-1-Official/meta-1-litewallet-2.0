@@ -9,8 +9,9 @@ const initialState = {};
 const enhancers = [];
 
 const sagaMiddleware = createSagaMiddleware();
-const logger = createLogger();
-const middleware = [sagaMiddleware, logger];
+// const logger = createLogger();
+// const middleware = [sagaMiddleware, logger];
+const middleware = [sagaMiddleware];
 
 // redux dev tools
 if (process.env.NODE_ENV === 'development') {

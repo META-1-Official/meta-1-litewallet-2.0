@@ -350,7 +350,6 @@ export default function LoginScreen(props) {
           <div className={styles.rightBlockContent}>
             <RightSideHelpMenuFirstType
               onClickExchangeAssetHandler={onClickExchangeAssetHandler}
-              assets={assets}
               portfolio={portfolio}
             />
           </div>
