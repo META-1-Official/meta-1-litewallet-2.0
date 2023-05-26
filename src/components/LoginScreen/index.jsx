@@ -20,12 +20,12 @@ export default function LoginScreen(props) {
     onSubmit,
     onSignUpClick,
     portfolio,
-    onClickExchangeEOSHandler,
-    onClickExchangeUSDTHandler,
+    assets,
     setLoginDataError,
     onClickRedirectToPortfolio,
     web3auth,
-    onClickResetIsSignatureProcessing
+    onClickResetIsSignatureProcessing,
+    onClickExchangeAssetHandler
   } = props;
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
@@ -349,8 +349,8 @@ export default function LoginScreen(props) {
           </div>
           <div className={styles.rightBlockContent}>
             <RightSideHelpMenuFirstType
-              onClickExchangeEOSHandler={onClickExchangeEOSHandler}
-              onClickExchangeUSDTHandler={onClickExchangeUSDTHandler}
+              onClickExchangeAssetHandler={onClickExchangeAssetHandler}
+              assets={assets}
               portfolio={portfolio}
             />
           </div>
