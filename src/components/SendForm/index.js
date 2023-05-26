@@ -27,8 +27,7 @@ const SendForm = React.memo((props) => {
     asset,
     onSuccessTransfer,
     assets,
-    onClickExchangeEOSHandler,
-    onClickExchangeUSDTHandler
+    onClickExchangeAssetHandler,
   } = props;
   const userCurrencyState = useSelector(userCurrencySelector);
   const sendApiState = useSelector(senderApiSelector);
@@ -687,8 +686,8 @@ const SendForm = React.memo((props) => {
           </div>
           <div className={"bottomBlockAdapt"}>
             <RightSideHelpMenuSecondType
-              onClickExchangeEOSHandler={onClickExchangeEOSHandler}
-              onClickExchangeUSDTHandler={onClickExchangeUSDTHandler}
+              onClickExchangeAssetHandler={onClickExchangeAssetHandler}
+              assets={assets}
             />
           </div>
         </div>

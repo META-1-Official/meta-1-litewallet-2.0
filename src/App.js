@@ -595,20 +595,16 @@ function Application(props) {
                       e.preventDefault();
                       setActiveScreen("login");
                     }}
-                    onClickExchangeUSDTHandler={(e) => {
+                    onClickExchangeAssetHandler={(e, asset) => {
                       e.preventDefault();
-                      setTradeAsset("USDT");
-                      setActiveScreen("exchange");
-                    }}
-                    onClickExchangeEOSHandler={(e) => {
-                      e.preventDefault();
-                      setTradeAsset("EOS");
+                      setTradeAsset(asset);
                       setActiveScreen("exchange");
                     }}
                     portfolio={portfolio}
                     isSignatureProcessing={isSignatureProcessing}
                     signatureResult={signatureResult}
                     web3auth={web3auth}
+                    assets={assets}
                   />
                   <Footer
                     onClickHomeHandler={(e) => {
@@ -635,14 +631,9 @@ function Application(props) {
                       e.preventDefault();
                       setActiveScreen("wallet");
                     }}
-                    onClickExchangeUSDTHandler={(e) => {
+                    onClickExchangeAssetHandler={(e, asset) => {
                       e.preventDefault();
-                      setTradeAsset("USDT");
-                      setActiveScreen("exchange");
-                    }}
-                    onClickExchangeEOSHandler={(e) => {
-                      e.preventDefault();
-                      setTradeAsset("EOS");
+                      setTradeAsset(asset);
                       setActiveScreen("exchange");
                     }}
                     getAvatarFromBack={getAvatarFromBack}
@@ -650,6 +641,7 @@ function Application(props) {
                     setUserCurrency={setUserCurrency}
                     setTokenModalMsg={setTokenModalMsg}
                     setTokenModalOpen={setTokenModalOpen}
+                    assets={assets}
                   />
                   <Footer
                     onClickHomeHandler={(e) => {
@@ -682,14 +674,9 @@ function Application(props) {
                     asset={tradeAsset}
                     metaUrl={metaUrl}
                     assets={assets}
-                    onClickExchangeUSDTHandler={(e) => {
+                    onClickExchangeAssetHandler={(e, asset) => {
                       e.preventDefault();
-                      setTradeAsset("USDT");
-                      setActiveScreen("exchange");
-                    }}
-                    onClickExchangeEOSHandler={(e) => {
-                      e.preventDefault();
-                      setTradeAsset("EOS");
+                      setTradeAsset(asset);
                       setActiveScreen("exchange");
                     }}
                     passwordShouldBeProvided={passwordShouldBeProvided}
@@ -720,14 +707,9 @@ function Application(props) {
                     setLoginDataError={setLoginDataError}
                     onSubmit={onLogin}
                     portfolio={portfolio}
-                    onClickExchangeUSDTHandler={(e) => {
+                    onClickExchangeAssetHandler={(e, asset) => {
                       e.preventDefault();
-                      setTradeAsset("USDT");
-                      setActiveScreen("exchange");
-                    }}
-                    onClickExchangeEOSHandler={(e) => {
-                      e.preventDefault();
-                      setTradeAsset("EOS");
+                      setTradeAsset(asset);
                       setActiveScreen("exchange");
                     }}
                     onClickRedirectToPortfolio={(e) => {
@@ -739,6 +721,7 @@ function Application(props) {
                       setSignatureResult(null);
                     }}
                     web3auth={web3auth}
+                    assets={assets}
                   />
                   <Footer
                     onClickHomeHandler={(e) => {
@@ -773,14 +756,9 @@ function Application(props) {
                     asset={tradeAsset}
                     sender={accountName}
                     assets={assets}
-                    onClickExchangeUSDTHandler={(e) => {
+                    onClickExchangeAssetHandler={(e, asset) => {
                       e.preventDefault();
-                      setTradeAsset("USDT");
-                      setActiveScreen("exchange");
-                    }}
-                    onClickExchangeEOSHandler={(e) => {
-                      e.preventDefault();
-                      setTradeAsset("EOS");
+                      setTradeAsset(asset);
                       setActiveScreen("exchange");
                     }}
                   />
@@ -909,14 +887,9 @@ function Application(props) {
                             }}
                             account={account}
                             accountName={accountName}
-                            onClickExchangeUSDTHandler={(e) => {
+                            onClickExchangeAssetHandler={(e, asset) => {
                               e.preventDefault();
-                              setTradeAsset("USDT");
-                              setActiveScreen("exchange");
-                            }}
-                            onClickExchangeEOSHandler={(e) => {
-                              e.preventDefault();
-                              setTradeAsset("EOS");
+                              setTradeAsset(asset);
                               setActiveScreen("exchange");
                             }}
                             setFullPortfolio={setFullPortfolio}
@@ -925,16 +898,12 @@ function Application(props) {
                         </div>
                         <div className={"bottomAdaptBlock"}>
                           <RightSideHelpMenuSecondType
-                            onClickExchangeUSDTHandler={(e) => {
+                            onClickExchangeAssetHandler={(e, asset) => {
                               e.preventDefault();
-                              setTradeAsset("USDT");
+                              setTradeAsset(asset);
                               setActiveScreen("exchange");
                             }}
-                            onClickExchangeEOSHandler={(e) => {
-                              e.preventDefault();
-                              setTradeAsset("EOS");
-                              setActiveScreen("exchange");
-                            }}
+                            assets={assets}
                             fromHistory={false}
                           />
                         </div>
@@ -1007,16 +976,12 @@ function Application(props) {
                         </div>
                         <div className={"bottomAdaptBlock margin-class newBottomAdaptBlock"}>
                           <RightSideHelpMenuSecondType
-                            onClickExchangeUSDTHandler={(e) => {
+                            onClickExchangeUSDTHandler={(e, asset) => {
                               e.preventDefault();
-                              setTradeAsset("USDT");
+                              setTradeAsset(asset);
                               setActiveScreen("exchange");
                             }}
-                            onClickExchangeEOSHandler={(e) => {
-                              e.preventDefault();
-                              setTradeAsset("EOS");
-                              setActiveScreen("exchange");
-                            }}
+                            assets={assets}
                             fromHistory={true}
                           />
                         </div>

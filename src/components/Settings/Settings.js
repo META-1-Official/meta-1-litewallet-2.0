@@ -20,13 +20,13 @@ import { saveUserCurrencyRequest, saveUserCurrencyReset, setUserCurrencyAction }
 let isSet = false;
 const Settings = (props) => {
   const {
-    onClickExchangeEOSHandler,
-    onClickExchangeUSDTHandler,
+    onClickExchangeAssetHandler,
     getAvatarFromBack,
     userCurrency,
     setUserCurrency,
     setTokenModalMsg,
-    setTokenModalOpen
+    setTokenModalOpen,
+    assets
   } = props;
 
   const checkPasswordState = useSelector(checkPasswordObjSelector);
@@ -314,8 +314,8 @@ const Settings = (props) => {
           </div>
           <div className={styles.helpBlockAdapt} style={{ width: "30%" }}>
             <RightSideHelpMenuThirdType
-              onClickExchangeEOSHandler={onClickExchangeEOSHandler}
-              onClickExchangeUSDTHandler={onClickExchangeUSDTHandler}
+              onClickExchangeAssetHandler={onClickExchangeAssetHandler}
+              assets={assets}
             />
           </div>
         </div>

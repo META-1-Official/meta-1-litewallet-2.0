@@ -22,13 +22,13 @@ import sendXApi from '../../API/sendXApi';
 export default function SignUpForm(props) {
   const {
     onRegistration,
-    onClickExchangeEOSHandler,
-    onClickExchangeUSDTHandler,
+    onClickExchangeAssetHandler,
     portfolio,
     isSignatureProcessing,
     signatureResult,
     onBackClick,
-    web3auth
+    web3auth,
+    assets
   } = props;
 
   const [accountName, setAccountName] = useState("");
@@ -420,8 +420,8 @@ export default function SignUpForm(props) {
             </div>
             <div className={"adaptThing"}>
               <RightSideHelpMenuFirstType
-                onClickExchangeEOSHandler={onClickExchangeEOSHandler}
-                onClickExchangeUSDTHandler={onClickExchangeUSDTHandler}
+                onClickExchangeAssetHandler={onClickExchangeAssetHandler}
+                assets={assets}
                 portfolio={portfolio}
               />
             </div>
