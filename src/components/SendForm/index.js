@@ -312,7 +312,7 @@ const SendForm = React.memo((props) => {
   const PasswordForm = (props) => {
     const [password, setPassword] = useState("");
     return (
-      <div class="ui large fluid labeled input action">
+      <div className="ui large fluid labeled input action">
         <input
           type="password"
           placeholder="Passkey"
@@ -494,7 +494,7 @@ const SendForm = React.memo((props) => {
                         type="number"
                         className={styles.inputDollars}
                         min="0"
-                        inputmode="numeric"
+                        inputMode="numeric"
                         pattern="\d*"
                         onChange={(e) => {
                           if (Number(e.target.value) >= 0) {

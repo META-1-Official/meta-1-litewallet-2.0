@@ -68,7 +68,7 @@ const CustomizeColumns = () => {
                 onMouseEnter={handleToggle}
             >
                 <i className="far fa-cog icon_customize"></i>
-                <i class="fas fa-sort-down icon_customize_1"></i>
+                <i className="fas fa-sort-down icon_customize_1"></i>
 
             </Button>
             <Popper className={`main-custom-open-order`} 

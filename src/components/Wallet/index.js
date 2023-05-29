@@ -251,7 +251,7 @@ function Wallet(props) {
                   }}
                   className='selectbox_div'
                 > 
-                  Select currency to display <i class="fas fa-caret-down"></i>
+                  Select currency to display <i className="fas fa-caret-down"></i>
                 </div>}
                 {!isCurrencySelectedEmpty && <FormControl className="mw-400 width-selectBox" sx={{ m: 1, minWidth: "270" }}>
                   <InputLabel 
