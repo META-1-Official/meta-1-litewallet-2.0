@@ -23,6 +23,8 @@ const RightSideHelpMenuSecondType = (props) => {
             let symbol = new_crypto.split('_')[0];
             let date_timestamp = new_crypto.split('_')[1];
 
+            if (symbol === '') return null;
+
             return (
               <div
                 className={styles.crypto}
