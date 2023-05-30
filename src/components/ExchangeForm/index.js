@@ -243,7 +243,7 @@ export default function ExchangeForm(props) {
     estPrice = estPrice * Math.pow(10, buyAsset.pre - sellAsset.pre);
 
     if (estPrice < price) {
-      while (estPrice < price && delta < 100) {
+      while (estPrice < price && delta < 200) {
         delta += 1;
         _sellAmount += 1;
         estPrice = _sellAmount / estBuyAmount;
@@ -257,7 +257,7 @@ export default function ExchangeForm(props) {
       to: selectedTo?.value?.trim(),
       amount: selectedToAmount,
       password: password,
-      tradePrice: _sellAmount
+      tradePrice: estPrice,
     });
     
     if (buyResult.error) {
@@ -604,7 +604,7 @@ export default function ExchangeForm(props) {
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
       setIsInputsEnabled(true);
-      setMarketPrice(_marketPrice);
+      setMarketPrice(ceilFloat(_marketPrice, 5));
     }
 
     setIsLoadingPrice(false);
