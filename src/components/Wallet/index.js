@@ -51,7 +51,7 @@ function Wallet(props) {
   const { data, isLoading, error } = useQuery("cryptos", getDatas);
 
   async function getDatas() {
-    const cryptoArray = ["META1", "ETH", "BTC", "BNB", "EOS", "XLM", "LTC"];
+    const cryptoArray = ["META1", "ETH", "BTC", "BNB", "EOS", "XLM", "LTC", "XRP", "TRX", "SOL", "DOGE"];
     let fetchedCryptos = {};
     for (let i = 0; i < cryptoArray.length; i++) {
       fetchedCryptos[cryptoArray[i]] = await Meta1.ticker(

@@ -1034,45 +1034,27 @@ export default function ExchangeForm(props) {
           <div className={"flexNeed customFlexNeed newCustomFlexNeed"} >
             <RightSideHelpMenuSecondType
               fromHistory="exchange"
-              onClickExchangeEOSHandler={() => {
-                setSelectedFrom({
-                  image: "/static/media/EOS.fb40b8e0.svg",
-                  value: "EOS",
-                  label: "EOS",
-                  pre: 4,
-                  balance: 0,
-                });
+              assets={assets}
+              onClickExchangeAssetHandler={(e, asset) => {
+                e.preventDefault();
+                
+                let balance = 0;
                 portfolio.map((el) => {
-                  if (el.name === "EOS") {
-                    setSelectedFrom({
-                      image: "/static/media/EOS.fb40b8e0.svg",
-                      value: "EOS",
-                      label: "EOS",
-                      pre: 4,
-                      balance: el.qty,
-                    });
+                  if (el.name === asset) {
+                    balance = el.qty;
                   }
                 });
-              }}
-              onClickExchangeUSDTHandler={() => {
-                setSelectedFrom({
-                  image: "/static/media/USDT.004b5e55.svg",
-                  value: "USDT",
-                  label: "USDT",
-                  pre: 2,
-                  balance: 0,
-                });
-                portfolio.map((el) => {
-                  if (el.name === "USDT") {
+                assets.map((el) => {
+                  if (el.symbol === asset) {
                     setSelectedFrom({
-                      image: "/static/media/USDT.004b5e55.svg",
-                      value: "USDT",
-                      label: "USDT",
-                      pre: 2,
-                      balance: el.qty,
+                      image: el.image,
+                      value: asset,
+                      label: asset,
+                      pre: el.precision,
+                      balance,
                     });
                   }
-                });
+                })
               }}
             />
           </div>

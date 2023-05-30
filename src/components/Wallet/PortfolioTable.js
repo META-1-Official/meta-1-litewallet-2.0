@@ -34,7 +34,7 @@ const PortfolioTable = React.memo((props) => {
   const { data, isLoading, error } = useQuery("cryptosTable", getDatas);
 
   async function getDatas() {
-    const cryptoArray = ["META1", "ETH", "BTC", "BNB", "EOS", "XLM", "LTC"];
+    const cryptoArray = ["META1", "ETH", "BTC", "BNB", "EOS", "XLM", "LTC", "XRP", "TRX", "SOL", "DOGE"];
     let fetchedCryptos = {};
     for (let i = 0; i < cryptoArray.length; i++) {
       fetchedCryptos[cryptoArray[i]] = await Meta1.ticker(
@@ -87,7 +87,7 @@ const PortfolioTable = React.memo((props) => {
   };
 
   const currencyPrice = (datass) => {
-    return Number(data[datass.name].latest).toFixed(8);
+    return data[datass.name]?Number(data[datass.name].latest).toFixed(8): 0;
   };
 
   const calculateCurrencyPrice = (value) => {
@@ -187,7 +187,7 @@ const PortfolioTable = React.memo((props) => {
               </StyledTableCell>
               <StyledTableCell align="left">
                 {
-                  <div
+                  data[datas.name] && <div
                     className={
                       Number(data[datas.name].percent_change) >= 0
                         ? "plus"
