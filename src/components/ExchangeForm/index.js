@@ -175,7 +175,7 @@ export default function ExchangeForm(props) {
 
     if (selectedFrom && Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
       setIsLoadingPrice(true);
-      const newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedFrom.balance);
+      const newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedToAmount);
 
       if (newMarketPrice * selectedToAmount > selectedFrom.balance) {
         const amountToSell = floorFloat(selectedFrom.balance / newMarketPrice, 3);
@@ -184,18 +184,6 @@ export default function ExchangeForm(props) {
       setIsLoadingPrice(false);
     }
   }, [selectedToAmount]);
-
-  useEffect(() => {
-    if (Number(blockPrice) <= 0.003) {
-      setError(
-        `The amount must be greater than ${(
-          0.003 * Number(userCurrencyState.split(" ")[2])
-        ).toFixed(3)} ${userCurrencyState.split(" ")[1]}`
-      );
-    } else {
-      setError("");
-    }
-  }, [blockPrice]);
 
   useEffect(() => {
     setPasswordShouldBeProvided(false);
@@ -212,8 +200,8 @@ export default function ExchangeForm(props) {
     const marketPrice = await calculateMarketPrice(baseAsset, quoteAsset);
 
     let newMarketPrice = marketPrice;
-    if (Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
-      newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedFrom.balance);
+    if (Number(selectedFrom.balance) > Number(selectedToAmount) * marketPrice) {
+      newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedToAmount);
     }
 
     if (marketLiquidity < selectedToAmount) {
@@ -231,12 +219,45 @@ export default function ExchangeForm(props) {
       return;
     }
 
+    // *** Fix tiny amount issue (precision issue) *** //
+    const sellAsset = selectedFrom;
+    const buyAsset = selectedTo;
+    let price = newMarketPrice;
+
+    const sellAmount = () => {
+      let scaledAmount = selectedToAmount * price;
+      console.log('PRE', selectedToAmount, Math.pow(10, sellAsset.pre));
+      return Number(scaledAmount) * Math.pow(10, sellAsset.pre)
+    };
+
+    const buyAmount = () => {
+      return Number(selectedToAmount) * Math.pow(10, buyAsset.pre);
+    };
+
+    const estSellAmount = floorFloat(sellAmount(), 0);
+    const estBuyAmount = floorFloat(buyAmount(), 0);
+    let _sellAmount = estSellAmount;
+    let estPrice;
+    let delta = 0;  // Prevent endless loop
+    estPrice = estSellAmount / estBuyAmount;
+    estPrice = estPrice * Math.pow(10, buyAsset.pre - sellAsset.pre);
+
+    if (estPrice < price) {
+      while (estPrice < price && delta < 200) {
+        delta += 1;
+        _sellAmount += 1;
+        estPrice = _sellAmount / estBuyAmount;
+        estPrice = estPrice * Math.pow(10, buyAsset.pre - sellAsset.pre);
+      }
+    }
+    // *********************************************** //
+
     const buyResult = await traderState.perform({
       from: selectedFrom.value,
       to: selectedTo?.value?.trim(),
       amount: selectedToAmount,
       password: password,
-      tradePrice: newMarketPrice
+      tradePrice: estPrice,
     });
     
     if (buyResult.error) {
@@ -573,27 +594,17 @@ export default function ExchangeForm(props) {
     }
 
     if (_marketPrice > 0) {
-      const percentDiff = _marketPrice + _marketPrice / Math.pow(10, 3);
-
       if (isTradingMETA1 && backingAssetValue) {
         const diff = Math.abs(_marketPrice - backingAssetValue) / 2;
 
-        if (!isQuoting) {
-          if (percentDiff >= backingAssetValue) {
+        if (!isQuoting && _marketPrice >= backingAssetValue) {
             _marketPrice = _marketPrice + diff;
-          } else {
-            _marketPrice = percentDiff;
-          }
-        } else {
-          _marketPrice = percentDiff;
         }
-      } else {
-        _marketPrice = percentDiff;
       }
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
       setIsInputsEnabled(true);
-      setMarketPrice(_marketPrice);
+      setMarketPrice(ceilFloat(_marketPrice, 5));
     }
 
     setIsLoadingPrice(false);
