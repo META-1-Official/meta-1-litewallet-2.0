@@ -1,6 +1,6 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
 import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar, validateSignature } from '../../API/API';
-import { setAccessToken, setLocation, setLoginDetail } from '../../utils/localstorage';
+import { setAccessToken, setLocation } from '../../utils/localstorage';
 import { checkTokenRequest, checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService, uploadAvatarFail, deleteAvatarFailed } from './actions';
 import * as types from './types';
 import Meta1 from "meta1-vision-dex";
@@ -17,7 +17,6 @@ function* loginHandler(data) {
         const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail: data.payload.emailOrPassword);
         if (!response.error) {
             setAccessToken(response.token);
-            setLoginDetail(response.accountName)
             setLocation('wallet');
             if (localStorage.getItem('isMigrationUser') === 'true' && data?.payload?.fromSignUpFlag) {
                 localStorage.setItem('readyToMigrate',true);

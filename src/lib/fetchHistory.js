@@ -13,7 +13,7 @@ async function getHistory(event) {
   } else if(event?.queryKey[3] === 'no found') {
     return [];
   }
-  const accountName = event?.queryKey[4] || localStorage.getItem("login");
+  const accountName = event?.queryKey[4];
   const response = await getHistoryData(accountName, (pageNo-1)*perPage, perPage, searchFilterValues);
   if (response.error) {
     return [];

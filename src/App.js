@@ -30,7 +30,7 @@ import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
-import { getAccessToken, getLoginDetail, setAccessToken } from "./utils/localstorage";
+import { getAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService } from "./store/account/actions";
@@ -85,8 +85,6 @@ function Application(props) {
       ? props.account
       : null;
 
-  if (domAccount) window.localStorage.setItem("account", domAccount);
-
   const crypt = {
     EUR: [0, "€"],
     GBP: [1, "£"],
@@ -111,7 +109,7 @@ function Application(props) {
     setAccountName(account);
     setPassword(password);
   };
-  const [login, setLogin] = useState(localStorage.getItem("login"));
+  const [login, setLogin] = useState();
   const [loginError, setLoginError] = useState(null);
   const [loginDataError, setLoginDataError] = useState(false);
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
@@ -249,7 +247,6 @@ function Application(props) {
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
-      localStorage.setItem("login", login);
       setLogin(login);
       if (clicked) {
         setLoginError(true);
@@ -351,7 +348,6 @@ function Application(props) {
         if (localStorage.getItem('isMigrationUser') === 'true' && localStorage.getItem('readyToMigrate') === 'true') {
           setIsFromMigration(true);
         }
-        localStorage.setItem("account", accountNameState);
         setActiveScreen(
           sessionStorage.getItem("location") != null
             ? sessionStorage.getItem("location")
@@ -372,8 +368,7 @@ function Application(props) {
           setIsLoading(false);
           if (
             accountNameState == null ||
-            accountNameState.length === 0 ||
-            !localStorage.getItem("login")
+            accountNameState.length === 0
           ) {
             if (localStorage.getItem('isSignature')) {
               setActiveScreen("registration");
@@ -432,7 +427,7 @@ function Application(props) {
 
   function refetchPortfolio() {
     setTimeout(async () => {
-      if (isLoginState && getLoginDetail()) {
+      if (isLoginState) {
         const fetched = await portfolioReceiverState.fetch();
         if (!fetched) {
           return;
@@ -447,19 +442,10 @@ function Application(props) {
   }
 
   const onRegistration = async (acc, pass, regEmail) => {
-    localStorage.setItem("account", acc);
-    localStorage.setItem("login", acc);
     setCredentials(acc, pass);
     onLogin(acc, true, pass, true, regEmail);
-
     setActiveScreen("wallet");
   };
-
-  async function chngLastLocation(location) {
-    if (location && location !== "login") {
-      await changeLastLocation(localStorage.getItem("login"), location);
-    }
-  }
 
   if (isLoading || loaderState || activeScreen == null) {
     return <MetaLoader size={"large"} />;

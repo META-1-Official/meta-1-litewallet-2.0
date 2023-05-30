@@ -1,4 +1,4 @@
-import { getAccessToken, getLoginDetail } from '../../utils/localstorage';
+import { getAccessToken } from '../../utils/localstorage';
 import * as types from './types';
 import logoNavbar from "../../images/default-pic2.png";
 import logoDefault from "../../images/default-pic1.png";
@@ -37,7 +37,7 @@ const initialState = {
 const loginDetail = getAccessToken();
 if(loginDetail){
     initialState.isLogin = true;
-    initialState.account = getLoginDetail();
+    initialState.account = "antman-kok357";
     initialState.token = loginDetail;
 }
 
