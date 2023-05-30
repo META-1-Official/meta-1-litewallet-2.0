@@ -34,7 +34,7 @@ const PortfolioTable = React.memo((props) => {
   const { data, isLoading, error } = useQuery("cryptosTable", getDatas);
 
   async function getDatas() {
-    const cryptoArray = ["META1", "ETH", "BTC", "BNB", "EOS", "XLM", "LTC", "XRP", "TRX", "SOL", "DOGE"];
+    const cryptoArray = process.env.REACT_APP_CRYPTOS_ARRAY.split(',');
     let fetchedCryptos = {};
     for (let i = 0; i < cryptoArray.length; i++) {
       fetchedCryptos[cryptoArray[i]] = await Meta1.ticker(
