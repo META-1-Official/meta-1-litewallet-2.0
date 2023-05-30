@@ -5,7 +5,7 @@ import TradeWithPassword from "./lib/TradeWithPassword";
 import SendWithPassword from "./lib/SendWithPassword";
 import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
-import { getCryptosChange, loginRequest } from "./API/API";
+import { checkToken } from "./API/API";
 import React, { useState, useEffect } from "react";
 import { getUserData, changeLastLocation, getLastLocation, sendEmail } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
@@ -41,7 +41,7 @@ import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
 import { Web3AuthCore } from "@web3auth/core";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-import { OpenloginAdapter} from "@web3auth/openlogin-adapter";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
 
@@ -142,7 +142,7 @@ function Application(props) {
     const init = async () => {
       try {
         const web3auth = new Web3AuthCore({
-          clientId: process.env.REACT_APP_TORUS_PROJECT_ID, 
+          clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
           web3AuthNetwork: process.env.REACT_APP_TORUS_NETWORK,
           chainConfig: {
             chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -215,25 +215,30 @@ function Application(props) {
     };
   }
 
-  useEffect(() => {
-    if (urlParams[0] === 'onMobile=true') {
-      localStorage.setItem('qr-bio', true);
+  // useEffect(() => {
+  //   if (urlParams[0] === 'onMobile=true') {
+  //     localStorage.setItem('qr-bio', true);
 
-      const accountName = urlParams[1].split('=')[1];
-      const email = urlParams[2].split('=')[1];
+  //     const accountName = urlParams[1].split('=')[1];
+  //     const email = urlParams[2].split('=')[1];
 
-      if (accountName && email) {
-        localStorage.setItem('qr-hash', `${accountName}_${email}`);
-        setActiveScreen('qr-bio');
-      } else {
-        alert("QR code is wrong or link has been edited. Try again.");
+  //     if (accountName && email) {
+  //       localStorage.setItem('qr-hash', `${accountName}_${email}`);
+  //       setActiveScreen('qr-bio');
+  //     } else {
+  //       alert("QR code is wrong or link has been edited. Try again.");
+  //     }
+  //   }
+  // }, [urlParams])
+
+  useEffect(async () => {
+    const token = getAccessToken();
+    if (token) {
+      let login = await checkToken(token);
+
+      if (login && login.accountName) {
+        onLogin(login.accountName);
       }
-    }
-  }, [urlParams])
-
-  useEffect(() => {
-    if (login !== null) {
-      onLogin(login);
     }
   }, []);
 
@@ -266,7 +271,7 @@ function Application(props) {
         setIsSignatureProcessing(true);
         setSignatureResult(signatureParam[1]);
 
-         if(!loginErrorState) {
+        if (!loginErrorState) {
           setActiveScreen('registration');
         }
       } else {
@@ -1187,18 +1192,18 @@ export function App({ domElement }) {
   const account = domElement.getAttribute("data-account");
 
   return (
-  <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
-    <Application
-      {...{
-        metaUrl,
-        linkAccountUrl,
-        email,
-        firstName,
-        lastName,
-        phone,
-        account,
-      }}
-    />
+    <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+      <Application
+        {...{
+          metaUrl,
+          linkAccountUrl,
+          email,
+          firstName,
+          lastName,
+          phone,
+          account,
+        }}
+      />
     </Worker>
   );
 

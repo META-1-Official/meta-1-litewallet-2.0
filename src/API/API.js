@@ -191,11 +191,26 @@ export async function loginRequest(accountName, email) {
   try {
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
-      { accountName, email }
+      { accountName, email, privateKey: "testkey" }
     );
     return { ...data, error: false };
   } catch (e) {
     return { message: "Wallet name or email is wrong", error: true };
+  }
+}
+
+
+
+
+export async function checkToken(token) {
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_BACK_URL}/check_token`,
+      { token }
+    );
+    return { ...data, error: false };
+  } catch (e) {
+    return { message: "invalid token", error: true };
   }
 }
 
