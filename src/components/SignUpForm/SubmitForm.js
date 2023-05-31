@@ -59,7 +59,7 @@ export default function SubmitForm(props) {
       }
 
       try {
-        const token = await getESigToken(email);
+        const token = await getESigToken(email, 'testkey');
         if (token.error === true) {
           return;
         } else if (token) {

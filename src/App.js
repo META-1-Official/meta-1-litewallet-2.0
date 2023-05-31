@@ -5,7 +5,7 @@ import TradeWithPassword from "./lib/TradeWithPassword";
 import SendWithPassword from "./lib/SendWithPassword";
 import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
-import { getCryptosChange, loginRequest } from "./API/API";
+import { checkToken } from "./API/API";
 import React, { useState, useEffect } from "react";
 import { getUserData, changeLastLocation, getLastLocation, sendEmail } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
@@ -30,7 +30,7 @@ import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
-import { getAccessToken, getLoginDetail, setAccessToken } from "./utils/localstorage";
+import { getAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService } from "./store/account/actions";
@@ -41,7 +41,7 @@ import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
 import { Web3AuthCore } from "@web3auth/core";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-import { OpenloginAdapter} from "@web3auth/openlogin-adapter";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
 
@@ -85,8 +85,6 @@ function Application(props) {
       ? props.account
       : null;
 
-  if (domAccount) window.localStorage.setItem("account", domAccount);
-
   const crypt = {
     EUR: [0, "€"],
     GBP: [1, "£"],
@@ -111,7 +109,7 @@ function Application(props) {
     setAccountName(account);
     setPassword(password);
   };
-  const [login, setLogin] = useState(localStorage.getItem("login"));
+  const [login, setLogin] = useState();
   const [loginError, setLoginError] = useState(null);
   const [loginDataError, setLoginDataError] = useState(false);
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
@@ -144,7 +142,7 @@ function Application(props) {
     const init = async () => {
       try {
         const web3auth = new Web3AuthCore({
-          clientId: process.env.REACT_APP_TORUS_PROJECT_ID, 
+          clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
           web3AuthNetwork: process.env.REACT_APP_TORUS_NETWORK,
           chainConfig: {
             chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -217,25 +215,30 @@ function Application(props) {
     };
   }
 
-  useEffect(() => {
-    if (urlParams[0] === 'onMobile=true') {
-      localStorage.setItem('qr-bio', true);
+  // useEffect(() => {
+  //   if (urlParams[0] === 'onMobile=true') {
+  //     localStorage.setItem('qr-bio', true);
 
-      const accountName = urlParams[1].split('=')[1];
-      const email = urlParams[2].split('=')[1];
+  //     const accountName = urlParams[1].split('=')[1];
+  //     const email = urlParams[2].split('=')[1];
 
-      if (accountName && email) {
-        localStorage.setItem('qr-hash', `${accountName}_${email}`);
-        setActiveScreen('qr-bio');
-      } else {
-        alert("QR code is wrong or link has been edited. Try again.");
+  //     if (accountName && email) {
+  //       localStorage.setItem('qr-hash', `${accountName}_${email}`);
+  //       setActiveScreen('qr-bio');
+  //     } else {
+  //       alert("QR code is wrong or link has been edited. Try again.");
+  //     }
+  //   }
+  // }, [urlParams])
+
+  useEffect(async () => {
+    const token = getAccessToken();
+    if (token) {
+      let login = await checkToken(token);
+
+      if (login && login.accountName) {
+        onLogin(login.accountName);
       }
-    }
-  }, [urlParams])
-
-  useEffect(() => {
-    if (login !== null) {
-      onLogin(login);
     }
   }, []);
 
@@ -249,7 +252,6 @@ function Application(props) {
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
-      localStorage.setItem("login", login);
       setLogin(login);
       if (clicked) {
         setLoginError(true);
@@ -269,7 +271,7 @@ function Application(props) {
         setIsSignatureProcessing(true);
         setSignatureResult(signatureParam[1]);
 
-         if(!loginErrorState) {
+        if (!loginErrorState) {
           setActiveScreen('registration');
         }
       } else {
@@ -351,7 +353,6 @@ function Application(props) {
         if (localStorage.getItem('isMigrationUser') === 'true' && localStorage.getItem('readyToMigrate') === 'true') {
           setIsFromMigration(true);
         }
-        localStorage.setItem("account", accountNameState);
         setActiveScreen(
           sessionStorage.getItem("location") != null
             ? sessionStorage.getItem("location")
@@ -372,8 +373,7 @@ function Application(props) {
           setIsLoading(false);
           if (
             accountNameState == null ||
-            accountNameState.length === 0 ||
-            !localStorage.getItem("login")
+            accountNameState.length === 0
           ) {
             if (localStorage.getItem('isSignature')) {
               setActiveScreen("registration");
@@ -432,7 +432,7 @@ function Application(props) {
 
   function refetchPortfolio() {
     setTimeout(async () => {
-      if (isLoginState && getLoginDetail()) {
+      if (isLoginState) {
         const fetched = await portfolioReceiverState.fetch();
         if (!fetched) {
           return;
@@ -447,19 +447,10 @@ function Application(props) {
   }
 
   const onRegistration = async (acc, pass, regEmail) => {
-    localStorage.setItem("account", acc);
-    localStorage.setItem("login", acc);
     setCredentials(acc, pass);
     onLogin(acc, true, pass, true, regEmail);
-
     setActiveScreen("wallet");
   };
-
-  async function chngLastLocation(location) {
-    if (location && location !== "login") {
-      await changeLastLocation(localStorage.getItem("login"), location);
-    }
-  }
 
   if (isLoading || loaderState || activeScreen == null) {
     return <MetaLoader size={"large"} />;
@@ -1201,18 +1192,18 @@ export function App({ domElement }) {
   const account = domElement.getAttribute("data-account");
 
   return (
-  <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
-    <Application
-      {...{
-        metaUrl,
-        linkAccountUrl,
-        email,
-        firstName,
-        lastName,
-        phone,
-        account,
-      }}
-    />
+    <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+      <Application
+        {...{
+          metaUrl,
+          linkAccountUrl,
+          email,
+          firstName,
+          lastName,
+          phone,
+          account,
+        }}
+      />
     </Worker>
   );
 

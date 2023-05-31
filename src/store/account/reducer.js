@@ -1,8 +1,10 @@
-import { getAccessToken, getLoginDetail } from '../../utils/localstorage';
+import { getAccessToken } from '../../utils/localstorage';
 import * as types from './types';
 import logoNavbar from "../../images/default-pic2.png";
 import logoDefault from "../../images/default-pic1.png";
 import { Avatar } from '@mui/material';
+import { checkToken } from "../../API/API";
+
 const initialState = {
     isLogin: false,
     loading: false,
@@ -34,11 +36,16 @@ const initialState = {
     fromSignUp: false,
     uploadImageError: false,
 };
-const loginDetail = getAccessToken();
-if(loginDetail){
-    initialState.isLogin = true;
-    initialState.account = getLoginDetail();
-    initialState.token = loginDetail;
+
+const token = getAccessToken();
+if(token){
+    checkToken(token).then (login => {
+        if (login.accountName) {            
+            initialState.isLogin = true;
+            initialState.account = login.accountName;
+            initialState.token = token;
+        }
+    });    
 }
 
 const accountsReducer = (state = initialState, action) => {
