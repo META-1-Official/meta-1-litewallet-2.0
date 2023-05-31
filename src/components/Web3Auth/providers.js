@@ -65,11 +65,11 @@ export const providers = [
         name: 'linkedin',
         image: linkedin
     },
-    {
-        id: 11,
-        name: 'twitter',
-        image: twitter
-    },
+    // {
+    //     id: 11,
+    //     name: 'twitter',
+    //     image: twitter
+    // },
     // {
     //     id: 12,
     //     name: 'weibo',
