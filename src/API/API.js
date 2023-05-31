@@ -199,9 +199,6 @@ export async function loginRequest(accountName, email) {
   }
 }
 
-
-
-
 export async function checkToken(token) {
   try {
     const { data } = await axios.post(

@@ -200,7 +200,7 @@ export default function LoginScreen(props) {
 
   const goToFaceKi = (data) => {
     setAuthData(data);
-    setPrivKey("web3authprivatekey");
+    setPrivKey(data?.privateKey);
     setEmail(data?.email.toLowerCase());
     setStep('faceki');
   }

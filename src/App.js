@@ -39,7 +39,7 @@ import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCu
 import OpenOrder from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
-import { Web3AuthCore } from "@web3auth/core";
+import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
@@ -51,6 +51,7 @@ const openloginAdapter = new OpenloginAdapter({
     uxMode: "popup",
     whiteLabel: {
       name: "META1",
+      logoLight: "https://pbs.twimg.com/profile_images/980143928769839105/hK3RnAff_400x400.jpg",
       defaultLanguage: "en",
       dark: false,
     }
@@ -141,7 +142,7 @@ function Application(props) {
   useEffect(() => {
     const init = async () => {
       try {
-        const web3auth = new Web3AuthCore({
+        const web3auth = new Web3AuthNoModal({
           clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
           web3AuthNetwork: process.env.REACT_APP_TORUS_NETWORK,
           chainConfig: {
