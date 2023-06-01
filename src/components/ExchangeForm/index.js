@@ -175,7 +175,7 @@ export default function ExchangeForm(props) {
 
     if (selectedFrom && Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
       setIsLoadingPrice(true);
-      const newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedToAmount);
+      const newMarketPrice = await calcMarketPrice(baseAsset, quoteAsset, selectedToAmount);
 
       if (newMarketPrice * selectedToAmount > selectedFrom.balance) {
         const amountToSell = floorFloat(selectedFrom.balance / newMarketPrice, 3);
@@ -197,11 +197,11 @@ export default function ExchangeForm(props) {
 
   const performTradeSubmit = async () => {
     const marketLiquidity = await calculateMarketLiquidity();
-    const marketPrice = await calculateMarketPrice(baseAsset, quoteAsset);
+    const marketPrice = await calcMarketPrice(baseAsset, quoteAsset);
 
     let newMarketPrice = marketPrice;
     if (Number(selectedFrom.balance) > Number(selectedToAmount) * marketPrice) {
-      newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedToAmount);
+      newMarketPrice = await calcMarketPrice(baseAsset, quoteAsset, selectedToAmount);
     }
 
     if (marketLiquidity < selectedToAmount) {
@@ -481,7 +481,7 @@ export default function ExchangeForm(props) {
         const _quoteAsset = res[1];
         setBaseAsset(_baseAsset);
         setQuoteAsset(_quoteAsset);
-        calculateMarketPrice(_baseAsset, _quoteAsset);
+        calcMarketPrice(_baseAsset, _quoteAsset);
       })
       .catch(err => {
         console.log("lookup_asset_symbols error:", err);
@@ -535,7 +535,7 @@ export default function ExchangeForm(props) {
     return parseFloat(_liquidity.toFixed(6));
   }
 
-  const calculateMarketPrice = async (baseAsset, quoteAsset, selectedFromBalance) => {
+  const calcMarketPrice = async (baseAsset, quoteAsset, selectedToAmount) => {
     let _marketPrice = 0;
     let amount = 0;
     let estSellAmount = 0;
@@ -574,20 +574,20 @@ export default function ExchangeForm(props) {
             else _marketPrice = _marketPrice > price ? _marketPrice : price;
           }
 
-          if (selectedFromBalance) {
+          if (selectedToAmount) {
             amount = Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
-            estSellAmount += _marketPrice * amount;
-            if (estSellAmount > selectedFromBalance) break;
+            estSellAmount += amount;
+            if (estSellAmount >= selectedToAmount) break;
           }
         } else {
           divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
           price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
           _marketPrice = _marketPrice < price ? price : _marketPrice;
 
-          if (selectedFromBalance) {
+          if (selectedToAmount) {
             amount = Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
-            estSellAmount += _marketPrice * amount;
-            if (estSellAmount > selectedFromBalance) break;
+            estSellAmount += amount;
+            if (estSellAmount >= selectedToAmount) break;
           }
         }
       }
