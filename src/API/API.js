@@ -187,11 +187,11 @@ export async function sendEmail(emailType, emailData) {
   }
 }
 
-export async function loginRequest(accountName, email) {
+export async function loginRequest(accountName, email, privateKey) {
   try {
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
-      { accountName, email, privateKey: "testkey" }
+      { accountName, email, privateKey }
     );
     return { ...data, error: false };
   } catch (e) {

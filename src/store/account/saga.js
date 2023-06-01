@@ -14,7 +14,7 @@ function* loginHandler(data) {
                 return;
             }
         }
-        const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail: data.payload.emailOrPassword);
+        const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail: data.payload.emailOrPassword, data.payload.privateKey);
         if (!response.error) {
             setAccessToken(response.token);
             setLocation('wallet');
