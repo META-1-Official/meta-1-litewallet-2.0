@@ -60,6 +60,7 @@ export default function SignUpForm(props) {
       setLastName(localStorage.getItem('lastname'));
       setPhone(localStorage.getItem('phone'));
       setEmail(localStorage.getItem('email'));
+      setPrivKey(localStorage.getItem('web3privatekey'));
       setStep('signature');
     }
   }, []);
@@ -193,6 +194,7 @@ export default function SignUpForm(props) {
         localStorage.removeItem('lastname');
         localStorage.removeItem('phone');
         localStorage.removeItem('email');
+        localStorage.removeItem('web3privatekey');
         localStorage.removeItem('access');
         localStorage.removeItem('recover');
         localStorage.removeItem('stored');
@@ -465,6 +467,7 @@ export default function SignUpForm(props) {
           isCloseIcon={true}
           paperWalletData={paperWalletData}
           onRegistration={onRegistration}
+          web3PrivateKey={privKey}
         />
         {
           authModalOpen && <LoginProvidersModal

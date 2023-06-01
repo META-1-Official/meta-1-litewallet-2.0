@@ -24,6 +24,7 @@ export default function FaceKiForm(props) {
     "Biometic Server Error": "Something went wrong from Biometric server.",
     "ESignature Server Error": "Something went wrong from ESignature server.",
     "Email Already Used": "This email already has been used for another user.",
+    "Successfully Enrolled": "You successfully enrolled your face",
     "Please try again.": "Please try again.",
     "Internal Error":"Internal Error",
     "New Name Generation Fail": "Can not generate new name!",
