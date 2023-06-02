@@ -53,35 +53,35 @@ export const assetsObj = [
         "total_in_collateral": 0
     },
     {
-        "id": "1.3.2",
+        "id": "1.3.3",
         "symbol": "LTC",
         "precision": 8,
         "issuer": "1.2.30",
         "dynamic_asset_data_id": "2.3.2"
     },
     {
-        "id": "1.3.3",
+        "id": "1.3.4",
         "symbol": "EOS",
         "precision": 4,
         "issuer": "1.2.30",
         "dynamic_asset_data_id": "2.3.3"
     },
     {
-        "id": "1.3.4",
+        "id": "1.3.6",
         "symbol": "ETH",
         "precision": 10,
         "issuer": "1.2.30",
         "dynamic_asset_data_id": "2.3.4"
     },
     {
-        "id": "1.3.5",
+        "id": "1.3.2",
         "symbol": "BTC",
         "precision": 8,
         "issuer": "1.2.30",
         "dynamic_asset_data_id": "2.3.5"
     },
     {
-        "id": "1.3.6",
+        "id": "1.3.5",
         "symbol": "XLM",
         "precision": 7,
         "issuer": "1.2.30",

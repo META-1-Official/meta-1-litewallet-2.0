@@ -1,4 +1,5 @@
 import account_constants from '../chain/account_constants'
+
 export const getMETA1Simple = () => {
     return [
         {
@@ -13,7 +14,7 @@ export const getMETA1Simple = () => {
             issuer: account_constants.issuer_name,
             issuerId: account_constants.issuer_name,
             issuerToId: account_constants.issuer_id,
-            assetId: '1.3.5',
+            assetId: '1.3.2',
             walletType: 'btc',
             minAmount: 100000,
             withdrawFee: 50000,
@@ -34,7 +35,7 @@ export const getMETA1Simple = () => {
             issuer: account_constants.issuer_name,
             issuerId: account_constants.issuer_name,
             issuerToId: account_constants.issuer_id,
-            assetId: '1.3.2',
+            assetId: '1.3.3',
             walletType: 'ltc',
             minAmount: 200000,
             withdrawFee: 100000,
@@ -55,7 +56,7 @@ export const getMETA1Simple = () => {
             issuer: account_constants.issuer_name,
             issuerId: account_constants.issuer_name,
             issuerToId: account_constants.issuer_id,
-            assetId: '1.3.4',
+            assetId: '1.3.6',
             walletType: 'eth',
             minAmount: 200000,
             withdrawFee: 100000,
@@ -97,7 +98,7 @@ export const getMETA1Simple = () => {
             issuer: account_constants.issuer_name,
             issuerId: account_constants.issuer_name,
             issuerToId: account_constants.issuer_id,
-            assetId: '1.3.6',
+            assetId: '1.3.5',
             walletType: 'xlm',
             minAmount: 200000,
             withdrawFee: 100000,
@@ -139,7 +140,7 @@ export const getMETA1Simple = () => {
             issuer: account_constants.issuer_name,
             issuerId: account_constants.issuer_name,
             issuerToId: account_constants.issuer_id,
-            assetId: '1.3.3',
+            assetId: '1.3.4',
             walletType: 'eos',
             minAmount: 200000,
             withdrawFee: 100000,
