@@ -20,10 +20,10 @@ const assetImages = {
     BNB: bnb,
     LTC: ltc,
     USDT: usdt,
-    // DOGE: doge,
-    // SOL: sol,
-    // TRX: trx,
-    // XRP: xrp
+    DOGE: doge,
+    SOL: sol,
+    TRX: trx,
+    XRP: xrp
 }
 
 export default class Portfolio {
