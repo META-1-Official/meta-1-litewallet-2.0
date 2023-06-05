@@ -242,8 +242,8 @@ export default function ExchangeForm(props) {
     estPrice = estSellAmount / estBuyAmount;
     estPrice = estPrice * Math.pow(10, buyAsset.pre - sellAsset.pre);
 
-    if (floorFloat(estPrice, 5) < price) {
-      while (floorFloat(estPrice, 5) <= price && delta < 5000) {
+    if (floorFloat(estPrice, buyAsset.pre) < price) {
+      while (floorFloat(estPrice, buyAsset.pre) <= price && delta < 5000) {
         delta += 1;
         _sellAmount += 1;
         estPrice = _sellAmount / estBuyAmount;
@@ -251,6 +251,23 @@ export default function ExchangeForm(props) {
       }
     }
     // *********************************************** //
+
+    // *** Check backingAsset level *** //
+    if (backingAssetValue) {
+      const isQuoting = selectedTo.label === 'META1';
+      if (
+        (isQuoting && backingAssetValue <= price) ||
+        (!isQuoting && backingAssetValue >= price)
+      ) {
+        const msg = `Too small amount.`;
+
+        setError(msg);
+        setPassword("");
+        setTradeInProgress(false);
+        return;
+      }
+    }
+    // ******************************** //
 
     const buyResult = await traderState.perform({
       from: selectedFrom.value,
