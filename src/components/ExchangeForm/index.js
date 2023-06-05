@@ -242,8 +242,8 @@ export default function ExchangeForm(props) {
     estPrice = estSellAmount / estBuyAmount;
     estPrice = estPrice * Math.pow(10, buyAsset.pre - sellAsset.pre);
 
-    if (estPrice < price) {
-      while (estPrice < price && delta < 200) {
+    if (floorFloat(estPrice, 5) < price) {
+      while (floorFloat(estPrice, 5) <= price && delta < 5000) {
         delta += 1;
         _sellAmount += 1;
         estPrice = _sellAmount / estBuyAmount;
