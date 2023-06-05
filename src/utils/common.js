@@ -1,4 +1,6 @@
 import Meta1 from "meta1-vision-dex";
+import {Apis} from 'meta1-vision-ws';
+
 export const sleepHandler = (ms) =>  {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -25,6 +27,11 @@ const isUserExistHandler = async (login, password, checkCount, status) => {
         }
     }
 }
+
+export const getAssets = () => {
+    
+}
+
 export const signUpHandler = async (login, password) => {
     let checkCount = 0;
     let status = false;

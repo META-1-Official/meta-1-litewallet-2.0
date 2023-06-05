@@ -182,7 +182,7 @@ export default function LoginScreen(props) {
   };
 
   const handleFaceKiSubmit = () => {
-    onSubmit(login, true, email);
+    onSubmit(login, true, email, false, "", privKey);
   }
 
   const renderFaceKi = () => {
