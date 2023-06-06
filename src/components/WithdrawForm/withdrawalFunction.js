@@ -1,6 +1,6 @@
 import AccountUtils from "../../utils/account_utils";
 import { Axios } from "axios";
-import { assetsObj } from "../../utils/common";
+import { getAssetsList } from "../../utils/common";
 import { Asset } from "../../utils/MarketClasses";
 import Immutable from "immutable";
 import { Aes, ChainStore, FetchChain, PrivateKey, TransactionBuilder, TransactionHelper } from "meta1-vision-js";
@@ -193,6 +193,8 @@ const create_transfer_op = async ({
     isSuccess
 }) => {
     let memo_sender_account = propose_account || from_account;
+    const assetsObj = await getAssetsList();
+    
     return Promise.all([
         FetchChain('getAccount', from_account),
         FetchChain('getAccount', to_account),
