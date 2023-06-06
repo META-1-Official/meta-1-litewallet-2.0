@@ -22,7 +22,7 @@ export default function SubmitForm(props) {
   const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
   const [subscription, setSubscription] = useState(localStorage.getItem('subscription') === 'false' ? false : true);
 
-  const {isSubmitted, setIsSubmitted, email, privKey} = props;
+  const {isSubmitted, setIsSubmitted, email, authData} = props;
   const { phone, firstName, lastName, accountName, password } = props;
 
   const isAllChecked = access && recover && stored && living && signed && paid;
@@ -69,7 +69,7 @@ export default function SubmitForm(props) {
           localStorage.setItem('lastname', lastName);
           localStorage.setItem('phone', phone);
           localStorage.setItem('email', email);
-          localStorage.setItem('web3privatekey', privKey);
+          localStorage.setItem('authdata', JSON.stringify(authData));
           localStorage.setItem('access', access);
           localStorage.setItem('recover', recover);
           localStorage.setItem('stored', stored);

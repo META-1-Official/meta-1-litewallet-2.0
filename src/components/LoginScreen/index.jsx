@@ -182,7 +182,7 @@ export default function LoginScreen(props) {
   };
 
   const handleFaceKiSubmit = () => {
-    onSubmit(login, true, email, false, "", privKey);
+    onSubmit(login, true, email, false, "", authData?.web3Token, authData?.web3PubKey);
   }
 
   const renderFaceKi = () => {

@@ -26,7 +26,7 @@ export default function FaceKiForm(props) {
     "Email Already Used": "This email already has been used for another user.",
     "Successfully Enrolled": "You successfully enrolled your face",
     "Please try again.": "Please try again.",
-    "Internal Error":"Internal Error",
+    "Internal Error": "Internal Error",
     "New Name Generation Fail": "Can not generate new name!",
     noCameraAccessible: 'No camera device accessible. Please connect your camera or try a different browser.',
     permissionDenied: 'Permission denied. Please refresh and give camera permission.',

@@ -243,10 +243,10 @@ function Application(props) {
     }
   }, []);
 
-  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", privateKey = "") => {
+  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", web3Token = "", web3PubKey = "") => {
     setIsLoading(true);
     if (clicked) {
-      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, privateKey }));
+      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, web3Token, web3PubKey }));
     }
     if (getAccessToken()) {
       dispatch(checkTransferableRequest({ login }))
@@ -447,9 +447,9 @@ function Application(props) {
     }, 2000);
   }
 
-  const onRegistration = async (acc, pass, regEmail, web3PrivateKey) => {
+  const onRegistration = async (acc, pass, regEmail, web3Token, web3PubKey) => {
     setCredentials(acc, pass);
-    onLogin(acc, true, pass, true, regEmail, web3PrivateKey);
+    onLogin(acc, true, pass, true, regEmail, web3Token, web3PubKey);
     setActiveScreen("wallet");
   };
 
