@@ -28,7 +28,7 @@ import Immutable from "immutable";
 import { getAssetAndGateway, getIntermediateAccount } from "../../utils/common/gatewayUtils";
 import { getCryptosChange } from "../../API/API";
 import { WithdrawAddresses } from "../../utils/gateway/gatewayMethods";
-import { assetsObj } from "../../utils/common";
+import { getAssetsList } from "../../utils/common";
 import { Asset } from "../../utils/MarketClasses";
 import AccountUtils from "../../utils/account_utils";
 import { transferHandler } from "./withdrawalFunction";
@@ -212,6 +212,7 @@ const WithdrawForm = (props) => {
   }
 
   const getAssetsObject = async (obj) => {
+    const assetsObj = await getAssetsList();
     const balances = obj.get('balances');
     let assets = Immutable.Map({})
     const newData = balances.map((data, index) => {
@@ -280,7 +281,7 @@ const WithdrawForm = (props) => {
   const selectedData = () => {
     let assets = [];
     let idMap = {};
-    let include = ["META1", "USDT", "BTC", "ETH", "EOS", "XLM", "BNB"];
+    let include = process.env.REACT_APP_CRYPTOS_ARRAY.split(',');
     backedCoins.forEach((coin) => {
       assets = assets
         .concat(

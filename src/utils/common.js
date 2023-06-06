@@ -28,8 +28,8 @@ const isUserExistHandler = async (login, password, checkCount, status) => {
     }
 }
 
-export const getAssets = () => {
-    
+export const getAssetsList = async () => {
+    return await Apis.db.get_assets(process.env.REACT_APP_CRYPTOS_ARRAY.split(','));
 }
 
 export const signUpHandler = async (login, password) => {
@@ -42,63 +42,3 @@ export const signUpHandler = async (login, password) => {
     }
     return { status: false };
 }
-
-export const assetsObj = [
-    {
-        "id": "1.3.0",
-        "symbol": "META1",
-        "precision": 9,
-        "issuer": "1.2.3",
-        "dynamic_asset_data_id": "2.3.0"
-    },
-    {
-        "id": "1.3.1",
-        "symbol": "USDT",
-        "precision": 6,
-        "issuer": "1.2.30",
-        "dynamic_asset_data_id": "2.3.1",
-        "total_in_collateral": 0
-    },
-    {
-        "id": "1.3.2",
-        "symbol": "LTC",
-        "precision": 8,
-        "issuer": "1.2.30",
-        "dynamic_asset_data_id": "2.3.2"
-    },
-    {
-        "id": "1.3.3",
-        "symbol": "EOS",
-        "precision": 4,
-        "issuer": "1.2.30",
-        "dynamic_asset_data_id": "2.3.3"
-    },
-    {
-        "id": "1.3.4",
-        "symbol": "ETH",
-        "precision": 10,
-        "issuer": "1.2.30",
-        "dynamic_asset_data_id": "2.3.4"
-    },
-    {
-        "id": "1.3.5",
-        "symbol": "BTC",
-        "precision": 8,
-        "issuer": "1.2.30",
-        "dynamic_asset_data_id": "2.3.5"
-    },
-    {
-        "id": "1.3.6",
-        "symbol": "XLM",
-        "precision": 7,
-        "issuer": "1.2.30",
-        "dynamic_asset_data_id": "2.3.6",
-    },
-    {
-        "id": "1.3.7",
-        "symbol": "BNB",
-        "precision": 8,
-        "issuer": "1.2.30",
-        "dynamic_asset_data_id": "2.3.7",
-    }
-]
