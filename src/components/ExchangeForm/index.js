@@ -255,9 +255,10 @@ export default function ExchangeForm(props) {
     // *** Check backingAsset level *** //
     if (backingAssetValue) {
       const isQuoting = selectedTo.label === 'META1';
+
       if (
-        (isQuoting && backingAssetValue <= price) ||
-        (!isQuoting && backingAssetValue >= price)
+        (isQuoting && backingAssetValue >= estPrice) ||
+        (!isQuoting && backingAssetValue <= estPrice)
       ) {
         const msg = `Too small amount.`;
 
