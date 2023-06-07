@@ -91,8 +91,8 @@ export default function FaceKiForm(props) {
   }
 
   const checkAndVerify = async (photoIndex) => {
-    const { privKey, email } = props;
-    if (!email || !privKey) return;
+    const { email } = props;
+    if (!email) return;
 
     setVerifying(true);
 

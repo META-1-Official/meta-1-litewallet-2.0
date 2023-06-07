@@ -7,6 +7,7 @@ import { providers } from "./providers";
 import { Modal } from "semantic-ui-react";
 import { WALLET_ADAPTERS } from "@web3auth/base";
 import MetaLoader from "../../UI/loader/Loader";
+import { getPublicCompressed } from "@toruslabs/eccrypto";
 
 const ProvidersBlock = ({ item, moreProviders, onClick }) => {
     return (
@@ -78,7 +79,12 @@ const LoginProvidersModal = (props) => {
                     method: "private_key"
                 });
 
+                const app_pub_key = getPublicCompressed(Buffer.from(privateKey.padStart(64, "0"), "hex")).toString("hex");
+
                 data.privateKey = privateKey;
+                
+                data.web3Token = data.idToken;
+                data.web3PubKey = app_pub_key;
                 
                 setLoader(false);
                 props.setOpen(false);
