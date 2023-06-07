@@ -1,3 +1,5 @@
+
+
 import axios from "axios";
 import { PrivateKey, Signature } from "meta1-vision-js";
 import "regenerator-runtime/runtime";
@@ -44,7 +46,9 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
-
+import {toast} from 'react-toastify';
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const openloginAdapter = new OpenloginAdapter({
   adapterSettings: {
@@ -56,6 +60,7 @@ const openloginAdapter = new OpenloginAdapter({
     }
   },
 });
+
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -127,7 +132,6 @@ function Application(props) {
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
-
   const updateBalances = () => {
     if (portfolioReceiverState && accountName && !passwordShouldBeProvided) {
       refetchPortfolio();
@@ -294,7 +298,8 @@ function Application(props) {
     }
     if (accountNameState) {
       setLoginDataError(false);
-      onLogin(accountNameState, false)
+      onLogin(accountNameState, false);
+      _onSetupWebSocket(accountNameState);
       if (fromSignUp) {
         setPortfolio(null);
         setRefreshData(prev => !prev);
@@ -451,6 +456,20 @@ function Application(props) {
     onLogin(acc, true, pass, true, regEmail);
     setActiveScreen("wallet");
   };
+
+  const _onSetupWebSocket = (accountName) => {
+    const websocket = new WebSocket(`ws://127.0.0.1:5003?account=${accountName}`);
+
+    websocket.onmessage = (message) => {
+      if (message && message.data) {
+        const content = JSON.parse(message.data).content;
+
+        toast(content);
+      }
+    };
+  }
+
+
 
   if (isLoading || loaderState || activeScreen == null) {
     return <MetaLoader size={"large"} />;
@@ -1176,6 +1195,7 @@ function Application(props) {
       </>
       }
       {activeScreen === 'qr-bio' && <QRBioVerification />}
+      <ToastContainer theme='light' />
     </>
   );
 }
