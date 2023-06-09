@@ -111,6 +111,7 @@ function Application(props) {
     setPassword(password);
   };
   const [login, setLogin] = useState();
+  const [token, setToken] = useState(null);
   const [loginError, setLoginError] = useState(null);
   const [loginDataError, setLoginDataError] = useState(false);
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
@@ -232,17 +233,6 @@ function Application(props) {
   //   }
   // }, [urlParams])
 
-  useEffect(async () => {
-    const token = getAccessToken();
-    if (token) {
-      let login = await checkToken(token);
-
-      if (login && login.accountName) {
-        onLogin(login.accountName);
-      }
-    }
-  }, []);
-
   const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", web3Token = "", web3PubKey = "") => {
     setIsLoading(true);
     if (clicked) {
@@ -288,7 +278,7 @@ function Application(props) {
     }
   }, [signatureParam]);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (loginErrorState) {
       setIsLoading(false);
       setLoginDataError(true);
@@ -310,7 +300,19 @@ function Application(props) {
       setAccountName(null);
       setLogin(null);
       setPortfolio(null);
-      setActiveScreen("login");
+      const token = getAccessToken();
+      if (token) {
+        let login = await checkToken(token);
+
+        if (login && login.accountName) {
+          setToken(token);
+          onLogin(login.accountName);
+        } else {
+          setActiveScreen("login");
+        }
+      } else {
+        setActiveScreen("login");
+      }
     }
   }, [accountNameState, loginErrorState]);
 
@@ -360,7 +362,6 @@ function Application(props) {
             : "wallet"
         );
       } catch (e) {
-        setActiveScreen("login");
       }
     }
     fetchPortfolio();
@@ -381,9 +382,6 @@ function Application(props) {
               localStorage.removeItem('isSignature');
             } else if (urlParams[0] === 'onMobile=true' || localStorage.getItem("qr-bio")) {
               setActiveScreen('qr-bio');
-            }
-            else {
-              setActiveScreen("login");
             }
           } else {
             setActiveScreen(
