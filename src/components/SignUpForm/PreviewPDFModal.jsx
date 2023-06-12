@@ -12,7 +12,8 @@ const PreviewPDFModal = (props) => {
     onRegistration,
     accountName,
     password,
-    email
+    email,
+    authData
   } = props;
 
   const [url, setUrl] = useState(null);
@@ -59,7 +60,7 @@ const PreviewPDFModal = (props) => {
     alink.click();
     localStorage.removeItem('paperWalletData');
 
-    onRegistration(accountName, password, email);
+    onRegistration(accountName, password, email, authData?.web3Token, authData?.web3PubKey);
   }
 
   return <Modal

@@ -175,7 +175,7 @@ export default function ExchangeForm(props) {
 
     if (selectedFrom && Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
       setIsLoadingPrice(true);
-      const newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedFrom.balance);
+      const newMarketPrice = await calcMarketPrice(baseAsset, quoteAsset, selectedToAmount);
 
       if (newMarketPrice * selectedToAmount > selectedFrom.balance) {
         const amountToSell = floorFloat(selectedFrom.balance / newMarketPrice, 3);
@@ -184,18 +184,6 @@ export default function ExchangeForm(props) {
       setIsLoadingPrice(false);
     }
   }, [selectedToAmount]);
-
-  useEffect(() => {
-    if (Number(blockPrice) <= 0.003) {
-      setError(
-        `The amount must be greater than ${(
-          0.003 * Number(userCurrencyState.split(" ")[2])
-        ).toFixed(3)} ${userCurrencyState.split(" ")[1]}`
-      );
-    } else {
-      setError("");
-    }
-  }, [blockPrice]);
 
   useEffect(() => {
     setPasswordShouldBeProvided(false);
@@ -209,11 +197,11 @@ export default function ExchangeForm(props) {
 
   const performTradeSubmit = async () => {
     const marketLiquidity = await calculateMarketLiquidity();
-    const marketPrice = await calculateMarketPrice(baseAsset, quoteAsset);
+    const marketPrice = await calcMarketPrice(baseAsset, quoteAsset);
 
     let newMarketPrice = marketPrice;
-    if (Number(selectedFrom.balance) < Number(selectedToAmount) * marketPrice) {
-      newMarketPrice = await calculateMarketPrice(baseAsset, quoteAsset, selectedFrom.balance);
+    if (Number(selectedFrom.balance) > Number(selectedToAmount) * marketPrice) {
+      newMarketPrice = await calcMarketPrice(baseAsset, quoteAsset, selectedToAmount);
     }
 
     if (marketLiquidity < selectedToAmount) {
@@ -231,12 +219,63 @@ export default function ExchangeForm(props) {
       return;
     }
 
+    // *** Fix tiny amount issue (precision issue) *** //
+    const sellAsset = selectedFrom;
+    const buyAsset = selectedTo;
+    let price = newMarketPrice;
+
+    const sellAmount = () => {
+      let scaledAmount = selectedToAmount * price;
+      console.log('PRE', selectedToAmount, Math.pow(10, sellAsset.pre));
+      return Number(scaledAmount) * Math.pow(10, sellAsset.pre)
+    };
+
+    const buyAmount = () => {
+      return Number(selectedToAmount) * Math.pow(10, buyAsset.pre);
+    };
+
+    const estSellAmount = floorFloat(sellAmount(), 0);
+    const estBuyAmount = floorFloat(buyAmount(), 0);
+    let _sellAmount = estSellAmount;
+    let estPrice;
+    let delta = 0;  // Prevent endless loop
+    estPrice = estSellAmount / estBuyAmount;
+    estPrice = estPrice * Math.pow(10, buyAsset.pre - sellAsset.pre);
+
+    if (floorFloat(estPrice, buyAsset.pre) < price) {
+      while (floorFloat(estPrice, buyAsset.pre) <= price && delta < 5000) {
+        delta += 1;
+        _sellAmount += 1;
+        estPrice = _sellAmount / estBuyAmount;
+        estPrice = estPrice * Math.pow(10, buyAsset.pre - sellAsset.pre);
+      }
+    }
+    // *********************************************** //
+
+    // *** Check backingAsset level *** //
+    if (backingAssetValue) {
+      const isQuoting = selectedTo.label === 'META1';
+
+      if (
+        (isQuoting && backingAssetValue >= estPrice) ||
+        (!isQuoting && backingAssetValue <= estPrice)
+      ) {
+        const msg = `Too small amount.`;
+
+        setError(msg);
+        setPassword("");
+        setTradeInProgress(false);
+        return;
+      }
+    }
+    // ******************************** //
+
     const buyResult = await traderState.perform({
       from: selectedFrom.value,
       to: selectedTo?.value?.trim(),
       amount: selectedToAmount,
       password: password,
-      tradePrice: newMarketPrice
+      tradePrice: estPrice,
     });
     
     if (buyResult.error) {
@@ -460,7 +499,7 @@ export default function ExchangeForm(props) {
         const _quoteAsset = res[1];
         setBaseAsset(_baseAsset);
         setQuoteAsset(_quoteAsset);
-        calculateMarketPrice(_baseAsset, _quoteAsset);
+        calcMarketPrice(_baseAsset, _quoteAsset);
       })
       .catch(err => {
         console.log("lookup_asset_symbols error:", err);
@@ -514,7 +553,7 @@ export default function ExchangeForm(props) {
     return parseFloat(_liquidity.toFixed(6));
   }
 
-  const calculateMarketPrice = async (baseAsset, quoteAsset, selectedFromBalance) => {
+  const calcMarketPrice = async (baseAsset, quoteAsset, selectedToAmount) => {
     let _marketPrice = 0;
     let amount = 0;
     let estSellAmount = 0;
@@ -553,47 +592,37 @@ export default function ExchangeForm(props) {
             else _marketPrice = _marketPrice > price ? _marketPrice : price;
           }
 
-          if (selectedFromBalance) {
+          if (selectedToAmount) {
             amount = Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
-            estSellAmount += _marketPrice * amount;
-            if (estSellAmount > selectedFromBalance) break;
+            estSellAmount += amount;
+            if (estSellAmount >= selectedToAmount) break;
           }
         } else {
           divideby = Math.pow(10, baseAsset.precision - quoteAsset.precision);
           price = Number(limitOrder.sell_price.quote.amount / limitOrder.sell_price.base.amount / divideby);
           _marketPrice = _marketPrice < price ? price : _marketPrice;
 
-          if (selectedFromBalance) {
+          if (selectedToAmount) {
             amount = Number(limitOrder.for_sale) / Math.pow(10, quoteAsset.precision);
-            estSellAmount += _marketPrice * amount;
-            if (estSellAmount > selectedFromBalance) break;
+            estSellAmount += amount;
+            if (estSellAmount >= selectedToAmount) break;
           }
         }
       }
     }
 
     if (_marketPrice > 0) {
-      const percentDiff = _marketPrice + _marketPrice / Math.pow(10, 3);
-
       if (isTradingMETA1 && backingAssetValue) {
         const diff = Math.abs(_marketPrice - backingAssetValue) / 2;
 
-        if (!isQuoting) {
-          if (percentDiff >= backingAssetValue) {
+        if (!isQuoting && _marketPrice >= backingAssetValue) {
             _marketPrice = _marketPrice + diff;
-          } else {
-            _marketPrice = percentDiff;
-          }
-        } else {
-          _marketPrice = percentDiff;
         }
-      } else {
-        _marketPrice = percentDiff;
       }
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
       setIsInputsEnabled(true);
-      setMarketPrice(_marketPrice);
+      setMarketPrice(ceilFloat(_marketPrice, 5));
     }
 
     setIsLoadingPrice(false);

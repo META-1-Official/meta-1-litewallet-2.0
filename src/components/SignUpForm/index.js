@@ -60,6 +60,7 @@ export default function SignUpForm(props) {
       setLastName(localStorage.getItem('lastname'));
       setPhone(localStorage.getItem('phone'));
       setEmail(localStorage.getItem('email'));
+      setAuthData(JSON.parse(localStorage.getItem('authdata')));
       setStep('signature');
     }
   }, []);
@@ -117,7 +118,7 @@ export default function SignUpForm(props) {
 
   const stepGoToFaceKi = (data) => {
     setAuthData(data);
-    setPrivKey("web3authprivatekey");
+    setPrivKey(data?.privateKey);
     setEmail(data?.email.toLowerCase());
     setStep('faceki');
   }
@@ -193,6 +194,7 @@ export default function SignUpForm(props) {
         localStorage.removeItem('lastname');
         localStorage.removeItem('phone');
         localStorage.removeItem('email');
+        localStorage.removeItem('authdata');
         localStorage.removeItem('access');
         localStorage.removeItem('recover');
         localStorage.removeItem('stored');
@@ -336,7 +338,7 @@ export default function SignUpForm(props) {
           lastName={lastName}
           firstName={firstName}
           password={password}
-          privKey={privKey}
+          authData={authData}
           email={email}
           phone={phone}
           isSubmitted={isSubmitted}
@@ -465,6 +467,7 @@ export default function SignUpForm(props) {
           isCloseIcon={true}
           paperWalletData={paperWalletData}
           onRegistration={onRegistration}
+          authData={authData}
         />
         {
           authModalOpen && <LoginProvidersModal

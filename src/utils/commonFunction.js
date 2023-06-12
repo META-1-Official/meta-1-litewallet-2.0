@@ -1,3 +1,3 @@
 export const removeExponent = (value) => {
-    return value.toFixed(8)
+    return Number.isSafeInteger(value) ? value : value.toFixed(8)
 }

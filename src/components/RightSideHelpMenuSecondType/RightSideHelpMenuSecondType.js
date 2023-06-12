@@ -111,7 +111,7 @@ const RightSideHelpMenuSecondType = (props) => {
               <div
                 style={{ margin: ".25rem 0", width: "6rem", textAlign: "end" }}
               >
-                <p>{removeExponent(Number(el.amount))}</p>
+                <p>{removeExponent(Number((el.amount.toString()).replace(',','')))}</p>
               </div>
             </div>
           ))
