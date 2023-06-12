@@ -188,7 +188,6 @@ export async function sendEmail(emailType, emailData) {
 }
 
 export async function loginRequest(accountName, email, web3Token, web3PubKey) {
-  console.log('@@@@', web3Token, web3PubKey);
   try {
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,

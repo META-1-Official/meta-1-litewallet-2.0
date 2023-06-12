@@ -167,6 +167,8 @@ export default function FaceKiForm(props) {
   const camWidth = width > 576 ? 600 : width - 30;
   const camHeight = camWidth / 1.07;
 
+  if (browserstack_test_accounts.includes(props.accountName)) return null;
+
   return (
     <div style={{ height: "110%" }} className={"totalSumBlock"}>
       <div className='under-div'>
