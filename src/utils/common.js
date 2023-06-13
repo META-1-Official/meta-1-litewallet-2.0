@@ -41,3 +41,4 @@ export const signUpHandler = async (login, password) => {
         return { status: true };
     }
     return { status: false };
+}
