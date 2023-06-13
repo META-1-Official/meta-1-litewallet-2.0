@@ -1,20 +1,12 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { useState, useEffect } from "react";
-import {
-  Message,
-  Modal,
-  Icon,
-  Button,
-  Grid,
-  Header,
-  Input,
-} from "semantic-ui-react";
+import { Message, Input } from "semantic-ui-react";
 import QRCode from "react-qr-code";
 
 import "./style.css";
 
 export default function DepositForm(props) {
-  const { fetcher, account, onBackClick, asset } = props;
+  const { fetcher, onBackClick, asset } = props;
   const [isLoading, setIsLoading] = useState(false);
   const [address, setAddress] = useState(props.address);
   const [refreshData, setRefreshData] = useState(false);

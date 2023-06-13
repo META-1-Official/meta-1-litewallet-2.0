@@ -18,7 +18,7 @@ export const getMETA1Simple = async () => {
 
     let data = [];
     assetsList.map(item => {
-        if (item.symbol == "META1") return;
+        if (item.symbol === "META1") return;
         data.push ({
             name: item.symbol,
             backingCoin: item.symbol,
