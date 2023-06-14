@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
 import { getCryptosChange, saveBalance, saveUserCurrency } from '../../API/API';
 import { getUserError } from '../account/actions';
-import { getCryptosChangeError, getCryptosChangeSuccess, meta1ConnectError, meta1ConnectSuccess, saveBalanceError, saveBalanceSuccess, saveUserCurrencyError, saveUserCurrencySuccess } from './actions';
+import { getCryptosChangeError, getCryptosChangeSuccess, saveBalanceError, saveBalanceSuccess, saveUserCurrencyError, saveUserCurrencySuccess } from './actions';
 import * as types from './types';
 
 

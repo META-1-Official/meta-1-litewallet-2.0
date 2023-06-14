@@ -3,14 +3,14 @@
  * General API Settings are stored in api/apiConfig and should be imported here
  */
 
- import {xbtsxAPIs} from '../API/apiConfig';
- import {allowedGateway} from './branding';
- import {isGatewayTemporarilyDisabled} from './onChainConfig';
-//  import SettingsStore from 'stores/SettingsStore';
+ import { xbtsxAPIs } from '../API/apiConfig';
+ import { allowedGateway } from './branding';
+ import { isGatewayTemporarilyDisabled } from './onChainConfig';
+ //  import SettingsStore from 'stores/SettingsStore';
  
  const _isEnabled = (gatewayKey) => {
      return async function (options = {}) {
-        let __DEV__ = "dev11"
+         let __DEV__ = "dev11"
          if (__DEV__) {
              console.log('Checking ' + gatewayKey + ' gateway ...');
          }
@@ -46,19 +46,14 @@
                  return true;
              }
          }
-         // has the user filtered it out?
-        //  let filteredServiceProviders = SettingsStore.getState().settings.get(
-        //      'filteredServiceProviders',
-        //      []
-        //  );
-        const filteredServiceProviders = null;
+         let filteredServiceProviders = null;
          if (!filteredServiceProviders) {
              filteredServiceProviders = [];
          }
          let userAllowed = false;
          if (
-             filteredServiceProviders.length == 1 &&
-             filteredServiceProviders[0] == 'all'
+             filteredServiceProviders.length === 1 &&
+             filteredServiceProviders[0] === 'all'
          ) {
              userAllowed = true;
          } else {
