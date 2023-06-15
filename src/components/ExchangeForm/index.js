@@ -197,12 +197,7 @@ export default function ExchangeForm(props) {
 
   const performTradeSubmit = async () => {
     const marketLiquidity = await calculateMarketLiquidity();
-    const marketPrice = await calcMarketPrice(baseAsset, quoteAsset);
-
-    let newMarketPrice = marketPrice;
-    if (Number(selectedFrom.balance) > Number(selectedToAmount) * marketPrice) {
-      newMarketPrice = await calcMarketPrice(baseAsset, quoteAsset, selectedToAmount);
-    }
+    const newMarketPrice = await calcMarketPrice(baseAsset, quoteAsset, selectedToAmount);
 
     if (marketLiquidity < selectedToAmount) {
       var msg;
