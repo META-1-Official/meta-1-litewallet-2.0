@@ -16,7 +16,11 @@ export default function DepositForm(props) {
     bnb: 0.001,
     xlm: 0.001,
     ltc: 0.01,
-    eth: 0.001
+    eth: 0.001,
+    xrp: 1,
+    sol: 1,
+    doge: 1,
+    trx: 1
   });
   const canDeposit = address.length > 0;
   useEffect(() => {
