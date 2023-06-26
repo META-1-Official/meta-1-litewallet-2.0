@@ -1,12 +1,13 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { useState, useEffect } from "react";
-import { Message, Input } from "semantic-ui-react";
+import { Message, Input, Segment, Button } from "semantic-ui-react";
 import QRCode from "react-qr-code";
 
 import "./style.css";
 
 export default function DepositForm(props) {
-  const { fetcher, onBackClick, asset } = props;
+  const { fetcher, onBackClick } = props;
+  const [asset, setAsset] = useState(props.asset);
   const [isLoading, setIsLoading] = useState(false);
   const [address, setAddress] = useState(props.address);
   const [refreshData, setRefreshData] = useState(false);
@@ -22,7 +23,9 @@ export default function DepositForm(props) {
     doge: 1,
     trx: 1
   });
-  const canDeposit = address.length > 0;
+  const canDeposit = address?.length > 0;
+  const depsositAvaliable = process.env.REACT_APP_DEPOSIT_AVAILABLE_ASSETS.split(',');
+
   useEffect(() => {
     async function fetchAddress(asset) {
       if (typeof fetcher !== 'function') {
@@ -85,8 +88,16 @@ export default function DepositForm(props) {
             </span>
           </div>
         </div>
-
         <div className="qr-section">
+          <div className="button-group-wrapper">
+            <div className="button-group">
+              {depsositAvaliable &&
+                depsositAvaliable.map(depo_asset => {
+                  return <Button key={depo_asset} className={`asset-button ${depo_asset === asset ? 'depo-selected' : ''}`} onClick={() => setAsset(depo_asset)}>{depo_asset}</Button>
+                })
+              }
+            </div>
+          </div>
           <div
             style={{
               background: "#F0F1F4",
@@ -121,11 +132,11 @@ export default function DepositForm(props) {
               fontSize: ".8rem",
             }}
           >
-            Minimum deposit: {getMinAmount(asset)} {asset} {asset.toLowerCase()==='usdt'?'(ERC20)':''}
+            Minimum deposit: {getMinAmount(asset)} {asset} {asset.toLowerCase() === 'usdt' ? '(ERC20)' : ''}
           </p>
           <div>
             {!isLoading && canDeposit && (
-              <CopyToClipboard text={address} onCopy={() => {}}>
+              <CopyToClipboard text={address} onCopy={() => { }}>
                 <div style={{ width: "100%" }}>
                   <Input
                     style={{ width: "100%" }}
@@ -146,7 +157,7 @@ export default function DepositForm(props) {
             className={"messageRed"}
             icon="attention"
             header="Important information"
-            content={`Send only ${asset} ${asset.toLowerCase()==='usdt'?'ERC20':''} to this address. Sending less than ${getMinAmount(asset)} ${asset} or any other currency to this address may result in the loss of your deposit`}
+            content={`Send only ${asset} ${asset.toLowerCase() === 'usdt' ? 'ERC20' : ''} to this address. Sending less than ${getMinAmount(asset)} ${asset} or any other currency to this address may result in the loss of your deposit`}
           />
         </div>
       </div>
