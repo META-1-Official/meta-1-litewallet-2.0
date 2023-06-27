@@ -21,7 +21,10 @@ export default function DepositForm(props) {
     xrp: 1,
     sol: 1,
     doge: 1,
-    trx: 1
+    trx: 1,
+    xmr: 1,
+    busd: 1,
+    ada: 1
   });
   const canDeposit = address?.length > 0;
   const depsositAvaliable = process.env.REACT_APP_DEPOSIT_AVAILABLE_ASSETS.split(',');
