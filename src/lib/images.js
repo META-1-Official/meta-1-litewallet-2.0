@@ -9,9 +9,6 @@ import doge from '../images/assets/DOGE.svg';
 import sol from '../images/assets/SOL.png';
 import trx from '../images/assets/TRX.svg';
 import xrp from '../images/assets/XRP.png';
-import ada from '../images/assets/ADA.png';
-import xmr from '../images/assets/XMR.png';
-import busd from '../images/assets/BUSD.png';
 
 const btc = 'https://cdn.byte-trade.com/token/icon6/btc.png';
 
@@ -27,10 +24,7 @@ const assetImages = {
     DOGE: doge,
     SOL: sol,
     TRX: trx,
-    XRP: xrp,
-    XMR: xmr,
-    ADA: ada,
-    BUSD: busd
+    XRP: xrp
 };
 
 const getImage = (symbol) => {

@@ -395,7 +395,7 @@ export const opText = (operation_type, operation, result) => {
 
       return UseAccount(operation_account).then((response_name) => {
         return UseAsset(amount_to_sell_asset_id).then((response_asset1) => {
-          // var sell_asset_name = response_asset1.data.symbol;
+          var sell_asset_name = response_asset1.data.symbol;
           var sell_asset_precision = response_asset1.data.precision;
 
           return UseAsset(min_to_receive_asset_id).then((response_asset2) => {
@@ -408,7 +408,7 @@ export const opText = (operation_type, operation, result) => {
                     : ''
                   : '';
 
-            const {first, second} = getMarketName(
+            const {first, second, marketName} = getMarketName(
               response_asset2.data,
               response_asset1.data
             );
@@ -515,12 +515,12 @@ export const opText = (operation_type, operation, result) => {
           var pays_asset_precision = response_asset1.data.precision;
 
           return UseAsset(receives_asset_id).then((response_asset2) => {
-            // var receive_asset_name = response_asset2.data.symbol;
+            var receive_asset_name = response_asset2.data.symbol;
             var receive_asset_precision = response_asset2.data.precision;
 
             var order_id = operation.order_id? `#${operation.order_id.substring(4)}`: '';
 
-            const {first, second} = getMarketName(
+            const {marketName, first, second} = getMarketName(
               response_asset2.data,
               response_asset1.data
             );

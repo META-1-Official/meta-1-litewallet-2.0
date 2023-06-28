@@ -1,7 +1,12 @@
+import {Apis} from 'meta1-vision-ws';
+// import GatewayActions from 'actions/GatewayActions';
 import {
+	availableBridges,
 	availableGateways,
 	gatewayPrefixes,
 } from '../gateways';
+// import counterpart from 'counterpart';
+import {isGatewayTemporarilyDisabled} from '../onChainConfig';
 
 export function getGatewayName(asset) {
 	if (asset.get('issuer') === '1.2.0') {
@@ -59,11 +64,11 @@ export function getGatewayStatusByAsset(
 
 			// Gateway has EOS.* asset names
 			if (backingCoin.toUpperCase().indexOf('EOS.') !== -1) {
-				let [_coin] = backingCoin.split('.');
+				let [_network, _coin] = backingCoin.split('.');
 				backingCoin = _coin;
 			}
 
-			if (coin[boolCheck] && isAvailable && selectedAsset === backingCoin) {
+			if (coin[boolCheck] && isAvailable && selectedAsset == backingCoin) {
 				gatewayStatus[g].options.enabled = true;
 			}
 		});
@@ -110,3 +115,36 @@ export function getAssetAndGateway(symbol) {
 		return {selectedGateway, selectedAsset};
 	}
 }
+
+// export async function updateGatewayBackers(chain = '22a8d817') {
+// 	// Only fetch this when on desired chain, default to main chain
+// 	if (!Apis.instance().chain_id) return;
+// 	if (Apis.instance().chain_id.substr(0, 8) === chain) {
+// 		// MOCK
+// 		// bridges are disabled
+// 		// Walk all Gateways
+// 		for (let gateway in availableGateways) {
+// 			let gatewayConfig = availableGateways[gateway];
+// 			gatewayConfig.enabled = await gatewayConfig.isEnabled();
+// 			if (gatewayConfig.enabled) {
+// 				if (!!gatewayConfig.isSimple) {
+// 					GatewayActions.fetchCoinsSimple.defer({
+// 						backer: gatewayConfig.id,
+// 						url: gatewayConfig.baseAPI.BASE + gatewayConfig.baseAPI.COINS_LIST,
+// 					});
+// 				} else {
+// 					GatewayActions.fetchCoins.defer({
+// 						backer: availableGateways[gateway].id,
+// 						url: gatewayConfig.baseAPI.BASE + gatewayConfig.baseAPI.COINS_LIST,
+// 						urlBridge:
+// 							gatewayConfig.baseAPI.BASE + gatewayConfig.baseAPI.TRADING_PAIRS,
+// 						urlWallets:
+// 							gatewayConfig.baseAPI.BASE + gatewayConfig.baseAPI.ACTIVE_WALLETS,
+// 					});
+// 				}
+// 			} else {
+// 				GatewayActions.temporarilyDisable({backer: gateway});
+// 			}
+// 		}
+// 	}
+// }

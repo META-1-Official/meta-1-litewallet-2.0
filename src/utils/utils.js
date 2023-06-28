@@ -264,7 +264,7 @@ var Utils = {
                 return false;
             }
         }
-        for (key in b) {
+        for (var key in b) {
             if ((b.hasOwnProperty(key) && !(key in a)) || a[key] !== b[key]) {
                 return false;
             }
