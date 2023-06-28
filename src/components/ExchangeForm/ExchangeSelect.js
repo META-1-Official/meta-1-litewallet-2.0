@@ -62,7 +62,7 @@ export default function ExchangeSelect(props) {
       options={options}
       value={selectedValue}
       isSearchable={false}
-      isDisabled={isDisabled || false}
+      isDisabled={props.isDisabled || false}
       className={`${props.from === 'withdrawal'? 'select-withdrawal' : ''}`}
     />
   );

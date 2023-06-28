@@ -185,14 +185,14 @@ var enforceLocalStorageType = null;
  */
 export const setLocalStorageType = (type) => {
 	if (type !== 'inram' && type !== 'persistant') {
-		console.log('Please choose inram or persistant storage type');
+		throw 'Please choose inram or persistant storage type';
 	}
 	enforceLocalStorageType = type;
 };
 
 export const isPersistantType = () => {
 	return (
-		enforceLocalStorageType === null || enforceLocalStorageType === 'persistant'
+		enforceLocalStorageType == null || enforceLocalStorageType == 'persistant'
 	);
 };
 
@@ -216,10 +216,10 @@ export class DynamicLocalStorage extends AbstractLocalStorage {
 	}
 
 	_switchIfNecessary() {
-		if (enforceLocalStorageType === null) {
+		if (enforceLocalStorageType == null) {
 			return;
 		}
-		if (enforceLocalStorageType === 'inram') {
+		if (enforceLocalStorageType == 'inram') {
 			this.useInRam();
 		} else {
 			this.usePersistant();
