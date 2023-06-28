@@ -236,34 +236,6 @@ function getMeta1DepositAddressJSGateway(symbol, currentAccount) {
 	});
 }
 
-function getMeta1DepositAddressPyGateway(symbol, currentAccount) {
-	return new Promise((resolve, reject) => {
-		fetch(
-			`${process.env.GATEWAY_META1_PY_URL}/gateway?uia=` +
-				symbol.toUpperCase() +
-				'&client_id=' +
-				currentAccount,
-			{
-				method: 'POST',
-				headers: {
-					Accept: 'application/json, text/plain, */*',
-					'Content-Type': 'application/json',
-					'X-Requested-With': 'XMLHttpRequest',
-				},
-				body: JSON.stringify({
-					metaId: currentAccount,
-				}),
-			}
-		)
-			.then((res) => res.json())
-			.then((response) => {
-				let address = response.address;
-				resolve(address);
-			})
-			.catch((err) => console.log(err));
-	}).catch((err) => console.log(err));
-}
-
 let depositRequests = {};
 export function requestDepositAddress({
 	inputCoinType,
@@ -291,7 +263,7 @@ export function requestDepositAddress({
 	depositRequests[body_string] = true;
 
 	if (selectedGateway === 'META1') {
-		if (true || inputCoinType == 'eth' || inputCoinType == 'usdt') {
+		if (true || inputCoinType === 'eth' || inputCoinType === 'usdt') {
 			getMeta1DepositAddressJSGateway(inputCoinType)
 				.then((response) => {
 					delete depositRequests[body_string];
@@ -465,7 +437,7 @@ export function validateAddress({
 }) {
 	if (!newAddress) return new Promise((res) => res());
 
-	if (!method || method == 'GET') {
+	if (!method || method === 'GET') {
 		url +=
 			'/wallets/' +
 			walletType +
@@ -485,7 +457,7 @@ export function validateAddress({
 			.catch((err) => {
 				console.log('validate error:', err);
 			});
-	} else if (method == 'POST') {
+	} else if (method === 'POST') {
 		url = 'https://apis.xbts.io/api/v1';
 		return fetch(url + '/wallets/' + walletType + '/check-address', {
 			method: 'post',
