@@ -1,4 +1,4 @@
-import Meta1 from "meta1-vision-dex";
+// import Meta1 from "meta1-vision-dex";
 import { operationType, opText } from "../helpers/utility";
 import { getHistoryData } from "../API/API";
 import moment from "moment";
@@ -19,11 +19,11 @@ async function getHistory(event) {
     return [];
   }
   const historyData = response.data.splice(0,numberOfRecords).map(async (value) => {
-    let timestamp;
+    // let timestamp;
     let witness;
     const op = operationType(value.operation_type);
     const transactionHash = value?.block_data?.trx_id || '';
-    const op_type = op[0];
+    // const op_type = op[0];
     const op_color = op[1];
 
     witness = value.witness;
