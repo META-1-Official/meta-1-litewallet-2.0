@@ -1,5 +1,4 @@
 
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { useState, useEffect } from "react";
 import Meta1 from "meta1-vision-dex";
 import { Aes, ChainStore, FetchChain, PrivateKey, TransactionBuilder, TransactionHelper } from "meta1-vision-js";
