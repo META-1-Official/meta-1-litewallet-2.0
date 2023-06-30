@@ -44,6 +44,8 @@ if(token){
             initialState.isLogin = true;
             initialState.account = login.accountName;
             initialState.token = token;
+        } else if (login.error) {
+            console.log('login error');
         }
     });    
 }

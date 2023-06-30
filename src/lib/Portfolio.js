@@ -96,7 +96,8 @@ export default class Portfolio {
 
     async _fetchAssets() {
         try {
-            return await this.metaApi.db.list_assets('', 101);
+            let symbols = process.env.REACT_APP_CRYPTOS_ARRAY.split(',');
+            return await this.metaApi.db.get_assets(symbols);
         } catch (err) {
             return null;
         }

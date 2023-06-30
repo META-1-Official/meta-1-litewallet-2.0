@@ -12,7 +12,7 @@ import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import WithdrawForm from "./components/WithdrawForm";
 import ExchangeForm from "./components/ExchangeForm";
-import SendForm from "./components/SendForm";
+import SendForm from "./components/SendForm"; 
 import LoginScreen from "./components/LoginScreen";
 import Wallet from "./components/Wallet";
 import Settings from "./components/Settings/Settings";
@@ -239,6 +239,7 @@ function Application(props) {
       dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, web3Token, web3PubKey }));
     }
     if (getAccessToken()) {
+      console.log('loging', getAccessToken())
       dispatch(checkTransferableRequest({ login }))
       await getAvatarFromBack(login);
       setLoginError(null);
@@ -327,6 +328,7 @@ function Application(props) {
 
   useEffect(() => {
     if (!isTokenValidState) {
+      console.log('token invalid',errorMsgState)
       setTokenModalOpen(true);
       setTokenModalMsg(errorMsgState);
     } else {
