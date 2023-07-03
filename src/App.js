@@ -12,7 +12,7 @@ import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import WithdrawForm from "./components/WithdrawForm";
 import ExchangeForm from "./components/ExchangeForm";
-import SendForm from "./components/SendForm"; 
+import SendForm from "./components/SendForm";
 import LoginScreen from "./components/LoginScreen";
 import Wallet from "./components/Wallet";
 import Settings from "./components/Settings/Settings";
@@ -310,6 +310,8 @@ function Application(props) {
           onLogin(login.accountName);
         } else {
           setActiveScreen("login");
+          setTokenModalOpen(true);
+          setTokenModalMsg('Invalid Or Expired Token. Please login again.');
         }
       } else {
         setActiveScreen("login");
@@ -327,14 +329,8 @@ function Application(props) {
   }, [cryptoDataState]);
 
   useEffect(() => {
-    if (!isTokenValidState) {
-      console.log('token invalid',errorMsgState)
-      setTokenModalOpen(true);
-      setTokenModalMsg(errorMsgState);
-    } else {
-      if (userDataState) {
-        dispatch(getCryptosChangeRequest())
-      }
+    if (isTokenValidState && userDataState) {
+      dispatch(getCryptosChangeRequest())
     }
   }, [userDataState, isTokenValidState]);
 
@@ -1054,8 +1050,8 @@ function Application(props) {
                 alignItems: "center",
               }}
             >
-              <h3 style={{ textAlign: "center" }}>
-                {errorMsgState}. Please Login
+              <h3 style={{ textAlign: "center", textWrap: "balance" }}>
+                {tokenModalMsg}
               </h3>
             </div>
           </Modal.Content>
