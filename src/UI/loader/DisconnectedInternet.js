@@ -1,10 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import './disconnectedinternet.css';
 
-import AppStore from "../../images/app-store.png";
-import GooglePlay from "../../images/google-play.png";
-import OfflieIcon from "../../images/offline.png";
-
 const DisconnectedInternet = (props) => {
     const QRCodeScanCard = (props) =>
         <div className="qr-code-card">
@@ -20,12 +16,12 @@ const DisconnectedInternet = (props) => {
                 <div className="text3">Unable to connect to the internet</div>
                 <div className="text4">Second option scan the QR code and download the app</div>
                 <div className="qr-code-wrapper">
-                    <QRCodeScanCard code={AppStore} text="App Store" />
-                    <QRCodeScanCard code={GooglePlay} text="Google Play" />
+                    <QRCodeScanCard code={props.appStoreIcon} text="App Store" />
+                    <QRCodeScanCard code={props.googlePlayIcon} text="Google Play" />
                 </div>
             </div>
             <div className="right-side">
-                <img src={OfflieIcon}></img>
+                <img src={props.offlineIcon}></img>
             </div>
         </div>
     )

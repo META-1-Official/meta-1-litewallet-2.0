@@ -46,6 +46,10 @@ import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
 
+// for the cache purpose
+import AppStore from "./images/app-store.png";
+import GooglePlay from "./images/google-play.png";
+import OfflineIcon from "./images/offline.png";
 
 const openloginAdapter = new OpenloginAdapter({
   adapterSettings: {
@@ -478,7 +482,7 @@ function Application(props) {
   };
 
   if (!isOnline) {
-    return <DisconnectedInternet />;
+    return <DisconnectedInternet appStoreIcon={AppStore} googlePlayIcon={GooglePlay} offlineIcon={OfflineIcon}/>;
   }
 
   if (isLoading || loaderState || activeScreen == null) {
@@ -1201,6 +1205,9 @@ function Application(props) {
             OK</Button>
         </Modal.Actions>
       </Modal>
+      <img src={AppStore} style={{display: 'none'}}/>
+      <img src={GooglePlay} style={{display: 'none'}}/>
+      <img src={OfflineIcon} style={{display: 'none'}}/>
     </>
   );
 }
