@@ -109,6 +109,7 @@ input:focus {
 :root {
   --headerBgColor: #330000;
   --gold: #fdc000;
+  --lightGold: #ffe9a6;
   --blue: blue;
   --green: #00aa08;
   --red: rgb(248, 0, 0);
@@ -122,4 +123,5 @@ input:focus {
   --textGold: #ffc000;
   --logoMain: #e9bd37;
   --font: "Poppins", sans-serif !important;
+  --hrColor: #ebebeb;
 }

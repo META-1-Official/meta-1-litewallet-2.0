@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./RightSideHelpMenuFirstType.module.scss";
 import { getImage } from "../../lib/images";
+import { AnnouncementCard } from "../Announcement/AnnouncemnetCard";
 
 const RightSideHelpMenuFirstType = (props) => {
   const { onClickExchangeAssetHandler, portfolio } = props;
@@ -76,6 +77,27 @@ const RightSideHelpMenuFirstType = (props) => {
               </div>
             )
           })}
+        </div>
+      </div>
+      <div className={styles.announcements}>
+        <h5 style={{ fontWeight: "bold", fontSize: "1rem" }}>Announcements</h5>
+        <hr />
+        <div className={styles.helpBlock}>
+          <AnnouncementCard
+            title="Ambassador New Opportunity Call Schedule"
+            description="Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text ."
+            time="1 Hour Ago"
+          />
+          <AnnouncementCard
+            title="Ambassador New Opportunity Call Schedule"
+            description="Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text ."
+            time="7 Hours Ago"
+          />
+          <AnnouncementCard
+            title="Ambassador New Opportunity Call Schedule"
+            description="Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text ."
+            time="3 Days Ago"
+          />
         </div>
       </div>
     </>

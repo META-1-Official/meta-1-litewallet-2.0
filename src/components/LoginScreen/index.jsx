@@ -12,6 +12,7 @@ import { Button, Modal } from "semantic-ui-react";
 import AccountApi from "../../lib/AccountApi";
 import MetaLoader from "../../UI/loader/Loader";
 import LoginProvidersModal from "../Web3Auth"
+import { UpComingEvents } from "../Announcement/UpComingEvents";
 
 export default function LoginScreen(props) {
   const {
@@ -387,6 +388,7 @@ export default function LoginScreen(props) {
             </Modal.Actions>
           </Modal>
         </div>
+        <UpComingEvents />
         {
           authModalOpen && <LoginProvidersModal
             open={authModalOpen}
