@@ -190,6 +190,7 @@ video {
 }
 
 .migration-modal-div .text2 {
+  font-size: 20px !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
