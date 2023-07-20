@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./Navbar.module.scss";
 import "./styles.css";
 import logo from "../../images/Logo.png";
@@ -6,9 +6,12 @@ import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutRequest } from "../../store/account/actions";
 import { navbarProfileImageSelector } from "../../store/account/selector";
+import NotiIcon from "../../images/notification.png";
+import Notification from "../Notification";
 
 const Navbar = (props) => {
   const dispatch = useDispatch();
+  const [showNotiDropDown, setShowNotiDropDown] = useState(false);
   const navbarProfileImageState = useSelector(navbarProfileImageSelector)
   const {
     onClickHomeHandler,
@@ -29,6 +32,21 @@ const Navbar = (props) => {
   const openInNewTab = url => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+  const ref = useRef(null);
+
+  useEffect(() => {
+    window.addEventListener('click', handleClickOutside, true);
+    return () => {
+      window.removeEventListener('click', handleClickOutside, true);
+    };
+  }, []);
+
+  const handleClickOutside = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setShowNotiDropDown(false);
+    }
+  };
+
   return (
     <>
       <div
@@ -113,6 +131,10 @@ const Navbar = (props) => {
                     Get help
                   </span>
                 </div>
+                <div className={styles.blockNotification} onClick={() => setShowNotiDropDown(true)}>
+                  <img src={NotiIcon} className={styles.notiIcon} />
+                  <div className={styles.badgeCount}>3</div>
+                </div>
                 <div className="nav-item dropdown parent-this">
                   <a
                     className={styles.btn}
@@ -123,10 +145,10 @@ const Navbar = (props) => {
                     aria-expanded="false"
                   >
                     Fund Wallet
-                   <span 
-                   className="nav-link dropdown-toggle for-dropdown"
-                    id="navbarScrollingDropdown"
-                   ></span>
+                    <span
+                      className="nav-link dropdown-toggle for-dropdown"
+                      id="navbarScrollingDropdown"
+                    ></span>
                     <div
                       className={"imgUser"}
                       style={{ marginLeft: ".3rem" }}
@@ -241,6 +263,7 @@ const Navbar = (props) => {
           </div>
         </div>
       </nav>
+      {showNotiDropDown && <div ref={ref}><Notification /></div>}
     </>
   );
 };

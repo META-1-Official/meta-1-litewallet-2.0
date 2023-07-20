@@ -1,57 +1,77 @@
 import React, { useEffect, useState } from 'react';
 
-import { AnnouncementCard } from './AnnouncementCard';
-import { AnnouncementDetailModal } from './AnnouncementDetailModal';
+import NotiIcon1 from '../../images/announcement1.png';
+import NotiIcon2 from '../../images/announcement2.png';
 
-export const Announcement = () => {
+import { NotificationItem } from './NotificationItem';
+
+import styles from "./notification.module.scss";
+
+const Notification = () => {
     const [data, setData] = useState();
     const [selectedData, setSelectedData] = useState(null);
-    const [modalOpened, setModalOpened] = useState(false);
 
-    const fetchAnnouncementsData = async (month) => {
+    const fetchNotificationData = async () => {
         return [
             {
-                title: "Ambassador New Opportunity Call Schedule",
+                type: 1,
+                title: "Ambassador New Opportunity Call",
                 description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
+                time: "1 Minute Ago"
             },
             {
-                title: "Ambassador New Opportunity Call Schedule",
+                type: 1,
+                title: "Ambassador New Opportunity Call",
                 description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
+                time: "1 Minute Ago"
             },
             {
-                title: "Ambassador New Opportunity Call Schedule",
+                type: 2,
+                title: "Ambassador New Opportunity Call",
                 description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
+                time: "1 Minute Ago"
             },
             {
-                title: "Ambassador New Opportunity Call Schedule",
+                type: 2,
+                title: "Ambassador New Opportunity Call",
                 description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
+                time: "1 Minute Ago"
             },
             {
-                title: "Ambassador New Opportunity Call Schedule",
+                type: 1,
+                title: "Ambassador New Opportunity Call",
                 description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
+                time: "1 Minute Ago"
             }
         ]
     }
 
+    const getItem = (type) => {
+        switch (type) {
+            case 1:
+                return NotiIcon1;
+            case 2:
+                return NotiIcon2;
+            default:
+                return NotiIcon1;
+        }
+    }
+
     const handleClick = (event) => {
-        setModalOpened(true);
+        console.log('Click Notification');
     }
 
     useEffect(async () => {
-        let res = await fetchAnnouncementsData('July');
+        let res = await fetchNotificationData();
         setData(res);
     }, []);
 
     return (
-        <div>
+        <div className={styles.notificationWrapper}>
             {
                 data && data.map((ele, index) => {
-                    return index < 3 && <AnnouncementCard
+                    return index < 4 && <NotificationItem
+                        icon={getItem(ele.type)}
                         title={ele.title}
                         description={ele.description}
                         time={ele.time}
@@ -59,7 +79,9 @@ export const Announcement = () => {
                     />
                 })
             }
-            <AnnouncementDetailModal data={data} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
+            <div className={styles.viewAll}>View All Notifications</div>
         </div>
     )
 }
+
+export default Notification;

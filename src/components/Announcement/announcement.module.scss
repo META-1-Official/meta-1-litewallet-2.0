@@ -9,6 +9,14 @@
 
 .info {
     max-width: 520px;
+
+    h4 {
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }
 
 .time {
@@ -121,7 +129,110 @@
     line-height: 20px;
 }
 
-// Modal
+// AnnouncementModal
+.announceModalContent {
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    border-radius: 10px;
+
+    .modalHeader {
+        display: flex;
+        justify-content: space-between;
+        background: #FC0;
+        height: 105px;
+        padding: 20px 40px;
+
+        .left {
+            display: flex;
+
+            .iconWrapper {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 56px;
+                height: 56px;
+                background-color: #471300;
+                border-radius: 50%;
+
+                img {
+                    width: 30px;
+                    height: 24px;
+                }
+            }
+
+            .titleWrapper {
+                margin-left: 20px;
+
+                .title {
+                    color: #471300;
+                    font-family: Poppins;
+                    font-size: 20px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                }
+
+                .time {
+                    display: flex;
+                    border: none;
+                    border-radius: 3px;
+                    height: 25px;
+                    width: 100px;
+                    background: rgba(255, 255, 255, 0.70);
+                    color: #471300;
+                    text-align: center;
+                    font-family: Poppins;
+                    font-size: 12px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: normal;
+                    text-transform: uppercase;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+        }
+
+        .cancelBtn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.70);
+            filter: drop-shadow(0px 10px 5px rgba(0, 0, 0, 0.2));
+            color: #C60101;
+            text-align: center;
+            font-family: Poppins;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+    }
+
+    .modalBody {
+        padding: 20px 40px;
+        overflow-y: auto;
+        margin-bottom: 30px;
+        
+        p {
+            color: #44484B;
+            font-family: Poppins;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px;
+            height: 500px;
+        }
+    }
+}
+
+// Event Modal
 .modalContent {
     display: flex;
     padding: 20px;

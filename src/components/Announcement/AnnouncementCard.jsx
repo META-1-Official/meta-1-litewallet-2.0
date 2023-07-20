@@ -1,12 +1,11 @@
 import logo from "../../images/logo_icon.png";
 import styles from "./announcement.module.scss";
 
-export const AnnouncementDetail = (props) => {
+export const AnnouncementCard = (props) => {
     return (
         <div className={styles.announcementCard}>
             <div className={styles.info}>
-
-                <h4>{props.title}</h4>
+                <h4 onClick={props.onClick}>{props.title}</h4>
                 <p>{props.description}</p>
                 <div className={styles.time}>
                     {props.time}

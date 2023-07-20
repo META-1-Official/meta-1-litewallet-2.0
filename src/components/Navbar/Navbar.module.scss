@@ -2,6 +2,9 @@
   background: var(--headerBgColor) !important;
   margin: 0 !important;
   padding: 0 !important;
+  position: fixed;
+  width: 100%;
+  z-index: 10;
 }
 
 .adaptNeed {
@@ -13,6 +16,7 @@
 .img {
   width: 10rem;
 }
+
 .line {
   border-left: 1px solid #000;
   height: 3rem;
@@ -26,6 +30,7 @@
   height: 1.8rem;
   margin: 1rem 0.5rem 0 0;
 }
+
 .btnDisabled {
   border: none;
   border-radius: 3px;
@@ -61,10 +66,44 @@
   font-size: 0.85rem;
   padding: 0.6rem 0;
 }
+
 .blockhelp {
   color: #fff;
   font-weight: 500;
   font-size: 0.9rem;
   margin: 1.4rem 1rem;
   cursor: pointer;
+}
+
+.blockNotification {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-right: 30px;
+  cursor: pointer;
+
+  .notiIcon {
+    width: 18px;
+    height: 25px;
+  }
+
+  .badgeCount {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: #fc0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #300;
+    font-family: Poppins;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: uppercase;
+    top: 20px;
+    right: -16px;
+  }
 }

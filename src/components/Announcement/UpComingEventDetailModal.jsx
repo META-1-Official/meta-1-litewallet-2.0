@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styles from "./announcement.module.scss";
 
-import Calendar from 'react-calendar';
-import './Calendar.scss';
-
 import { Modal } from "semantic-ui-react";
 import TimerIcon from "../../images/timer.png";
 import LocationIcon from "../../images/location.png";
 
-export const UpComingEventDetail = (props) => {
+export const UpComingEventDetailModal = (props) => {
     return (
         <Modal
             open={props.isOpen}

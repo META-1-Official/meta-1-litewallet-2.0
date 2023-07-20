@@ -1,0 +1,93 @@
+.notificationWrapper {
+    position: absolute;
+    z-index: 10;
+    background: white;
+    top: 65px;
+    right: 50px;
+    filter: drop-shadow(0px 30px 30px rgba(0, 0, 0, 0.2));
+    border-top: 3px solid #E24C4D;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    width: 440px;
+    padding-bottom: 20px;
+
+    // Paddle
+    &::after {
+        content: '\a';
+        border-style: solid;
+        border-width: 15px 15px 15px 0px;
+        border-color: transparent #E24C4D transparent transparent;
+        position: absolute;
+        transform: rotate(90deg);
+        right: 50%;
+        top: -25px;
+    }
+}
+
+.notificationCard {
+    display: flex;
+    padding: 20px;
+    align-items: center;
+    justify-content: space-between;
+
+    &:nth-child(even) {
+        background-color: #F7F8FA;
+    }
+}
+
+.info {
+    margin-left: 15px;
+
+    h4 {
+        cursor: pointer;
+        margin: 5px 0px;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    p {
+        color: #607383;
+        font-family: Poppins;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        text-transform: capitalize;
+    }
+}
+
+.time {
+    display: flex;
+    color: #000;
+    font-family: Poppins;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: capitalize;
+    justify-content: space-between;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+.viewAll {
+    color: #FFC000;
+    font-family: Poppins;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-decoration-line: underline;
+    text-transform: capitalize;
+    margin-top: 10px;
+    text-align: center;
+    cursor: pointer;
+}

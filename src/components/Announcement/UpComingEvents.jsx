@@ -114,11 +114,13 @@ export const UpComingEvents = () => {
 
     const prevIcon = <i class="fas fa-chevron-left event" />;
     const nextIcon = <i class="fas fa-chevron-right event" />;
-    const renderTile = (activeStartDate, date, view) => {
-        const eventExistDay = (day) => {
-            if (!data) return false;
-            return data.filter(ele => ele.date === day).length > 0;
-        };
+
+    const eventExistDay = (day) => {
+        if (!data) return false;
+        return data.filter(ele => ele.date === day).length > 0;
+    };
+
+    const renderTile = (activeStartDate, date, view) => {        
         let weekOfDate = date.getDay();
         let dayOfDate = date.getDate();
         let cardBorder = `2px solid ${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'black'}`;
@@ -145,7 +147,10 @@ export const UpComingEvents = () => {
     }
 
     const handleClick = (value, event) => {
-        setModalOpened(true);
+        let dayOfDate = value.getDate();
+
+        let isValid = eventExistDay(dayOfDate);
+        isValid && setModalOpened(true);
     }
 
     return (
