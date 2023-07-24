@@ -1049,7 +1049,7 @@ export default function ExchangeForm(props) {
                     />
                   </div>
                   <span style={{ color: "lightcoral", textAlign: "left", position: "absolute", marginLeft: "50px" }}>
-                    Market order rate is not guaranteed due to slippage. Click <a href='https://support.meta1coin.vision/hc/en-us/articles/11896478311963-How-to-Trade-Coins-in-the-META-LITE-Wallet' style={{ color: "lightcoral", textDecoration: "underline" }} target="_blank">here</a> to learn more.
+                    Market order rate is not guaranteed due to slippage. Click <a href={process.env.REACT_APP_HOW_TO_TRADE} style={{ color: "lightcoral", textDecoration: "underline" }} target="_blank">here</a> to learn more.
                   </span>
                 </div>
               )}
