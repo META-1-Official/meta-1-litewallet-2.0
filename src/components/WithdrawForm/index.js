@@ -522,7 +522,7 @@ const WithdrawForm = (props) => {
                     trigger={
                       <div className={styles.inputForAmount}>
                         <Input
-                          placeholder="Amount crypto"
+                          placeholder={`Minimum Withdraw: ${minAmountForAsset}`}
                           value={selectedFromAmount}
                           type={"number"}
                           onChange={(e) => {
