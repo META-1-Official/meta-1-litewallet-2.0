@@ -93,6 +93,7 @@ const WithdrawForm = (props) => {
   const ariaLabel = { "aria-label": "description" };
   const [gatewayStatus, setGatewayStatus] = useState(availableGateways);
   const [backedCoins] = useState(Immutable.Map({ META1: getMETA1Simple() }));
+  const [withdrawSuccessModalOpen, setWithdrawSuccessModalOpen] = useState(false);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
@@ -348,7 +349,7 @@ const WithdrawForm = (props) => {
       .then((res) => {
         if (res.success === 'success') {
           setIsLoading(false);
-          alert("Email sent, awesome!");
+          setWithdrawSuccessModalOpen(true);
           // Reset form inputs
           setName('');
           setEmailAddress('');
@@ -713,6 +714,38 @@ const WithdrawForm = (props) => {
             }}
           >
             Close</Button>
+        </Modal.Actions>
+      </Modal>
+      <Modal
+        size="mini"
+        open={withdrawSuccessModalOpen}
+        id={"modal-1"}
+      >
+        <Modal.Header>Success</Modal.Header>
+        <Modal.Content style={{ height: "55%" }}>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <h3 style={{ textAlign: "center" }}>
+              Withdrawal request submitted sucessfully, an email confirmation has been sent to you
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button
+            style={{ backgroundColor: "#fc0", color: "white" }}
+            onClick={() => {
+              setWithdrawSuccessModalOpen(false);
+            }}
+          >
+            OK
+          </Button>
         </Modal.Actions>
       </Modal>
     </>
