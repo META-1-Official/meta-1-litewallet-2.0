@@ -13,102 +13,44 @@ export const UpComingEvents = () => {
     const [modalOpened, setModalOpened] = useState(false);
 
     const fetchEventData = async (month) => {
-        return [
-            {
-                date: 1,
-                events: [
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    },
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    }
-                ]
-            },
-            {
-                date: 9,
-                events: [
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    },
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    }
-                ]
-            },
-            {
-                date: 10,
-                events: [
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    },
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    }
-                ]
-            },
-            {
-                date: 11,
-                events: [
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    },
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    }
-                ]
-            },
-            {
-                date: 17,
-                events: [
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    },
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    }
-                ]
-            },
-            {
-                date: 26,
-                events: [
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    },
-                    {
-                        title: "Freedom Fest",
-                        location: "Colorado City, Arizona",
-                        duration: "9:00AM-5:00PM MDT"
-                    }
-                ]
-            },
-        ]
+        return {
+            "5": [
+                {
+                    "id": 1,
+                    "title": "Scottsdale Arizona",
+                    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
+                    "location_bg_url": "https://media.istockphoto.com/id/169960380/photo/downtown-scottsdale-and-suburbs-of-phoenix.jpg?s=1024x1024&w=is&k=20&c=ldM-AWgyZbutOcRFBv74tUqSRWcHLAkNZOHFczwQcfs=",
+                    "location": "Holiday Inn & Suites Scottsdale North - Airpark 14255 North 87th Street, Scottsdale, AZ 85260",
+                    "registration": "",
+                    "start": "2023-08-05T00:00:00.000Z",
+                    "end": "2023-08-05T04:00:00.000Z",
+                    "plus_title": "LUNCH INCLUDED",
+                    "plus_description": "(Bring your favorite dish to share in the pot luck)",
+                    "created_at": "2023-08-02T10:57:10.486Z",
+                    "updated_at": "2023-08-02T10:57:10.486Z"
+                }
+            ],
+            "31": [
+                {
+                    "id": 2,
+                    "title": "Scottsdale Arizona",
+                    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
+                    "location_bg_url": "https://media.istockphoto.com/id/169960380/photo/downtown-scottsdale-and-suburbs-of-phoenix.jpg?s=1024x1024&w=is&k=20&c=ldM-AWgyZbutOcRFBv74tUqSRWcHLAkNZOHFczwQcfs=",
+                    "location": "Holiday Inn & Suites Scottsdale North - Airpark 14255 North 87th Street, Scottsdale, AZ 85260",
+                    "registration": "",
+                    "start": "2023-08-30T16:00:00.000Z",
+                    "end": "2023-08-30T17:00:00.000Z",
+                    "plus_title": "LUNCH INCLUDED",
+                    "plus_description": "(Bring your favorite dish to share in the pot luck)",
+                    "created_at": "2023-08-08T18:08:57.485Z",
+                    "updated_at": "2023-08-08T18:08:57.485Z"
+                }
+            ]
+        }
     }
 
     useEffect(async () => {
-        let res = await fetchEventData('July');
+        let res = await fetchEventData('08');
         setData(res);
     }, []);
 
@@ -117,10 +59,10 @@ export const UpComingEvents = () => {
 
     const eventExistDay = (day) => {
         if (!data) return false;
-        return data.filter(ele => ele.date === day).length > 0;
+        return data[day].length > 0;
     };
 
-    const renderTile = (activeStartDate, date, view) => {        
+    const renderTile = (activeStartDate, date, view) => {
         let weekOfDate = date.getDay();
         let dayOfDate = date.getDate();
         let cardBorder = `2px solid ${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'black'}`;
@@ -129,17 +71,13 @@ export const UpComingEvents = () => {
         return <div className={styles.eventCard} style={{ borderTop: cardBorder, background: cardBackground }}>
             <span className={styles.dateText} style={{ color: cardColor }}>{dayOfDate}</span>
             {
-                data && data.map(ele => {
-                    if (ele.date === dayOfDate) {
-                        return ele.events.map((ev, index) => {
-                            if (index < 2) {
-                                return <div className={styles.cardInfo}>
-                                    <div className={styles.title}>{ev.title}</div>
-                                    <div className={styles.location}>{ev.location}</div>
-                                    <div className={styles.duration}>{ev.duration}</div>
-                                </div>
-                            }
-                        })
+                data[dayOfDate] && data[dayOfDate].map((ev, index) => {
+                    if (index < 2) {
+                        return <div className={styles.cardInfo}>
+                            <div className={styles.title}>{ev.title}</div>
+                            <div className={styles.location}>{ev.location}</div>
+                            <div className={styles.duration}>{ev.start}</div>
+                        </div>
                     }
                 })
             }
