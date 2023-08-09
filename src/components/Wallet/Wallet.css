@@ -162,7 +162,7 @@
   font-size: 12px !important;
 }
 .tradeButton {
-  background: #6c4848 !important;
+  background: rgb(100, 72, 72) !important;
   color: #fff !important;
   width: 4.5rem !important;
   height: 2rem;
@@ -170,6 +170,17 @@
   border-radius: 3px;
   border: none;
   box-shadow: var(--boxShadowIndex) !important;
+}
+.tradeButtonDisabled {
+  background: rgb(100, 72, 72, 0.7) !important;
+  color: #fff !important;
+  width: 4.5rem !important;
+  height: 2rem;
+  font-weight: 600 !important;
+  border-radius: 3px;
+  border: none;
+  box-shadow: var(--boxShadowIndex) !important;
+  cursor: no-drop;
 }
 .depositButton {
   background: var(--green) !important;
