@@ -70,7 +70,7 @@ function Wallet(props) {
     if (isCurrencySelected !== '' && isCurrencySelectedEmpty) {
       setIsCurrencySelectedEmpty(false);
     }
-  },[isCurrencySelected, selectBoxOpen]);
+  }, [isCurrencySelected, selectBoxOpen]);
 
   useEffect(() => {
     function check() {
@@ -203,10 +203,10 @@ function Wallet(props) {
         >
           <div
             className={"blockSumAndPercentage"}
-            style={{ display: "flex", flexDirection: "row", alignItems:'center' }}
+            style={{ display: "flex", flexDirection: "row", alignItems: 'center' }}
           >
             <h2 style={{ color: "#FFC000", fontSize: "2rem", margin: "0" }}>
-              <strong className={`adaptAmountMain ${!isMobile ? 'balanceFontSize' : 'balanceFontSizeMobile' }`} style={!isMobile ? { fontSize: '25px' } : { fontSize: '16px !important' }}>
+              <strong className={`adaptAmountMain ${!isMobile ? 'balanceFontSize' : 'balanceFontSizeMobile'}`} style={!isMobile ? { fontSize: '25px' } : { fontSize: '16px !important' }}>
                 {loader && isLoading ? (
                   <Loader size="mini" active inline="centered" />
                 ) : (
@@ -242,24 +242,24 @@ function Wallet(props) {
             </h5>
           </div>
           <div className="rightSideBlock">
-          <div className="select_currency">
+            <div className="select_currency">
               <div className={"blockChoose"}>
-                {isCurrencySelectedEmpty && <div 
+                {isCurrencySelectedEmpty && <div
                   onClick={() => {
                     setIsCurrencySelectedEmpty(false);
                     setSelectBoxOpen(true);
                   }}
                   className='selectbox_div'
-                > 
+                >
                   Select currency to display <i className="fas fa-caret-down"></i>
                 </div>}
                 {!isCurrencySelectedEmpty && <FormControl className="mw-400 width-selectBox" sx={{ m: 1, minWidth: "270" }}>
-                  <InputLabel 
+                  <InputLabel
                     onClick={() => {
                       if (isCurrencySelected !== '') {
                         setSelectBoxOpen(true);
                       }
-                    }} 
+                    }}
                     className={`select-label ${isCurrencySelected !== '' ? 'select-label-selected' : ''}`} id="demo-simple-select-autowidth-label"
                   >
                     Select currency to display
@@ -275,8 +275,8 @@ function Wallet(props) {
                     onChange={(e) => changeCryptoCurrency(e, false)}
                     autoWidth
                     label="Select currency to display"
-                    MenuProps={{ classes: { paper: 'options-height-wallet' }}}
-                    onClose={()=>{
+                    MenuProps={{ classes: { paper: 'options-height-wallet' } }}
+                    onClose={() => {
                       setSelectBoxOpen(false);
                     }}
                   >
@@ -333,11 +333,9 @@ function Wallet(props) {
         </div>
       </div>
       <div className="portfolio-table">
-        <div className="portfolio-table">
-          <Portfolio
-            onAssetSelect={onAssetSelect}
-          />
-        </div>
+        <Portfolio
+          onAssetSelect={onAssetSelect}
+        />
       </div>
     </>
   );

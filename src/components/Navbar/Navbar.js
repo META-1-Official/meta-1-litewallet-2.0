@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Navbar.module.scss";
 import "./styles.css";
 import logo from "../../images/Logo.png";
@@ -6,6 +6,9 @@ import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutRequest } from "../../store/account/actions";
 import { navbarProfileImageSelector } from "../../store/account/selector";
+import sunIcon from "../../images/sun.png";
+import moonIcon from "../../images/moon.png";
+import { useTheme } from "styled-components";
 
 const Navbar = (props) => {
   const dispatch = useDispatch();
@@ -19,9 +22,11 @@ const Navbar = (props) => {
     onClickSettingsHandler,
     onClickHistoryHandler,
     onClickOpenOrderHandler,
+    themeSetter,
+    themeMode,
     portfolio,
     name,
-    onClickResetIsSignatureProcessing
+    onClickResetIsSignatureProcessing,
   } = props;
 
   const { innerWidth: width } = window;
@@ -29,6 +34,7 @@ const Navbar = (props) => {
   const openInNewTab = url => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+
   return (
     <>
       <div
@@ -123,10 +129,10 @@ const Navbar = (props) => {
                     aria-expanded="false"
                   >
                     Fund Wallet
-                   <span 
-                   className="nav-link dropdown-toggle for-dropdown"
-                    id="navbarScrollingDropdown"
-                   ></span>
+                    <span
+                      className="nav-link dropdown-toggle for-dropdown"
+                      id="navbarScrollingDropdown"
+                    ></span>
                     <div
                       className={"imgUser"}
                       style={{ marginLeft: ".3rem" }}
@@ -170,6 +176,17 @@ const Navbar = (props) => {
                   </ul>
                 </div>
                 <div className={styles.line + styles.adaptNeed} />
+                <div
+                  className={"imgUser"}
+                  style={{ marginLeft: ".3rem" }}
+                >
+                  <img
+                    className={styles.themeChanger}
+                    src={themeMode == "dark" ? moonIcon : sunIcon}
+                    alt="user"
+                    onClick={() => themeSetter()}
+                  />
+                </div>
                 <div
                   className={styles.adaptNeed}
                   style={{

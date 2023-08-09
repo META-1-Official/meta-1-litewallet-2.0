@@ -1,5 +1,4 @@
 @media (max-width: 767px) {
-
   .singup-grid,
   .singup-grid .column {}
 }
@@ -29,12 +28,13 @@ button {
 
 label {
   font-size: 0.8rem;
-  color: var(--textBrown);
+  color: var(--textBrown) !important;
   font-weight: 700;
 }
 
 input {
   box-shadow: var(--boxShadowIndex);
+  background-color: var(--inputColor) !important;
 }
 
 .head-title {
@@ -42,6 +42,7 @@ input {
   margin: 1.1rem 0 !important;
   padding: 0 !important;
   color: var(--textBrown);
+  border-bottom: 1px solid var(--hrColor) !important;
 }
 
 .disp-section {
@@ -58,7 +59,8 @@ input {
   padding: 1rem 2rem;
   border-radius: 4px;
   box-shadow: var(--boxShadowIndex);
-  background: #fff;
+  background: var(--blockBgColor);
+  border: 1px solid var(--borderColor);
   width: 70%;
   position: relative;
   margin-right: 1rem;

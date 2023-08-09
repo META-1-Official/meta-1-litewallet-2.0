@@ -52,8 +52,10 @@
 .linkMeta,
 .intro,
 .newCrypto {
+  background: var(--blockBgColor2);
+  border: 1px solid var(--borderColor);
+  color: var(--textBrown);
   margin: 1rem;
-  background: #fff;
   border-radius: 4px;
   padding: 1.6rem;
   box-shadow: var(--boxShadowIndex);
@@ -95,6 +97,8 @@
   }
 }
 .intro {
+  background: var(--blockBgColor);
+  color: var(--textBrown);
   height: 15rem;
   h5 {
     font-size: 1rem;

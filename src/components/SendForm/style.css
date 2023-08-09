@@ -7,13 +7,9 @@
 .MuiTextField-root {
   width: 100%;
   margin-top: 1rem;
-  background: #fff !important;
 }
 .MuiTextField-root:hover {
   background-color: #fff;
-}
-.Mui-disabled {
-  background: #fff !important;
 }
 input[type="number"] {
   -moz-appearance: textfield;

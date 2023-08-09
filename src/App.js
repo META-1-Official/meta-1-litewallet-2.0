@@ -42,6 +42,7 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
+import { getTheme, setTheme } from './utils/storage';
 
 // for the cache purpose
 import AppStore from "./images/app-store.png";
@@ -80,6 +81,7 @@ function Application(props) {
   const senderApiState = useSelector(senderApiSelector);
   const checkTransferableModelState = useSelector(checkTransferableModelSelector);
 
+  const [selectedTheme, setSelectedTheme] = useState(getTheme('theme'));
 
   const { metaUrl } = props;
   const domAccount =
@@ -189,7 +191,6 @@ function Application(props) {
     init();
     _enablePersistingLog();
   }, []);
-
 
   const _enablePersistingLog = () => {
     const thiz = this;
@@ -351,6 +352,16 @@ function Application(props) {
     }
   }, [cryptoDataState]);
 
+  // theme change
+  useEffect(() => {
+    const widget = document.getElementById("root");
+    if (selectedTheme === 'dark') {
+      widget.className = 'meta_one_widget';
+    } else {
+      widget.className += " theme-dark";
+    }
+  }, [selectedTheme]);
+
   useEffect(() => {
     if (!isTokenValidState) {
       console.log('token invalid', errorMsgState)
@@ -486,6 +497,12 @@ function Application(props) {
     return <MetaLoader size={"large"} />;
   }
 
+  const themeChangeHandler = () => {
+    const newTheme = selectedTheme === "light" ? "dark" : "light";
+    setSelectedTheme(newTheme);
+    setTheme('theme', newTheme);
+  }
+
   return (
     <>
       <Navbar
@@ -546,6 +563,8 @@ function Application(props) {
         portfolio={portfolio}
         name={accountName}
         activeScreen={activeScreen}
+        themeSetter={themeChangeHandler}
+        themeMode={selectedTheme}
       />
       <div className={"forAdapt"}>
         <LeftPanel
@@ -710,7 +729,6 @@ function Application(props) {
                 />
               </div>
             )}
-
             {activeScreen === "login" && (
               <div
                 style={{
@@ -871,7 +889,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="headerBlock">
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Portfolio</strong>
                       </h5>
@@ -980,7 +998,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="headerBlock">
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Transaction History</strong>
                       </h5>
