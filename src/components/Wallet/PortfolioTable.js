@@ -214,7 +214,10 @@ const PortfolioTable = React.memo((props) => {
                   onClick={() => {
                     onAssetSelect(datas?.name);
                   }}
-                  className={"tradeButton"}
+                  className={
+                    datas.qty > 0 ? "tradeButton" : "tradeButtonDisabled"
+                  }
+                  disabled={datas.qty <= 0}
                 >
                   Trade
                 </button>
