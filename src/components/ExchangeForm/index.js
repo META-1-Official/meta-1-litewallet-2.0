@@ -782,7 +782,7 @@ export default function ExchangeForm(props) {
             </div>
             <div className={styles.mainBlockExchange}>
               <div className={styles.leftBlockExchange}>
-                <h2 style={{ textAlign: "center" }}>Sell</h2>
+                <h2 style={{ textAlign: "center" }}>Buy</h2>
                 <div id="to">
                   <Grid stackable>
                     <Grid.Column columns={2} className="flex-middle">
@@ -913,7 +913,7 @@ export default function ExchangeForm(props) {
                 />
               </div>
               <div className={styles.rightBlockExchange}>
-                <h2 style={{ textAlign: "center" }}>Buy</h2>
+                <h2 style={{ textAlign: "center" }}>Sell</h2>
                 <div id="from">
                   <Grid stackable>
                     <Grid.Column columns={2} className="flex-middle">
