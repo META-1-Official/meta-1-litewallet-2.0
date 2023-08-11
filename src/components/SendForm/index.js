@@ -165,7 +165,7 @@ const SendForm = React.memo((props) => {
 
   const RedditTextField = React.memo(
     styled((props) => (
-      <TextField InputProps={{ disableUnderline: true }} {...props} />
+      <TextField InputProps={{ disableUnderline: true }} {...props} autoComplete='off'/>
     ))(({ theme }) => ({
       "& .MuiFilledInput-root": {
         border: "1px solid #e2e2e1",
@@ -566,12 +566,15 @@ const SendForm = React.memo((props) => {
                 <div className={styles.rightBlockSend}>
                   <h2 style={{ textAlign: "center" }}>Receive</h2>
                   <TextField
-                    InputProps={{ disableUnderline: true }}
+                    InputProps={{ 
+                      disableUnderline: true,
+                    }}
                     label="To"
                     value={receiver}
                     onChange={(e) => {
                       setReceiver(e.target.value);
                     }}
+                    autoComplete="off"
                     className={styles.input}
                     id="reddit-input receiver"
                     variant="filled"
