@@ -458,18 +458,24 @@ function Application(props) {
   };
 
   const _onSetupWebSocket = (accountName) => {
-    const websocket = new WebSocket(`ws://127.0.0.1:5003?account=${accountName}`);
-
-    websocket.onmessage = (message) => {
-      if (message && message.data) {
-        const content = JSON.parse(message.data).content;
-
-        toast(content);
-      }
-    };
+    try {
+      const websocket = new WebSocket(
+       `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
+      );
+      websocket.onmessage = (message) => {
+        console.log('notification arrived', message);
+        if (message && message.data) {
+          const content = JSON.parse(message.data).content;
+          toast(content);
+        }
+      };
+      websocket.onopen = () => {
+        console.log('setup notification websocket');
+      };
+    } catch (e) {
+      console.log('notification connection error', e);
+    }
   }
-
-
 
   if (isLoading || loaderState || activeScreen == null) {
     return <MetaLoader size={"large"} />;
