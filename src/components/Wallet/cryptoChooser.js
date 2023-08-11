@@ -1,11 +1,11 @@
-import { ReactComponent as BnbLogo } from "../../images/assets/BNB.svg";
-import { ReactComponent as BtcLogo } from "../../images/assets/BTC.svg";
-import { ReactComponent as EosLogo } from "../../images/assets/EOS.svg";
-import { ReactComponent as EthLogo } from "../../images/assets/ETH.svg";
-import { ReactComponent as LtcLogo } from "../../images/assets/LTC.svg";
-import { ReactComponent as MetaLogo } from "../../images/assets/META1.svg";
-import { ReactComponent as UsdtLogo } from "../../images/assets/USDT.svg";
-import { ReactComponent as XlmLogo } from "../../images/assets/XLM.svg";
+import BnbLogo from "../../images/assets/bnb.png";
+import BtcLogo from "../../images/assets/btc.png";
+import EosLogo from "../../images/assets/eos.png";
+import EthLogo from "../../images/assets/eth.png";
+import LtcLogo from "../../images/assets/ltc.png";
+import MetaLogo from "../../images/assets/meta.png";
+import UsdtLogo from "../../images/assets/usdt.png";
+import XlmLogo from "../../images/assets/xlm.png";
 
 export function getAsset(symbol) {
   switch (symbol) {

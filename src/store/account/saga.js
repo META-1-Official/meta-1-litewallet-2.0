@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
 import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar, validateSignature } from '../../API/API';
 import { setAccessToken, setLocation } from '../../utils/localstorage';
-import { checkTokenRequest, checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService, uploadAvatarFail, deleteAvatarFailed } from './actions';
+import { checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService, uploadAvatarFail, deleteAvatarFailed } from './actions';
 import * as types from './types';
 import Meta1 from "meta1-vision-dex";
 import { signUpHandler } from '../../utils/common';
@@ -14,7 +14,7 @@ function* loginHandler(data) {
                 return;
             }
         }
-        const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail: data.payload.emailOrPassword);
+        const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail: data.payload.emailOrPassword, data.payload.web3Token, data.payload.web3PubKey);
         if (!response.error) {
             setAccessToken(response.token);
             setLocation('wallet');

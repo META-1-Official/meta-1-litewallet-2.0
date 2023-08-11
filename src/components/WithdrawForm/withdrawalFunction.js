@@ -1,11 +1,11 @@
 import AccountUtils from "../../utils/account_utils";
-import { Axios } from "axios";
-import { assetsObj } from "../../utils/common";
-import { Asset } from "../../utils/MarketClasses";
+// import { Axios } from "axios";
+import { getAssetsList } from "../../utils/common";
+// import { Asset } from "../../utils/MarketClasses";
 import Immutable from "immutable";
-import { Aes, ChainStore, FetchChain, PrivateKey, TransactionBuilder, TransactionHelper } from "meta1-vision-js";
+import { Aes, FetchChain, PrivateKey, TransactionBuilder, TransactionHelper } from "meta1-vision-js";
 import { ChainConfig } from 'meta1-vision-ws';
-import Meta1 from "meta1-vision-dex";
+// import Meta1 from "meta1-vision-dex";
 
 const broadcast = (transaction, resolve, reject, isSuccess) => {
     let broadcast_timeout = setTimeout(() => {
@@ -15,7 +15,7 @@ const broadcast = (transaction, resolve, reject, isSuccess) => {
             error: "Your transaction has expired without being confirmed, please try again later.",
             closed: false,
         };
-        if (reject) reject();
+        // if (reject) reject();
     }, ChainConfig.expire_in_secs * 2000);
 
     transaction
@@ -35,7 +35,7 @@ const broadcast = (transaction, resolve, reject, isSuccess) => {
                 trx_in_block: res[0].trx_num,
                 broadcasted_transaction: true,
             };
-            if (resolve) resolve();
+            // if (resolve) resolve();
         })
         .catch((error) => {
             if (error && error?.message) {
@@ -54,7 +54,7 @@ const broadcast = (transaction, resolve, reject, isSuccess) => {
                 error: message,
                 closed: false,
             };
-            if (reject) reject();
+            // if (reject) reject();
         });
 }
 const confirmTransaction = (transaction, resolve, reject, isSuccess) => {
@@ -165,17 +165,18 @@ const promiseUnlockChange = () => {
     return true;
 }
 
-const promiseUnlock = () => {
-    return new Promise((resolve, reject) => {
-        return { resolve, reject };
-    })
-        .then((was_unlocked) => {
-            if (was_unlocked) promiseUnlockChange();
-        })
-        .catch((params) => {
-            throw params;
-        });
-}
+// const promiseUnlock = () => {
+//     return new Promise((resolve, reject) => {
+//         return { resolve, reject };
+//     })
+//         .then((was_unlocked) => {
+//             if (was_unlocked) promiseUnlockChange();
+//         })
+//         .catch((params) => {
+//             throw params;
+//         });
+// }
+
 const create_transfer_op = async ({
     // OBJECT: { ... }
     from_account,
@@ -193,6 +194,8 @@ const create_transfer_op = async ({
     isSuccess
 }) => {
     let memo_sender_account = propose_account || from_account;
+    const assetsObj = await getAssetsList();
+    
     return Promise.all([
         FetchChain('getAccount', from_account),
         FetchChain('getAccount', to_account),
@@ -253,7 +256,7 @@ const create_transfer_op = async ({
             }
 
             // Allow user to choose asset with which to pay fees #356
-            let fee_asset = chain_fee_asset.toJS();
+            // let fee_asset = chain_fee_asset.toJS();
 
             let tr = null;
             if (transactionBuilder == null) {

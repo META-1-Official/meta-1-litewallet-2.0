@@ -1,16 +1,18 @@
-import eth from '../images/assets/ETH.svg'
-import bnb from '../images/assets/BNB.svg'
-import ltc from '../images/assets/LTC.svg'
-import eos from '../images/assets/EOS.svg'
-import metaone from '../images/assets/META1.svg'
-import usdt from '../images/assets/USDT.svg'
-import xlm from '../images/assets/XLM.svg'
-import doge from '../images/assets/DOGE.svg'
-import sol from '../images/assets/SOL.png'
-import trx from '../images/assets/TRX.svg'
-import xrp from '../images/assets/XRP.png'
+import eth from '../images/assets/eth.png'
+import bnb from '../images/assets/bnb.png'
+import ltc from '../images/assets/ltc.png'
+import eos from '../images/assets/eos.png'
+import metaone from '../images/assets/meta.png'
+import usdt from '../images/assets/usdt.png'
+import xlm from '../images/assets/xlm.png'
+import doge from '../images/assets/doge.png'
+import sol from '../images/assets/sol.png'
+import xrp from '../images/assets/xrp.png'
+import ada from '../images/assets/ada.png'
+import xmr from '../images/assets/xmr.png'
+import busd from '../images/assets/busd.png'
+import btc from '../images/assets/btc.png'
 
-const btc = 'https://cdn.byte-trade.com/token/icon6/btc.png'
 const assetImages = {
     ETH: eth,
     EOS: eos,
@@ -22,8 +24,10 @@ const assetImages = {
     USDT: usdt,
     DOGE: doge,
     SOL: sol,
-    TRX: trx,
-    XRP: xrp
+    XRP: xrp,
+    XMR: xmr,
+    ADA: ada,
+    BUSD: busd
 }
 
 export default class Portfolio {
@@ -96,7 +100,8 @@ export default class Portfolio {
 
     async _fetchAssets() {
         try {
-            return await this.metaApi.db.list_assets('', 101);
+            let symbols = process.env.REACT_APP_CRYPTOS_ARRAY.split(',');
+            return await this.metaApi.db.get_assets(symbols);
         } catch (err) {
             return null;
         }

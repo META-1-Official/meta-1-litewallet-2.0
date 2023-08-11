@@ -187,20 +187,17 @@ export async function sendEmail(emailType, emailData) {
   }
 }
 
-export async function loginRequest(accountName, email) {
+export async function loginRequest(accountName, email, web3Token, web3PubKey) {
   try {
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
-      { accountName, email, privateKey: "testkey" }
+      { accountName, email, idToken: web3Token, appPubKey: web3PubKey }
     );
     return { ...data, error: false };
   } catch (e) {
     return { message: "Wallet name or email is wrong", error: true };
   }
 }
-
-
-
 
 export async function checkToken(token) {
   try {

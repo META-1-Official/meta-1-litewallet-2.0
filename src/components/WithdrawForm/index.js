@@ -1,5 +1,4 @@
 
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { useState, useEffect } from "react";
 import Meta1 from "meta1-vision-dex";
 import { Aes, ChainStore, FetchChain, PrivateKey, TransactionBuilder, TransactionHelper } from "meta1-vision-js";
@@ -28,7 +27,7 @@ import Immutable from "immutable";
 import { getAssetAndGateway, getIntermediateAccount } from "../../utils/common/gatewayUtils";
 import { getCryptosChange } from "../../API/API";
 import { WithdrawAddresses } from "../../utils/gateway/gatewayMethods";
-import { assetsObj } from "../../utils/common";
+import { getAssetsList } from "../../utils/common";
 import { Asset } from "../../utils/MarketClasses";
 import AccountUtils from "../../utils/account_utils";
 import { transferHandler } from "./withdrawalFunction";
@@ -94,6 +93,7 @@ const WithdrawForm = (props) => {
   const ariaLabel = { "aria-label": "description" };
   const [gatewayStatus, setGatewayStatus] = useState(availableGateways);
   const [backedCoins] = useState(Immutable.Map({ META1: getMETA1Simple() }));
+  const [withdrawSuccessModalOpen, setWithdrawSuccessModalOpen] = useState(false);
 
   useEffect(() => {
     const currentPortfolio = props.portfolio || [];
@@ -212,6 +212,7 @@ const WithdrawForm = (props) => {
   }
 
   const getAssetsObject = async (obj) => {
+    const assetsObj = await getAssetsList();
     const balances = obj.get('balances');
     let assets = Immutable.Map({})
     const newData = balances.map((data, index) => {
@@ -280,7 +281,7 @@ const WithdrawForm = (props) => {
   const selectedData = () => {
     let assets = [];
     let idMap = {};
-    let include = ["META1", "USDT", "BTC", "ETH", "EOS", "XLM", "BNB"];
+    let include = process.env.REACT_APP_CRYPTOS_ARRAY.split(',');
     backedCoins.forEach((coin) => {
       assets = assets
         .concat(
@@ -348,7 +349,7 @@ const WithdrawForm = (props) => {
       .then((res) => {
         if (res.success === 'success') {
           setIsLoading(false);
-          alert("Email sent, awesome!");
+          setWithdrawSuccessModalOpen(true);
           // Reset form inputs
           setName('');
           setEmailAddress('');
@@ -522,7 +523,7 @@ const WithdrawForm = (props) => {
                     trigger={
                       <div className={styles.inputForAmount}>
                         <Input
-                          placeholder="Amount crypto"
+                          placeholder={`Minimum Withdraw: ${minAmountForAsset}`}
                           value={selectedFromAmount}
                           type={"number"}
                           onChange={(e) => {
@@ -713,6 +714,38 @@ const WithdrawForm = (props) => {
             }}
           >
             Close</Button>
+        </Modal.Actions>
+      </Modal>
+      <Modal
+        size="mini"
+        open={withdrawSuccessModalOpen}
+        id={"modal-1"}
+      >
+        <Modal.Header>Success</Modal.Header>
+        <Modal.Content style={{ height: "55%" }}>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <h3 style={{ textAlign: "center" }}>
+              Withdrawal request submitted sucessfully, an email confirmation has been sent to you
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button
+            style={{ backgroundColor: "#fc0", color: "white" }}
+            onClick={() => {
+              setWithdrawSuccessModalOpen(false);
+            }}
+          >
+            OK
+          </Button>
         </Modal.Actions>
       </Modal>
     </>

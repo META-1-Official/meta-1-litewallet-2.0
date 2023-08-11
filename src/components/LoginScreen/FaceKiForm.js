@@ -16,7 +16,7 @@ export default function FaceKiForm(props) {
 
   const width = useWidth();
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'antman-kok357', 'bond-02', 'user-x01'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'antman-kok357', 'bond-02', 'user-x01', 'jin124'];
   const bypass_wallets = process.env.REACT_APP_FACEKI_SKIP_WALLETS.split(',');
   const errorCase = {
     "Camera Not Found": "Please check your camera.",
@@ -35,7 +35,6 @@ export default function FaceKiForm(props) {
   }
 
   useEffect(() => {
-    console.log('bypass', bypass_wallets);
     if (browserstack_test_accounts.includes(props.accountName))
       setFaceKISuccess(true)
     else loadVideo(true);
@@ -92,8 +91,8 @@ export default function FaceKiForm(props) {
   }
 
   const checkAndVerify = async (photoIndex) => {
-    const { privKey, email } = props;
-    if (!email || !privKey) return;
+    const { email } = props;
+    if (!email) return;
 
     setVerifying(true);
 
@@ -167,6 +166,8 @@ export default function FaceKiForm(props) {
 
   const camWidth = width > 576 ? 600 : width - 30;
   const camHeight = camWidth / 1.07;
+
+  if (browserstack_test_accounts.includes(props.accountName)) return null;
 
   return (
     <div style={{ height: "110%" }} className={"totalSumBlock"}>
