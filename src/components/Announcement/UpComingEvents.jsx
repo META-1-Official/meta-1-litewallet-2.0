@@ -10,8 +10,7 @@ import { UpComingEventDetailModal } from './UpComingEventDetailModal';
 export const UpComingEvents = () => {
     const [date, setDate] = useState(new Date());
     const [data, setData] = useState();
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-    const [selectedData, setSelectedData] = useState(null);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [modalOpened, setModalOpened] = useState(false);
 
     const fetchEventData = async (month) => {
@@ -38,7 +37,7 @@ export const UpComingEvents = () => {
         let cardBorder = `2px solid ${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'black'}`;
         let cardBackground = `${eventExistDay(dayOfDate) ? 'linear-gradient(0, rgba(255, 255, 255, 0.00) 0%, rgba(236, 240, 245, 0.50) 100%)' : 'transparent'}`;
         let cardColor = `${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'black'}`;
-        let events = (eventExistDay(dayOfDate) && data && date >= activeStartDate) ? data[dayOfDate] : [];
+        let events = (eventExistDay(dayOfDate) && data && date > activeStartDate) ? data[dayOfDate] : [];
         return <div className={styles.eventCard} style={{ borderTop: cardBorder, background: cardBackground }}>
             <span className={styles.dateText} style={{ color: cardColor }}>{dayOfDate}</span>
             {
@@ -93,7 +92,7 @@ export const UpComingEvents = () => {
                 onClickDay={handleClick}
                 onActiveStartDateChange={handleActiveStartDateChange}
             />
-            <UpComingEventDetailModal data={data} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
+            <UpComingEventDetailModal data={data} date={date} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
         </div>
     )
 }

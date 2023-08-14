@@ -6,6 +6,9 @@ import TimerIcon from "../../images/timer.png";
 import LocationIcon from "../../images/location.png";
 
 export const UpComingEventDetailModal = (props) => {
+    const {data, date} = props;
+
+    console.log ("@@@@", data, date);
     return (
         <Modal
             open={props.isOpen}
