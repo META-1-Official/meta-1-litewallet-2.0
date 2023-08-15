@@ -1,3 +1,5 @@
+
+
 import axios from "axios";
 import { PrivateKey, Signature } from "meta1-vision-js";
 import "regenerator-runtime/runtime";
@@ -43,6 +45,9 @@ import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
 import { getTheme, setTheme } from './utils/storage';
+import {toast} from 'react-toastify';
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // for the cache purpose
 import AppStore from "./images/app-store.png";
@@ -60,6 +65,7 @@ const openloginAdapter = new OpenloginAdapter({
     }
   },
 });
+
 
 window.Meta1 = Meta1;
 function Application(props) {
@@ -134,7 +140,6 @@ function Application(props) {
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
-
   const updateBalances = () => {
     if (portfolioReceiverState && accountName && !passwordShouldBeProvided) {
       refetchPortfolio();
@@ -312,7 +317,8 @@ function Application(props) {
     }
     if (accountNameState) {
       setLoginDataError(false);
-      onLogin(accountNameState, false)
+      onLogin(accountNameState, false);
+      _onSetupWebSocket(accountNameState);
       if (fromSignUp) {
         setPortfolio(null);
         setRefreshData(prev => !prev);
@@ -488,6 +494,27 @@ function Application(props) {
     onLogin(acc, true, pass, true, regEmail, web3Token, web3PubKey);
     setActiveScreen("wallet");
   };
+
+
+  const _onSetupWebSocket = (accountName) => {
+    try {
+      const websocket = new WebSocket(
+       `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
+      );
+      websocket.onmessage = (message) => {
+        console.log('notification arrived', message);
+        if (message && message.data) {
+          const content = JSON.parse(message.data).content;
+          toast(content);
+        }
+      };
+      websocket.onopen = () => {
+        console.log('setup notification websocket');
+      };
+    } catch (e) {
+      console.log('notification connection error', e);
+    }
+  }
 
   if (!isOnline) {
     return <DisconnectedInternet appStoreIcon={AppStore} googlePlayIcon={GooglePlay} offlineIcon={OfflineIcon}/>;
@@ -1202,27 +1229,28 @@ function Application(props) {
         <Modal.Content >
           <div
             className="claim_wallet_btn_div"
-
-          >
-            <h3 className="claim_model_content">
-              Hello {accountName}<br />
-              {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
-            </h3>
-          </div>
-        </Modal.Content>
-        <Modal.Actions className="claim_modal-action">
-          <Button
-            className="claim_wallet_btn"
-            onClick={() => {
-              setFetchAssetModalOpen(false);
-            }}
-          >
-            OK</Button>
-        </Modal.Actions>
+            >
+              <h3 className="claim_model_content">
+                Hello {accountName}<br />
+                {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
+              </h3>
+            </div>
+          </Modal.Content>
+          <Modal.Actions className="claim_modal-action">
+            <Button
+              className="claim_wallet_btn"
+              onClick={() => {
+                setFetchAssetModalOpen(false);
+              }}
+            >
+              OK</Button>
+          </Modal.Actions>
       </Modal>
+      
       <img src={AppStore} style={{display: 'none'}}/>
       <img src={GooglePlay} style={{display: 'none'}}/>
       <img src={OfflineIcon} style={{display: 'none'}}/>
+      <ToastContainer theme='light' />
     </>
   );
 }
