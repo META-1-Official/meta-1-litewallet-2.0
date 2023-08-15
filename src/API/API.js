@@ -567,6 +567,11 @@ export async function getAnnouncement(id) {
   return data;
 }
 
+export async function getAllAnnouncements() {
+  const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/get_all_announcements`);
+  return data;
+}
+
 export async function updateAnnouncement(id, type, title, description, announced_time) {
   try {
     const { data } = await axios.patch(

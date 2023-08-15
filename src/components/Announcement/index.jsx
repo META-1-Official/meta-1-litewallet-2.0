@@ -3,47 +3,20 @@ import React, { useEffect, useState } from 'react';
 import { AnnouncementCard } from './AnnouncementCard';
 import { AnnouncementDetailModal } from './AnnouncementDetailModal';
 
+import { getAllAnnouncements } from '../../API/API';
+
 export const Announcement = () => {
     const [data, setData] = useState();
-    const [selectedData, setSelectedData] = useState(null);
+    const [index, setIndex] = useState(0);
     const [modalOpened, setModalOpened] = useState(false);
 
-    const fetchAnnouncementsData = async (month) => {
-        return [
-            {
-                title: "Ambassador New Opportunity Call Schedule",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
-            },
-            {
-                title: "Ambassador New Opportunity Call Schedule",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
-            },
-            {
-                title: "Ambassador New Opportunity Call Schedule",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
-            },
-            {
-                title: "Ambassador New Opportunity Call Schedule",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
-            },
-            {
-                title: "Ambassador New Opportunity Call Schedule",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Hour Ago"
-            }
-        ]
-    }
-
-    const handleClick = (event) => {
+    const handleClick = (index) => {
+        setIndex(index);
         setModalOpened(true);
     }
 
     useEffect(async () => {
-        let res = await fetchAnnouncementsData('July');
+        let res = await getAllAnnouncements();
         setData(res);
     }, []);
 
@@ -54,12 +27,12 @@ export const Announcement = () => {
                     return index < 3 && <AnnouncementCard
                         title={ele.title}
                         description={ele.description}
-                        time={ele.time}
-                        onClick={handleClick}
+                        time={ele.announced_time}
+                        onClick={() => handleClick(index)}
                     />
                 })
             }
-            <AnnouncementDetailModal data={data} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
+            <AnnouncementDetailModal data={data} index={index} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
         </div>
     )
 }

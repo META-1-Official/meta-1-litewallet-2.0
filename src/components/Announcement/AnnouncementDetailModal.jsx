@@ -1,10 +1,33 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import styles from "./announcement.module.scss";
 
 import { Modal } from "semantic-ui-react";
 import MicroPhoneIcon from "../../images/microphone.png";
 
 export const AnnouncementDetailModal = (props) => {
+    const {data, index} = props;
+    const [detail, setDetail] = useState();
+
+    useEffect(() => {
+        if (data) {
+            setDetail(data[index]);
+        }       
+    }, [data, index]);
+
+    const getTimeDiff = (time) => {
+        var diff = time.getTime() - new Date().getTime();
+
+        var msec = diff;
+        var hh = Math.floor(msec / 1000 / 60 / 60);
+        msec -= hh * 1000 * 60 * 60;
+        var mm = Math.floor(msec / 1000 / 60);
+        msec -= mm * 1000 * 60;
+        var ss = Math.floor(msec / 1000);
+        msec -= ss * 1000;
+
+        return hh + ' hours ago';
+    }
+
     return (
         <Modal
             open={props.isOpen}
@@ -18,27 +41,14 @@ export const AnnouncementDetailModal = (props) => {
                                 <img src={MicroPhoneIcon} />
                             </div>
                             <div className={styles.titleWrapper}>
-                                <span className={styles.title}>Ambassador New Opportunity Call Schedule</span>
-                                <div className={styles.time}>7 Hours ago</div>
+                                <span className={styles.title}>{detail?.title}</span>
+                                <div className={styles.time}>{getTimeDiff(new Date(detail?.announced_time))}</div>
                             </div>
                         </div>
                         <div className={styles.cancelBtn} onClick={() => props.setModalOpened(false)}>X</div>
                     </div>
                     <div className={styles.modalBody}>
-                        <p>
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.<br /><br />
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.<br /><br />
-                            It has survived not only five centuries, but also the leap into electronic type setting, remai ning essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing<br /><br />
-                            software like Aldus PageMaker including versions of Lorem Ipsum.<br /><br />
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.<br /><br />
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.<br /><br />
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.<br /><br />
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.<br /><br />
-                            It has survived not only five centuries, but also the leap into electronic type setting, remai ning essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing<br /><br />
-                            software like Aldus PageMaker including versions of Lorem Ipsum.<br /><br />
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.<br /><br />
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.<br /><br />
-                        </p>
+                        <p>{detail?.description}</p>
                     </div>
                 </div>
             </Modal.Content>
