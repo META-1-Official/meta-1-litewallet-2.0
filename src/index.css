@@ -134,6 +134,7 @@ input:focus {
   --inputColor: #fff;
   --tableHeaderColor: #fff;
   --inputBorderColor: rgb(229, 232, 235);
+  --inputOutlineColor: #808080;
   --font: "Poppins", sans-serif !important;
 }
 
@@ -151,7 +152,7 @@ input:focus {
   --footerbg: #d8dbe4;
   --tooltipred: #d52525;
   --textBrown: #fff;
-  --textGrey: rgba(80, 83, 97, 0.47);
+  --textGrey: rgba(255, 255, 255, 0.60);
   --textGold: #ffc000;
   --logoMain: #e9bd37;
   --disabledListColor: #0A0B0D;
@@ -163,5 +164,6 @@ input:focus {
   --tableHeaderColor: #15171B;
   --inputColor: rgba(21, 23, 27, 0.40);
   --inputBorderColor: #1C1F27;
+  --inputOutlineColor: #ffc000;
   --font: "Poppins", sans-serif !important;
 }
