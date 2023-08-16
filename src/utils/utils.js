@@ -454,6 +454,20 @@ var Utils = {
     get_percentage(a, b) {
         return Math.round((a / b) * 100) + "%";
     },
+
+    get_time_diff: function(time_str) {
+        var diff = new Date().getTime() - new Date(time_str).getTime();
+
+        var msec = diff;
+        var hh = Math.floor(msec / 1000 / 60 / 60);
+        msec -= hh * 1000 * 60 * 60;
+        var mm = Math.floor(msec / 1000 / 60);
+        msec -= mm * 1000 * 60;
+        var ss = Math.floor(msec / 1000);
+        msec -= ss * 1000;
+
+        return hh + ' hours ago';
+    },
 };
 
 export default Utils;

@@ -23,14 +23,14 @@ export const Announcement = () => {
     return (
         <div>
             {
-                data && data.map((ele, index) => {
+                data ? data.map((ele, index) => {
                     return index < 3 && <AnnouncementCard
                         title={ele.title}
                         description={ele.description}
                         time={ele.announced_time}
                         onClick={() => handleClick(index)}
                     />
-                })
+                }) : <div>No Annoucement</div>
             }
             <AnnouncementDetailModal data={data} index={index} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
         </div>
