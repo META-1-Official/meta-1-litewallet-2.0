@@ -118,7 +118,7 @@
 }
 
 .input {
-  width: 15rem;
+  width: 15rem !important;
   height: 3rem;
   border: 1px solid var(--inputBorderColor) !important;
   border-radius: 5px;

@@ -109,8 +109,11 @@ input:focus {
 
 :root {
   --backgroundColor: #FFFFFF;
+  --infoBgColor: #ff8e8e66;
+  --infoTextColor: #240000;
   --blockBgColor: #fff;
   --blockBgColor2: #fff;
+  --blockBgColor3: #fff;
   --headerBgColor: #330000;
   --gold: #fdc000;
   --blue: blue;
@@ -140,8 +143,11 @@ input:focus {
 
 .theme-dark {
   --backgroundColor: #0A0B0D;
+  --infoBgColor: transparent;
+  --infoTextColor: #FF2F2F;
   --blockBgColor: #0A0B0D;
   --blockBgColor2: rgba(21, 23, 27, 0.40);
+  --blockBgColor3: #15171B;
   --headerBgColor: #0A0B0D;
   --blue: blue;
   --green: #00aa08;
