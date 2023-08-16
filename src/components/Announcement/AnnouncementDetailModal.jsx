@@ -40,7 +40,7 @@ export const AnnouncementDetailModal = (props) => {
                         </div>
                     </div>
                 </Modal.Content>
-            </Modal> : <div>No found</div>
+            </Modal> : <div></div>
             }
         </>
     )

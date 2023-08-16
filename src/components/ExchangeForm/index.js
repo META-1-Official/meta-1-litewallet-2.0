@@ -334,15 +334,16 @@ export default function ExchangeForm(props) {
       ? Apis.db.get_published_asset_price(_selectedTo.value)
       : Promise.resolve()
     const getAssetLimitationPromise = Apis.db.get_asset_limitation_value('META1');
+    const getTickerPromise = Meta1.ticker(_selectedFrom.value, _selectedTo.value);
 
-    Promise.all([getBaseAssetPricePromise, getQuoteAssetPricePromise, getAssetLimitationPromise])
+    Promise.all([getBaseAssetPricePromise, getQuoteAssetPricePromise, getAssetLimitationPromise, getTickerPromise])
       .then(res => {
         // Caculate backing asset value
         const meta1_usdt = ceilFloat(res[2] / 1000000000, 2);
         console.log(LOG_ID, 'META1 Backing Asset($): ', meta1_usdt);
 
-        const baseAssetPrice = res[0] ? (res[0].numerator / res[0].denominator) : meta1_usdt;
-        const quoteAssetPrice = res[1] ? (res[1].numerator / res[1].denominator) : meta1_usdt;
+        const baseAssetPrice = res[0] ? (res[0].numerator / res[0].denominator) : Number(res[3].latest);
+        const quoteAssetPrice = res[1] ? (res[1].numerator / res[1].denominator) : Number(res[3].latest);
 
         if (_selectedFrom.value === 'META1' || _selectedTo.value === 'META1') {
           const asset_usdt = isQuoting ? baseAssetPrice : quoteAssetPrice;
@@ -385,14 +386,16 @@ export default function ExchangeForm(props) {
         ? Apis.db.get_published_asset_price(_selectedTo.value)
         : Promise.resolve()
       const getAssetLimitationPromise = Apis.db.get_asset_limitation_value('META1');
+      const getTickerPromise = Meta1.ticker(_selectedFrom.value, _selectedTo.value);
+
       Promise.all([getPairPromise, getBaseAssetPricePromise, getQuoteAssetPricePromise, getAssetLimitationPromise])
         .then(res => {
           // Caculate backing asset value
           const meta1_usdt = ceilFloat(res[3] / 1000000000, 2);
           console.log(LOG_ID, 'META1 Backing Asset($): ', meta1_usdt);
 
-          const baseAssetPrice = res[1] ? (res[1].numerator / res[1].denominator) : meta1_usdt;
-          const quoteAssetPrice = res[2] ? (res[2].numerator / res[2].denominator) : meta1_usdt;
+          const baseAssetPrice = res[1] ? (res[1].numerator / res[1].denominator) : Number(res[3].latest);
+          const quoteAssetPrice = res[2] ? (res[2].numerator / res[2].denominator) : Number(res[3].latest);
 
           setBaseAssetPrice(baseAssetPrice);
           setQuoteAssetPrice(quoteAssetPrice);
@@ -1049,7 +1052,7 @@ export default function ExchangeForm(props) {
                     />
                   </div>
                   <span style={{ color: "lightcoral", textAlign: "left", position: "absolute", marginLeft: "50px" }}>
-                    Market order rate is not guaranteed due to slippage. Click <a href='https://support.meta1coin.vision/hc/en-us/articles/11896478311963-How-to-Trade-Coins-in-the-META-LITE-Wallet' style={{ color: "lightcoral", textDecoration: "underline" }} target="_blank">here</a> to learn more.
+                    Market order rate is not guaranteed due to slippage. Click <a href={process.env.REACT_APP_HOW_TO_TRADE} style={{ color: "lightcoral", textDecoration: "underline" }} target="_blank">here</a> to learn more.
                   </span>
                 </div>
               )}

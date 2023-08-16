@@ -21,7 +21,7 @@ const RightSideHelpMenuFirstType = (props) => {
             <button
               className={styles.Button}
               style={{ fontSize: "100%", marginTop: "0" }}
-              onClick={() => { window.open(`${process.env.REACT_APP_WALLET_FOOTER_SUPPORT_HREF}/how-to-create-a-meta-lite-wallet`) }}
+              onClick={() => { window.open(process.env.REACT_APP_HOW_TO_CREATE_WALLET) }}
               type={"submit"}
             >
               Get Started
