@@ -30,7 +30,7 @@ export const AnnouncementDetailModal = (props) => {
                                 </div>
                                 <div className={styles.titleWrapper}>
                                     <span className={styles.title}>{detail?.title}</span>
-                                    <div className={styles.time}>{Utils.get_time_diff(detail?.announced_time)}</div>
+                                    <div className={styles.time}>{Utils.get_time_diff(detail?.created_at)}</div>
                                 </div>
                             </div>
                             <div className={styles.cancelBtn} onClick={() => props.setModalOpened(false)}>X</div>
