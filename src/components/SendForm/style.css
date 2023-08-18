@@ -32,7 +32,7 @@ input[type="number"] {
   color: var(--inputOutlineColor) !important;
 }
 .css-q0jhri-MuiInputBase-root-MuiInput-root:before {
-  border-bottom: 2px solid var(--inputOutlineColor) !important;
+  border-bottom: 2px solid var(--inputOutlineColor);
 }
 .css-q0jhri-MuiInputBase-root-MuiInput-root:after {
   border-bottom: 2px solid var(--inputOutlineColor) !important;
