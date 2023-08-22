@@ -8,6 +8,7 @@ import { Modal } from "semantic-ui-react";
 import { WALLET_ADAPTERS } from "@web3auth/base";
 import MetaLoader from "../../UI/loader/Loader";
 import { getPublicCompressed } from "@toruslabs/eccrypto";
+import { getTheme, setTheme } from '../../utils/storage';
 
 const ProvidersBlock = ({ item, moreProviders, onClick }) => {
     return (
@@ -146,7 +147,7 @@ const LoginProvidersModal = (props) => {
             onOpen={() => props.setOpen(true)}
             open={props.open}
             id="auth-modal"
-            className={styles.containerProvider}
+            className={`${styles.containerProvider}${getTheme('theme') === 'dark' ? ' theme-dark' : ''}`}
             centered
             style={isPhone() ? { width: '100%', margin: 0 } : { width: '25rem', margin: 0 }}
         >

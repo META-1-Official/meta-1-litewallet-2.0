@@ -114,6 +114,7 @@ input:focus {
   --blockBgColor: #fff;
   --blockBgColor2: #fff;
   --blockBgColor3: #fff;
+  --blockBgColor4: #fff;
   --headerBgColor: #330000;
   --gold: #fdc000;
   --blue: blue;
@@ -133,6 +134,7 @@ input:focus {
   --iconColor: #240000;
   --footColor: #d8dbe4;
   --borderColor: none;
+  --borderColor2: #eaeaea;
   --hrColor: #808080;
   --inputColor: #fff;
   --tableHeaderColor: #fff;
@@ -148,6 +150,7 @@ input:focus {
   --blockBgColor: #0A0B0D;
   --blockBgColor2: rgba(21, 23, 27, 0.40);
   --blockBgColor3: #15171B;
+  --blockBgColor4: gray;
   --headerBgColor: #0A0B0D;
   --blue: blue;
   --green: #00aa08;
@@ -166,6 +169,7 @@ input:focus {
   --iconColor: #240000;
   --footColor: #15171B;
   --borderColor: #1C1F27;
+  --borderColor2: none;
   --hrColor: #808080;
   --tableHeaderColor: #15171B;
   --inputColor: rgba(21, 23, 27, 0.40);

@@ -142,6 +142,7 @@ span.css-llftvd {
   margin: 0 auto;
   height:3rem !important;
   font-family: inherit !important;
+  color: var(--textBrown) !important;
 }
 .claim_wallet_btn_div {
   width: 100%;
@@ -149,7 +150,6 @@ span.css-llftvd {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 .claim_wallet_modal {
   margin: 13rem auto !important;
@@ -157,7 +157,7 @@ span.css-llftvd {
 }
 .claim_modal-action{
   text-align:center !important;
-  background: #ffffff !important;
+  background: transparent !important;
   padding: 0px 0px !important;
   border-top: 0 !important;
 }

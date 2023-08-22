@@ -73,6 +73,10 @@ input {
   position: relative;
 }
 
+.copyButton {
+  width: auto !important;
+}
+
 .justFlexAndDirect {
   display: flex;
   flex-direction: row;
@@ -372,27 +376,44 @@ select {
   z-index: 2;
   opacity: 0.8;
 }
+.modal-content {
+  background: transparent !important;
+  padding: 20px;
+  margin-bottom: 30px;
+}
 
 .copy_passkey_modal {
   margin: 13rem auto !important;
   height: 21rem !important;
   width: 35rem !important;
+  background: var(--blockBgColor2) !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
 
 .copy_passkey_mobile_modal {
   margin: 13rem auto !important;
   height: 29rem !important;
   width: 20rem !important;
+  background: var(--blockBgColor2) !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
 
 .paper_wallet_modal {
   margin: 13rem auto !important;
   height: 14rem !important;
+  background: var(--blockBgColor2) !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
 
 .preview_paper_wallet_modal {
   height: 90vh !important;
   padding: 1rem auto !important;
+  background: var(--blockBgColor2) !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
 
 .copy_passkey_paper_wallet_modal_div {

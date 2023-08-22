@@ -61,7 +61,7 @@ const openloginAdapter = new OpenloginAdapter({
       name: "META1",
       logoLight: "https://pbs.twimg.com/profile_images/980143928769839105/hK3RnAff_400x400.jpg",
       defaultLanguage: "en",
-      dark: false,
+      dark: getTheme('theme') === "dark" ? true : false,
     }
   },
 });
@@ -361,9 +361,12 @@ function Application(props) {
   // theme change
   useEffect(() => {
     const widget = document.getElementById("root");
-    if (selectedTheme === 'dark') {
+    const modal = document.getElementById("auth-modal");
+    if (selectedTheme === 'light') {
       widget.className = 'meta_one_widget';
+      if (modal) modal.className.replace('theme-dark', '');
     } else {
+      if (modal) modal.className += "theme-dark";
       widget.className += " theme-dark";
     }
   }, [selectedTheme]);
