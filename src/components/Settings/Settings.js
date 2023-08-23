@@ -171,7 +171,7 @@ const Settings = (props) => {
         </Modal.Actions>
       </Modal>
       <div>
-        <div style={{ background: "#fff", padding: "1.05rem 2rem" }}>
+        <div className={styles.settingsBlock}>
           <h3 style={{ fontWeight: "600" }}>
             <strong>Account Settings</strong>
           </h3>

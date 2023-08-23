@@ -47,7 +47,9 @@
 }
 .createMeta, .linkMeta, .intro, .newCrypto {
   margin: 1rem;
-  background: #fff;
+  background: var(--blockBgColor2);
+  border: 1px solid var(--borderColor);
+  color: var(--textBrown);
   border-radius: 4px;
   padding: 1.6rem;
   box-shadow: var(--boxShadowIndex);

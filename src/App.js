@@ -44,6 +44,7 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
+import { getTheme, setTheme } from './utils/storage';
 import {toast} from 'react-toastify';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -60,7 +61,7 @@ const openloginAdapter = new OpenloginAdapter({
       name: "META1",
       logoLight: "https://pbs.twimg.com/profile_images/980143928769839105/hK3RnAff_400x400.jpg",
       defaultLanguage: "en",
-      dark: false,
+      dark: getTheme('theme') === "dark" ? true : false,
     }
   },
 });
@@ -86,6 +87,7 @@ function Application(props) {
   const senderApiState = useSelector(senderApiSelector);
   const checkTransferableModelState = useSelector(checkTransferableModelSelector);
 
+  const [selectedTheme, setSelectedTheme] = useState(getTheme('theme'));
 
   const { metaUrl } = props;
   const domAccount =
@@ -194,7 +196,6 @@ function Application(props) {
     init();
     _enablePersistingLog();
   }, []);
-
 
   const _enablePersistingLog = () => {
     const thiz = this;
@@ -356,6 +357,16 @@ function Application(props) {
       dispatch(setUserCurrencyAction(userCurrencyData))
     }
   }, [cryptoDataState]);
+
+  // theme change
+  useEffect(() => {
+    const widget = document.getElementsByTagName("body");
+    if (selectedTheme === 'light') {
+      widget[0].className = '';
+    } else {
+      widget[0].className = "theme-dark";
+    }
+  }, [selectedTheme]);
 
   useEffect(() => {
     if (!isTokenValidState) {
@@ -540,6 +551,12 @@ function Application(props) {
     return <MetaLoader size={"large"} />;
   }
 
+  const themeChangeHandler = () => {
+    const newTheme = selectedTheme === "light" ? "dark" : "light";
+    setSelectedTheme(newTheme);
+    setTheme('theme', newTheme);
+  }
+
   return (
     <>
       <Navbar
@@ -600,6 +617,8 @@ function Application(props) {
         portfolio={portfolio}
         name={accountName}
         activeScreen={activeScreen}
+        themeSetter={themeChangeHandler}
+        themeMode={selectedTheme}
       />
       <div className={"forAdapt"}>
         <LeftPanel
@@ -764,7 +783,6 @@ function Application(props) {
                 />
               </div>
             )}
-
             {activeScreen === "login" && (
               <div
                 style={{
@@ -925,7 +943,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="headerBlock">
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Portfolio</strong>
                       </h5>
@@ -1004,7 +1022,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="paperWallet" style={{ padding: "1.1rem 2rem" }}>
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Paper Wallet</strong>
                       </h5>
@@ -1034,7 +1052,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="headerBlock">
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Transaction History</strong>
                       </h5>
@@ -1082,7 +1100,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div className="orderOrderMainFlex" style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
                       <div>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                           <strong>Open Order</strong>

@@ -8,6 +8,7 @@ import { Modal } from "semantic-ui-react";
 import { WALLET_ADAPTERS } from "@web3auth/base";
 import MetaLoader from "../../UI/loader/Loader";
 import { getPublicCompressed } from "@toruslabs/eccrypto";
+import { getTheme, setTheme } from '../../utils/storage';
 
 const ProvidersBlock = ({ item, moreProviders, onClick }) => {
     return (

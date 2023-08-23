@@ -91,7 +91,7 @@ const LeftPanel = (props) => {
         className={styles.Li + " nav-item"}
       >
         <div className={styles.containerLi}>
-          <div className={styles.circle}>
+          <div className={styles.circle} style={activeScreen === "login" ? { backgroundColor: "#FFC000" } : null}>
             <img style={{ padding: ".47rem .5rem" }} src={homeIcon} alt="" />
           </div>
           <div

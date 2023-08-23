@@ -12,7 +12,8 @@
   flex-direction: row;
 }
 .paperWalletStyles {
-  background: #fff;
+  background: var(--blockBgColor);
+  border: 1px solid var(--borderColor);
   box-shadow: 0 0 10px 6px rgba(0, 0, 0, 0.11);
   width: 50%;
   padding: 2rem;
@@ -20,7 +21,8 @@
   border-radius: 4px;
 }
 .paperWalletStylesTH {
-  background: #fff;
+  background: var(--blockBgColor);
+  border: 1px solid var(--borderColor);
   box-shadow: 0 0 10px 6px rgba(0, 0, 0, 0.11);
   width: 96%;
   margin: 1.5rem;
@@ -130,12 +132,18 @@ span.css-llftvd {
 .marginBottomCustom {
   margin-bottom: 1rem;
 }
+.headerBlock {
+  border-bottom: 1px solid var(--borderColor);
+  padding: 1.1rem 2rem;
+  color: var(--textBrown);
+}
 .claim_wallet_btn {
   background-color: #fdc000 !important;
   color: #240000 !important;
   margin: 0 auto;
   height:3rem !important;
   font-family: inherit !important;
+  color: var(--textBrown) !important;
 }
 .claim_wallet_btn_div {
   width: 100%;
@@ -143,7 +151,6 @@ span.css-llftvd {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 .claim_wallet_modal {
   margin: 13rem auto !important;
@@ -151,26 +158,29 @@ span.css-llftvd {
 }
 .claim_modal-action{
   text-align:center !important;
-  background: #ffffff !important;
+  background: transparent !important;
   padding: 0px 0px !important;
   border-top: 0 !important;
 }
 .claim_model_content{
   text-align: center !important;
 }
-.orderOrderMainFlex {
+.openOrderMainFlex {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: transparent !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
-/*.modal {*/
-/*  height: 20rem!important;*/
-/*  margin: auto!important;*/
-/*  top: 0!important;*/
-/*  left: 0!important;*/
-/*  right: 0!important;*/
-/*  bottom: 0!important;*/
-/*}*/
+.paperWallet {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
+}
 @media (max-width: 1366px) {
   .newBottomAdaptBlock {
     width: 96%;
@@ -247,4 +257,9 @@ span.css-llftvd {
 @media(max-width: 991px){
 .customJustFlexAndDirect .blockInfoYourCrypto {width: 100% !important;margin: 0 !important;}
 .customJustFlexAndDirect .bottomAdaptBlock {width: 100% !important;margin: 0 !important;}
+}
+
+.css-6hp17o-MuiList-root-MuiMenu-list {
+  background-color: var(--blockBgColor) !important;
+  border: 1px solid var(--borderColor);
 }

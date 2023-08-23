@@ -2,6 +2,7 @@
   background: var(--headerBgColor) !important;
   margin: 0 !important;
   padding: 0 !important;
+  border-bottom: 1px solid var(--borderColor);
 }
 
 .adaptNeed {
@@ -25,6 +26,14 @@
   width: 1.8rem;
   height: 1.8rem;
   margin: 1rem 0.5rem 0 0;
+}
+
+.themeChanger {
+  border-radius: 50px;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin: 1.1rem 0 0 0.7rem;
+  cursor: pointer;
 }
 .btnDisabled {
   border: none;
