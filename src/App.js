@@ -360,14 +360,11 @@ function Application(props) {
 
   // theme change
   useEffect(() => {
-    const widget = document.getElementById("root");
-    const modal = document.getElementById("auth-modal");
+    const widget = document.getElementsByTagName("body");
     if (selectedTheme === 'light') {
-      widget.className = 'meta_one_widget';
-      if (modal) modal.className.replace('theme-dark', '');
+      widget[0].className = '';
     } else {
-      if (modal) modal.className += "theme-dark";
-      widget.className += " theme-dark";
+      widget[0].className = "theme-dark";
     }
   }, [selectedTheme]);
 
@@ -998,7 +995,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="paperWallet" style={{ padding: "1.1rem 2rem" }}>
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Paper Wallet</strong>
                       </h5>
@@ -1076,7 +1073,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div className="orderOrderMainFlex" style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
                       <div>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                           <strong>Open Order</strong>

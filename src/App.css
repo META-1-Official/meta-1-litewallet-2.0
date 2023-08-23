@@ -12,7 +12,8 @@
   flex-direction: row;
 }
 .paperWalletStyles {
-  background: #fff;
+  background: var(--blockBgColor);
+  border: 1px solid var(--borderColor);
   box-shadow: 0 0 10px 6px rgba(0, 0, 0, 0.11);
   width: 50%;
   padding: 2rem;
@@ -164,19 +165,22 @@ span.css-llftvd {
 .claim_model_content{
   text-align: center !important;
 }
-.orderOrderMainFlex {
+.openOrderMainFlex {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: transparent !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
-/*.modal {*/
-/*  height: 20rem!important;*/
-/*  margin: auto!important;*/
-/*  top: 0!important;*/
-/*  left: 0!important;*/
-/*  right: 0!important;*/
-/*  bottom: 0!important;*/
-/*}*/
+.paperWallet {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
+}
 @media (max-width: 1366px) {
   .newBottomAdaptBlock {
     width: 96%;
@@ -253,4 +257,9 @@ span.css-llftvd {
 @media(max-width: 991px){
 .customJustFlexAndDirect .blockInfoYourCrypto {width: 100% !important;margin: 0 !important;}
 .customJustFlexAndDirect .bottomAdaptBlock {width: 100% !important;margin: 0 !important;}
+}
+
+.css-6hp17o-MuiList-root-MuiMenu-list {
+  background-color: var(--blockBgColor) !important;
+  border: 1px solid var(--borderColor);
 }

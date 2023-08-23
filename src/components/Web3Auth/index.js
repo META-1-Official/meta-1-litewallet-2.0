@@ -147,7 +147,7 @@ const LoginProvidersModal = (props) => {
             onOpen={() => props.setOpen(true)}
             open={props.open}
             id="auth-modal"
-            className={`${styles.containerProvider}${getTheme('theme') === 'dark' ? ' theme-dark' : ''}`}
+            className={styles.containerProvider}
             centered
             style={isPhone() ? { width: '100%', margin: 0 } : { width: '25rem', margin: 0 }}
         >
