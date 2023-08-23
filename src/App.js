@@ -498,7 +498,22 @@ function Application(props) {
 
   const _onSetupWebSocket = (accountName) => {
     try {
-      const websocket = new WebSocket(
+      const webSocketFactory = {
+        connectionTries: 5,
+        connect: function (url) {
+          let ws = new WebSocket(url);
+          ws.onerror = (error) => {
+            console.log('websocket error', error);
+          };
+          ws.onopen = () => {
+            console.log('setup notification websocket');
+            webSocketFactory.connectionTries = 5;
+          };
+          return ws;
+        },
+      };
+
+      const websocket = new webSocketFactory.connect(
        `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
       websocket.onmessage = (message) => {
@@ -508,8 +523,20 @@ function Application(props) {
           toast(content);
         }
       };
-      websocket.onopen = () => {
-        console.log('setup notification websocket');
+      websocket.onclose = (event) => {
+        if (event.code > 1001) {
+          webSocketFactory.connectionTries =
+            webSocketFactory.connectionTries - 1;
+
+          if (webSocketFactory.connectionTries > 0) {
+            this.ws = null;
+            setTimeout(() => _onSetupWebSocket(accountName), 5000);
+          } else {
+            throw new Error(
+              'Maximum number of connection trials has been reached'
+            );
+          }
+        }
       };
     } catch (e) {
       console.log('notification connection error', e);
