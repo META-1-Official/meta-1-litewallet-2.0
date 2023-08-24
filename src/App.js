@@ -45,8 +45,8 @@ import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
 import { getTheme, setTheme } from './utils/storage';
-import {toast} from 'react-toastify';
-import {ToastContainer} from 'react-toastify';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // for the cache purpose
@@ -180,8 +180,11 @@ function Application(props) {
           web3AuthNetwork: process.env.REACT_APP_TORUS_NETWORK,
           chainConfig: {
             chainNamespace: CHAIN_NAMESPACES.EIP155,
-            rpcTarget: "https://rpc.ankr.com/eth",
             chainId: "0x1",
+            rpcTarget: "https://rpc.ankr.com/eth",
+            blockExplorer: "https://goerli.etherscan.io",
+            ticker: "ETH",
+            tickerName: "Ethereum",
           }
         });
 
@@ -514,7 +517,7 @@ function Application(props) {
       };
 
       const websocket = new webSocketFactory.connect(
-       `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
+        `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
       websocket.onmessage = (message) => {
         console.log('notification arrived', message);
@@ -544,7 +547,7 @@ function Application(props) {
   }
 
   if (!isOnline) {
-    return <DisconnectedInternet appStoreIcon={AppStore} googlePlayIcon={GooglePlay} offlineIcon={OfflineIcon}/>;
+    return <DisconnectedInternet appStoreIcon={AppStore} googlePlayIcon={GooglePlay} offlineIcon={OfflineIcon} />;
   }
 
   if (isLoading || loaderState || activeScreen == null) {
@@ -1256,27 +1259,27 @@ function Application(props) {
         <Modal.Content >
           <div
             className="claim_wallet_btn_div"
-            >
-              <h3 className="claim_model_content">
-                Hello {accountName}<br />
-                {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
-              </h3>
-            </div>
-          </Modal.Content>
-          <Modal.Actions className="claim_modal-action">
-            <Button
-              className="claim_wallet_btn"
-              onClick={() => {
-                setFetchAssetModalOpen(false);
-              }}
-            >
-              OK</Button>
-          </Modal.Actions>
+          >
+            <h3 className="claim_model_content">
+              Hello {accountName}<br />
+              {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              setFetchAssetModalOpen(false);
+            }}
+          >
+            OK</Button>
+        </Modal.Actions>
       </Modal>
-      
-      <img src={AppStore} style={{display: 'none'}}/>
-      <img src={GooglePlay} style={{display: 'none'}}/>
-      <img src={OfflineIcon} style={{display: 'none'}}/>
+
+      <img src={AppStore} style={{ display: 'none' }} />
+      <img src={GooglePlay} style={{ display: 'none' }} />
+      <img src={OfflineIcon} style={{ display: 'none' }} />
       <ToastContainer theme='light' />
     </>
   );
