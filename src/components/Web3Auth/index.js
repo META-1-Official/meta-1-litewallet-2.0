@@ -77,7 +77,7 @@ const LoginProvidersModal = (props) => {
                 const data = await web3auth.getUserInfo();
                 
                 const privateKey = await web3auth.provider.request({
-                    method: "private_key"
+                    method: "eth_private_key"
                 });
 
                 const app_pub_key = getPublicCompressed(Buffer.from(privateKey.padStart(64, "0"), "hex")).toString("hex");

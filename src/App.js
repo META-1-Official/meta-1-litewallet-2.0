@@ -40,6 +40,7 @@ import OpenOrder from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
@@ -54,6 +55,19 @@ import AppStore from "./images/app-store.png";
 import GooglePlay from "./images/google-play.png";
 import OfflineIcon from "./images/offline.png";
 
+const chainConfig = {
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  chainId: "0x1",
+  rpcTarget: "https://rpc.ankr.com/eth",
+  blockExplorer: "https://goerli.etherscan.io",
+  ticker: "ETH",
+  tickerName: "Ethereum",
+}
+
+const privateKeyProvider = new EthereumPrivateKeyProvider({
+  config: { chainConfig },
+});
+
 const openloginAdapter = new OpenloginAdapter({
   adapterSettings: {
     uxMode: "popup",
@@ -64,6 +78,7 @@ const openloginAdapter = new OpenloginAdapter({
       dark: getTheme('theme') === "dark" ? true : false,
     }
   },
+  privateKeyProvider
 });
 
 
@@ -178,16 +193,8 @@ function Application(props) {
         const web3auth = new Web3AuthNoModal({
           clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
           web3AuthNetwork: process.env.REACT_APP_TORUS_NETWORK,
-          chainConfig: {
-            chainNamespace: CHAIN_NAMESPACES.EIP155,
-            chainId: "0x1",
-            rpcTarget: "https://rpc.ankr.com/eth",
-            blockExplorer: "https://goerli.etherscan.io",
-            ticker: "ETH",
-            tickerName: "Ethereum",
-          }
+          chainConfig
         });
-
         web3auth.configureAdapter(openloginAdapter);
         setWeb3auth(web3auth);
         await web3auth.init();
