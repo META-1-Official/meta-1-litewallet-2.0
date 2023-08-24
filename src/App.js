@@ -509,6 +509,7 @@ function Application(props) {
         if (message && message.data) {
           const content = JSON.parse(message.data).content;
           toast(content);
+          dispatch(getNotificationsRequest({ login: accountName }));
         }
       };
       websocket.onclose = (event) => {
