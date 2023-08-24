@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import moment from 'moment';
 import { AnnouncementCard } from './AnnouncementCard';
 import { AnnouncementDetailModal } from './AnnouncementDetailModal';
 
@@ -27,7 +27,7 @@ export const Announcement = () => {
                     return index < 3 && <AnnouncementCard
                         title={ele.title}
                         description={ele.description}
-                        time={ele.announced_time}
+                        time={moment(ele.announced_time).fromNow()}
                         onClick={() => handleClick(index)}
                     />
                 }) : <div>No Annoucement</div>

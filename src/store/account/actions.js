@@ -232,4 +232,3 @@ export const getNotificationsError = () => {
         type: types.GET_NOTIFICATIONS_ERROR,
     }
 }
-
