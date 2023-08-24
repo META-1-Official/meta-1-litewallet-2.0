@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from 'redux-saga/effects';
-import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar, validateSignature } from '../../API/API';
+import { checkOldUser, deleteAvatar, getUserData, loginRequest, sendEmail, uploadAvatar, validateSignature, getNotifications } from '../../API/API';
 import { setAccessToken, setLocation } from '../../utils/localstorage';
-import { checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService, uploadAvatarFail, deleteAvatarFailed } from './actions';
+import { checkAccountSignatureError, checkAccountSignatureSuccess, checkTransferableError, checkTransferableSuccess, deleteAvatarSuccess, getUserError, getUserSuccess, loginError, loginSuccess, sendMailError, sendMailSuccess, uploadAvatarSuccess, passKeyErrorService, passKeySuccessService, uploadAvatarFail, deleteAvatarFailed, getNotificationsSuccess, getNotificationsError } from './actions';
 import * as types from './types';
 import Meta1 from "meta1-vision-dex";
 import { signUpHandler } from '../../utils/common';
@@ -82,7 +82,6 @@ function* sendMailHandler(data) {
         }
     }
 }
-
 function* checkTransferableHandler(data) {
     const response = yield call(checkOldUser, data.payload.login);
     if (!response.error) {
@@ -95,7 +94,6 @@ function* checkTransferableHandler(data) {
         yield put(checkTransferableError());
     }
 }
-
 function* CheckAccountSignatureHandler(data) {
     const response = yield call(validateSignature, data.payload.login, data.payload.password);
     if (!response.error) {
@@ -104,15 +102,12 @@ function* CheckAccountSignatureHandler(data) {
         yield put(checkAccountSignatureError());
     }
 }
-
-
 function* checkTokenHandler(data) {
     const response = yield call(getUserData, data.payload);
     if (response['tokenExpired']) {
         yield put(getUserError({ msg: response.responseMsg }));
     }
 }
-
 function* passKeyHandler(data) {
     try {
         yield Meta1.connect(process.env.REACT_APP_MAIA);
@@ -126,6 +121,15 @@ function* passKeyHandler(data) {
         yield put(passKeyErrorService());
     }
 }
+function* getNotificationsHandler(data) {
+    const response = yield call(getNotifications, data.payload.login);
+    console.log('getNotificationsHandler', response);
+    if (!response.error) {
+        yield put(getNotificationsSuccess({notifications: response}));
+    } else {
+        yield put(getNotificationsError());
+    }
+}
 
 export function* waitForAccount() {
     yield takeEvery(types.LOGIN_REQUEST, loginHandler);
@@ -137,4 +141,5 @@ export function* waitForAccount() {
     yield takeEvery(types.CHECK_ACCOUNT_SIGNATURE_REQUEST, CheckAccountSignatureHandler);
     yield takeEvery(types.CHECK_TOKEN_REQUEST, checkTokenHandler);
     yield takeEvery(types.PASS_KEY_REQUEST, passKeyHandler);
+    yield takeEvery(types.GET_NOTIFICATIONS_REQUEST, getNotificationsHandler);
 }

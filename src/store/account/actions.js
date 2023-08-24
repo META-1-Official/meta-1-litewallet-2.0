@@ -212,3 +212,24 @@ export const customizedColumnOpenOrderRequest = (payload) => {
         payload
     }
 }
+
+export const getNotificationsRequest = (payload) => {
+    return {
+        type: types.GET_NOTIFICATIONS_REQUEST,
+        payload
+    }
+}
+
+export const getNotificationsSuccess = (payload) => {
+    return {
+        type: types.GET_NOTIFICATIONS_SUCCESS,
+        payload
+    }
+}
+
+export const getNotificationsError = () => {
+    return {
+        type: types.GET_NOTIFICATIONS_ERROR,
+    }
+}
+

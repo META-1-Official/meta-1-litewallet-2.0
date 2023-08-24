@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-
+import { useSelector } from "react-redux";
+import moment from 'moment';
 import NotiIcon1 from '../../images/announcement1.png';
 import NotiIcon2 from '../../images/announcement2.png';
 
 import { NotificationItem } from './NotificationItem';
+import { notificationsSelector } from "../../store/account/selector";
 
 import styles from "./notification.module.scss";
 
 const Notification = () => {
     const [data, setData] = useState();
     const [selectedData, setSelectedData] = useState(null);
+    const notificationsState = useSelector(notificationsSelector)
 
     const fetchNotificationData = async () => {
         return [
@@ -48,9 +51,9 @@ const Notification = () => {
 
     const getItem = (type) => {
         switch (type) {
-            case 1:
+            case 'ANNOUNCEMENTS':
                 return NotiIcon1;
-            case 2:
+            case 'EVENTS':
                 return NotiIcon2;
             default:
                 return NotiIcon1;
@@ -61,10 +64,12 @@ const Notification = () => {
         console.log('Click Notification');
     }
 
-    useEffect(async () => {
-        let res = await fetchNotificationData();
-        setData(res);
-    }, []);
+    useEffect(() => {
+        for (const notification of notificationsState) {
+            notification.time = moment(notification.createdAt).fromNow();
+        }
+        setData(notificationsState);
+    }, [notificationsState]);
 
     return (
         <div className={styles.notificationWrapper}>
@@ -73,7 +78,7 @@ const Notification = () => {
                     return index < 4 && <NotificationItem
                         icon={getItem(ele.type)}
                         title={ele.title}
-                        description={ele.description}
+                        description={ele.content}
                         time={ele.time}
                         onClick={handleClick}
                     />

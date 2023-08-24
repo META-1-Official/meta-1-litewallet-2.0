@@ -589,3 +589,14 @@ export async function updateAnnouncement(id, type, title, description, announced
   }
 }
 
+export async function getNotifications(login) {
+  const config = {}
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getNotifications`, {
+      accountName: login,
+    }, config);
+    return data;
+  } catch (err) {
+    return { message: "Something is wrong", error: true };
+  }
+}

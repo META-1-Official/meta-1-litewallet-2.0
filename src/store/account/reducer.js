@@ -34,6 +34,7 @@ const initialState = {
     passwordRequestFlag: false,
     fromSignUp: false,
     uploadImageError: false,
+    notifications: []
 };
 
 const token = getAccessToken();
@@ -116,6 +117,10 @@ const accountsReducer = (state = initialState, action) => {
             return { ...state, isValidPasswordKey: false, passwordKeyError: false };
         case types.CUSTOMIZED_COLUMNS_OPEN_ORDER:
             return { ...state, openOrderCustomColumns: { ...state.openOrderCustomColumns, [action.payload.key]: action.payload.value } };
+        case types.GET_NOTIFICATIONS_REQUEST:
+            return state;
+        case types.GET_NOTIFICATIONS_SUCCESS:
+            return { ...state, notifications: action.payload.notifications};
         default:
             return state;
     }
