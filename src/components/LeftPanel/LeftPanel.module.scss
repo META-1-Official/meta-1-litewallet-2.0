@@ -65,6 +65,10 @@ ul {
   display: flex;
   flex-direction: row;
   font-weight: bold;
+
+  i {
+    color: var(--textBrown) !important;
+  }
 }
 .textSpan {
   text-align: left;

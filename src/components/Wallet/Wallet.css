@@ -426,9 +426,26 @@
 }
 .page_sec span {
   padding: 5px;
+  color: var(--textBrown) !important;
 }
 .page_sec ul {
   width: 100% !important;
+}
+.page_sec ul li{
+  color: var(--textBrown) !important;
+}
+.css-10w330c-MuiButtonBase-root-MuiPaginationItem-root.Mui-disabled {
+  color: gray !important;
+}
+.css-10w330c-MuiButtonBase-root-MuiPaginationItem-root {
+  color: var(--textBrown) !important;
+}
+.css-1p5q5e5-MuiStack-root {
+  justify-content: center !important;
+  height: 100% !important;
+}
+.css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon {
+  fill: var(--textBrown) !important;
 }
 .dashboard .image {
   mask-image: none !important;

@@ -441,7 +441,7 @@ export default function SignUpForm(props) {
           onContinue={() => stepLastSubmit()}
           continueBtnText='Acknowledge and Continue'
           accountName={accountName}
-          text='If you forget your passkey you will NOT be able to access your wallet or your funds. We are NO LONGER able to restore, reset, or redistribute lost coins, or help with lost passkeys. Please MAKE SURE you copy your wallet name and passkey on to your computer and then transfer it to an offline storage location for easy access like a USB drive! Check our passkey storage tips knowledge article for more info <a target="__blank" href="https://support.meta1coin.vision/password-storage-tips">here</a>'
+          text='If you forget your passkey you will NOT be able to access your wallet or your funds. We are NO LONGER able to restore, reset, or redistribute lost coins, or help with lost passkeys. Please MAKE SURE you copy your wallet name and passkey on to your computer and then transfer it to an offline storage location for easy access like a USB drive! Check our passkey storage tips knowledge article for more info <a target="__blank" href="https://support.meta1coin.vision/hc/en-us/articles/11552911024027-Passkey-Storage-Tips">here</a>'
           className={`${!isMobile ? 'copy_passkey_modal' : 'copy_passkey_mobile_modal'}`}
           isCloseIcon={true}
         />
