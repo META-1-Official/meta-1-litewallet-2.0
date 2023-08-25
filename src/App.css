@@ -263,3 +263,7 @@ span.css-llftvd {
   background-color: var(--blockBgColor) !important;
   border: 1px solid var(--borderColor);
 }
+
+.css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper {
+  color: var(--textBrown) !important;
+}

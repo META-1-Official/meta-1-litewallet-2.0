@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styles from './loginProviders.module.scss';
 import arrow from '../../images/arrow.jpg';
-import closeBtn from '../../images/close.png';
 import { providers } from "./providers";
 // import CountryNumber from "./GetCountry/countryNumber";
 import { Modal } from "semantic-ui-react";
@@ -157,7 +156,7 @@ const LoginProvidersModal = (props) => {
                         <>
                             <div className={styles.providerHeader}>
                                 <div className={styles.closeBtnWrapper}>
-                                    <img src={closeBtn} width={20} height={20} onClick={handleClose} alt="close"></img>
+                                    <i className="fa fa-times" onClick={handleClose} style={{fontSize: 20}}/>
                                 </div>
                                 <p className={styles.welcomeText}>Welcome onboard</p>
                                 <p className={styles.descriptionText}>Select how you would like to continue</p>

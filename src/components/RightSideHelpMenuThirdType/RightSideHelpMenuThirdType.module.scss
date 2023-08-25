@@ -73,6 +73,10 @@
   flex-direction: row;
   justify-content: space-between;
   cursor: pointer;
+
+  i {
+    color: var(--textBrown) !important;
+  }
 }
 
 .input {
