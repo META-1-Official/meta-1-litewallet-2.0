@@ -510,6 +510,8 @@ function Application(props) {
           const content = JSON.parse(message.data).content;
           toast(content);
           dispatch(getNotificationsRequest({ login: accountName }));
+          console.log('set notification count', localStorage.getItem('unreadNotifications'));
+          localStorage.setItem('unreadNotifications', Number(localStorage.getItem('unreadNotifications')) + 1);
         }
       };
       websocket.onclose = (event) => {

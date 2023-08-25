@@ -13,6 +13,7 @@ const Navbar = (props) => {
   const dispatch = useDispatch();
   const [showNotiDropDown, setShowNotiDropDown] = useState(false);
   const navbarProfileImageState = useSelector(navbarProfileImageSelector)
+
   const {
     onClickHomeHandler,
     onClickPortfolioHandler,
@@ -24,7 +25,7 @@ const Navbar = (props) => {
     onClickOpenOrderHandler,
     portfolio,
     name,
-    onClickResetIsSignatureProcessing
+    onClickResetIsSignatureProcessing,
   } = props;
 
   const { innerWidth: width } = window;
@@ -47,6 +48,12 @@ const Navbar = (props) => {
     }
   };
 
+  const showNotifications = () => {
+    setShowNotiDropDown(true);
+    localStorage.setItem('unreadNotifications', 0);
+  }
+
+  const unreadNotifications = localStorage.getItem('unreadNotifications');
   return (
     <>
       <div
@@ -131,9 +138,9 @@ const Navbar = (props) => {
                     Get help
                   </span>
                 </div>
-                <div className={styles.blockNotification} onClick={() => setShowNotiDropDown(true)}>
+                <div className={styles.blockNotification} onClick={showNotifications}>
                   <img src={NotiIcon} className={styles.notiIcon} />
-                  <div className={styles.badgeCount}>3</div>
+                  { unreadNotifications > 0 && <div className={styles.badgeCount}>{unreadNotifications}</div>}
                 </div>
                 <div className="nav-item dropdown parent-this">
                   <a
