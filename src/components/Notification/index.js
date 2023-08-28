@@ -15,46 +15,10 @@ import styles from "./notification.module.scss";
 
 const Notification = () => {
     const [data, setData] = useState();
-    const [selectedData, setSelectedData] = useState(null);
-    const notificationsState = useSelector(notificationsSelector)
+    const notificationsState = useSelector(notificationsSelector);
 
-    const fetchNotificationData = async () => {
-        return [
-            {
-                type: 1,
-                title: "Ambassador New Opportunity Call",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Minute Ago"
-            },
-            {
-                type: 1,
-                title: "Ambassador New Opportunity Call",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Minute Ago"
-            },
-            {
-                type: 2,
-                title: "Ambassador New Opportunity Call",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Minute Ago"
-            },
-            {
-                type: 2,
-                title: "Ambassador New Opportunity Call",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Minute Ago"
-            },
-            {
-                type: 1,
-                title: "Ambassador New Opportunity Call",
-                description: "Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been the industry's standard dummy text .",
-                time: "1 Minute Ago"
-            }
-        ]
-    }
-
-    const getItem = (type) => {
-        switch (type) {
+    const getItem = (category) => {
+        switch (category) {
             case 'Announcements':
                 return AnnouncementIcon;
             case 'Events':
