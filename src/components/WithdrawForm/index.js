@@ -552,17 +552,7 @@ const WithdrawForm = (props) => {
                           inputMode="numeric"
                           pattern="\d*"
                         />
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            marginTop: ".1rem",
-                            fontSize: "1rem",
-                            color: "#505361",
-                            background: "#f0f1f4"
-                          }}
-                        >
+                        <div className="from-amount">
                           <input
                             className={styles.inputDollars}
                             onChange={(e) => {

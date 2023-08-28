@@ -1,18 +1,26 @@
 .mainBlock,
 .changeCurrencyBlock {
-  background: #fff;
+  background: var(--blockBgColor);
   box-shadow: var(--boxShadowIndex);
+  border: 1px solid var(--borderColor);
   border-radius: 5px;
   margin: 1rem !important;
 }
 .mainBlock {
   padding-bottom: 1rem !important;
 }
+.settingsBlock{
+  background-color: transparent;
+  border-bottom: 1px solid var(--borderColor);
+  padding: 1.05rem 2rem;
+  color: var(--textBrown);
+}
 .changeCurrencyBlock {
   padding: 1rem 0;
 }
 .mainHeader {
   padding: 1rem 0 0 2rem;
+  color: var(--textBrown);
 }
 .changeDataBlock {
   padding: 0 2rem;
@@ -217,13 +225,15 @@
 .currencySelect {
   width: 30rem;
   height: 3rem;
-  border: 1px solid rgb(229, 232, 235);
+  background: transparent;
+  border: 1px solid var(--inputBorderColor);
   border-radius: 5px;
   font-family: "Poppins", sans-serif !important;
   font-weight: 500;
   box-shadow: var(--boxShadowIndex);
   padding-left: 1rem;
   font-size: 0.8rem;
+  color: var(--textBrown);
   outline: none;
   @media (max-width: 600px) {
     width: 100%;
@@ -234,6 +244,7 @@
 }
 .changeCurrencyHeader {
   margin: 0 2rem;
+  color: var(--textBrown);
 }
 .changeCurrencyForm {
   margin: 0 2rem;

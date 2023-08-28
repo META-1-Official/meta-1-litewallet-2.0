@@ -38,18 +38,33 @@ import OpenOrder from "./components/OpenOrder";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
-import {toast} from 'react-toastify';
-import {ToastContainer} from 'react-toastify';
+import { getTheme, setTheme } from './utils/storage';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // for the cache purpose
 import AppStore from "./images/app-store.png";
 import GooglePlay from "./images/google-play.png";
 import OfflineIcon from "./images/offline.png";
+
+const chainConfig = {
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  chainId: "0x1",
+  rpcTarget: "https://rpc.ankr.com/eth",
+  blockExplorer: "https://goerli.etherscan.io",
+  ticker: "ETH",
+  tickerName: "Ethereum",
+}
+
+const privateKeyProvider = new EthereumPrivateKeyProvider({
+  config: { chainConfig },
+});
 
 const openloginAdapter = new OpenloginAdapter({
   adapterSettings: {
@@ -58,9 +73,10 @@ const openloginAdapter = new OpenloginAdapter({
       name: "META1",
       logoLight: "https://pbs.twimg.com/profile_images/980143928769839105/hK3RnAff_400x400.jpg",
       defaultLanguage: "en",
-      dark: false,
+      dark: getTheme('theme') === "dark" ? true : false,
     }
   },
+  privateKeyProvider
 });
 
 
@@ -84,6 +100,7 @@ function Application(props) {
   const senderApiState = useSelector(senderApiSelector);
   const checkTransferableModelState = useSelector(checkTransferableModelSelector);
 
+  const [selectedTheme, setSelectedTheme] = useState(getTheme('theme'));
 
   const { metaUrl } = props;
   const domAccount =
@@ -146,13 +163,8 @@ function Application(props) {
         const web3auth = new Web3AuthNoModal({
           clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
           web3AuthNetwork: process.env.REACT_APP_TORUS_NETWORK,
-          chainConfig: {
-            chainNamespace: CHAIN_NAMESPACES.EIP155,
-            rpcTarget: "https://rpc.ankr.com/eth",
-            chainId: "0x1",
-          }
+          chainConfig
         });
-
         web3auth.configureAdapter(openloginAdapter);
         setWeb3auth(web3auth);
         await web3auth.init();
@@ -164,25 +176,6 @@ function Application(props) {
     init();
     _enablePersistingLog();
   }, []);
-
-  useEffect(() => {
-    // Update network status
-    const handleStatusChange = () => {
-      setIsOnline(navigator.onLine);
-    };
-
-    // Listen to the online status
-    window.addEventListener('online', handleStatusChange);
-
-    // Listen to the offline status
-    window.addEventListener('offline', handleStatusChange);
-
-    // Specify how to clean up after this effect for performance improvment
-    return () => {
-      window.removeEventListener('online', handleStatusChange);
-      window.removeEventListener('offline', handleStatusChange);
-    };
-  }, [isOnline]);
 
   const _enablePersistingLog = () => {
     const thiz = this;
@@ -345,6 +338,16 @@ function Application(props) {
     }
   }, [cryptoDataState]);
 
+  // theme change
+  useEffect(() => {
+    const widget = document.getElementsByTagName("body");
+    if (selectedTheme === 'light') {
+      widget[0].className = '';
+    } else {
+      widget[0].className = "theme-dark";
+    }
+  }, [selectedTheme]);
+
   useEffect(() => {
     if (!isTokenValidState) {
       console.log('token invalid', errorMsgState)
@@ -486,8 +489,23 @@ function Application(props) {
 
   const _onSetupWebSocket = (accountName) => {
     try {
-      const websocket = new WebSocket(
-       `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
+      const webSocketFactory = {
+        connectionTries: 5,
+        connect: function (url) {
+          let ws = new WebSocket(url);
+          ws.onerror = (error) => {
+            console.log('websocket error', error);
+          };
+          ws.onopen = () => {
+            console.log('setup notification websocket');
+            webSocketFactory.connectionTries = 5;
+          };
+          return ws;
+        },
+      };
+
+      const websocket = new webSocketFactory.connect(
+        `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
       websocket.onmessage = (message) => {
         console.log('notification arrived', message);
@@ -496,8 +514,20 @@ function Application(props) {
           toast(content);
         }
       };
-      websocket.onopen = () => {
-        console.log('setup notification websocket');
+      websocket.onclose = (event) => {
+        if (event.code > 1001) {
+          webSocketFactory.connectionTries =
+            webSocketFactory.connectionTries - 1;
+
+          if (webSocketFactory.connectionTries > 0) {
+            this.ws = null;
+            setTimeout(() => _onSetupWebSocket(accountName), 5000);
+          } else {
+            throw new Error(
+              'Maximum number of connection trials has been reached'
+            );
+          }
+        }
       };
     } catch (e) {
       console.log('notification connection error', e);
@@ -505,11 +535,17 @@ function Application(props) {
   }
 
   if (!isOnline) {
-    return <DisconnectedInternet appStoreIcon={AppStore} googlePlayIcon={GooglePlay} offlineIcon={OfflineIcon}/>;
+    return <DisconnectedInternet appStoreIcon={AppStore} googlePlayIcon={GooglePlay} offlineIcon={OfflineIcon} />;
   }
 
   if (isLoading || loaderState || activeScreen == null) {
     return <MetaLoader size={"large"} />;
+  }
+
+  const themeChangeHandler = () => {
+    const newTheme = selectedTheme === "light" ? "dark" : "light";
+    setSelectedTheme(newTheme);
+    setTheme('theme', newTheme);
   }
 
   return (
@@ -571,6 +607,8 @@ function Application(props) {
         portfolio={portfolio}
         name={accountName}
         activeScreen={activeScreen}
+        themeSetter={themeChangeHandler}
+        themeMode={selectedTheme}
       />
       <div className={"forAdapt"}>
         <LeftPanel
@@ -733,7 +771,6 @@ function Application(props) {
                 />
               </div>
             )}
-
             {activeScreen === "login" && (
               <div
                 style={{
@@ -891,7 +928,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="headerBlock">
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Portfolio</strong>
                       </h5>
@@ -970,7 +1007,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="paperWallet" style={{ padding: "1.1rem 2rem" }}>
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Paper Wallet</strong>
                       </h5>
@@ -1000,7 +1037,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="headerBlock">
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Transaction History</strong>
                       </h5>
@@ -1048,7 +1085,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div className="orderOrderMainFlex" style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
                       <div>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                           <strong>Open Order</strong>
@@ -1204,27 +1241,27 @@ function Application(props) {
         <Modal.Content >
           <div
             className="claim_wallet_btn_div"
-            >
-              <h3 className="claim_model_content">
-                Hello {accountName}<br />
-                {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
-              </h3>
-            </div>
-          </Modal.Content>
-          <Modal.Actions className="claim_modal-action">
-            <Button
-              className="claim_wallet_btn"
-              onClick={() => {
-                setFetchAssetModalOpen(false);
-              }}
-            >
-              OK</Button>
-          </Modal.Actions>
+          >
+            <h3 className="claim_model_content">
+              Hello {accountName}<br />
+              {portfolioReceiverState && portfolioReceiverState._fetchAssetLastValue() ? 'Connected' : 'Not Connected'}
+            </h3>
+          </div>
+        </Modal.Content>
+        <Modal.Actions className="claim_modal-action">
+          <Button
+            className="claim_wallet_btn"
+            onClick={() => {
+              setFetchAssetModalOpen(false);
+            }}
+          >
+            OK</Button>
+        </Modal.Actions>
       </Modal>
-      
-      <img src={AppStore} style={{display: 'none'}}/>
-      <img src={GooglePlay} style={{display: 'none'}}/>
-      <img src={OfflineIcon} style={{display: 'none'}}/>
+
+      <img src={AppStore} style={{ display: 'none' }} />
+      <img src={GooglePlay} style={{ display: 'none' }} />
+      <img src={OfflineIcon} style={{ display: 'none' }} />
       <ToastContainer theme='light' />
     </>
   );

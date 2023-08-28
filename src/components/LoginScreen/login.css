@@ -72,6 +72,7 @@ iframe {
   text-align: center;
   padding-top: 5px;
   padding-bottom: 5px;
+  color: var(--textBrown) !important;
 }
 
 .header_ptag {
@@ -204,7 +205,7 @@ video {
 
 .webcam_div {
   width: 100%;
-  background: #fff  !important;
+  background: transparent  !important;
 }
 
 .margin-bottom-zero {
@@ -238,9 +239,10 @@ select {
   width: 100%;
   max-width: 250px;
   height: 40px;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--borderColor2);
   border-radius: 5px;
   margin-top: 5px;
+  background-color: var(--blockBgColor4) !important;
 }
 
 @media screen and (max-width: 678px) {

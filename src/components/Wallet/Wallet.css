@@ -72,8 +72,10 @@
   background: #f9fafb !important;
 }
 .portfolio-table {
-  background: #fff;
+  background: transparent;
+  border: 1px solid var(--borderColor);
   height: 100%;
+  border-radius: 5px;
 }
 
 .rightSideBlock {
@@ -121,7 +123,8 @@
 }
 .totalSumBlock {
   border-radius: 3px;
-  background: #fff;
+  background: var(--blockBgColor);
+  border: 1px solid var(--borderColor);
   box-shadow: var(--boxShadowIndex);
   margin: 0 0 1rem 0 !important;
   padding: 1.2rem 1rem 1.2rem 2rem;
@@ -146,14 +149,11 @@
   background: var(--red);
   color: #fff;
 }
-.css-1wvnaxz-MuiTableCell-root {
-  font-family: var(--font) !important;
-}
-.custom_table_head .MuiTableCell-head {
-  color: #000 !important;
-  background-color: #fff !important;
+.MuiTableCell-head {
+  background-color: var(--tableHeaderColor) !important;
   font-weight: 600 !important;
   font-size: 0.8rem !important;
+  color: var(--textBrown) !important;
 }
 .bodyCell {
   color: #505361 !important;
@@ -426,9 +426,26 @@
 }
 .page_sec span {
   padding: 5px;
+  color: var(--textBrown) !important;
 }
 .page_sec ul {
   width: 100% !important;
+}
+.page_sec ul li{
+  color: var(--textBrown) !important;
+}
+.css-10w330c-MuiButtonBase-root-MuiPaginationItem-root.Mui-disabled {
+  color: gray !important;
+}
+.css-10w330c-MuiButtonBase-root-MuiPaginationItem-root {
+  color: var(--textBrown) !important;
+}
+.css-1p5q5e5-MuiStack-root {
+  justify-content: center !important;
+  height: 100% !important;
+}
+.css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon {
+  fill: var(--textBrown) !important;
 }
 .dashboard .image {
   mask-image: none !important;
@@ -449,17 +466,18 @@
   padding: 25px !important;
   margin-left: -20px !important;
   font-family: sans-serif;
-  color: rgba(0, 0, 0, .85) !important;
+  color: var(--textBrown) !important;
   font-size: 14px !important;
   font-weight: 500 !important;
   padding-left: -10px !important;
   margin-top: 2px !important;
 }
 .selectbox_div {
+  display: none;
   padding: 25px !important;
   margin-left: -20px !important;
   font-family: sans-serif;
-  color: rgba(0, 0, 0, .85) !important;
+  color: var(--textBrown) !important;
   font-size: 14px !important;
   font-weight: 500 !important;
   padding-left: -10px !important;
@@ -507,4 +525,15 @@
 }
 .hide-zero-span {
   font-size: 12px !important;
+  color: var(--textBrown) !important;
+}
+.MuiTableContainer-root {
+  background-color: transparent !important;
+  border: none !important;
+}
+.MuiTableCell-root {
+  text-align: left !important;
+  color: var(--textBrown) !important;
+  border-bottom: 1px solid var(--borderColor) !important;
+  font-family: var(--font) !important;
 }
