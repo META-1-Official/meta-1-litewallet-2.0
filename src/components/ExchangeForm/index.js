@@ -118,8 +118,8 @@ export default function ExchangeForm(props) {
     } else {
       const from = newOptions.find((o) => o.value === selectedFrom.value);
       const to = newOptions.find((o) => o.value === selectedTo.value);
-      if (from.value !== selectedFrom.value) setSelectedFrom(from);
-      if (to.value !== selectedTo.value) setSelectedTo(to);
+      setSelectedFrom(from);
+      setSelectedTo(to);
     }
   }, [props.assets, props.portfolio]);
 
