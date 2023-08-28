@@ -34,6 +34,9 @@
 	font-size: .8rem;
 	margin: 1rem;
 }
+.copy-button {
+	width: 100%;	
+}
 .input, .qr-section .message {
 	width: 100%;
 	max-width: 100%;
@@ -76,8 +79,8 @@ input {
 }
 @media (min-width: 768px) {
 	.qr-section .input, .qr-section .message {
-		width: 500px;
-		max-width: 500px;
+		width: 100%;
+		max-width: 600px;
 	}	
 }
 @media (min-width: 768px) {

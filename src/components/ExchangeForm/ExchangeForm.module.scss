@@ -16,6 +16,7 @@
 .leftBlockExchange,
 .rightBlockExchange {
   width: 40% !important;
+  height: 390px;
   @media (max-width: 1136px) {
     width: 100% !important;
     &:focus {
