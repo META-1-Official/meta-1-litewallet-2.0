@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
 import moment from 'moment';
-import NotiIcon1 from '../../images/announcement1.png';
-import NotiIcon2 from '../../images/announcement2.png';
+import AnnouncementIcon from '../../images/announcements.png';
+import EventIcon from '../../images/events.png';
+import DepositIcon from '../../images/deposit.png';
+import WithdrawlIcon from '../../images/withdrawal.png';
+import OrderCreatedIcon from '../../images/order-created.png';
+import OrderCancelledIcon from '../../images/order-cancelled.png';
 
 import { NotificationItem } from './NotificationItem';
 import { notificationsSelector } from "../../store/account/selector";
@@ -51,12 +55,22 @@ const Notification = () => {
 
     const getItem = (type) => {
         switch (type) {
-            case 'ANNOUNCEMENTS':
-                return NotiIcon1;
-            case 'EVENTS':
-                return NotiIcon2;
+            case 'Announcements':
+                return AnnouncementIcon;
+            case 'Events':
+                return EventIcon;
+            case 'Created Order':
+                return OrderCreatedIcon;
+            case 'Cancelled Order':
+                return OrderCancelledIcon;
+            case 'Deposit':
+                return DepositIcon;
+            case 'Withdraw':
+                return WithdrawlIcon;
+            case 'Price Change':
+                return WithdrawlIcon;
             default:
-                return NotiIcon1;
+                return AnnouncementIcon;
         }
     }
 
@@ -76,8 +90,9 @@ const Notification = () => {
             {
                 data && data.map((ele, index) => {
                     return index < 4 && <NotificationItem
-                        icon={getItem(ele.type)}
+                        icon={getItem(ele.category)}
                         title={ele.title}
+                        category={ele.category}
                         description={ele.content}
                         time={ele.time}
                         onClick={handleClick}

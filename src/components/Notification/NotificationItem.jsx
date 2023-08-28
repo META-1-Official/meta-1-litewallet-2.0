@@ -13,7 +13,7 @@ export const NotificationItem = (props) => {
                 <h4 onClick={props.onClick}>{props.title}</h4>
                 <p>{props.description}</p>
                 <div className={styles.time}>
-                    <span>Announcements</span>
+                    <span>{props.category}</span>
                     <span>{props.time}</span>
                 </div>
             </div>
