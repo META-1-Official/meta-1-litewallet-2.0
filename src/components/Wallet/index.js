@@ -323,6 +323,7 @@ function Wallet(props) {
                 className={"switch"}
                 checked={hideZero}
                 onClick={() => {
+                  console.log('@@@@@, clicked', hideZero)
                   setHideZero(!hideZero);
                 }}
                 inputProps={{ "aria-label": "controlled" }}
