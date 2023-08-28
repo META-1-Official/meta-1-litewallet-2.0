@@ -49,10 +49,26 @@ const PortfolioTable = React.memo((props) => {
 
   useLayoutEffect(() => {
     filteredPortfolio.forEach((d, i) => {
-      let precision = assets.filter((asset) => asset.symbol.includes(d.name));
-      Object.assign(filteredPortfolio[i], { pre: precision[0].precision });
+      let asset = assets.filter((asset) => asset.symbol.includes(d.name));
+      Object.assign(filteredPortfolio[i], { pre: asset[0].precision });
     });
-    setLists(filteredPortfolio);
+
+    if (lists.length === 0) {
+      setLists(filteredPortfolio);
+      return;
+    }
+
+    // Update list when there is a change
+    let hasChange = false;
+    for (let list of lists) {
+      let asset = filteredPortfolio.find((portfolio) => portfolio.name === list.name);
+      if (asset && asset.qty !== list.qty) {
+        hasChange = true;
+        break;
+      }
+    }
+
+    if (hasChange) setLists(filteredPortfolio);
   }, [filteredPortfolio, assets, data]);
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({

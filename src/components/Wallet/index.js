@@ -14,17 +14,6 @@ import { userCurrencySelector } from "../../store/meta1/selector";
 import { useSelector } from "react-redux";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-// Трансферы между мета1 аккаунтами
-// вместо BitShares ставь Meta1
-// https://gist.github.com/bogdyak/e0172e95"large"db21f41ccd98c67dfaa7
-
-// Вывод на внешний аккаунт
-// вместо BitShares ставь Meta1
-// https://gist.github.com/bogdyak/087bf94c61fffc947d94e4dbbd24d692
-// обрати внимание что для EOS и XLM нужен мемо это типо доп айдишника
-
-// сначала надо залогиниться в сдк
-
 function Wallet(props) {
   const {
     portfolio,
@@ -160,30 +149,8 @@ function Wallet(props) {
     setIsCurrencySelected(crypto);
   };
 
-  function Portfolio(props) {
-    if (portfolio == null || portfolio.length === 0)
-      return <MetaLoader size={"small"} />;
-    const filteredPortfolio = hideZero
-      ? portfolio.filter((p) => p.qty > 0)
-      : portfolio;
+  const filteredPortfolio = hideZero ? portfolio.filter((p) => p.qty > 0) : portfolio;
 
-    return (
-      <PortfolioTable
-        assets={assets}
-        history={orders}
-        filteredPortfolio={filteredPortfolio}
-        onSendClick={onSendClick}
-        onDepositClick={onDepositClick}
-        onWithdrawClick={onWithdrawClick}
-        onAssetSelect={props.onAssetSelect}
-        onSetHideZero={setHideZero}
-        hideZero={hideZero}
-        data={data}
-        isLoading={isLoading}
-        isCurrencySelected={isCurrencySelected}
-      />
-    );
-  }
   return (
     <>
       <div style={{ marginLeft: "3rem" }} className={"totalSumBlock"}>
@@ -333,11 +300,24 @@ function Wallet(props) {
         </div>
       </div>
       <div className="portfolio-table">
-        <div className="portfolio-table">
-          <Portfolio
-            onAssetSelect={onAssetSelect}
+        {(portfolio == null || portfolio.length === 0) ?
+          <MetaLoader size={"small"} />
+          :
+          <PortfolioTable
+            assets={assets}
+            history={orders}
+            filteredPortfolio={filteredPortfolio}
+            onSendClick={onSendClick}
+            onDepositClick={onDepositClick}
+            onWithdrawClick={onWithdrawClick}
+            onAssetSelect={props.onAssetSelect}
+            onSetHideZero={setHideZero}
+            hideZero={hideZero}
+            data={data}
+            isLoading={isLoading}
+            isCurrencySelected={isCurrencySelected}
           />
-        </div>
+        }
       </div>
     </>
   );
