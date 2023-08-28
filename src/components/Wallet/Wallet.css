@@ -285,7 +285,13 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 14rem;
+  height: max-content;
+  border: 1px solid var(--borderColor) !important;
+  background: transparent !important;
+}
+.ui.modal>div {
+  background: var(--blockBgColor) !important;
+  color: var(--textBrown) !important
 }
 .blockChoosen {
   display: flex;
