@@ -118,7 +118,7 @@ export default function DepositForm(props) {
           <div>
             {!isLoading && canDeposit && (
               <CopyToClipboard text={address} onCopy={() => { }}>
-                <div style={{ width: "100%" }}>
+                <div className="copy-button">
                   <Input
                     action={{
                       color: "yellow",

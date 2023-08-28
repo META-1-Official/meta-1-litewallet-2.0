@@ -66,10 +66,13 @@ ul {
   flex-direction: row;
   font-weight: bold;
 
-  i {
-    color: var(--textBrown) !important;
+  div:last-child {
+    i {
+      color: var(--textBrown) !important;
+    }
   }
 }
+
 .textSpan {
   text-align: left;
   font-size: 0.77rem;
