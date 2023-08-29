@@ -498,7 +498,7 @@ function Application(props) {
       }
     }, 2000);
   }
-
+  
   const onRegistration = async (acc, pass, regEmail, web3Token, web3PubKey) => {
     setCredentials(acc, pass);
     onLogin(acc, true, pass, true, regEmail, web3Token, web3PubKey);
@@ -1305,6 +1305,9 @@ export function App({ domElement }) {
 
   return (
     <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+    
+    
+    
       <Application
         {...{
           metaUrl,
