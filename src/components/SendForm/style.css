@@ -8,8 +8,9 @@
   width: 100%;
   margin-top: 1rem;
 }
-.MuiTextField-root:hover {
-  background-color: #fff;
+input:focus {
+  outline: none !important;
+  border: none !important;
 }
 .Mui-disabled {
   -webkit-text-fill-color: var(--textGrey) !important;

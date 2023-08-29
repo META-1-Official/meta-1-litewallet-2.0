@@ -55,15 +55,38 @@ export default function ExchangeSelect(props) {
     );
   };
 
+  const customStyles = {
+    control: (styles, {isDisabled}) => {
+      return {
+        ...styles,
+        cursor: isDisabled ? 'not-allowed' : 'default',
+        backgroundColor: 'transparent',
+        borderRadius: 10,
+        borderColor: 'var(--inputBorderColor)',
+        boxShadow: 'var(--boxShadowIndex)'
+      }
+    },
+    option: (styles, {isDisabled}) => {
+      return {
+        ...styles,
+        backgroundColor: 'transparent',
+        cursor: isDisabled ? 'not-allowed' : 'default',
+        borderRadius: 10,
+        boxShadow: 'var(--boxShadowIndex)'
+      };
+    },
+  };
+
   return (
     <Select
-      onChange={(newVal, actionMeta) => props.onChange(newVal)}
+      onChange={(newVal) => props.onChange(newVal)}
       components={{ SingleValue: MySingleValue, Option: MyOption }}
       options={options}
       value={selectedValue}
       isSearchable={false}
-      isDisabled={isDisabled || false}
+      // isDisabled={isDisabled || false}
       className={`${props.from === 'withdrawal'? 'select-withdrawal' : ''}`}
+      styles={customStyles}
     />
   );
 }

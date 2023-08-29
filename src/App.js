@@ -474,12 +474,12 @@ function Application(props) {
     }
   }
 
-  const newUpdatedBalance = useQuery({
-    queryKey: ['updateBalance'],
-    queryFn: fetchPortfolio,
-    retryDelay: 2000,
-    refetchInterval: 2000
-  });
+  // const newUpdatedBalance = useQuery({
+  //   queryKey: ['updateBalance'],
+  //   queryFn: fetchPortfolio,
+  //   retryDelay: 2000,
+  //   refetchInterval: 2000
+  // });
 
   const onRegistration = async (acc, pass, regEmail, web3Token, web3PubKey) => {
     setCredentials(acc, pass);
