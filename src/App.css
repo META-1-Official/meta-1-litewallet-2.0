@@ -1,5 +1,6 @@
 .App {
   background: var(--bodybg);
+  margin-top: 65px;
 }
 .AppContent {
   height: 100%;
@@ -10,6 +11,7 @@
 .forAdapt {
   display: flex;
   flex-direction: row;
+  height: 100vh;
 }
 .paperWalletStyles {
   background: var(--blockBgColor);

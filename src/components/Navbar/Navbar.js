@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo, useReducer } from "react";
 import styles from "./Navbar.module.scss";
 import "./styles.css";
 import logo from "../../images/Logo.png";
@@ -6,13 +6,19 @@ import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutRequest } from "../../store/account/actions";
 import { navbarProfileImageSelector } from "../../store/account/selector";
+import NotiIcon from "../../images/notification.png";
+import Notification from "../Notification";
 import sunIcon from "../../images/sun.png";
 import moonIcon from "../../images/moon.png";
 import { useTheme } from "styled-components";
 
+
 const Navbar = (props) => {
   const dispatch = useDispatch();
+  const [showNotiDropDown, setShowNotiDropDown] = useState(false);
   const navbarProfileImageState = useSelector(navbarProfileImageSelector)
+  const [_, forceUpdate] = useReducer((x) => x + 1, 0);
+
   const {
     onClickHomeHandler,
     onClickPortfolioHandler,
@@ -34,6 +40,32 @@ const Navbar = (props) => {
   const openInNewTab = url => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+
+  const ref = useRef(null);
+
+  useEffect(() => {
+    window.addEventListener('click', handleClickOutside, true);
+    return () => {
+      window.removeEventListener('click', handleClickOutside, true);
+    };
+  }, []);
+
+  const handleClickOutside = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setShowNotiDropDown(false);
+    }
+  };
+
+  const showNotifications = () => {
+    setShowNotiDropDown(true);
+  }
+
+  const unreadNotifications = useMemo(() => {
+    let unreadNotifications = [];
+    if (localStorage.getItem('unreadNotifications'))
+      unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
+    return unreadNotifications;
+  }, [localStorage.getItem('unreadNotifications')]);
 
   return (
     <>
@@ -118,6 +150,10 @@ const Navbar = (props) => {
                   >
                     Get help
                   </span>
+                </div>
+                <div className={styles.blockNotification} onClick={showNotifications}>
+                  <img src={NotiIcon} className={styles.notiIcon} />
+                  { unreadNotifications.length > 0 && <div className={styles.badgeCount}>{unreadNotifications.length}</div>}
                 </div>
                 <div className="nav-item dropdown parent-this">
                   <a
@@ -258,6 +294,7 @@ const Navbar = (props) => {
           </div>
         </div>
       </nav>
+      {showNotiDropDown && <div ref={ref}><Notification forceUpdate={forceUpdate}/></div>}
     </>
   );
 };

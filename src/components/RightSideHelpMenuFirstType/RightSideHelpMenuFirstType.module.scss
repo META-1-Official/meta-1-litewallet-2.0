@@ -2,6 +2,7 @@
   background: var(--bodybg);
   width: 100%;
 }
+
 .header {
   font-size: 1.3rem;
   font-weight: bold;
@@ -9,22 +10,27 @@
   height: 3.7rem;
   box-shadow: var(--boxShadowIndex);
 }
+
 .headerM {
   padding: 1.1rem 2rem;
 }
+
 .leftBlockContent {
   display: flex;
   flex-direction: column;
 }
+
 .rightBlockContent {
   display: flex;
   flex-direction: column;
   width: 28%;
 }
+
 .mainBlockContent {
   display: flex;
   flex-direction: row;
 }
+
 .Button {
   border: none;
   border-radius: 5px;
@@ -38,16 +44,20 @@
   font-size: 0.9rem;
   box-shadow: var(--boxShadowIndex);
 }
+
 .linkMeta {
   padding: 1rem 1.6rem !important;
   height: 90%;
 }
+
 .newCrypto {
   margin-right: auto;
 }
+
 .createMeta,
 .linkMeta,
 .intro,
+.announcements,
 .newCrypto {
   margin: 1rem;
   background: var(--blockBgColor2);
@@ -56,21 +66,25 @@
   border-radius: 4px;
   padding: 1.6rem;
   box-shadow: var(--boxShadowIndex);
+
   h5 {
     font-size: 0.85rem;
     margin-bottom: 0.6rem;
     font-weight: 400;
   }
+
   span {
     font-weight: 600;
     font-size: 0.71rem;
     color: #838892;
+
     a {
       color: var(--textGold) !important;
       text-decoration: underline var(--textGold);
     }
   }
 }
+
 .crypto {
   display: flex;
   flex-direction: row;
@@ -91,17 +105,21 @@
   font-size: 0.8rem;
   outline: none;
 }
+
 .intro {  
   background: var(--blockBgColor2);
   color: var(--textBrown);
   height: 15rem;
+
   h5 {
     font-size: 1rem;
     font-weight: bold;
   }
 }
+
 .blockCryptText {
   margin-top: 0.3rem;
+
   h6 {
     margin: 0;
   }
@@ -110,10 +128,12 @@
 .helpBlock {
   display: flex;
   flex-direction: column;
+
   span {
     font-size: 0.8rem;
     font-weight: 500;
   }
+
   a {
     color: var(--textGold) !important;
     border-bottom: 1px solid var(--textGold);

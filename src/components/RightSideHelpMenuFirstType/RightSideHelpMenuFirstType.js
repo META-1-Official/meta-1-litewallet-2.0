@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./RightSideHelpMenuFirstType.module.scss";
 import { getImage } from "../../lib/images";
+import { Announcement } from "../Announcement";
 
 const RightSideHelpMenuFirstType = (props) => {
   const { onClickExchangeAssetHandler, portfolio } = props;
@@ -76,6 +77,13 @@ const RightSideHelpMenuFirstType = (props) => {
               </div>
             )
           })}
+        </div>
+      </div>
+      <div className={styles.announcements}>
+        <h5 style={{ fontWeight: "bold", fontSize: "1rem" }}>Announcements</h5>
+        <hr />
+        <div className={styles.helpBlock}>
+          <Announcement />
         </div>
       </div>
     </>

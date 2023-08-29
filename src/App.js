@@ -1,5 +1,3 @@
-
-
 import axios from "axios";
 import { PrivateKey, Signature } from "meta1-vision-js";
 import "regenerator-runtime/runtime";
@@ -33,7 +31,7 @@ import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
-import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService } from "./store/account/actions";
+import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService, getNotificationsRequest } from "./store/account/actions";
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder from "./components/OpenOrder";
@@ -282,6 +280,7 @@ function Application(props) {
     if (getAccessToken()) {
       console.log('loging', getAccessToken())
       dispatch(checkTransferableRequest({ login }))
+      dispatch(getNotificationsRequest({ login }))
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
@@ -531,6 +530,17 @@ function Application(props) {
         if (message && message.data) {
           const content = JSON.parse(message.data).content;
           toast(content);
+          dispatch(getNotificationsRequest({ login: accountName }));
+          let unreadNotifications = [];
+
+          if (localStorage.getItem('unreadNotifications'))
+            unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
+          const notificationId = JSON.parse(message.data).id;
+
+          if (unreadNotifications.indexOf(notificationId) < 0)
+            unreadNotifications.push(notificationId);
+
+          localStorage.setItem('unreadNotifications', JSON.stringify(unreadNotifications));
         }
       };
       websocket.onclose = (event) => {

@@ -228,6 +228,27 @@
   height: 20rem;
 }
 
+#detail-event {
+  margin: auto auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: fit-content;
+  width: fit-content;
+}
+
+#detail-announcement {
+  margin: auto auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: fit-content;
+  width: fit-content;
+  border-radius: 10px;
+}
+
 #modalExch {
   margin: 3rem auto;
   top: 0;
