@@ -8,6 +8,10 @@ import { logoutRequest } from "../../store/account/actions";
 import { navbarProfileImageSelector } from "../../store/account/selector";
 import NotiIcon from "../../images/notification.png";
 import Notification from "../Notification";
+import sunIcon from "../../images/sun.png";
+import moonIcon from "../../images/moon.png";
+import { useTheme } from "styled-components";
+
 
 const Navbar = (props) => {
   const dispatch = useDispatch();
@@ -24,6 +28,8 @@ const Navbar = (props) => {
     onClickSettingsHandler,
     onClickHistoryHandler,
     onClickOpenOrderHandler,
+    themeSetter,
+    themeMode,
     portfolio,
     name,
     onClickResetIsSignatureProcessing,
@@ -34,6 +40,7 @@ const Navbar = (props) => {
   const openInNewTab = url => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+
   const ref = useRef(null);
 
   useEffect(() => {
@@ -205,6 +212,17 @@ const Navbar = (props) => {
                   </ul>
                 </div>
                 <div className={styles.line + styles.adaptNeed} />
+                <div
+                  className={"imgUser"}
+                  style={{ marginLeft: ".3rem" }}
+                >
+                  <img
+                    className={styles.themeChanger}
+                    src={themeMode == "dark" ? moonIcon : sunIcon}
+                    alt="user"
+                    onClick={() => themeSetter()}
+                  />
+                </div>
                 <div
                   className={styles.adaptNeed}
                   style={{

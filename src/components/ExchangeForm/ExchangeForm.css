@@ -101,24 +101,6 @@
   display: flex !important;
 }
 
-.css-yk16xz-control {
-  border-radius: 8px !important;
-  height: 4rem !important;
-  width: 22rem !important;
-  border: 1px solid rgba(34, 36, 38, 0.15) !important;
-  box-shadow: var(--boxShadowIndex);
-}
-
-.select-withdrawal.css-yk16xz-control {
-  height: 4rem !important;
-  width: 22rem !important;
-  border: 1px solid rgba(34, 36, 38, 0.15) !important;
-  box-shadow: var(--boxShadowIndex);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .yellow {
   color: var(--textBrown) !important;
 }
@@ -126,6 +108,7 @@
 .css-g1d714-ValueContainer {
   height: 100%;
   border-radius: 8px !important;
+  align-items: center !important;
 }
 
 .select-withdrawal .css-g1d714-ValueContainer {
@@ -137,12 +120,20 @@
 
 .wallet-option {
   margin-top: 0;
+  /* border-bottom: 1px solid var(--borderColor); */
 }
 
 .css-1okebmr-indicatorSeparator {
   display: none;
 }
 
+.css-26l3qy-menu {
+  background-color: var(--blockBgColor) !important;
+  border: 1px solid var(--borderColor);
+}
+.css-4ljt47-MenuList {
+  height: 275px !important;
+}
 .css-1pahdxg-control:hover {
   border-color: var(--gold) !important;
 }
@@ -153,6 +144,7 @@
   width: 22rem !important;
   border-radius: 8px !important;
   border-color: var(--gold) !important;
+  background-color: transparent !important;
 }
 
 .css-1gtu0rj-indicatorContainer:hover {
@@ -199,10 +191,6 @@
 
 .max-button {
   margin-top: 6rem;
-}
-
-.wallet-option {
-  margin-top: 0 !important;
 }
 
 .select-withdrawal .wallet-option {
@@ -290,6 +278,20 @@
   margin: 0 1rem;
 }
 
+.css-q0jhri-MuiInputBase-root-MuiInput-root {
+  border-bottom: 1px solid var(--borderColor) !important;
+}
+
+.css-1pnmrwp-MuiTypography-root {
+  color: var(--textBrown) !important;
+}
+
+input {
+  border: none !important;
+  /* width: 100% !important; */
+  background: transparent !important;
+}
+
 @media (max-width: 600px) {
   .flexNeed {
     flex-direction: column;
@@ -314,16 +316,11 @@
     padding-top: 0 !important;
     padding-bottom: 0 !important;
   }
-
-  .css-yk16xz-control {
-    width: 100% !important;
-  }
 }
 
 @media (min-width: 768px) {
   .wallet-option {
     margin-top: 10px;
-    margin-bottom: 10px;
   }
 }
 
@@ -375,4 +372,10 @@
 .percentage-padding {
   padding-right: 5px;
   cursor: pointer;
+}
+
+.headerTitle {
+  background: transparent;
+	border-bottom: 1px solid var(--borderColor);
+  color: var(--textBrown);
 }

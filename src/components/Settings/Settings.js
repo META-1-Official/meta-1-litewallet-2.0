@@ -171,7 +171,7 @@ const Settings = (props) => {
         </Modal.Actions>
       </Modal>
       <div>
-        <div style={{ background: "#fff", padding: "1.05rem 2rem" }}>
+        <div className={styles.settingsBlock}>
           <h3 style={{ fontWeight: "600" }}>
             <strong>Account Settings</strong>
           </h3>
@@ -200,7 +200,7 @@ const Settings = (props) => {
                   <div className={styles.extraInfoBlock}>
 
                     {<div style={openPasswordSection ? { display: 'none', fontFamily: "Poppins, sans-serif" } : { display: 'block', fontFamily: "Poppins, sans-serif" }}>
-                      <h4 style={{ margin: "0" }}>Upload a Photo</h4>
+                      <h4 className={styles.uploadPhotoTitle}>Upload a Photo</h4>
                       <div className={styles.buttonAdapt}>
                         <div
                           className={styles.blockForUpload}

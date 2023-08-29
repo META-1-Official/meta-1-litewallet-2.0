@@ -60,7 +60,9 @@
 .announcements,
 .newCrypto {
   margin: 1rem;
-  background: #fff;
+  background: var(--blockBgColor2);
+  border: 1px solid var(--borderColor);
+  color: var(--textBrown);
   border-radius: 4px;
   padding: 1.6rem;
   box-shadow: var(--boxShadowIndex);
@@ -87,6 +89,10 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  i {
+    color: var(--textBrown) !important;
+  }
 }
 
 .input {
@@ -100,7 +106,9 @@
   outline: none;
 }
 
-.intro {
+.intro {  
+  background: var(--blockBgColor2);
+  color: var(--textBrown);
   height: 15rem;
 
   h5 {
@@ -131,4 +139,8 @@
     border-bottom: 1px solid var(--textGold);
     text-decoration: none !important;
   }
+}
+
+hr {
+  background: var(--hrColor) !important;
 }

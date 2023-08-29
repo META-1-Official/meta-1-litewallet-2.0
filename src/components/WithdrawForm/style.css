@@ -16,6 +16,16 @@ div.withdraw label {
 	font-weight: 600;
 }
 
+.from-amount {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-top: .1rem;
+	font-size: 1rem;
+	color: #505361;
+	background: transparent;
+}
+
 .input {
 	padding-top: 5px;
 }
@@ -37,8 +47,8 @@ div.withdraw label {
 
 button.withdraw {
 	margin-top: 20px;
-	background-color: #330000 !important;
-	color: #ffc000 !important;
+	background-color: #ffc000 !important;
+	color: var(--textBrown) !important;
 }
 
 .ui.disabled.withdraw {
@@ -71,7 +81,8 @@ button.withdraw {
 }
 
 .withdrawal-form-div {
-	background: rgb(255, 255, 255) !important;
+	background: transparent !important;
+	border: 1px solid var(--borderColor);
 	padding: 10px 25px 20px !important;
 	margin-top: 10px !important;
 	width: 50% !important;
@@ -98,6 +109,17 @@ button.withdraw {
 
 .withdrawal-form-div input {
 	padding-top: 10px !important;
+	outline: none !important;
+}
+
+.withdrawal-form-div input:focus {
+	border: none !important;
+	outline: none !important;
+}
+
+.withdrawal-form-div input:focus-visible {
+	border: none !important;
+	outline: none !important;
 }
 
 .new-wallet_input div:first-child {
@@ -106,6 +128,7 @@ button.withdraw {
 
 .withdrawal-form-div .new-wallet_input input {
 	padding: 10px !important;
+	color: var(--textBrown) !important;
 }
 
 .withdrawal-form-div .currency-span {
@@ -115,6 +138,7 @@ button.withdraw {
 
 .withdrawal-form-div .currency-letters p {
 	padding: 10px !important;
+	color: var(--textBrown) !important;
 }
 
 .new-max-withdrawal {

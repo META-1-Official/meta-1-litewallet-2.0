@@ -101,23 +101,8 @@ export default function DepositForm(props) {
               }
             </div>
           </div>
-          <div
-            style={{
-              background: "#F0F1F4",
-              padding: "1rem",
-              width: "96%",
-              margin: "0 auto",
-              borderRadius: "10px",
-            }}
-          >
-            <span
-              style={{
-                color: "#000",
-                fontWeight: "bold",
-                fontSize: ".8rem",
-                margin: "1rem",
-              }}
-            >
+          <div className="qr-body">
+            <span className="qr-asset">
               DEPOSIT <span style={{ color: "#FFC000" }}>{asset}</span>
             </span>
             <div className={"needAdaptToQR"}>
@@ -127,22 +112,14 @@ export default function DepositForm(props) {
               )}
             </div>
           </div>
-          <p
-            style={{
-              margin: "1rem",
-              color: "#505361",
-              fontWeight: "600",
-              fontSize: ".8rem",
-            }}
-          >
+          <p className="minimum-deposit-text">
             Minimum deposit: {getMinAmount(asset)} {asset} {asset.toLowerCase() === 'usdt' ? '(ERC20)' : ''}
           </p>
           <div>
             {!isLoading && canDeposit && (
               <CopyToClipboard text={address} onCopy={() => { }}>
-                <div style={{ width: "100%" }}>
+                <div className="copy-button">
                   <Input
-                    style={{ width: "100%" }}
                     action={{
                       color: "yellow",
                       labelPosition: "right",

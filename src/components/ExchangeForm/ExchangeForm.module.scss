@@ -2,7 +2,8 @@
   margin: 1rem;
   padding: 2rem;
   width: 100%;
-  background: #fff;
+  background: var(--blockBgColor);
+  border: 1px solid var(--borderColor);
   border-radius: 4px;
   box-shadow: var(--boxShadowIndex);
   @media (max-width: 600px) {
@@ -15,6 +16,7 @@
 .leftBlockExchange,
 .rightBlockExchange {
   width: 40% !important;
+  height: 390px;
   @media (max-width: 1136px) {
     width: 100% !important;
     &:focus {
@@ -47,9 +49,9 @@ h2 {
   display: flex;
   align-items: center;
   border-radius: 8px;
-  background: #fff;
+  background: var(--blockBgColor2);
   box-shadow: var(--boxShadowIndex);
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: 1px solid var(--borderColor);
   margin: 3rem 0;
 }
 .centeredBlock {
@@ -84,6 +86,7 @@ h2 {
 .textBlockLeft {
   text-align: right;
   margin: 1rem 0;
+  color: var(--textBrown) !important;
   @media (max-width: 600px) {
     text-align: center !important;
   }
@@ -95,6 +98,7 @@ h2 {
 .textBlockRight {
   text-align: left;
   margin: 1rem;
+  color: var(--textBrown) !important;
   h4 {
     margin: 0;
     color: var(--textGold);
@@ -139,11 +143,15 @@ h2 {
   padding: 1rem;
   box-shadow: var(--boxShadowIndex);
   border-radius: 8px !important;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: 1px solid var(--inputBorderColor);  
+
+  .MuiInput-root {
+    background-color: transparent !important;
+    color: var(--textBrown) !important;
+  }
 }
 .inputDollars {
-  background: rgba(255, 255, 255, 0);
-  border: none;
+  background: rgba(255, 255, 255, 0);  
   box-shadow: none !important;
   &:focus {
     border: none !important;

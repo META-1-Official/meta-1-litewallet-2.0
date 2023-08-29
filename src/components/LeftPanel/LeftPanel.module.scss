@@ -1,13 +1,15 @@
 .mainBlock {
-  width: 14rem;
-  background: #fff;
-  // box-shadow: var(--boxShadowIndex);
+  width: 270px;
+  height: 100vh;
+  background: var(--backgroundColor);
+  box-shadow: var(--boxShadowIndex);
   z-index: 2;
   min-width: 12rem;
   @media screen and (max-width: 599px) {
     display: none;
   }
   margin-top: 65px;
+  border-right: 1px solid var(--borderColor);
 }
 ul {
   list-style: none;
@@ -19,7 +21,8 @@ ul {
     font-size: 0.9rem;
     height: 4rem;
     cursor: pointer;
-    transition: background 0.5s;
+    transition: background 0.5s;   
+
     &:hover {
       .textSpan {
         color: var(--textBrown) !important;
@@ -34,7 +37,7 @@ ul {
     height: 4rem;
     transition: background 0.5s;
     cursor: not-allowed;
-    background: #f1f1f1;
+    background: var(--disabledListColor);
   }
 }
 .userinfo {
@@ -43,6 +46,14 @@ ul {
   flex-direction: row;
   height: 3.7rem;
 }
+.circle {
+  background: var(--circleBackgroundColor);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50px;
+  margin: 1rem 0 0 2rem;
+  color: var(--iconColor);
+}
 .imageUser {
   margin: 1rem 0 0 1rem;
   width: 2rem;
@@ -50,18 +61,19 @@ ul {
   border-radius: 50px;
   background: #fff;
 }
-.circle {
-  background: #e2e2e2;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50px;
-  margin: 1rem 0 0 2rem;
-}
+
 .containerLi {
   display: flex;
   flex-direction: row;
   font-weight: bold;
+
+  div:last-child {
+    i {
+      color: var(--textBrown) !important;
+    }
+  }
 }
+
 .textSpan {
   text-align: left;
   font-size: 0.77rem;

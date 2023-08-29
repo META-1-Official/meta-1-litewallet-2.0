@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import styles from './loginProviders.module.scss';
 import arrow from '../../images/arrow.jpg';
-import closeBtn from '../../images/close.png';
 import { providers } from "./providers";
 // import CountryNumber from "./GetCountry/countryNumber";
 import { Modal } from "semantic-ui-react";
 import { WALLET_ADAPTERS } from "@web3auth/base";
 import MetaLoader from "../../UI/loader/Loader";
 import { getPublicCompressed } from "@toruslabs/eccrypto";
+import { getTheme, setTheme } from '../../utils/storage';
 
 const ProvidersBlock = ({ item, moreProviders, onClick }) => {
     return (
@@ -76,7 +76,7 @@ const LoginProvidersModal = (props) => {
                 const data = await web3auth.getUserInfo();
                 
                 const privateKey = await web3auth.provider.request({
-                    method: "private_key"
+                    method: "eth_private_key"
                 });
 
                 const app_pub_key = getPublicCompressed(Buffer.from(privateKey.padStart(64, "0"), "hex")).toString("hex");
@@ -156,7 +156,7 @@ const LoginProvidersModal = (props) => {
                         <>
                             <div className={styles.providerHeader}>
                                 <div className={styles.closeBtnWrapper}>
-                                    <img src={closeBtn} width={20} height={20} onClick={handleClose} alt="close"></img>
+                                    <i className="fa fa-times" onClick={handleClose} style={{fontSize: 20}}/>
                                 </div>
                                 <p className={styles.welcomeText}>Welcome onboard</p>
                                 <p className={styles.descriptionText}>Select how you would like to continue</p>

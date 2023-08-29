@@ -8,6 +8,7 @@ import { PrivateKey, ChainStore } from "meta1-vision-js";
 import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken, signUp } from "../../API/API";
 
 import "./SignUpForm.css";
+import styles from "./SignUpForm.module.scss";
 import FaceKiForm from "./FaceKiForm.js";
 import MigrationForm from "./MigrationForm.js";
 import { createPaperWalletAsPDF } from "../PaperWalletLogin/CreatePdfWallet.js";
@@ -18,6 +19,7 @@ import PreviewPDFModal from "./PreviewPDFModal.jsx";
 import MetaLoader from "../../UI/loader/Loader.js";
 import LoginProvidersModal from "../Web3Auth"
 import sendXApi from '../../API/sendXApi';
+import { getTheme } from "../../utils/storage.js";
 
 export default function SignUpForm(props) {
   const {
@@ -383,18 +385,8 @@ export default function SignUpForm(props) {
   return (
     <>
       <div>
-        <div
-          style={{
-            background: "#fff",
-            width: "100%",
-            height: "3.7rem",
-            padding: "1.1rem 2rem",
-            boxShadow: "0 9px 10px 0 rgba(0,0,0,0.11)",
-            fontSize: "1.3rem",
-            fontWeight: "bold",
-          }}
-        >
-          <span style={{ color: "#240000" }}>META Lite Wallet</span>
+        <div className={styles.signupBlock} >
+          <span>META Lite Wallet</span>
         </div>
         <div className={"createWalletForm"}>
           <div className={"justFlexAndDirect"}>
@@ -449,7 +441,7 @@ export default function SignUpForm(props) {
           onContinue={() => stepLastSubmit()}
           continueBtnText='Acknowledge and Continue'
           accountName={accountName}
-          text='If you forget your passkey you will NOT be able to access your wallet or your funds. We are NO LONGER able to restore, reset, or redistribute lost coins, or help with lost passkeys. Please MAKE SURE you copy your wallet name and passkey on to your computer and then transfer it to an offline storage location for easy access like a USB drive! Check our passkey storage tips knowledge article for more info <a target="__blank" href="https://support.meta1coin.vision/password-storage-tips">here</a>'
+          text='If you forget your passkey you will NOT be able to access your wallet or your funds. We are NO LONGER able to restore, reset, or redistribute lost coins, or help with lost passkeys. Please MAKE SURE you copy your wallet name and passkey on to your computer and then transfer it to an offline storage location for easy access like a USB drive! Check our passkey storage tips knowledge article for more info <a target="__blank" href="https://support.meta1coin.vision/hc/en-us/articles/11552911024027-Passkey-Storage-Tips">here</a>'
           className={`${!isMobile ? 'copy_passkey_modal' : 'copy_passkey_mobile_modal'}`}
           isCloseIcon={true}
         />
