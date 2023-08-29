@@ -1,3 +1,5 @@
+
+
 import axios from "axios";
 import { PrivateKey, Signature } from "meta1-vision-js";
 import "regenerator-runtime/runtime";
@@ -153,9 +155,37 @@ function Application(props) {
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
+  const updateBalances = () => {
+    if (portfolioReceiverState && accountName && !passwordShouldBeProvided) {
+      refetchPortfolio();
+    }
+  }
+
+  const newUpdatedBalance = useQuery(['updateBalance'], updateBalances, {
+    refetchInterval: 20000
+  });
 
   // Online state
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    // Update network status
+    const handleStatusChange = () => {
+      setIsOnline(navigator.onLine);
+    };
+
+    // Listen to the online status
+    window.addEventListener('online', handleStatusChange);
+
+    // Listen to the offline status
+    window.addEventListener('offline', handleStatusChange);
+
+    // Specify how to clean up after this effect for performance improvment
+    return () => {
+      window.removeEventListener('online', handleStatusChange);
+      window.removeEventListener('offline', handleStatusChange);
+    };
+  }, [isOnline]);
 
   useEffect(() => {
     const init = async () => {
@@ -269,24 +299,24 @@ function Application(props) {
   };
 
   useEffect(() => {
-    if (signatureParam[0] !== 'signature') return;
+    if (signatureParam[0] === 'signature') {
+      if (!fromSignUpState) {
+        setIsSignatureProcessing(true);
+        setSignatureResult(signatureParam[1]);
 
-    if (!fromSignUpState) {
-      setIsSignatureProcessing(true);
-      setSignatureResult(signatureParam[1]);
-
-      if (!loginErrorState) {
-        setActiveScreen('registration');
+        if (!loginErrorState) {
+          setActiveScreen('registration');
+        }
+      } else {
+        if (window.location.search.includes('?signature=success')) {
+          sessionStorage.setItem('location', 'wallet');
+          setActiveScreen("wallet");
+          window.location.href = window.location.href.split('?')[0];
+        }
       }
-    } else {
       if (window.location.search.includes('?signature=success')) {
-        sessionStorage.setItem('location', 'wallet');
-        setActiveScreen("wallet");
-        window.location.href = window.location.href.split('?')[0];
+        localStorage.setItem('isSignature', true);
       }
-    }
-    if (window.location.search.includes('?signature=success')) {
-      localStorage.setItem('isSignature', true);
     }
   }, [signatureParam]);
 
@@ -365,14 +395,15 @@ function Application(props) {
   }
 
   useEffect(() => {
-    async function _fetchPortfolio() {
+    async function fetchPortfolio() {
       if (portfolioReceiverState === null) return;
       if (portfolio !== null) return;
       if (accountNameState === null || accountNameState.length === 0) return;
       try {
         const fetched = await portfolioReceiverState.fetch();
-        if (!fetched) return;
-
+        if (!fetched) {
+          return;
+        }
         setAssets(fetched.assets);
         setPortfolio(fetched.portfolio);
         setFullPortfolio(fetched.full);
@@ -387,8 +418,8 @@ function Application(props) {
       } catch (e) {
       }
     }
-    _fetchPortfolio();
-  }, [portfolioReceiverState, accountName, refreshData]);
+    fetchPortfolio();
+  }, [portfolioReceiverState, portfolio, accountName, refreshData]);
 
   useEffect(() => {
     async function connect() {
@@ -452,40 +483,28 @@ function Application(props) {
     connect();
   }, [accountNameState]);
 
-  const fetchPortfolio = async () => {
-    if (!isLoginState) return;
-    if (!portfolioReceiverState) return;
-
-    const result = await portfolioReceiverState.fetch();
-    if (!result) return;
-
-    for (let _iter of result.full) {
-      const name = _iter.name;
-      const asset = portfolioFull?.find(asset => asset.name === _iter.name);
-
-      // Update states only portfolio is actually changed
-      if (asset && (asset.qty !== _iter.qty || asset.latest !== _iter.latest)) {
-        console.log('Portfolio change is detected!');
-        setPortfolio(result.portfolio);
-        setFullPortfolio(result.full);
-        setAssets(result.assets);
-        break;
+  function refetchPortfolio() {
+    setTimeout(async () => {
+      if (isLoginState) {
+        const fetched = await portfolioReceiverState.fetch();
+        if (!fetched) {
+          return;
+        }
+        if (!assets || (Array.isArray(assets) && assets.length === 0)) {
+          setAssets(fetched.assets);
+        }
+        setPortfolio(fetched.portfolio);
+        setFullPortfolio(fetched.full);
       }
-    }
+    }, 2000);
   }
-
-  const newUpdatedBalance = useQuery({
-    queryKey: ['updateBalance'],
-    queryFn: fetchPortfolio,
-    retryDelay: 2000,
-    refetchInterval: 2000
-  });
-
+  
   const onRegistration = async (acc, pass, regEmail, web3Token, web3PubKey) => {
     setCredentials(acc, pass);
     onLogin(acc, true, pass, true, regEmail, web3Token, web3PubKey);
     setActiveScreen("wallet");
   };
+
 
   const _onSetupWebSocket = (accountName) => {
     try {
@@ -560,6 +579,7 @@ function Application(props) {
         onClickPortfolioHandler={(e) => {
           e.preventDefault();
           dispatch(getUserRequest(login));
+          refetchPortfolio();
           setActiveScreen("wallet");
           setIsSignatureProcessing(false);
         }}
@@ -621,6 +641,7 @@ function Application(props) {
           onClickPortfolioHandler={(e) => {
             e.preventDefault();
             dispatch(getUserRequest(login));
+            refetchPortfolio();
             setActiveScreen("wallet");
             setIsSignatureProcessing(false);
           }}
@@ -750,6 +771,7 @@ function Application(props) {
                   onSuccessModal={() => setActiveScreen("wallet")}
                   onSuccessTrade={() => {
                     setPortfolio(null);
+                    refetchPortfolio();
                   }}
                   portfolio={portfolio}
                   asset={tradeAsset}
@@ -793,6 +815,7 @@ function Application(props) {
                     setActiveScreen("exchange");
                   }}
                   onClickRedirectToPortfolio={(e) => {
+                    refetchPortfolio();
                     setActiveScreen("wallet");
                   }}
                   onClickResetIsSignatureProcessing={() => {
@@ -830,6 +853,7 @@ function Application(props) {
                   onSuccessTransfer={() => {
                     setActiveScreen("wallet");
                     setPortfolio(null);
+                    refetchPortfolio();
                   }}
                   asset={tradeAsset}
                   sender={accountName}
@@ -903,6 +927,7 @@ function Application(props) {
                   redirectToPortfolio={() => setActiveScreen("wallet")}
                   onSuccessWithDrawal={() => {
                     setPortfolio(null);
+                    refetchPortfolio();
                   }}
                   setTokenModalOpen={setTokenModalOpen}
                   setTokenModalMsg={setTokenModalMsg}
@@ -1280,6 +1305,9 @@ export function App({ domElement }) {
 
   return (
     <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+    
+    
+    
       <Application
         {...{
           metaUrl,
