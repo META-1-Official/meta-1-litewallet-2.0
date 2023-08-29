@@ -13,10 +13,10 @@ import { notificationsSelector } from "../../store/account/selector";
 
 import styles from "./notification.module.scss";
 
-const Notification = () => {
+const Notification = (props) => {
     const [data, setData] = useState();
     const notificationsState = useSelector(notificationsSelector);
-
+    const forceUpdate = props.forceUpdate;
     const getItem = (category) => {
         switch (category) {
             case 'Announcements':
@@ -38,8 +38,16 @@ const Notification = () => {
         }
     }
 
-    const handleClick = (event) => {
-        console.log('Click Notification');
+    const handleClick = (id) => {
+        let unreadNotifications = [];
+        if (localStorage.getItem('unreadNotifications'))
+            unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
+
+        if (unreadNotifications.indexOf(id) > -1) {
+            unreadNotifications.splice(unreadNotifications.indexOf(id), 1);
+        }
+        localStorage.setItem('unreadNotifications', JSON.stringify(unreadNotifications));
+        forceUpdate();
     }
 
     useEffect(() => {
@@ -59,7 +67,7 @@ const Notification = () => {
                         category={ele.category}
                         description={ele.content}
                         time={ele.time}
-                        onClick={handleClick}
+                        onClick={() => handleClick(ele.id)}
                     />
                 })
             }

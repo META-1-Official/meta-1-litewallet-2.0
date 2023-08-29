@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo, useReducer } from "react";
 import styles from "./Navbar.module.scss";
 import "./styles.css";
 import logo from "../../images/Logo.png";
@@ -13,6 +13,7 @@ const Navbar = (props) => {
   const dispatch = useDispatch();
   const [showNotiDropDown, setShowNotiDropDown] = useState(false);
   const navbarProfileImageState = useSelector(navbarProfileImageSelector)
+  const [_, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const {
     onClickHomeHandler,
@@ -50,10 +51,15 @@ const Navbar = (props) => {
 
   const showNotifications = () => {
     setShowNotiDropDown(true);
-    localStorage.setItem('unreadNotifications', 0);
   }
 
-  const unreadNotifications = localStorage.getItem('unreadNotifications');
+  const unreadNotifications = useMemo(() => {
+    let unreadNotifications = [];
+    if (localStorage.getItem('unreadNotifications'))
+      unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
+    return unreadNotifications;
+  }, [localStorage.getItem('unreadNotifications')]);
+
   return (
     <>
       <div
@@ -140,7 +146,7 @@ const Navbar = (props) => {
                 </div>
                 <div className={styles.blockNotification} onClick={showNotifications}>
                   <img src={NotiIcon} className={styles.notiIcon} />
-                  { unreadNotifications > 0 && <div className={styles.badgeCount}>{unreadNotifications}</div>}
+                  { unreadNotifications.length > 0 && <div className={styles.badgeCount}>{unreadNotifications.length}</div>}
                 </div>
                 <div className="nav-item dropdown parent-this">
                   <a
@@ -270,7 +276,7 @@ const Navbar = (props) => {
           </div>
         </div>
       </nav>
-      {showNotiDropDown && <div ref={ref}><Notification /></div>}
+      {showNotiDropDown && <div ref={ref}><Notification forceUpdate={forceUpdate}/></div>}
     </>
   );
 };

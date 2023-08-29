@@ -510,8 +510,16 @@ function Application(props) {
           const content = JSON.parse(message.data).content;
           toast(content);
           dispatch(getNotificationsRequest({ login: accountName }));
-          console.log('set notification count', localStorage.getItem('unreadNotifications'));
-          localStorage.setItem('unreadNotifications', Number(localStorage.getItem('unreadNotifications')) + 1);
+          let unreadNotifications = [];
+
+          if (localStorage.getItem('unreadNotifications'))
+            unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
+          const notificationId = JSON.parse(message.data).id;
+
+          if (unreadNotifications.indexOf(notificationId) < 0)
+            unreadNotifications.push(notificationId);
+
+          localStorage.setItem('unreadNotifications', JSON.stringify(unreadNotifications));
         }
       };
       websocket.onclose = (event) => {
