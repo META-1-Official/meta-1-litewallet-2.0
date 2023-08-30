@@ -7,6 +7,7 @@ import DepositIcon from '../../images/deposit.png';
 import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
+import PriceChangeIcon from '../../images/price-change.png';
 
 import { NotificationItem } from './NotificationItem';
 import { notificationsSelector } from "../../store/account/selector";
@@ -32,7 +33,7 @@ const Notifications = (props) => {
             case 'Withdraw':
                 return WithdrawlIcon;
             case 'Price Change':
-                return WithdrawlIcon;
+                return PriceChangeIcon;
             default:
                 return AnnouncementIcon;
         }
