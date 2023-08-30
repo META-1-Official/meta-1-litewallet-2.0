@@ -376,12 +376,6 @@ select {
   z-index: 2;
   opacity: 0.8;
 }
-.modal-content {
-  background: transparent !important;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
 .copy_passkey_modal {
   margin: 13rem auto !important;
   height: 21rem !important;

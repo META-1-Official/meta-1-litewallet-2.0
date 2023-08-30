@@ -204,6 +204,7 @@ const Footer = (props) => {
         tabIndex="-1"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
+        style={{marginTop: 80}}
       >
         <div className="modal-dialog modal-lg modal-dialog-scrollable">
           <div className="modal-content">
@@ -211,29 +212,28 @@ const Footer = (props) => {
               className="modal-header"
               style={{ display: "block", textAlign: "center" }}
             >
-              <button
-                type="button"
-                style={{ margin: "0 0 0 97%" }}
-                className="btn-close"
+              <i
+                style={{ margin: "0 0 0 97%", fontSize: 30, cursor: 'pointer', color: 'var(--textBrown)' }}
+                className="fa fa-times"
                 data-bs-dismiss="modal"
                 aria-label="Close"
               />
-              <h2 style={{ margin: "0", fontSize: "2.5rem", color: "#000" }}>
-                WELCOME TO <span style={{ color: "#FFC000" }}>META1COIN.VISION</span>
+              <h2 style={{ margin: "0", fontSize: "2.5rem", color: "#FFC000" }}>
+                Welcome to litewallet.meta1coin.vision
               </h2>
-              <h3 style={{ fontSize: "1.7rem", fontWeight: "500" }}>
-                By Using The <span style={{ color: "#FFC000" }}>META1COIN.Vision</span>{" "}
+              <h3 style={{ fontSize: "1.7rem", fontWeight: "500", color: "var(--textBrown)" }}>
+                By Using The <span style={{ color: "#FFC000" }}>litewallet.meta1coin.vision</span>{" "}
                 Website You Are Agreeing To The{" "}
                 <strong style={{ fontWeight: "700" }}>Privacy Policy</strong>{" "}
                 And Website Use <strong>Terms Below.</strong>
               </h3>
             </div>
             <div className={"modal-body"} style={{ textAlign: "center" }}>
-              <h4 style={{ fontSize: "1.5rem" }}>
+              <h4 style={{ fontSize: "1.5rem", color: "var(--textBrown)" }}>
                 <span style={{ color: "#FFC000" }}>Meta 1 Coin</span> Trust
                 Privacy Statements
               </h4>
-              <p style={{ fontSize: "1rem" }}>
+              <p style={{ fontSize: "1rem", color: "var(--textBrown)" }}>
                 This website (META1Coin.vision, META1Coin.Com) and all META 1 COIN TRUST
                 business are private, protected by the privacy act of 1974.
                 Title 5 U.S.C. 552(a), the fourth and fifth Amendments of the
@@ -241,7 +241,7 @@ const Footer = (props) => {
                 privacy rights available in the united States of America and
                 every other applicable jurisdiction.
               </p>
-              <p style={{ fontSize: "1rem" }}>
+              <p style={{ fontSize: "1rem", color: "var(--textBrown)" }}>
                 The only participants of META 1 Coin Trust and the named
                 websites are for Live Natural Man and Women, flesh-and-blood
                 Almighty God-created private Humans sui juris sentient being;
@@ -255,12 +255,12 @@ const Footer = (props) => {
                 1-207;1-308, U.C.C. 1-103.6 (Anderson's UCC) reserved ab initio,
                 nunc pro tunc:
               </p>
-              <p style={{ fontSize: "1rem" }}>
+              <p style={{ fontSize: "1rem", color: "var(--textBrown)" }}>
                 By accepting to the following terms, you agree to a
                 Non-Disclosure Agreement with META 1 Coin TRUST to operate this
                 commercial transaction in the Private.
               </p>
-              <p style={{ fontSize: "1rem" }}>
+              <p style={{ fontSize: "1rem", color: "var(--textBrown)" }}>
                 * If you need clarification regarding Private transactions and
                 status, please contact private@meta1.io
               </p>
@@ -275,7 +275,7 @@ const Footer = (props) => {
               >
                 Notice
               </h3>
-              <p style={{ fontSize: "1rem" }}>
+              <p style={{ fontSize: "1rem", color: "var(--textBrown)" }}>
                 BE WARNED, NOTICED, AND ADVISED that in addition to the
                 constitutional limits on governmental authority included in the
                 “Constitution for the united States of America”, the Honorable
@@ -294,7 +294,7 @@ const Footer = (props) => {
                 natural flesh and blood man or woman who has been injured. When
                 there is no victim, there is no crime committed or law broken.
               </p>
-              <p style={{ fontSize: "1rem" }}>
+              <p style={{ fontSize: "1rem", color: "var(--textBrown)" }}>
                 Remember in taking a solemn binding oath(s) to protect and
                 defend the original Constitution for the united States of
                 America circa and/or the Constitution of the State of ARIZONA
@@ -303,7 +303,7 @@ const Footer = (props) => {
                 treason and immoral dishonor. The Undersigned accepts said
                 Oath(s) of Office that you have sworn to uphold.
               </p>
-              <p style={{ fontSize: "1rem" }}>
+              <p style={{ fontSize: "1rem", color: "var(--textBrown)" }}>
                 This legal and timely notice, declaration, and demand is prima
                 facie evidence of sufficient Notice of Grace. The terms and
                 conditions of this presentment agreement are a quasi-contract
@@ -316,7 +316,7 @@ const Footer = (props) => {
                 where an obligation to act or not to act exists, is ultra vires
                 and injurious by willful and gross negligence.
               </p>
-              <p style={{ fontSize: "1rem" }}>
+              <p style={{ fontSize: "1rem", color: "var(--textBrown)" }}>
                 The liability is upon you, and/or your superior, and upon,
                 including any and all local, state, regional, federal,
                 multijurisdictional, international, and/or corporate agencies,
@@ -367,7 +367,7 @@ const Footer = (props) => {
           </ul>
         </div>
         <div style={{ padding: ".9rem 0 .9rem 3rem", width: "13rem" }}>
-          <span style={{ fontSize: ".7rem" }}>Copyright © 2022 META 1</span>
+          <span style={{ fontSize: ".7rem" }}>Copyright © 2023 META 1</span>
         </div>
       </div>
     </>

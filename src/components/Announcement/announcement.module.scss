@@ -51,7 +51,8 @@
 // upcoming events
 .block {
     margin: 1rem;
-    background: #fff;
+    background: var(--blockBgColor) !important;
+    border: 1px solid var(--borderColor);
     border-radius: 4px;
     box-shadow: var(--boxShadowIndex);
 
@@ -68,6 +69,7 @@
 .headerTitle {
     font-size: 1rem;
     font-weight: 600;
+    color: var(--textBrown);
 }
 
 .addEvBtn {
@@ -78,7 +80,7 @@
     background: #FFC000;
     box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.05);
     border: none;
-    color: #300;
+    color: var(--textBrown);
     font-size: 16px;
     font-weight: 600;
 }
@@ -106,7 +108,7 @@
 }
 
 .title {
-    color: #495056;
+    color: var(--textBrown);
     font-family: Poppins;
     font-size: 14px;
     font-weight: 600;
@@ -114,7 +116,7 @@
 }
 
 .location {
-    color: #495056;
+    color: var(--textBrown);
     font-family: Poppins;
     font-size: 14px;
     font-weight: 500;
