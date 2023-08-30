@@ -33,6 +33,7 @@ const Navbar = (props) => {
     portfolio,
     name,
     onClickResetIsSignatureProcessing,
+    setActiveScreen
   } = props;
 
   const { innerWidth: width } = window;
@@ -66,6 +67,11 @@ const Navbar = (props) => {
       unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
     return unreadNotifications;
   }, [localStorage.getItem('unreadNotifications')]);
+
+  const showAllNotifications = () => {
+    setShowNotiDropDown(false);
+    setActiveScreen('notifications');
+  }
 
   return (
     <>
@@ -294,7 +300,7 @@ const Navbar = (props) => {
           </div>
         </div>
       </nav>
-      {showNotiDropDown && <div ref={ref}><Notification forceUpdate={forceUpdate}/></div>}
+      {showNotiDropDown && <div ref={ref}><Notification forceUpdate={forceUpdate} showAllNotifications={showAllNotifications}/></div>}
     </>
   );
 };

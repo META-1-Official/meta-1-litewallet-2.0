@@ -7,16 +7,16 @@ import DepositIcon from '../../images/deposit.png';
 import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
+import PriceChangeIcon from '../../images/price-change.png';
 
 import { NotificationItem } from './NotificationItem';
 import { notificationsSelector } from "../../store/account/selector";
 
 import styles from "./notification.module.scss";
 
-const Notification = (props) => {
+const Notifications = (props) => {
     const [data, setData] = useState();
     const notificationsState = useSelector(notificationsSelector);
-    const { forceUpdate, showAllNotifications } = props;
 
     const getItem = (category) => {
         switch (category) {
@@ -33,7 +33,7 @@ const Notification = (props) => {
             case 'Withdraw':
                 return WithdrawlIcon;
             case 'Price Change':
-                return WithdrawlIcon;
+                return PriceChangeIcon;
             default:
                 return AnnouncementIcon;
         }
@@ -48,7 +48,6 @@ const Notification = (props) => {
             unreadNotifications.splice(unreadNotifications.indexOf(id), 1);
         }
         localStorage.setItem('unreadNotifications', JSON.stringify(unreadNotifications));
-        forceUpdate();
     }
 
     useEffect(() => {
@@ -58,12 +57,11 @@ const Notification = (props) => {
         setData(notificationsState);
     }, [notificationsState]);
 
-
     return (
-        <div className={styles.notificationWrapper}>
+        <div className={styles.notifications}>
             {
                 data && data.map((ele, index) => {
-                    return index < 4 && <NotificationItem
+                    return <NotificationItem
                         icon={getItem(ele.category)}
                         title={ele.title}
                         category={ele.category}
@@ -73,9 +71,8 @@ const Notification = (props) => {
                     />
                 })
             }
-            <div className={styles.viewAll} onClick={showAllNotifications}>View All Notifications</div>
         </div>
     )
 }
 
-export default Notification;
+export default Notifications;
