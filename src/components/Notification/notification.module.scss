@@ -55,6 +55,14 @@
     }
 }
 
+.allNotifcationsCard {
+    display: flex;
+    padding: 30px;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 2px solid #EDEDED;
+}
+
 .info {
     width: 100%;
     margin-left: 15px;
@@ -111,4 +119,15 @@
     margin-top: 10px;
     text-align: center;
     cursor: pointer;
+}
+
+.allNotifications {
+    font-family: Poppins;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: capitalize;
+    margin-left: 30px;
+    padding-top: 20px;
 }

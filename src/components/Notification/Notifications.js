@@ -8,6 +8,7 @@ import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
 import PriceChangeIcon from '../../images/price-change.png';
+import NotificationTimeIcon from '../../images/notification-time.png';
 
 import { NotificationItem } from './NotificationItem';
 import { notificationsSelector } from "../../store/account/selector";
@@ -17,6 +18,8 @@ import styles from "./notification.module.scss";
 const Notifications = (props) => {
     const [data, setData] = useState();
     const notificationsState = useSelector(notificationsSelector);
+    const { showAllNotifications } = props;
+
 
     const getItem = (category) => {
         switch (category) {
@@ -57,18 +60,36 @@ const Notifications = (props) => {
         setData(notificationsState);
     }, [notificationsState]);
 
+
     return (
         <div className={styles.notifications}>
+            <p className={styles.allNotifications}> All Notifications </p>
             {
                 data && data.map((ele, index) => {
-                    return <NotificationItem
-                        icon={getItem(ele.category)}
-                        title={ele.title}
-                        category={ele.category}
-                        description={ele.content}
-                        time={ele.time}
-                        onClick={() => handleClick(ele.id)}
-                    />
+                     return (<div className={styles.allNotifcationsCard} onClick={() => handleClick(ele.id)}>
+                        <img
+                            style={{ width: "40px", height: "40px" }}
+                            src={getItem(ele.category)}
+                            alt='meta1'
+                        />
+                        <div className={styles.info}>
+                            
+                            <div className={styles.time}>
+                                <div>
+                                    <h4>{ele.category}</h4>
+                                    <p>{ele.content}</p>
+                                </div>
+                                <div>
+                                <span>{ele.time}</span>
+                                <img
+                                    style={{ width: "20px", height: "20px", marginLeft: '10px' }}
+                                    src={NotificationTimeIcon}
+                                    alt='meta1'
+                                />
+                                </div>
+                            </div>
+                        </div>
+                    </div>)       
                 })
             }
         </div>
