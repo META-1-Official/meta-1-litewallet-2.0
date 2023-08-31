@@ -236,6 +236,8 @@
   right: 0;
   height: fit-content;
   width: fit-content;
+  background: transparent;
+  border: 1px solid var(--borderColor);
 }
 
 #detail-announcement {
@@ -247,6 +249,8 @@
   height: fit-content;
   width: fit-content;
   border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--borderColor);
 }
 
 #modalExch {
@@ -289,7 +293,8 @@
 input {
   border: none !important;
   /* width: 100% !important; */
-  background: transparent !important;
+  background: var(--backgroundColor) !important;
+  border: 1px solid var(--inputBorderColor) !important;
 }
 
 @media (max-width: 600px) {
