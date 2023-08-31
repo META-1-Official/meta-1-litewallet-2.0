@@ -35,6 +35,7 @@ import { checkAccountSignatureReset, checkTransferableModelAction, checkTransfer
 import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder from "./components/OpenOrder";
+import Notifications from "./components/Notification/Notifications";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { useQuery } from "react-query";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
@@ -639,6 +640,7 @@ function Application(props) {
         activeScreen={activeScreen}
         themeSetter={themeChangeHandler}
         themeMode={selectedTheme}
+        setActiveScreen={setActiveScreen}
       />
       <div className={"forAdapt"}>
         <LeftPanel
@@ -1152,6 +1154,45 @@ function Application(props) {
                 </div>
               </>
             )}
+            {activeScreen === "notifications" && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <div>
+                    <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
+                      <div>
+                        <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                          <strong>Notifications</strong>
+                        </h5>
+                      </div>
+                      <div>
+                        <CustomizeColumns />
+                      </div>
+                    </div>
+                    <div className="justFlexAndDirect justFlexAndDirectMobile">
+                      <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
+                        <Notifications
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                      setIsSignatureProcessing(false);
+                    }}
+                  />
+                </div>
+              </>
+            )}
+
           </div>
         </div>
       </div>

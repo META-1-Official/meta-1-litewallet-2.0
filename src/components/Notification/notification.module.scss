@@ -24,6 +24,26 @@
     }
 }
 
+.notifications {
+    z-index: 10;
+    background: white;
+    top: 65px;
+    right: 50px;
+    padding-bottom: 20px;
+
+    // Paddle
+    &::after {
+        content: '\a';
+        border-style: solid;
+        border-width: 15px 15px 15px 0px;
+        border-color: transparent #E24C4D transparent transparent;
+        position: absolute;
+        transform: rotate(90deg);
+        right: 50%;
+        top: -25px;
+    }
+}
+
 .notificationCard {
     display: flex;
     padding: 20px;
@@ -33,6 +53,14 @@
     &:nth-child(even) {
         background-color: #F7F8FA;
     }
+}
+
+.allNotifcationsCard {
+    display: flex;
+    padding: 30px;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 2px solid #EDEDED;
 }
 
 .info {
@@ -91,4 +119,15 @@
     margin-top: 10px;
     text-align: center;
     cursor: pointer;
+}
+
+.allNotifications {
+    font-family: Poppins;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: capitalize;
+    margin-left: 30px;
+    padding-top: 20px;
 }

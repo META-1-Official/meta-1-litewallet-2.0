@@ -13,10 +13,10 @@ import { notificationsSelector } from "../../store/account/selector";
 
 import styles from "./notification.module.scss";
 
-const Notification = (props) => {
+const Notifications = (props) => {
     const [data, setData] = useState();
     const notificationsState = useSelector(notificationsSelector);
-    const { forceUpdate, showAllNotifications } = props;
+    const { showAllNotifications } = props;
 
     const getItem = (category) => {
         switch (category) {
@@ -48,7 +48,6 @@ const Notification = (props) => {
             unreadNotifications.splice(unreadNotifications.indexOf(id), 1);
         }
         localStorage.setItem('unreadNotifications', JSON.stringify(unreadNotifications));
-        forceUpdate();
     }
 
     useEffect(() => {
@@ -60,22 +59,31 @@ const Notification = (props) => {
 
 
     return (
-        <div className={styles.notificationWrapper}>
+        <div className={styles.notifications}>
+            <p className={styles.allNotifications}> All Notifications </p>
             {
                 data && data.map((ele, index) => {
-                    return index < 4 && <NotificationItem
-                        icon={getItem(ele.category)}
-                        title={ele.title}
-                        category={ele.category}
-                        description={ele.content}
-                        time={ele.time}
-                        onClick={() => handleClick(ele.id)}
-                    />
+                     return (<div className={styles.allNotifcationsCard} onClick={() => handleClick(ele.id)}>
+                        <img
+                            style={{ width: "40px", height: "40px" }}
+                            src={getItem(ele.category)}
+                            alt='meta1'
+                        />
+                        <div className={styles.info}>
+                            
+                            <div className={styles.time}>
+                                <div>
+                                <h4>{ele.category}</h4>
+                                <p>{ele.content}</p>
+                                </div>
+                                <span>{ele.time}</span>
+                            </div>
+                        </div>
+                    </div>)       
                 })
             }
-            <div className={styles.viewAll} onClick={showAllNotifications}>View All Notifications</div>
         </div>
     )
 }
 
-export default Notification;
+export default Notifications;
