@@ -8,6 +8,7 @@ import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
 import PriceChangeIcon from '../../images/price-change.png';
+import NotificationTimeIcon from '../../images/notification-time.png';
 
 import { NotificationItem } from './NotificationItem';
 import { notificationsSelector } from "../../store/account/selector";
@@ -82,7 +83,7 @@ const Notifications = (props) => {
                                 <span>{ele.time}</span>
                                 <img
                                     style={{ width: "20px", height: "20px", marginLeft: '10px' }}
-                                    src={getItem(ele.category)}
+                                    src={NotificationTimeIcon}
                                     alt='meta1'
                                 />
                                 </div>
