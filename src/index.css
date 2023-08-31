@@ -116,6 +116,7 @@ input:focus {
   --blockBgColor3: #fff;
   --blockBgColor4: #fff;
   --modalBgColor: #fff;
+  --tableOddColor: #F7F8FA;
   --calendarItemBgColor: #e6e6e6;
   --headerBgColor: #330000;
   --gold: #fdc000;
@@ -133,6 +134,7 @@ input:focus {
   --textGrey: rgba(80, 83, 97, 0.47);
   --textGold: #ffc000;
   --logoMain: #e9bd37;
+  --textColor2: #484848;
   --disabledListColor: #f1f1f1;
   --circleBackgroundColor: #e2e2e2;
   --iconColor: #240000;
@@ -157,6 +159,7 @@ input:focus {
   --blockBgColor2: rgba(21, 23, 27, 0.40);
   --blockBgColor3: #15171B;
   --blockBgColor4: gray;
+  --tableOddColor: #1C1F27;
   --calendarItemBgColor: rgba(21, 23, 27, 0.10);
   --modalBgColor: #0A0B0D;
   --headerBgColor: #0A0B0D;
@@ -171,6 +174,7 @@ input:focus {
   --textBrown: #fff;
   --textGrey: rgba(255, 255, 255, 0.60);
   --textGold: #ffc000;
+  --textColor2: #eaeaea;
   --logoMain: #e9bd37;
   --disabledListColor: #0A0B0D;
   --circleBackgroundColor: #fff;

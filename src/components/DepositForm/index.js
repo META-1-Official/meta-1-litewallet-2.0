@@ -2,6 +2,8 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { useState, useEffect } from "react";
 import { Message, Input, Segment, Button } from "semantic-ui-react";
 import QRCode from "react-qr-code";
+import Loader from "semantic-ui-react";
+import MetaLoader from '../../UI/loader/Loader';
 
 import "./style.css";
 
@@ -106,6 +108,7 @@ export default function DepositForm(props) {
               DEPOSIT <span style={{ color: "#FFC000" }}>{asset}</span>
             </span>
             <div className={"needAdaptToQR"}>
+              {isLoading && <MetaLoader size="small" />}
               {!isLoading && !canDeposit && <p> Cannot deposit </p>}
               {!isLoading && canDeposit && (
                 <QRCode value={address} size={200} />
@@ -132,7 +135,6 @@ export default function DepositForm(props) {
               </CopyToClipboard>
             )}
           </div>
-
           <Message
             className={"messageRed"}
             icon="attention"

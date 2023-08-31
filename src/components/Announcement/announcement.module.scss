@@ -169,7 +169,7 @@
                 margin-left: 20px;
 
                 .title {
-                    color: #471300;
+                    color: var(--textBrown);
                     font-family: Poppins;
                     font-size: 20px;
                     font-style: normal;
@@ -225,7 +225,7 @@
         margin-bottom: 30px;
         
         p {
-            color: #44484B;
+            color: var(--textBrown);
             font-family: Poppins;
             font-size: 16px;
             font-style: normal;
@@ -250,7 +250,7 @@
     }
 
     .locationText {
-        color: #000;
+        color: var(--textBrown);
         font-family: Poppins;
         font-size: 22px;
         font-weight: 600;
@@ -269,7 +269,7 @@
     }
 
     .infoText {
-        color: #44484B;
+        color: var(--textColor2);
         font-family: Poppins;
         font-size: 16px;
         font-style: normal;
@@ -296,7 +296,7 @@
         height: 48px;
         border-radius: 50px;
         background: #FC0;
-        color: #300;
+        color: var(--textBrown);
         text-align: center;
         font-family: Poppins;
         font-size: 16px;
