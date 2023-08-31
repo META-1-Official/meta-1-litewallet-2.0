@@ -73,10 +73,17 @@ const Notifications = (props) => {
                             
                             <div className={styles.time}>
                                 <div>
-                                <h4>{ele.category}</h4>
-                                <p>{ele.content}</p>
+                                    <h4>{ele.category}</h4>
+                                    <p>{ele.content}</p>
                                 </div>
+                                <div>
                                 <span>{ele.time}</span>
+                                <img
+                                    style={{ width: "20px", height: "20px", marginLeft: '10px' }}
+                                    src={getItem(ele.category)}
+                                    alt='meta1'
+                                />
+                                </div>
                             </div>
                         </div>
                     </div>)       
