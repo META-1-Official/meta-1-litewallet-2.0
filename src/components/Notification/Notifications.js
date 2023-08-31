@@ -8,6 +8,7 @@ import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
 import PriceChangeIcon from '../../images/price-change.png';
+
 import { NotificationItem } from './NotificationItem';
 import { notificationsSelector } from "../../store/account/selector";
 
@@ -17,6 +18,7 @@ const Notifications = (props) => {
     const [data, setData] = useState();
     const notificationsState = useSelector(notificationsSelector);
     const { showAllNotifications } = props;
+
 
     const getItem = (category) => {
         switch (category) {

@@ -36,7 +36,16 @@
   justify-content: space-between;
   height: 100%;
 }
-
+.modal-content {
+  background: var(--modalBgColor) !important;
+  border: 1px solid var(--borderColor) !important;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+.ui.mini.modal {
+  background: transparent !important;
+  border: 1px solid var(--borderColor);
+}
 span.css-1fzkqb4,
 span.css-llftvd {
   border: 0 !important;

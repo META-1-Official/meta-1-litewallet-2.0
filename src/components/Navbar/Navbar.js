@@ -57,6 +57,11 @@ const Navbar = (props) => {
     }
   };
 
+  const handleClickLogout = () => {
+    onClickResetIsSignatureProcessing();
+    dispatch(logoutRequest());
+  }
+
   const showNotifications = () => {
     setShowNotiDropDown(true);
   }
@@ -269,10 +274,7 @@ const Navbar = (props) => {
                           <p
                             className="dropdown-item"
                             style={{ textAlign: "center" }}
-                            onClick={() => {
-                              onClickResetIsSignatureProcessing();
-                              dispatch(logoutRequest());
-                            }}
+                            onClick={handleClickLogout}
                           >
                             Log Out
                           </p>
@@ -292,9 +294,10 @@ const Navbar = (props) => {
                 onClickOrderTableHandler={onClickOrderTableHandler}
                 onClickSettingsHandler={onClickSettingsHandler}
                 onClickHistoryHandler={onClickHistoryHandler}
+                onClickResetIsSignatureProcessing={onClickResetIsSignatureProcessing}
                 portfolio={portfolio}
                 name={name}
-                onClickOpenOrderHandler={onClickOpenOrderHandler}
+                onClick={handleClickLogout}
               />
             ) : null}
           </div>
