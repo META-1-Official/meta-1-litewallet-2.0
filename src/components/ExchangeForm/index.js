@@ -620,7 +620,7 @@ export default function ExchangeForm(props) {
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
       setIsInputsEnabled(true);
-      setMarketPrice(ceilFloat(_marketPrice, 5));
+      setMarketPrice(ceilFloat(_marketPrice, Math.min(baseAsset.precision, quoteAsset.precision)));
     }
 
     setIsLoadingPrice(false);
