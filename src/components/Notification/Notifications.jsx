@@ -63,33 +63,32 @@ const Notifications = (props) => {
 
     return (
         <div className={styles.notifications}>
-            <p className={styles.allNotifications}> All Notifications </p>
             {
                 data && data.map((ele, index) => {
-                     return (<div className={styles.allNotifcationsCard} onClick={() => handleClick(ele.id)}>
+                    return (<div className={styles.notificationCard} onClick={() => handleClick(ele.id)}>
                         <img
                             style={{ width: "40px", height: "40px" }}
                             src={getItem(ele.category)}
                             alt='meta1'
                         />
                         <div className={styles.info}>
-                            
+
                             <div className={styles.time}>
                                 <div>
                                     <h4>{ele.category}</h4>
                                     <p>{ele.content}</p>
                                 </div>
                                 <div>
-                                <span>{ele.time}</span>
-                                <img
-                                    style={{ width: "20px", height: "20px", marginLeft: '10px' }}
-                                    src={NotificationTimeIcon}
-                                    alt='meta1'
-                                />
+                                    <span>{ele.time}</span>
+                                    <img
+                                        style={{ width: "20px", height: "20px", marginLeft: '10px' }}
+                                        src={NotificationTimeIcon}
+                                        alt='meta1'
+                                    />
                                 </div>
                             </div>
                         </div>
-                    </div>)       
+                    </div>)
                 })
             }
         </div>

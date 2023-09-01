@@ -109,6 +109,7 @@ input:focus {
 
 :root {
   --backgroundColor: #FFFFFF;
+  --backgroundColor2: #e2e2e2;
   --infoBgColor: #ff8e8e66;
   --infoTextColor: #240000;
   --blockBgColor: #fff;
@@ -153,6 +154,7 @@ input:focus {
 
 .theme-dark {
   --backgroundColor: #0A0B0D;
+  --backgroundColor2: #0A0B0D;
   --infoBgColor: transparent;
   --infoTextColor: #FF2F2F;
   --blockBgColor: #0A0B0D;

@@ -26,11 +26,13 @@
 }
 
 .notifications {
-    z-index: 10;
-    background: white;
-    top: 65px;
-    right: 50px;
-    padding-bottom: 20px;
+    width: 100%;
+    max-height: calc(100vh - 105px);
+    background: var(--blockBgColor);
+    overflow-y: scroll;
+    margin: 30px;
+    border: 1px solid var(--borderColor);
+    border-radius: 5px;
 
     // Paddle
     &::after {
@@ -91,6 +93,7 @@
     line-height: normal;
     text-transform: capitalize;
     justify-content: space-between;
+    align-items: center;
 }
 
 .logo {
