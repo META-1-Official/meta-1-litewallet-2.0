@@ -13,7 +13,7 @@ const RightSideHelpMenuFirstType = (props) => {
 
   return (
     <>
-      <div className={styles.intro}>
+      {/* <div className={styles.intro}>
         <h5>Intro</h5>
         <hr />
         <div className={styles.helpBlock}>
@@ -71,14 +71,14 @@ const RightSideHelpMenuFirstType = (props) => {
                 <div style={{ marginTop: "1rem", marginRight: "1rem" }}>
                   <i
                     style={{ color: "#240000" }}
-                    className="fas fa-chevron-right event"
+                    className="fas fa-chevron-right"
                   />
                 </div>
               </div>
             )
           })}
         </div>
-      </div>
+      </div> */}
       <div className={styles.announcements}>
         <h5 style={{ fontWeight: "bold", fontSize: "1rem" }}>Announcements</h5>
         <hr />

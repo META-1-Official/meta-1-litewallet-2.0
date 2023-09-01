@@ -172,6 +172,14 @@ span.css-llftvd {
   border: 1px solid var(--borderColor) !important;
   color: var(--textBrown) !important;
 }
+.notificationMainFlex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
+}
 @media (max-width: 1366px) {
   .newBottomAdaptBlock {
     width: 96%;

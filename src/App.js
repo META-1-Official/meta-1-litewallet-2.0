@@ -1165,21 +1165,13 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
-                      <div>
-                        <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
-                          <strong>Notifications</strong>
-                        </h5>
-                      </div>
-                      <div>
-                        <CustomizeColumns />
-                      </div>
+                    <div className="notificationMainFlex" style={{ padding: "1.1rem 2rem" }}>
+                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                        <strong>All Notifications</strong>
+                      </h5>
                     </div>
-                    <div className="justFlexAndDirect justFlexAndDirectMobile">
-                      <div className={"paperWalletStylesTH marginBottomZero marginBottomCustom"}>
-                        <Notifications
-                        />
-                      </div>
+                    <div className={"justFlexAndDirect justFlexAndDirectMobile"} style={{backgroundColor: 'var(--backgroundColor2)'}} >
+                      <Notifications />
                     </div>
                   </div>
                   <Footer
@@ -1192,7 +1184,6 @@ function Application(props) {
                 </div>
               </>
             )}
-
           </div>
         </div>
       </div>

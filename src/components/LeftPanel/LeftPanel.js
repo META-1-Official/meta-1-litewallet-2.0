@@ -44,7 +44,8 @@ const LeftPanel = (props) => {
 
   useEffect(() => {
     document.querySelector('.portforlio-class').addEventListener('mouseenter', portfolioScrollPositionHoverEvent);
-  }, [])
+  }, []);
+  
   useEffect(() => {
     if (name && portfolio) {
       setTimeout(() => {

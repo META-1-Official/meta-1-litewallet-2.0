@@ -54,7 +54,7 @@ const RightSideHelpMenuSecondType = (props) => {
                 </div>
                 <div style={{ marginTop: "1rem", marginRight: "1rem" }}>
                   <i
-                    className="fas fa-chevron-right event"
+                    className="fas fa-chevron-right"
                   />
                 </div>
               </div>
