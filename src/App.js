@@ -498,13 +498,12 @@ function Application(props) {
       }
     }, 2000);
   }
-  
+
   const onRegistration = async (acc, pass, regEmail, web3Token, web3PubKey) => {
     setCredentials(acc, pass);
     onLogin(acc, true, pass, true, regEmail, web3Token, web3PubKey);
     setActiveScreen("wallet");
   };
-
 
   const _onSetupWebSocket = (accountName) => {
     try {
@@ -526,6 +525,7 @@ function Application(props) {
       const websocket = new webSocketFactory.connect(
         `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
+
       websocket.onmessage = (message) => {
         console.log('notification arrived', message);
         if (message && message.data) {
@@ -544,6 +544,7 @@ function Application(props) {
           localStorage.setItem('unreadNotifications', JSON.stringify(unreadNotifications));
         }
       };
+
       websocket.onclose = (event) => {
         if (event.code > 1001) {
           webSocketFactory.connectionTries =
@@ -1170,7 +1171,7 @@ function Application(props) {
                         <strong>All Notifications</strong>
                       </h5>
                     </div>
-                    <div className={"justFlexAndDirect justFlexAndDirectMobile"} style={{backgroundColor: 'var(--backgroundColor2)'}} >
+                    <div className={"justFlexAndDirect justFlexAndDirectMobile"} style={{ backgroundColor: 'var(--backgroundColor2)' }} >
                       <Notifications />
                     </div>
                   </div>
@@ -1347,9 +1348,9 @@ export function App({ domElement }) {
 
   return (
     <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
-    
-    
-    
+
+
+
       <Application
         {...{
           metaUrl,

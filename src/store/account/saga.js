@@ -123,7 +123,6 @@ function* passKeyHandler(data) {
 }
 function* getNotificationsHandler(data) {
     const response = yield call(getNotifications, data.payload.login);
-    console.log('getNotificationsHandler', response);
     if (!response.error) {
         yield put(getNotificationsSuccess({notifications: response}));
     } else {
