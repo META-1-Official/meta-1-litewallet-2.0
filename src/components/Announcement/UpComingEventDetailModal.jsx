@@ -18,6 +18,10 @@ export const UpComingEventDetailModal = (props) => {
         }        
     }, [data, date]);
 
+    const isPastEvent = () => {
+        return new Date() > date;
+    }
+
     return (
         <Modal
             open={props.isOpen}
@@ -57,6 +61,11 @@ export const UpComingEventDetailModal = (props) => {
                         <button
                             className={styles.actionBtn}
                             onClick={() => console.log('registernow')}
+                            disabled={isPastEvent()}
+                            style={{
+                                cursor: isPastEvent ? 'not-allowed' : 'pointer',
+                                opacity: isPastEvent ? 0.5 : 1.0
+                            }}
                         >
                             Register Now
                         </button>
