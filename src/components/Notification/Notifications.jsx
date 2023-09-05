@@ -9,8 +9,9 @@ import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
 import PriceChangeIcon from '../../images/price-change.png';
 import NotificationTimeIcon from '../../images/notification-time.png';
+import { Tooltip } from 'react-tooltip'
+import 'react-tooltip/dist/react-tooltip.css'
 
-import { NotificationItem } from './NotificationItem';
 import { notificationsSelector } from "../../store/account/selector";
 
 import styles from "./notification.module.scss";
@@ -18,8 +19,6 @@ import styles from "./notification.module.scss";
 const Notifications = (props) => {
     const [data, setData] = useState();
     const notificationsState = useSelector(notificationsSelector);
-    const { showAllNotifications } = props;
-
 
     const getItem = (category) => {
         switch (category) {
@@ -72,7 +71,6 @@ const Notifications = (props) => {
                             alt='meta1'
                         />
                         <div className={styles.info}>
-
                             <div className={styles.time}>
                                 <div>
                                     <h4>{ele.category}</h4>
@@ -84,6 +82,8 @@ const Notifications = (props) => {
                                         style={{ width: "20px", height: "20px", marginLeft: '10px' }}
                                         src={NotificationTimeIcon}
                                         alt='meta1'
+                                        data-tooltip-id="time-tooltip" 
+                                        data-tooltip-content={ele.createdAt}
                                     />
                                 </div>
                             </div>
@@ -91,6 +91,7 @@ const Notifications = (props) => {
                     </div>)
                 })
             }
+            <Tooltip id="time-tooltip" style={{ backgroundColor: "rgb(80, 80, 80)" }} />
         </div>
     )
 }
