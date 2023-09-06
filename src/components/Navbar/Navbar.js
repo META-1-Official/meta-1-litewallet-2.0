@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo, useReducer } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import styles from "./Navbar.module.scss";
 import "./styles.css";
 import logo from "../../images/Logo.png";
@@ -10,14 +10,12 @@ import NotiIcon from "../../images/notification.png";
 import Notification from "../Notification";
 import sunIcon from "../../images/sun.png";
 import moonIcon from "../../images/moon.png";
-import { useTheme } from "styled-components";
 
 
 const Navbar = (props) => {
   const dispatch = useDispatch();
   const [showNotiDropDown, setShowNotiDropDown] = useState(false);
-  const navbarProfileImageState = useSelector(navbarProfileImageSelector)
-  const [_, forceUpdate] = useReducer((x) => x + 1, 0);
+  const navbarProfileImageState = useSelector(navbarProfileImageSelector);
 
   const {
     onClickHomeHandler,
@@ -303,7 +301,7 @@ const Navbar = (props) => {
           </div>
         </div>
       </nav>
-      {showNotiDropDown && <div ref={ref}><Notification forceUpdate={forceUpdate} showAllNotifications={showAllNotifications}/></div>}
+      {showNotiDropDown && <div ref={ref}><Notification showAllNotifications={showAllNotifications}/></div>}
     </>
   );
 };

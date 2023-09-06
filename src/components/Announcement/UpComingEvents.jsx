@@ -3,6 +3,7 @@ import styles from "./announcement.module.scss";
 
 import Calendar from 'react-calendar';
 import './Calendar.scss';
+import NoEvent from '../../images/no-event.png';
 import { getEventsInMonth } from '../../API/API';
 
 import { UpComingEventDetailModal } from './UpComingEventDetailModal';
@@ -14,8 +15,8 @@ export const UpComingEvents = () => {
     const [modalOpened, setModalOpened] = useState(false);
 
     const fetchEventData = async (month) => {
-       const res = await getEventsInMonth (month);
-       return res;
+        const res = await getEventsInMonth(month);
+        return res;
     }
 
     useEffect(async () => {
@@ -23,8 +24,8 @@ export const UpComingEvents = () => {
         setData(res);
     }, [selectedMonth]);
 
-    const prevIcon = <i class="fas fa-chevron-left event" />;
-    const nextIcon = <i class="fas fa-chevron-right event" />;
+    const prevIcon = <i class="fas fa-chevron-left" />;
+    const nextIcon = <i class="fas fa-chevron-right" />;
 
     const eventExistDay = (day) => {
         if (!data) return false;
@@ -39,7 +40,7 @@ export const UpComingEvents = () => {
         let cardColor = `${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
         let events = (eventExistDay(dayOfDate) && data && date > activeStartDate) ? data[dayOfDate] : [];
         return <div className={styles.eventCard} style={{ borderTop: cardBorder, background: cardBackground }}>
-            <span className={styles.dateText} style={{ color: cardColor }}>{dayOfDate}</span>
+            <span className={styles.dateText} style={{ color: cardColor }}>{dayOfDate}</span>            
             {
                 events && events.map((ev, index) => {
                     if (index < 2) {
@@ -50,6 +51,13 @@ export const UpComingEvents = () => {
                         </div>
                     }
                 })
+            }
+            {
+                !eventExistDay(dayOfDate) &&
+                <div className={styles.noEventImgWrapper}>
+                    <img src={NoEvent} />
+                    <span>No Event</span>
+                </div>
             }
         </div>
     }
