@@ -88,7 +88,8 @@ const LeftPanel = (props) => {
       </li>
       <li
         style={{ marginTop: "1rem" }}
-        onClick={portfolio && isLoginState ? onClickHomeHandler : null}
+        // onClick={portfolio && isLoginState ? onClickHomeHandler : null}
+        onClick={onClickHomeHandler}
         className={styles.Li + " nav-item"}
       >
         <div className={styles.containerLi}>

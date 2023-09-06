@@ -92,6 +92,25 @@
     flex-direction: column;
 }
 
+.noEventImgWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+
+    img {
+        opacity: 0.1;
+        width: 10rem;
+        height: 10rem;
+    }
+
+    span {
+        margin-top: 10px;
+        margin-left: -30px;
+    }
+}
+
 .dateText {
     font-family: Dosis;
     font-size: 36px;

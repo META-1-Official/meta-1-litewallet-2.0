@@ -4,6 +4,10 @@
 }
 .AppContent {
   height: 100%;
+  overflow: auto;
+}
+.meta_one_widget {
+  overflow: hidden;
 }
 .meta_one_widget .router-link {
   color: black;
@@ -131,10 +135,10 @@ span.css-llftvd {
 .claim_wallet_btn {
   background-color: #fdc000 !important;
   color: #240000 !important;
-  margin: 0 auto;
   height:3rem !important;
   font-family: inherit !important;
   color: var(--textBrown) !important;
+  margin-top: 10px !important;
 }
 .claim_wallet_btn_div {
   width: 100%;
