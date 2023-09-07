@@ -17,7 +17,23 @@ import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, u
 import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector, profileImageSelector, uploadImageErrorSelector } from "../../store/account/selector";
 import { deleteAvatarRequest, passKeyRequestService, passKeyResetService, uploadAvatarRequest, uploadAvatarReset } from "../../store/account/actions";
 import { saveUserCurrencyRequest, saveUserCurrencyReset, setUserCurrencyAction } from "../../store/meta1/actions";
+import Switch from "@mui/material/Switch";
+
+// sub menu icons
+import userIcon from "../../images/user.png";
+import currencyIcon from "../../images/settings.png";
+import notificationIcon from "../../images/bell.png";
+
+// notification items
+import AnnouncementIcon from '../../images/announcements.png';
+import EventIcon from '../../images/events.png';
+import DepositIcon from '../../images/deposit.png';
+import WithdrawlIcon from '../../images/withdrawal.png';
+import OrderCreatedIcon from '../../images/order-created.png';
+import OrderCancelledIcon from '../../images/order-cancelled.png';
+
 let isSet = false;
+
 const Settings = (props) => {
   const {
     onClickExchangeAssetHandler,
@@ -39,15 +55,20 @@ const Settings = (props) => {
   const [openPasswordSection, setOpenPasswordSection] = useState(false);
   const [isRemoveBtn, setIsRemoveBtn] = useState(false);
   const [isPasswordTouch, setIsPasswordTouch] = useState(false);
+  const [activeTab, setActiveTab] = useState('edit_profile');
   const imageRef = useRef();
   const dispatch = useDispatch();
   const cryptoDataState = useSelector(cryptoDataSelector);
   const accountNameState = useSelector(accountsSelector);
-  const profileImageState =  useSelector(profileImageSelector);
+  const profileImageState = useSelector(profileImageSelector);
   const changeCurrencyState = useSelector(changeCurrencySelector);
   const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
-  
+
+  const [notiMode, setNotiMode] = useState({
+    events: true,
+  });
+
   useEffect(() => {
     if (!isValidPasswordKeyState && passwordKeyErrorState) {
       setPasswordError("Invalid Credentials");
@@ -63,23 +84,25 @@ const Settings = (props) => {
       }
       closePasswordSectionHandler(false);
     }
-  }, [isValidPasswordKeyState, passwordKeyErrorState])
-  const changeCurrencyHandler = async (e) => {
-    e.preventDefault();
-    dispatch(saveUserCurrencyRequest({login:accountNameState,currency}));
-  };
-  useEffect(()=>{
+  }, [isValidPasswordKeyState, passwordKeyErrorState]);
+
+  useEffect(() => {
     if (changeCurrencyState) {
       setModalOpened(true);
     }
-  },[changeCurrencyState]);
+  }, [changeCurrencyState]);
+
+  const changeCurrencyHandler = async (e) => {
+    e.preventDefault();
+    dispatch(saveUserCurrencyRequest({ login: accountNameState, currency }));
+  };
 
   const uploadImageValidation = async () => {
     if (!password) {
       setIsPasswordTouch(true);
       return;
     }
-    dispatch(passKeyRequestService({ login: accountNameState, password}));
+    dispatch(passKeyRequestService({ login: accountNameState, password }));
   }
 
   const removeImageValidation = async () => {
@@ -87,10 +110,10 @@ const Settings = (props) => {
       setIsPasswordTouch(true);
       return;
     }
-    dispatch(passKeyRequestService({ login: accountNameState, password}));
+    dispatch(passKeyRequestService({ login: accountNameState, password }));
   }
 
-  async function uploadFile(e) {
+  const uploadFile = async (e) => {
     e.preventDefault();
     if (e.target?.files[0]?.name) {
       let type = e.target?.files[0]?.name.split(".")[1];
@@ -124,12 +147,36 @@ const Settings = (props) => {
     setPasswordError('');
     if (isRemove) setIsRemoveBtn(true);
   }
+
   const closePasswordSectionHandler = () => {
     setOpenPasswordSection(false);
     setPasswordError('');
     setIsRemoveBtn(false);
     setIsPasswordTouch(false);
   }
+
+  const NotificationItem = (props) => {
+    const { icon, type, onToggle } = props;
+
+    return (
+      <div className={styles.notificationItem} >
+        <div className={styles.leftItem}>
+          <img src={icon} alt="edit profile" />
+          <span>{type}</span>
+        </div>
+        <div>
+          <Switch
+            className={styles.switch}
+            checked={notiMode['events']}
+            onClick={onToggle}
+            inputProps={{ "aria-label": "controlled" }}
+            color={"warning"}
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       <Modal
@@ -177,8 +224,64 @@ const Settings = (props) => {
           </h3>
         </div>
         <div className={styles.adaptNeed}>
-          <div className={styles.mainBlockAdapt} style={{ width: "70%" }}>
-            <div className={styles.mainBlock}>
+          <ul className={styles.subNaveBar}>
+            <li
+              onClick={() => setActiveTab('edit_profile')}
+              className={styles.Li + " nav-item"}
+            >
+              <div className={styles.containerLi}>
+                <div className={styles.leftLi}>
+                  <img src={userIcon} alt="edit profile" />
+                  <div className={styles.textSpan} >
+                    <span>Edit Profile</span>
+                  </div>
+                </div>
+                <div className={styles.rightLi}>
+                  <i
+                    className="fas fa-chevron-right"
+                  />
+                </div>
+              </div>
+            </li>
+            <li
+              onClick={() => setActiveTab('currency_preference')}
+              className={styles.Li + " nav-item"}
+            >
+              <div className={styles.containerLi}>
+                <div className={styles.leftLi}>
+                  <img src={currencyIcon} alt="currecny setting" />
+                  <div className={styles.textSpan} >
+                    <span>Currency Preference</span>
+                  </div>
+                </div>
+                <div className={styles.rightLi}>
+                  <i
+                    className="fas fa-chevron-right"
+                  />
+                </div>
+              </div>
+            </li>
+            <li
+              onClick={() => setActiveTab('notification_preference')}
+              className={styles.Li + " nav-item"}
+            >
+              <div className={styles.containerLi}>
+                <div className={styles.leftLi}>
+                  <img src={notificationIcon} alt="notification" />
+                  <div className={styles.textSpan} >
+                    <span>Notification Preference</span>
+                  </div>
+                </div>
+                <div className={styles.rightLi}>
+                  <i
+                    className="fas fa-chevron-right"
+                  />
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div className={styles.tabWrapper}>
+            {activeTab === 'edit_profile' && <div className={styles.mainBlock}>
               <div className={styles.mainHeader}>
                 <h3 style={{ fontWeight: "700" }}>Edit Profile</h3>
               </div>
@@ -198,7 +301,6 @@ const Settings = (props) => {
                     />
                   </div>
                   <div className={styles.extraInfoBlock}>
-
                     {<div style={openPasswordSection ? { display: 'none', fontFamily: "Poppins, sans-serif" } : { display: 'block', fontFamily: "Poppins, sans-serif" }}>
                       <h4 className={styles.uploadPhotoTitle}>Upload a Photo</h4>
                       <div className={styles.buttonAdapt}>
@@ -217,7 +319,7 @@ const Settings = (props) => {
                             onChange={(e) => {
                               uploadFile(e);
                             }}
-                            onClick={()=>{
+                            onClick={() => {
                               dispatch(passKeyResetService());
                             }}
                             ref={imageRef}
@@ -259,7 +361,8 @@ const Settings = (props) => {
                 </div>
               </div>
             </div>
-            <div className={styles.changeCurrencyBlock}>
+            }
+            {activeTab === 'currency_preference' && <div className={styles.changeCurrencyBlock}>
               <div className={styles.changeCurrencyHeader}>
                 <h3>Currency Preference</h3>
               </div>
@@ -310,12 +413,24 @@ const Settings = (props) => {
                   </button>
                 </div>
               </form>
+            </div>}
+            {activeTab === 'notification_preference' && <div className={styles.changeNotifcationBlock}>
+              <div className={styles.changeCurrencyHeader}>
+                <h3>Notification Preference</h3>
+              </div>
+              <hr style={{ color: "rgba(80, 83, 97, 0.47)" }} />
+              <div className={styles.notificationPrefContent}>
+                <h5>Select the kind of notifications you get about your activities.</h5>
+                <hr style={{ color: "rgba(80, 83, 97, 0.47)" }} />
+                <NotificationItem type='Events' icon={EventIcon} onToggle={() => console.log('event toggle')} />
+                <NotificationItem type='Announcements' icon={AnnouncementIcon} onToggle={() => console.log('announcement toggle')} />
+                <NotificationItem type='Deposits' icon={DepositIcon} onToggle={() => console.log('deposits toggle')} />
+                <NotificationItem type='Withdrawals' icon={WithdrawlIcon} onToggle={() => console.log('withdrawals toggle')} />
+                <NotificationItem type='Trade Executed' icon={OrderCreatedIcon} onToggle={() => console.log('trade executed toggle')} />
+                <NotificationItem type='Trade Canceled' icon={OrderCancelledIcon} onToggle={() => console.log('trade canceled toggle')} />
+              </div>
             </div>
-          </div>
-          <div className={styles.helpBlockAdapt} style={{ width: "30%" }}>
-            <RightSideHelpMenuThirdType
-              onClickExchangeAssetHandler={onClickExchangeAssetHandler}
-            />
+            }
           </div>
         </div>
       </div>
