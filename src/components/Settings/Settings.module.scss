@@ -1,13 +1,77 @@
-.mainBlock,
-.changeCurrencyBlock {
-  background: var(--blockBgColor);
-  box-shadow: var(--boxShadowIndex);
-  border: 1px solid var(--borderColor);
-  border-radius: 5px;
-  margin: 1rem !important;
+.adaptNeed {
+  display: flex;
+  flex-direction: row;
+  padding: 30px;
 }
-.mainBlock {
-  padding-bottom: 1rem !important;
+
+.subNaveBar {
+  list-style: none;
+  width: 20rem;
+  background: var(--blockBgColor);
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  padding-left: 20px;
+
+  .Li {
+    color: var(--textBrown);
+    cursor: pointer;
+    transition: background 0.5s;
+    display: flex;
+    align-items: center;
+    height: 3.5rem;
+    border-bottom: 1px solid rgba(80, 83, 97, 0.3);
+
+    &:hover {
+      .textSpan {
+        color: var(--textBrown) !important;
+      }
+      color: var(--textBrown) !important;
+      background: var(--gold);
+    }
+  }
+  .LiDisabled {
+    color: var(--textBrown);
+    font-size: 0.9rem;
+    height: 4rem;
+    transition: background 0.5s;
+    cursor: not-allowed;
+    background: var(--disabledListColor);
+  }
+}
+
+.tabWrapper {
+  background: var(--blockBgColor);
+  width: 100%;
+  border-left: 1px solid rgba(80, 83, 97, 0.3);
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.containerLi {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+
+  .leftLi {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 16px;
+      margin-right: 10px;
+    }
+  }
+
+  .rightLi {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+
+    i {
+      color: var(--textBrown) !important;
+    }
+  }
 }
 .settingsBlock{
   background-color: transparent;
@@ -17,6 +81,15 @@
 }
 .changeCurrencyBlock {
   padding: 1rem 0;
+}
+.changeNotifcationBlock {
+  padding: 1rem 0;
+  .notificationPrefContent {
+    h5 {
+      margin-left: 30px;
+      color: gray;
+    }
+  }
 }
 .mainHeader {
   padding: 1rem 0 0 2rem;
@@ -253,16 +326,6 @@
 .changeCurrencyForm {
   margin: 0 2rem;
 }
-.adaptNeed {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-  @media screen and (max-width: 1000px) {
-    flex-direction: column;
-  }
-}
-
 .mainBlockAdapt {
   @media screen and (max-width: 1000px) {
     width: 100% !important;
@@ -274,4 +337,35 @@
     flex-direction: row;
     width: 100% !important;
   }
+}
+
+.notificationItem {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  border-bottom: 1px solid rgba(80, 83, 97, 0.3);
+
+  .leftItem {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 30px;
+      height: 30px;
+      margin-right: 30px;
+    }
+
+    span {
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  .rightItem {
+    .switch {
+      margin: 0 0 0 2rem !important;
+    }
+  } 
 }
