@@ -63,8 +63,8 @@ export const UpComingEventDetailModal = (props) => {
                             onClick={() => console.log('registernow')}
                             disabled={isPastEvent()}
                             style={{
-                                cursor: isPastEvent ? 'not-allowed' : 'pointer',
-                                opacity: isPastEvent ? 0.5 : 1.0
+                                cursor: isPastEvent() ? 'not-allowed' : 'pointer',
+                                opacity: isPastEvent() ? 0.5 : 1.0
                             }}
                         >
                             Register Now

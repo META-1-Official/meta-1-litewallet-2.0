@@ -19,6 +19,7 @@ import { deleteAvatarRequest, passKeyRequestService, passKeyResetService, upload
 import { saveUserCurrencyRequest, saveUserCurrencyReset, setUserCurrencyAction } from "../../store/meta1/actions";
 import Switch from "@mui/material/Switch";
 
+import { getImage } from "../../lib/images";
 // sub menu icons
 import userIcon from "../../images/user.png";
 import currencyIcon from "../../images/settings.png";
@@ -164,7 +165,7 @@ const Settings = (props) => {
           <img src={icon} alt="edit profile" />
           <span>{type}</span>
         </div>
-        <div>
+        <div className={styles.rightItem}>
           <Switch
             className={styles.switch}
             checked={notiMode['events']}
@@ -172,6 +173,34 @@ const Settings = (props) => {
             inputProps={{ "aria-label": "controlled" }}
             color={"warning"}
           />
+        </div>
+      </div>
+    )
+  }
+
+  const CoinNotificationItem = (props) => {
+    const { asset, gteOrLte, value, onToggle } = props;
+
+    return (
+      <div className={styles.coinNotificationItem} >
+        <div className={styles.leftItem}>
+          <img src={getImage(asset.toUpperCase())} alt="edit profile" />
+          <div className={styles.coinSec}>
+            <span>{asset}</span>
+            <span>{`Price move ${gteOrLte} than ${value}`}</span>
+          </div>
+        </div>
+        <div className={styles.rightItem}>
+          <Switch
+            className={styles.switch}
+            checked={notiMode['events']}
+            onClick={onToggle}
+            inputProps={{ "aria-label": "controlled" }}
+            color={"warning"}
+          />
+          <button>
+            <i className="fa fa-times" />
+          </button>
         </div>
       </div>
     )
@@ -428,6 +457,12 @@ const Settings = (props) => {
                 <NotificationItem type='Withdrawals' icon={WithdrawlIcon} onToggle={() => console.log('withdrawals toggle')} />
                 <NotificationItem type='Trade Executed' icon={OrderCreatedIcon} onToggle={() => console.log('trade executed toggle')} />
                 <NotificationItem type='Trade Canceled' icon={OrderCancelledIcon} onToggle={() => console.log('trade canceled toggle')} />
+                <div className={styles.coinMovements}>Coin Movements</div>
+                <CoinNotificationItem asset="META1" gteOrLte='greater' value='10%' onToggle={() => console.log('price')} />
+                <CoinNotificationItem asset="USDT" gteOrLte='less' value='12.3%' onToggle={() => console.log('price')} />
+                <CoinNotificationItem asset="ETH" gteOrLte='greater' value='10.7%' onToggle={() => console.log('price')} />
+                <CoinNotificationItem asset="BTC" gteOrLte='less' value='20%' onToggle={() => console.log('price')} />
+                <CoinNotificationItem asset="DOGE" gteOrLte='greater' value='$10' onToggle={() => console.log('price')} />
               </div>
             </div>
             }
