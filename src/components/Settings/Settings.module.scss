@@ -369,3 +369,58 @@
     }
   } 
 }
+
+.coinMovements {
+  border-bottom: 1px solid rgba(80, 83, 97, 0.3);
+  padding: 20px 30px;
+  background-color: #ebebeb;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.coinNotificationItem {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  border-bottom: 1px solid rgba(80, 83, 97, 0.3);
+
+  .leftItem {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 30px;
+      height: 30px;
+      margin-right: 30px;
+    }
+
+    .coinSec {
+      display: flex;
+      flex-direction: column;
+
+      span{
+        font-size: 16px;
+        font-weight: 600;
+
+        &:last-child {
+          color: gray; 
+        }
+      }
+    }    
+  }
+
+  .rightItem {
+    .switch {
+      margin: 0 0 0 2rem !important;
+    }
+    button {
+      border-radius: 50% !important;
+      border: none !important;
+      width: 30px;
+      height: 30px;
+      color: red;
+    }
+  } 
+}

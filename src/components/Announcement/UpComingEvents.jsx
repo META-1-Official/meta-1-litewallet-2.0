@@ -52,13 +52,13 @@ export const UpComingEvents = () => {
                     }
                 })
             }
-            {
+            {/* {
                 !eventExistDay(dayOfDate) &&
                 <div className={styles.noEventImgWrapper}>
                     <img src={NoEvent} />
                     <span>No Event</span>
                 </div>
-            }
+            } */}
         </div>
     }
 
