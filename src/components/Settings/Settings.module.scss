@@ -360,6 +360,7 @@
     span {
       font-size: 16px;
       font-weight: 600;
+      color: var(--textBrown);
     }
   }
 
@@ -423,4 +424,59 @@
       color: red;
     }
   } 
+}
+p.coin_p{
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 15px 0;
+}
+
+.form_custom{
+  padding: 30px 15px;
+  background: #f8f9fb;
+  background-color: var(----blockBgColor);
+}
+
+p.coin_p{
+}
+
+label.label_same{
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 5px 0;
+  display: block;
+  color: var(--textBrown);
+}
+
+.common_margin{
+  margin: 0 0 20px 0;
+}
+
+select.select_same {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 50px;
+  padding: 0 15px;
+  color: gray;
+  color: var(--textBrown);
+    
+}
+.select_same {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 50px;
+  padding: 0 15px;
+  color: gray;
+  color: var(--textBrown);
+  background-color: var(----blockBgColor);
+  
+}
+.btn_save_movment{
+  width: 150px;
+  background-color: #fdc000 !important;
+  margin-top: 10px !important;
+  margin-left: 20px !important;
+  height: 50px !important;
 }

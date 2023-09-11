@@ -464,6 +464,61 @@ const Settings = (props) => {
                 <CoinNotificationItem asset="BTC" gteOrLte='less' value='20%' onToggle={() => console.log('price')} />
                 <CoinNotificationItem asset="DOGE" gteOrLte='greater' value='$10' onToggle={() => console.log('price')} />
               </div>
+                <div className={styles.form_custom}>
+                 <div className="row">
+                  <div className="col-lg-12">
+                    <div className="coin-122">
+                      <p className={styles.coin_p}>Coin Movements</p>
+                    </div>
+                  </div>
+                  <div className="col-lg-12">
+                    <div className={styles.common_margin}>
+                      <label className={styles.label_same}>Coins:</label>
+                      <select className={styles.select_same}>
+                        <option>Meta 1</option>
+                        <option>Meta 2</option>
+                        <option>Meta 3</option>
+                        <option>Meta 4</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-lg-12">
+                    <div className={styles.common_margin}>
+                      <label className={styles.label_same}>Movement:</label>
+                      <select className={styles.select_same}>
+                        <option>Greator Than</option>
+                        <option>Meta 2</option>
+                        <option>Meta 3</option>
+                        <option>Meta 4</option>
+                      </select>
+                    </div>
+                  </div>
+                 </div>
+                 <div className="row">
+                  <div className="col-lg-6">
+                    <div className={styles.common_margin}>
+                      <select className={styles.select_same}>
+                          <option>Price By</option>
+                          <option>Meta 2</option>
+                          <option>Meta 3</option>
+                          <option>Meta 4</option>
+                      </select>
+                    </div>
+                    
+                  </div>
+                  <div className="col-lg-6">
+                    <div className={styles.common_margin}>
+                      
+                      <input className={styles.select_same}></input>
+                    </div>
+                    
+                  </div>
+                  
+                 </div>
+                
+                
+                </div>
+                <Button className={styles.btn_save_movment}>Save</Button>
             </div>
             }
           </div>
