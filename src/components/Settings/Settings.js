@@ -12,6 +12,7 @@ import {
   Popup,
 } from "semantic-ui-react";
 import { saveUserCurrency } from "../../API/API";
+import CoinSelect from "./CoinSelect";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, userCurrencySelector } from "../../store/meta1/selector";
 import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector, profileImageSelector, uploadImageErrorSelector } from "../../store/account/selector";
@@ -314,7 +315,7 @@ const Settings = (props) => {
               <div className={styles.mainHeader}>
                 <h3 style={{ fontWeight: "700" }}>Edit Profile</h3>
               </div>
-              <hr style={{ color: "rgba(80, 83, 97, 0.47)" }} />
+              <hr />
               <div className={styles.changeDataBlock}>
                 <div className={styles.imgChangeBlock}>
                   <div className={styles.userNewImgBlock}>
@@ -395,7 +396,7 @@ const Settings = (props) => {
               <div className={styles.changeCurrencyHeader}>
                 <h3>Currency Preference</h3>
               </div>
-              <hr style={{ color: "rgba(80, 83, 97, 0.47)" }} />
+              <hr />
               <form
                 onSubmit={changeCurrencyHandler}
                 className={styles.changeCurrencyForm}
@@ -447,10 +448,10 @@ const Settings = (props) => {
               <div className={styles.changeCurrencyHeader}>
                 <h3>Notification Preference</h3>
               </div>
-              <hr style={{ color: "rgba(80, 83, 97, 0.47)" }} />
+              <hr />
               <div className={styles.notificationPrefContent}>
                 <h5>Select the kind of notifications you get about your activities.</h5>
-                <hr style={{ color: "rgba(80, 83, 97, 0.47)" }} />
+                <hr />
                 <NotificationItem type='Events' icon={EventIcon} onToggle={() => console.log('event toggle')} />
                 <NotificationItem type='Announcements' icon={AnnouncementIcon} onToggle={() => console.log('announcement toggle')} />
                 <NotificationItem type='Deposits' icon={DepositIcon} onToggle={() => console.log('deposits toggle')} />
@@ -464,6 +465,50 @@ const Settings = (props) => {
                 <CoinNotificationItem asset="BTC" gteOrLte='less' value='20%' onToggle={() => console.log('price')} />
                 <CoinNotificationItem asset="DOGE" gteOrLte='greater' value='$10' onToggle={() => console.log('price')} />
               </div>
+              <div className={styles.form_custom}>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <div className="coin-122">
+                      <p className={styles.coin_p}>Coin Movements</p>
+                    </div>
+                  </div>
+                  <div className="col-lg-12">
+                    <div className={styles.common_margin}>
+                      <label className={styles.label_same}>Coins:</label>
+                      <CoinSelect
+                        onChange={(val) => console.log('change')}
+                        options={process.env.REACT_APP_CRYPTOS_ARRAY.split(',')}
+                        selectedValue='META1'
+                      />
+                    </div>
+                  </div>
+                  <div className="col-lg-12">
+                    <div className={styles.common_margin}>
+                      <label className={styles.label_same}>Movement:</label>
+                      <select className={styles.select_same}>
+                        <option>Greator Than</option>
+                        <option>Less Than</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <div className={styles.common_margin}>
+                      <select className={styles.select_same}>
+                        <option>By Price</option>
+                        <option>By Percentage</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-lg-6">
+                    <div className={styles.common_margin}>
+                      <input placeholder="$10.00" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <Button className={styles.btn_save_movment}>Save</Button>
             </div>
             }
           </div>
