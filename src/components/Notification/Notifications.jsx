@@ -64,6 +64,7 @@ const Notifications = (props) => {
         <div className={styles.notifications}>
             {
                 data && data.map((ele, index) => {
+                    var d = new Date(ele.createdAt);
                     return (<div className={styles.notificationCard} onClick={() => handleClick(ele.id)}>
                         <img
                             style={{ width: "40px", height: "40px" }}
@@ -83,7 +84,7 @@ const Notifications = (props) => {
                                         src={NotificationTimeIcon}
                                         alt='meta1'
                                         data-tooltip-id="time-tooltip" 
-                                        data-tooltip-content={ele.createdAt}
+                                        data-tooltip-content={d.toLocaleString()}
                                     />
                                 </div>
                             </div>

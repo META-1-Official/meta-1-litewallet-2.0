@@ -116,6 +116,7 @@ input:focus {
   --blockBgColor2: #fff;
   --blockBgColor3: #fff;
   --blockBgColor4: #fff;
+  --blockBgColor5: #ebebeb;
   --modalBgColor: #fff;
   --tableOddColor: #F7F8FA;
   --calendarItemBgColor: #e6e6e6;
@@ -161,6 +162,7 @@ input:focus {
   --blockBgColor2: rgba(21, 23, 27, 0.40);
   --blockBgColor3: #15171B;
   --blockBgColor4: gray;
+  --blockBgColor5: #15171B;
   --tableOddColor: #1C1F27;
   --calendarItemBgColor: rgba(21, 23, 27, 0.10);
   --modalBgColor: #0A0B0D;
