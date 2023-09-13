@@ -1091,7 +1091,8 @@ function Application(props) {
                       </div>
                       <div className={"bottomAdaptBlock margin-class newBottomAdaptBlock"}>
                         <RightSideHelpMenuSecondType
-                          onClickExchangeUSDTHandler={(e, asset) => {
+                          onClickExchangeAssetHandler={(e, asset) => {
+                            console.log('@@@@@order')
                             e.preventDefault();
                             setTradeAsset(asset);
                             setActiveScreen("exchange");
