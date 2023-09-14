@@ -1,30 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./Settings.module.scss";
-import axios from "axios";
-import RightSideHelpMenuThirdType from "../RightSideHelpMenuThirdType/RightSideHelpMenuThirdType";
 import {
-  Image,
   Modal,
   Button,
   Grid,
   Icon,
-  Label,
-  Popup,
 } from "semantic-ui-react";
-import { saveUserCurrency } from "../../API/API";
 import CoinSelect from "./CoinSelect";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, userCurrencySelector } from "../../store/meta1/selector";
 import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector, profileImageSelector, uploadImageErrorSelector } from "../../store/account/selector";
 import { deleteAvatarRequest, passKeyRequestService, passKeyResetService, uploadAvatarRequest, uploadAvatarReset } from "../../store/account/actions";
-import { saveUserCurrencyRequest, saveUserCurrencyReset, setUserCurrencyAction } from "../../store/meta1/actions";
+import { saveUserCurrencyRequest, saveUserCurrencyReset } from "../../store/meta1/actions";
 import Switch from "@mui/material/Switch";
-
 import { getImage } from "../../lib/images";
-// sub menu icons
-import userIcon from "../../images/user.png";
-import currencyIcon from "../../images/settings.png";
-import notificationIcon from "../../images/bell.png";
 
 // notification items
 import AnnouncementIcon from '../../images/announcements.png';
@@ -34,20 +23,7 @@ import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
 
-let isSet = false;
-
 const Settings = (props) => {
-  const {
-    onClickExchangeAssetHandler,
-    getAvatarFromBack,
-    userCurrency,
-    setUserCurrency,
-    setTokenModalMsg,
-    setTokenModalOpen,
-    assets
-  } = props;
-
-  const checkPasswordState = useSelector(checkPasswordObjSelector);
   const userCurrencyState = useSelector(userCurrencySelector);
   const uploadImageErrorState = useSelector(uploadImageErrorSelector);
   const [currency, setCurrency] = useState(userCurrencyState);
@@ -261,7 +237,7 @@ const Settings = (props) => {
             >
               <div className={styles.containerLi}>
                 <div className={styles.leftLi}>
-                  <img src={userIcon} alt="edit profile" />
+                  <i className="fas fa-user" />
                   <div className={styles.textSpan} >
                     <span>Edit Profile</span>
                   </div>
@@ -279,7 +255,7 @@ const Settings = (props) => {
             >
               <div className={styles.containerLi}>
                 <div className={styles.leftLi}>
-                  <img src={currencyIcon} alt="currecny setting" />
+                  <i className="fa fa-cog" />
                   <div className={styles.textSpan} >
                     <span>Currency Preference</span>
                   </div>
@@ -297,7 +273,7 @@ const Settings = (props) => {
             >
               <div className={styles.containerLi}>
                 <div className={styles.leftLi}>
-                  <img src={notificationIcon} alt="notification" />
+                  <i className="fa fa-bell" />
                   <div className={styles.textSpan} >
                     <span>Notification Preference</span>
                   </div>
