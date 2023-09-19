@@ -35,6 +35,14 @@ export default function FaceKiForm(props) {
     canvas: 'Canvas is not supported.',
   }
 
+  const fasClient = useRef();
+  useEffect(() => {
+    console.log('Loading fas');
+    if (fasClient.current) {
+      fasClient.current.load();
+    }
+  }, []);
+
   useEffect(() => {
     if (browserstack_test_accounts.includes(props.accountName))
       setFaceKISuccess(true)
@@ -179,7 +187,7 @@ export default function FaceKiForm(props) {
               <h6 style={{ fontSize: '24px' }}>Authenticate Your Face</h6>
               <p className='header_ptag'>To log into your wallet, please complete biometric authentication.</p>
             </div>
-            <div className='child-div' style={{ width: camWidth, height: camHeight }}>
+            <div className='child-div' style={{ width: camWidth, height: '100%' }}>
               <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head color-black">Position your face in the oval</div>
                 <button
@@ -205,6 +213,7 @@ export default function FaceKiForm(props) {
               {/*/>*/}
 
               <FASClient
+                ref={fasClient}
                 username={'user-x01-1'}
                 task={'verify'}
                 activeDeviceId={activeDeviceId}
@@ -225,17 +234,17 @@ export default function FaceKiForm(props) {
               {/*</div>*/}
             </div>
           </div>
-          <select
-            onChange={(event) => {
-              setActiveDeviceId(event.target.value);
-            }}
-          >
-            {devices.map((d) => (
-              <option key={d.deviceId} value={d.deviceId}>
-                {d.label}
-              </option>
-            ))}
-          </select>
+          {/*<select*/}
+          {/*  onChange={(event) => {*/}
+          {/*    setActiveDeviceId(event.target.value);*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  {devices.map((d) => (*/}
+          {/*    <option key={d.deviceId} value={d.deviceId}>*/}
+          {/*      {d.label}*/}
+          {/*    </option>*/}
+          {/*  ))}*/}
+          {/*</select>*/}
         </div>
       </div>
     </div>

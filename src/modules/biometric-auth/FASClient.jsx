@@ -11,6 +11,7 @@ import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   message,
+  Select
 } from 'antd';
 import Webcam from 'react-webcam';
 import JWTAuth from './services/JWTAuth';
@@ -98,6 +99,7 @@ const FASClient = forwardRef((props, ref) => {
       );
       setDevices(videoDevices);
 
+      console.log('VIDEO DEVICES: ', videoDevices);
       if (videoDevices.length > 0) {
         setSelectedDevice(videoDevices[0].deviceId);
       }
@@ -366,7 +368,7 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   const stop = () => {
-    console.log('@1');
+    console.log('@1 STOP');
     setLoading(false);
     remoteVideoDisplayRef.current.srcObject = null;
     setCanvasToDefault(processingCanvasRef);
@@ -689,26 +691,22 @@ const FASClient = forwardRef((props, ref) => {
       <div className="FASClient" style={{ maxWidth: '100vw', margin: '0 auto' }}>
         <div style={{ width: '100%' }}>
           <div>
-            {/*<Row gutter={[16, 32]} style={{ marginTop: 15 }}>*/}
-            {/*  <Col span={6}>*/}
-            {/*    <Form.Item>*/}
-            {/*      {devices.length > 0 ? (*/}
-            {/*        <Select*/}
-            {/*          style={{ width: 200 }}*/}
-            {/*          placeholder="Please select a camera"*/}
-            {/*          value={selectedDevice}*/}
-            {/*          onChange={(value) => setSelectedDevice(value)}*/}
-            {/*          options={devices.map((device, index) => {*/}
-            {/*            return {*/}
-            {/*              value: device.deviceId,*/}
-            {/*              label: device.label || `Camera #${index + 1}`,*/}
-            {/*            };*/}
-            {/*          })}*/}
-            {/*        />*/}
-            {/*      ) : null}*/}
-            {/*    </Form.Item>*/}
-            {/*  </Col>*/}
-            {/*</Row>*/}
+            <div style={{ marginTop: 15, position: 'relative', zIndex: 1 }}>
+              {devices.length > 0 ? (
+                <Select
+                  style={{ width: 200 }}
+                  placeholder="Please select a camera"
+                  value={selectedDevice}
+                  onChange={(value) => setSelectedDevice(value)}
+                  options={devices.map((device, index) => {
+                    return {
+                      value: device.deviceId,
+                      label: device.label || `Camera #${index + 1}`,
+                    };
+                  })}
+                />
+              ) : null}
+            </div>
 
             <div
               style={{
