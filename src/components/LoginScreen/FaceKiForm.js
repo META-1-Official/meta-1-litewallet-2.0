@@ -3,6 +3,7 @@ import { verify, getUserKycProfile, livenessCheck } from "../../API/API";
 import OvalImage from '../../images/oval/oval.png';
 import { Camera } from 'react-camera-pro';
 import useWidth from '../../lib/useWidth';
+import FASClient from '../../modules/biometric-auth/FASClient';
 
 import "./login.css";
 
@@ -189,19 +190,21 @@ export default function FaceKiForm(props) {
                     });
                   }}>X</button>
               </div>
-              <img src={OvalImage} alt='oval-image' className='oval-image' />
-              <Camera
-                ref={webcamRef}
-                aspectRatio="cover"
-                numberOfCamerasCallback={(i) => setNumberOfCameras(i)}
-                videoSourceDeviceId={activeDeviceId}
-                errorMessages={{
-                  noCameraAccessible: errorCase.noCameraAccessible,
-                  permissionDenied: errorCase.permissionDenied,
-                  switchCamera: errorCase.switchCamera,
-                  canvas: errorCase.canvas,
-                }}
-              />
+              {/*<img src={OvalImage} alt='oval-image' className='oval-image' />*/}
+              {/*<Camera*/}
+              {/*  ref={webcamRef}*/}
+              {/*  aspectRatio="cover"*/}
+              {/*  numberOfCamerasCallback={(i) => setNumberOfCameras(i)}*/}
+              {/*  videoSourceDeviceId={activeDeviceId}*/}
+              {/*  errorMessages={{*/}
+              {/*    noCameraAccessible: errorCase.noCameraAccessible,*/}
+              {/*    permissionDenied: errorCase.permissionDenied,*/}
+              {/*    switchCamera: errorCase.switchCamera,*/}
+              {/*    canvas: errorCase.canvas,*/}
+              {/*  }}*/}
+              {/*/>*/}
+              <FASClient />
+
               <div className='btn-div'>
                 <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>
                 <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
