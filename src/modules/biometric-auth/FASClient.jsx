@@ -21,8 +21,9 @@ import Loader from './LoaderComponent';
 import parseTurnServer from './helpers/parseTurnServer';
 import calculateCompletionPercentage from './shared/calculateTasksProgress';
 import loadingImage from './helpers/loadingImage';
+import getDevices from "./helpers/getDevices";
 import { _black, setCanvasToDefault } from "./helpers/canvas";
-import { FRAME_RATE, DEFAULT_COLOR, CAMERA_CONTRAINTS } from "./constants";
+import { DEFAULT_COLOR, CAMERA_CONTRAINTS, camOptions } from "./constants";
 
 
 const WSSignalingServer = process.env.REACT_APP_SIGNALIG_SERVER;
@@ -50,17 +51,10 @@ const FASClient = forwardRef((props, ref) => {
   const [makingOffer, setMakingOffer] = useState(false);
   const [connected, setConnected] = useState(false);
   const [logs, setLogs] = useState([]);
-  const [shoudlCloseCamera, setShoudlCloseCamera] = useState(false);
+  const [shouldCloseCamera, setShouldCloseCamera] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [currentStream, setCurrentStream] = useState('empty');
-
-  const camOptions = {
-    // aspectRatio: 9 / 16,
-    width: 1920,
-    height: 1080,
-    frameRate: FRAME_RATE,
-  };
 
   const ws = useRef(null);
   const pc = useRef(null);
@@ -79,35 +73,6 @@ const FASClient = forwardRef((props, ref) => {
   ); // App Token
 
   const jwtAuth = new JWTAuth();
-
-  const getDevices = async () => {
-    try {
-      // Request camera permissions by getting a stream and then immediately closing it
-      const dummyStream = await navigator.mediaDevices.getUserMedia({
-        video: { ...camOptions },
-      });
-
-      // localTrackRef.current
-
-      dummyStream
-        .getTracks()
-        .forEach((track) => (shoudlCloseCamera ? track.stop() : null));
-
-      const deviceInfos = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = deviceInfos.filter(
-        (device) => device.kind === 'videoinput',
-      );
-      setDevices(videoDevices);
-
-      console.log('VIDEO DEVICES: ', videoDevices);
-      if (videoDevices.length > 0) {
-        setSelectedDevice(videoDevices[0].deviceId);
-      }
-    } catch (error) {
-      message.error(`Error accessing camera devices: ${error.toString()}`);
-      console.error('Error accessing camera devices:', error);
-    }
-  };
 
   const checkAndAddDir = (description) => {
     // if (!description.sdp.includes('a=sendrecv')) {
@@ -129,7 +94,7 @@ const FASClient = forwardRef((props, ref) => {
       });
 
       emptyStreamRef.current = black(preloadCanvasRef.current);
-      // if (shoudlCloseCamera) {
+      // if (shouldCloseCamera) {
       addOrReplaceTrack(
         emptyStreamRef.current.getTracks()[0],
         emptyStreamRef.current,
@@ -383,7 +348,7 @@ const FASClient = forwardRef((props, ref) => {
         currentTrack = currentSender.track;
       }
 
-      if (shoudlCloseCamera) {
+      if (shouldCloseCamera) {
         addOrReplaceTrack(
           emptyStreamRef.current.getTracks()[0],
           emptyStreamRef.current,
@@ -392,7 +357,7 @@ const FASClient = forwardRef((props, ref) => {
 
       if (currentTrack) {
         // Close current webcam video track
-        if (shoudlCloseCamera) {
+        if (shouldCloseCamera) {
           currentTrack.stop();
         }
       }
@@ -598,11 +563,11 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   const handleKeepWebCamOpenSwitchChange = (value, event) => {
-    setShoudlCloseCamera(value);
+    setShouldCloseCamera(value);
   };
 
   const __load = () => {
-    getDevices().then((r) => {
+    getDevices(setDevices, setSelectedDevice, shouldCloseCamera).then((r) => {
       console.log(devices);
     });
     connect();
@@ -669,7 +634,7 @@ const FASClient = forwardRef((props, ref) => {
   }, [connected]);
 
   useEffect(() => {
-    if (selectedDevice && !shoudlCloseCamera) {
+    if (selectedDevice && !shouldCloseCamera) {
       setCurrentStream('altcam');
       addWebCamToPeer();
     }

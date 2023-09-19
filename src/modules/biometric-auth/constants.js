@@ -12,3 +12,10 @@ export const CAMERA_CONTRAINTS = {
         height: 1080,
     },
 };
+
+export const camOptions = {
+    // aspectRatio: 9 / 16,
+    width: 1920,
+    height: 1080,
+    frameRate: FRAME_RATE,
+};
