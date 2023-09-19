@@ -376,7 +376,7 @@ const FASClient = forwardRef((props, ref) => {
     console.log('@1');
     setLoading(false);
     remoteVideoDisplayRef.current.srcObject = null;
-    setCanvasToDefault();
+    setCanvasToDefault(processingCanvasRef);
 
     if (pc.current && emptyStreamRef.current) {
       sendMessageToServer({ type: 'msg', message: { fas: 'stop' } });
@@ -637,7 +637,7 @@ const FASClient = forwardRef((props, ref) => {
       console.log(devices);
     });
     connect();
-    setCanvasToDefault();
+    setCanvasToDefault(processingCanvasRef);
 
     setTimeout(() => {
       forceCleanUp();
