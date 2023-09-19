@@ -42,13 +42,6 @@ const FASClient = forwardRef((props, ref) => {
     setWindowWidth(window.innerWidth);
   };
 
-  useEffect(() => {
-    window.addEventListener('resize', updateWindowWidth);
-    return () => {
-      window.removeEventListener('resize', updateWindowWidth);
-    };
-  }, []);
-
   const polite = true; // Set whether this peer is the polite peer
 
   const [devices, setDevices] = useState([]);
@@ -480,32 +473,6 @@ const FASClient = forwardRef((props, ref) => {
     }
   };
 
-  useEffect(() => {
-    if (connected) {
-      __start();
-    } else {
-      __stop();
-    }
-  }, [connected]);
-
-  useEffect(() => {
-    if (selectedDevice && !shoudlCloseCamera) {
-      setCurrentStream('altcam');
-      addWebCamToPeer();
-    }
-  }, [selectedDevice]);
-
-  useEffect(() => {
-    const data = logs[logs.length - 1]?.msg;
-    if (data && data?.type === 'data') {
-      const tasks = data?.message;
-      const progress = calculateCompletionPercentage(tasks);
-      console.log('SCORE: ', progress);
-      console.log('!!!!!!!!!!!!!!', tasks);
-      setProgress(progress);
-    }
-  }, [logs]);
-
   function forceCleanUp() {
     // disconnect();
     message.info('Disconnected forcefully, Please reload!!!', 9999999);
@@ -683,6 +650,39 @@ const FASClient = forwardRef((props, ref) => {
     start: __start,
     stop: __stop,
   }));
+
+  useEffect(() => {
+    window.addEventListener('resize', updateWindowWidth);
+    return () => {
+      window.removeEventListener('resize', updateWindowWidth);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (connected) {
+      __start();
+    } else {
+      __stop();
+    }
+  }, [connected]);
+
+  useEffect(() => {
+    if (selectedDevice && !shoudlCloseCamera) {
+      setCurrentStream('altcam');
+      addWebCamToPeer();
+    }
+  }, [selectedDevice]);
+
+  useEffect(() => {
+    const data = logs[logs.length - 1]?.msg;
+    if (data && data?.type === 'data') {
+      const tasks = data?.message;
+      const progress = calculateCompletionPercentage(tasks);
+      console.log('SCORE: ', progress);
+      console.log('!!!!!!!!!!!!!!', tasks);
+      setProgress(progress);
+    }
+  }, [logs]);
 
   return (
     <div>
