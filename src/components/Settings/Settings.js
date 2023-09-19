@@ -42,10 +42,48 @@ const Settings = (props) => {
   const changeCurrencyState = useSelector(changeCurrencySelector);
   const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
+  const iconList = {
+    events: EventIcon,
+    announcements: AnnouncementIcon,
+    deposits: DepositIcon,
+    withdrawals: WithdrawlIcon,
+    tradeExcuted: OrderCreatedIcon,
+    tradeCanceled: OrderCancelledIcon
+  }
 
-  const [notiMode, setNotiMode] = useState({
-    events: true,
-  });
+  const [notiMode, setNotiMode] = useState(null);
+
+  useEffect(() => {
+    var conf = JSON.parse(localStorage.getItem("noti_conf"));
+    if (!conf) {
+      conf = {
+        specNotification: [
+          { events: true },
+          { announcements: true },
+          { deposits: true },
+          { tradeExcuted: true },
+          { tradeCanceled: true },
+        ],
+        coinMovements: [
+          {
+            meta1: {
+              toggle: true,
+              tendency: 'down',
+              comparator: ['by percentage', 1]
+            }
+          },
+          {
+            usdt: {
+              toggle: true,
+              tendency: 'up',
+              comparator: ['by price', 10]
+            }
+          }
+        ]
+      }
+    }
+    setNotiMode(conf);
+  }, []);
 
   useEffect(() => {
     if (!isValidPasswordKeyState && passwordKeyErrorState) {
@@ -134,7 +172,7 @@ const Settings = (props) => {
   }
 
   const NotificationItem = (props) => {
-    const { icon, type, onToggle } = props;
+    const { icon, type, value, onToggle } = props;
 
     return (
       <div className={styles.notificationItem} >
@@ -149,6 +187,7 @@ const Settings = (props) => {
             onClick={onToggle}
             inputProps={{ "aria-label": "controlled" }}
             color={"warning"}
+            value={value}
           />
         </div>
       </div>
@@ -428,13 +467,20 @@ const Settings = (props) => {
               <div className={styles.notificationPrefContent}>
                 <h5>Select the kind of notifications you get about your activities.</h5>
                 <hr />
-                <NotificationItem type='Events' icon={EventIcon} onToggle={() => console.log('event toggle')} />
-                <NotificationItem type='Announcements' icon={AnnouncementIcon} onToggle={() => console.log('announcement toggle')} />
-                <NotificationItem type='Deposits' icon={DepositIcon} onToggle={() => console.log('deposits toggle')} />
-                <NotificationItem type='Withdrawals' icon={WithdrawlIcon} onToggle={() => console.log('withdrawals toggle')} />
-                <NotificationItem type='Trade Executed' icon={OrderCreatedIcon} onToggle={() => console.log('trade executed toggle')} />
-                <NotificationItem type='Trade Canceled' icon={OrderCancelledIcon} onToggle={() => console.log('trade canceled toggle')} />
+                {
+                  notiMode.specNotification && notiMode.specNotification.map((ele) => {
+                    var obj_key, obj_value;
+                    for (var key in ele) {
+                      obj_key = key;
+                      obj_value = ele[key];
+                    }
+                    return <NotificationItem type={obj_key} icon={iconList[obj_key]} value={obj_value} onToggle={() => console.log(obj_key, 'toggle')} />
+                  })
+                }
                 <div className={styles.coinMovements}>Coin Movements</div>
+                {
+                  notiMode
+                }
                 <CoinNotificationItem asset="META1" gteOrLte='greater' value='10%' onToggle={() => console.log('price')} />
                 <CoinNotificationItem asset="USDT" gteOrLte='less' value='12.3%' onToggle={() => console.log('price')} />
                 <CoinNotificationItem asset="ETH" gteOrLte='greater' value='10.7%' onToggle={() => console.log('price')} />
