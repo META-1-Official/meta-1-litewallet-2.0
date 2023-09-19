@@ -203,20 +203,26 @@ export default function FaceKiForm(props) {
               {/*    canvas: errorCase.canvas,*/}
               {/*  }}*/}
               {/*/>*/}
-              <FASClient />
 
-              <div className='btn-div'>
-                <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>
-                <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
-                  Min camera resolution must be 720p
-                </span>
-                <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
-                  Verifying will take 10 seconds as maximum.
-                </span>
-                <div className="btn-grp">
-                  <button className='btn-1' onClick={() => checkAndVerify(0)} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>
-                </div>
-              </div>
+              <FASClient
+                username={'user-x01-1'}
+                task={'verify'}
+                activeDeviceId={activeDeviceId}
+                onComplete={() => setFaceKISuccess(true)}
+              />
+
+              {/*<div className='btn-div'>*/}
+              {/*  <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>*/}
+              {/*  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>*/}
+              {/*    Min camera resolution must be 720p*/}
+              {/*  </span>*/}
+              {/*  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>*/}
+              {/*    Verifying will take 10 seconds as maximum.*/}
+              {/*  </span>*/}
+              {/*  <div className="btn-grp">*/}
+              {/*    <button className='btn-1' onClick={() => checkAndVerify(0)} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>*/}
+              {/*  </div>*/}
+              {/*</div>*/}
             </div>
           </div>
           <select
