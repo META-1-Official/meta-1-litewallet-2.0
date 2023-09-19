@@ -347,19 +347,22 @@ export default function ExchangeForm(props) {
 
         if (_selectedFrom.value === 'META1' || _selectedTo.value === 'META1') {
           const asset_usdt = isQuoting ? baseAssetPrice : quoteAssetPrice;
-          let ratio = isQuoting ? meta1_usdt / asset_usdt : asset_usdt / meta1_usdt;
-          ratio = isQuoting ? ceilFloat(ratio, _selectedTo.pre) : floorFloat(ratio, _selectedTo.pre);
+          let _backingAssetValue = isQuoting ? meta1_usdt / asset_usdt : asset_usdt / meta1_usdt;
+          const backingAssetValuePrecision = Math.max(_selectedTo.pre, _selectedFrom.pre);
+          _backingAssetValue = isQuoting
+            ? ceilFloat(_backingAssetValue, backingAssetValuePrecision)
+            : floorFloat(_backingAssetValue, backingAssetValuePrecision);
           console.log(
             LOG_ID, isQuoting ? _selectedFrom.value : _selectedTo.value, ': USDT', asset_usdt
           );
 
           if (!isQuoting) {
-            console.log(LOG_ID, 'BUY/SELL price should be lower than', ratio);
+            console.log(LOG_ID, 'BUY/SELL price should be lower than', _backingAssetValue);
           } else {
-            console.log(LOG_ID, 'BUY/SELL price should be bigger than', ratio);
+            console.log(LOG_ID, 'BUY/SELL price should be bigger than', _backingAssetValue);
           }
 
-          setBackingAssetValue(ratio);
+          setBackingAssetValue(_backingAssetValue);
         }
 
         setBaseAssetPrice(baseAssetPrice);
