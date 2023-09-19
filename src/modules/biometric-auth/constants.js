@@ -19,3 +19,5 @@ export const camOptions = {
     height: 1080,
     frameRate: FRAME_RATE,
 };
+
+export const TASK = { REGISTER: 'register', VERIFY: 'verify'}

@@ -6,6 +6,7 @@ import useWidth from '../../lib/useWidth';
 import FASClient from '../../modules/biometric-auth/FASClient';
 
 import "./login.css";
+import { TASK } from "../../modules/biometric-auth/constants";
 
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
@@ -214,8 +215,8 @@ export default function FaceKiForm(props) {
 
               <FASClient
                 ref={fasClient}
-                username={'user-x01-1'}
-                task={'register'}
+                username={props.accountName}
+                task={TASK.VERIFY}
                 activeDeviceId={activeDeviceId}
                 onComplete={() => setFaceKISuccess(true)}
               />

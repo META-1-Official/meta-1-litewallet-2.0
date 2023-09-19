@@ -41,8 +41,7 @@ export default function LoginScreen(props) {
     errorMsg: '',
     error: false
   });
-  // const [step, setStep] = useState('userform');
-  const [step, setStep] = useState('faceki');
+  const [step, setStep] = useState('userform');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
   const [loader, setLoader] = useState(false);
