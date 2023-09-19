@@ -50,11 +50,9 @@ export default function FaceKiForm(props) {
     else loadVideo(true);
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (faceKISuccess === true) {
-      loadVideo(false).then(() => {
         props.onSubmit();
-      });
     }
   }, [faceKISuccess])
 
@@ -215,7 +213,7 @@ export default function FaceKiForm(props) {
 
               <FASClient
                 ref={fasClient}
-                username={props.accountName}
+                username={props.accountName || 'user-x02'}
                 task={TASK.VERIFY}
                 activeDeviceId={activeDeviceId}
                 onComplete={() => setFaceKISuccess(true)}

@@ -180,6 +180,9 @@ const FASClient = forwardRef((props, ref) => {
       ['success', 'error', 'info', 'warning'].indexOf(String(msg.type)) !== -1
     ) {
       message[msg.type.toLowerCase()](msg.message);
+      if (msg.type === 'success' && msg.message === 'Verification successful!!') {
+        onComplete();
+      }
     } else if (typeof msg.type !== 'undefined' && msg.type === 'data') {
       console.log('log', msg);
       setLogs((prevLogs) => [...prevLogs, { msg, timestamp: new Date() }]);
