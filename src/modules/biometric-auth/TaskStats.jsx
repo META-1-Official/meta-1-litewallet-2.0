@@ -29,14 +29,18 @@ const processData = (data, parentKey = '') => {
 
       return (
         <div key={progressBarKey} style={{ margin: '0' }}>
-          <label style={{ color: '#ffffff' }}>{progressBarKey}</label>
+          <span style={{ color: '#ffffff', fontSize: 10 }}>{progressBarKey}</span>
           <Progress
             percent={_value}
             status={progressStatus}
-            strokeWidth={10}
+            strokeWidth={6}
             strokeColor={{
               '0%': '#ff4d4f',
               '100%': '#52c41a',
+            }}
+            style={{
+              margin: 0,
+              lineHeight: 0
             }}
           />
         </div>

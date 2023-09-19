@@ -22,16 +22,13 @@ export default class ProgressScores extends React.Component {
 
   render() {
     return (
-      this.log && (
-        <div>
+      <div>
+        {this.log && (
           <div style={{ minHeight: '180px', textAlign: 'left' }}>
-            {/*<div>*/}
-            {/*    <p>TaskStats</p>*/}
-            {/*</div>*/}
             <TaskStats data={this.log.message} />
           </div>
-        </div>
-      )
+        )}
+      </div>
     );
   }
 }

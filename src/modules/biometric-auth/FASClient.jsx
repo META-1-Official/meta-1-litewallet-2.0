@@ -833,15 +833,9 @@ const FASClient = forwardRef((props, ref) => {
               className="aspect-3-2"
               style={{ position: 'absolute', bottom: 0, left: 0 }}
             >
-              {/*<ProgressScores logs={logs}></ProgressScores>*/}
+              <ProgressScores logs={logs}></ProgressScores>
             </div>
           </div>
-
-          {/*<Col xs={24} md={10}>*/}
-          {/*  <div className="aspect-3-2">*/}
-          {/*    <ProgressScores logs={logs}></ProgressScores>*/}
-          {/*  </div>*/}
-          {/*</Col>*/}
         </div>
       </div>
       <canvas
