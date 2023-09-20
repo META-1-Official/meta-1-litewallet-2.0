@@ -12,7 +12,8 @@ const PreviewPDFModal = (props) => {
     onRegistration,
     accountName,
     password,
-    email
+    email,
+    authData
   } = props;
 
   const [url, setUrl] = useState(null);
@@ -59,7 +60,7 @@ const PreviewPDFModal = (props) => {
     alink.click();
     localStorage.removeItem('paperWalletData');
 
-    onRegistration(accountName, password, email);
+    onRegistration(accountName, password, email, authData?.web3Token, authData?.web3PubKey);
   }
 
   return <Modal
@@ -68,7 +69,7 @@ const PreviewPDFModal = (props) => {
     open={props.onOpen}
     id={"modal-1"}
   >
-    <Modal.Content >
+    <div className="modal-content" style={{marginBottom: '0px !important'}}>
       <div
         className="copy_passkey_paper_wallet_modal_div"
       >
@@ -103,14 +104,14 @@ const PreviewPDFModal = (props) => {
         </div>
 
       </div>
-    </Modal.Content>
+    </div>
     <Modal.Actions className="claim_modal-action">
       <Button
         className="sbBtn"
         onClick={handleDownload}
         type="submit"
         style={{
-          marginBottom: '10px'
+          marginBottom: '10px',
         }}
       >
         Download

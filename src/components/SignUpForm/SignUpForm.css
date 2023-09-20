@@ -1,5 +1,4 @@
 @media (max-width: 767px) {
-
   .singup-grid,
   .singup-grid .column {}
 }
@@ -29,12 +28,13 @@ button {
 
 label {
   font-size: 0.8rem;
-  color: var(--textBrown);
+  color: var(--textBrown) !important;
   font-weight: 700;
 }
 
 input {
   box-shadow: var(--boxShadowIndex);
+  background-color: var(--inputColor) !important;
 }
 
 .head-title {
@@ -42,6 +42,7 @@ input {
   margin: 1.1rem 0 !important;
   padding: 0 !important;
   color: var(--textBrown);
+  border-bottom: 1px solid var(--hrColor) !important;
 }
 
 .disp-section {
@@ -58,7 +59,8 @@ input {
   padding: 1rem 2rem;
   border-radius: 4px;
   box-shadow: var(--boxShadowIndex);
-  background: #fff;
+  background: var(--blockBgColor);
+  border: 1px solid var(--borderColor);
   width: 70%;
   position: relative;
   margin-right: 1rem;
@@ -69,6 +71,10 @@ input {
   flex-direction: column;
   width: 30%;
   position: relative;
+}
+
+.copyButton {
+  width: auto !important;
 }
 
 .justFlexAndDirect {
@@ -370,27 +376,38 @@ select {
   z-index: 2;
   opacity: 0.8;
 }
-
 .copy_passkey_modal {
   margin: 13rem auto !important;
   height: 21rem !important;
   width: 35rem !important;
+  background: var(--blockBgColor2) !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
 
 .copy_passkey_mobile_modal {
   margin: 13rem auto !important;
   height: 29rem !important;
   width: 20rem !important;
+  background: var(--blockBgColor2) !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
 
 .paper_wallet_modal {
   margin: 13rem auto !important;
   height: 14rem !important;
+  background: var(--blockBgColor2) !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
 
 .preview_paper_wallet_modal {
   height: 90vh !important;
   padding: 1rem auto !important;
+  background: var(--blockBgColor2) !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
 
 .copy_passkey_paper_wallet_modal_div {
@@ -427,7 +444,7 @@ select {
 }
 .webcam_div {
   width: 100%;
-  background: #fff  !important;  
+  background: #fff  !important;
 }
 @media screen and (max-width: 1024px) {
   .regForm {
@@ -442,15 +459,15 @@ select {
 @media screen and (max-width: 678px) {
   .webcam_div {
     width: 100% !important;
-    height: 100%  !important;  
+    height: 100%  !important;
   }
   .under-div {
     width: 100% !important;
-    height: 100%  !important;  
+    height: 100%  !important;
   }
   .header_tag {
     width: 100% !important;
-    height: unset;  
+    height: unset;
   }
   .btn-1 {
     width: 80px !important;
@@ -481,6 +498,7 @@ select {
 .migration_subtitle {
   font-weight: 500 !important;
   font-size: 16px !important;
+  color: var(--textBrown) !important;
 }
 
 .important_msg_header {
@@ -503,6 +521,7 @@ select {
   font-size: 0.928571rem !important;
   font-weight: 700 !important;
   text-transform: none !important;
+  color: var(--textBrown) !important;
 }
 
 .margin-bottom-zero {

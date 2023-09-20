@@ -9,7 +9,7 @@ const ModalTemplate = (props) => {
     open={props.onOpen}
     id={"modal-1"}
   >
-    <Modal.Content >
+    <div className="modal-content">
         <div
           className="copy_passkey_paper_wallet_modal_div"
         >
@@ -21,8 +21,6 @@ const ModalTemplate = (props) => {
         </div>
         {props.text && <div dangerouslySetInnerHTML={{__html: props.text}} />}
       </div>
-    </Modal.Content>
-    <Modal.Actions className="claim_modal-action">
       {props.okBtnText && <Button
         className="claim_wallet_btn"
         onClick={() => {
@@ -39,7 +37,7 @@ const ModalTemplate = (props) => {
       >
         {props.continueBtnText}
       </Button>}
-    </Modal.Actions>
+    </div>
   </Modal>
 }
 export default ModalTemplate;

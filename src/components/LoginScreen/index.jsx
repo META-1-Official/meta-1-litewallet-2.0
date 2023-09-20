@@ -54,7 +54,7 @@ export default function LoginScreen(props) {
   const dispatch = useDispatch();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'bond-02', 'antman-kok357', 'user-x01'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'bond-02', 'antman-kok357', 'user-x01', 'jin124'];
 
   useEffect(() => {
     if (signatureErrorState) {
@@ -182,7 +182,7 @@ export default function LoginScreen(props) {
   };
 
   const handleFaceKiSubmit = () => {
-    onSubmit(login, true, email);
+    onSubmit(login, true, email, false, "", authData?.web3Token, authData?.web3PubKey);
   }
 
   const renderFaceKi = () => {
@@ -200,7 +200,7 @@ export default function LoginScreen(props) {
 
   const goToFaceKi = (data) => {
     setAuthData(data);
-    setPrivKey("web3authprivatekey");
+    setPrivKey(data?.privateKey);
     setEmail(data?.email.toLowerCase());
     setStep('faceki');
   }

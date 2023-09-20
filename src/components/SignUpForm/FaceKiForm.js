@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { livenessCheck, verify, enroll, remove, getUserKycProfile, postUserKycProfile } from "../../API/API";
+import { livenessCheck, enroll } from "../../API/API";
 import OvalImage from '../../images/oval/oval.png';
 import "./SignUpForm.css";
 import { Camera } from 'react-camera-pro';
@@ -24,6 +24,9 @@ export default function FaceKiForm(props) {
     "Biometic Server Error": "Something went wrong from Biometric server.",
     "ESignature Server Error": "Something went wrong from ESignature server.",
     "Email Already Used": "This email already has been used for another user.",
+    "Successfully Enrolled": "You successfully enrolled your face",
+    "Please try again.": "Please try again.",
+    "Internal Error": "Internal Error",
     "New Name Generation Fail": "Can not generate new name!",
     noCameraAccessible: 'No camera device accessible. Please connect your camera or try a different browser.',
     permissionDenied: 'Permission denied. Please refresh and give camera permission.',
@@ -121,76 +124,17 @@ export default function FaceKiForm(props) {
 
   const faceEnroll = async (file) => {
     const { privKey, email } = props;
+    const response = await enroll(file, email, privKey);
 
-    const response_verify = await verify(file);
-    if (response_verify.status === 'Verify OK') {
-      const nameArry = response_verify.name.split(',');
-
-      if (nameArry.includes(email)) {
-        alert(errorCase['Already Enrolled']);
-        setFaceKISuccess(true);
-      } else {
-        const response_user = await getUserKycProfile(email);
-        if (response_user.error === true) {
-          alert(errorCase['ESignature Server Error']);
-          setVerifying(false);
-        } else if (response_user) {
-          alert(errorCase['Email Already Used']);
-          setVerifying(false);
-        } else {
-          const newName = response_verify.name + "," + email;
-
-          if (!newName) {
-            alert(errorCase['New Name Generation Fail']);
-            setVerifying(false);
-          } else {
-            const response_enroll = await enroll(file, newName);
-            if (!response_enroll) {
-              alert(errorCase['ESignature Server Error']);
-              setVerifying(false);
-            } else {
-              if (response_enroll.status === 'Enroll OK') {
-                await remove(response_verify.name);
-                const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
-                if (add_response.result) {
-                  setFaceKISuccess(true);
-                } else {
-                  alert(errorCase['ESignature Server Error']);
-                  setVerifying(false);
-                }
-              } else {
-                alert(errorCase[response_enroll.status]);
-                setVerifying(false);
-              }
-            }
-          }
-        }
-      }
-    } else if (response_verify.status === 'Verify Failed' || response_verify.status === 'No Users') {
-      const response_user = await getUserKycProfile(email);
-      if (response_user.error === true) {
-        alert(errorCase['ESignature Server Error']);
-        setVerifying(false);
-      } else if (response_user) {
-        alert(errorCase['Email Already Used']);
-        setVerifying(false);
-      } else {
-        const response_enroll = await enroll(file, email);
-        if (response_enroll.status === 'Enroll OK') {
-          const add_response = await postUserKycProfile(email, `usr_${email}_${privKey}`);
-          if (add_response.result) {
-            alert('Successfully enrolled.');
-            setFaceKISuccess(true);
-          }
-          else {
-            await remove(email);
-            alert(errorCase['ESignature Server Error']);
-            setVerifying(false);
-          }
-        }
-      }
+    if (!response) {
+      alert(errorCase['Biometic Server Error']);
+      setVerifying(false);
+      return;
     } else {
-      alert('Please try again.');
+      alert(errorCase[response.message]);
+      if (response.message === 'Successfully Enrolled' || response.message === 'Already Enrolled') {
+        setFaceKISuccess(true);
+      }
       setVerifying(false);
     }
   }

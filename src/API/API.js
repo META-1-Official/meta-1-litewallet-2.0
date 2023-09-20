@@ -187,15 +187,27 @@ export async function sendEmail(emailType, emailData) {
   }
 }
 
-export async function loginRequest(accountName, email) {
+export async function loginRequest(accountName, email, web3Token, web3PubKey) {
   try {
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
-      { accountName, email }
+      { accountName, email, idToken: web3Token, appPubKey: web3PubKey }
     );
     return { ...data, error: false };
   } catch (e) {
     return { message: "Wallet name or email is wrong", error: true };
+  }
+}
+
+export async function checkToken(token) {
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_BACK_URL}/check_token`,
+      { token }
+    );
+    return { ...data, error: false };
+  } catch (e) {
+    return { message: "invalid token", error: true };
   }
 }
 
@@ -300,14 +312,32 @@ export async function livenessCheck(image) {
   }
 };
 
-export async function enroll(image, name) {
+// export async function enroll(image, name) {
+//   try {
+//     let form_data = new FormData();
+//     form_data.append('image', image);
+//     form_data.append('name', name);
+
+//     const { data } = await axios.post(
+//       `${process.env.REACT_APP_BACK_URL}/enroll_user`,
+//       form_data,
+//       { headers: { 'content-type': 'multipart/form-data' } },
+//     );
+//     return data;
+//   } catch (e) {
+//     return { message: "Something is wrong", error: true };
+//   }
+// };
+
+export async function enroll(image, email, privKey) {
   try {
     let form_data = new FormData();
     form_data.append('image', image);
-    form_data.append('name', name);
+    form_data.append('email', email);
+    form_data.append('privKey', privKey);
 
     const { data } = await axios.post(
-      `${process.env.REACT_APP_BACK_URL}/enroll_user`,
+      `${process.env.REACT_APP_BACK_URL}/face_enroll`,
       form_data,
       { headers: { 'content-type': 'multipart/form-data' } },
     );
@@ -333,17 +363,17 @@ export async function verify(image) {
   }
 };
 
-export async function remove(name) {
-  try {
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_BACK_URL}/remove_user`,
-      { name }
-    );
-    return data;
-  } catch (e) {
-    return { message: "Something is wrong", error: true };
-  }
-};
+// export async function remove(name) {
+//   try {
+//     const { data } = await axios.post(
+//       `${process.env.REACT_APP_BACK_URL}/remove_user`,
+//       { name }
+//     );
+//     return data;
+//   } catch (e) {
+//     return { message: "Something is wrong", error: true };
+//   }
+// };
 
 // MIGRATION
 export async function checkOldUser(accountName) {
