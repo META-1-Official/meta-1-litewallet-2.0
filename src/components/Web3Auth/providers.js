@@ -55,21 +55,21 @@ export const providers = [
         name: 'github',
         image: github
     },
-    {
-        id: 9,
-        name: 'kakao',
-        image: kakao
-    },
-    {
-        id: 10,
-        name: 'linkedin',
-        image: linkedin
-    },
-    {
-        id: 11,
-        name: 'twitter',
-        image: twitter
-    },
+    // {
+    //     id: 9,
+    //     name: 'kakao',
+    //     image: kakao
+    // },
+    // {
+    //     id: 10,
+    //     name: 'linkedin',
+    //     image: linkedin
+    // },
+    // {
+    //     id: 11,
+    //     name: 'twitter',
+    //     image: twitter
+    // },
     // {
     //     id: 12,
     //     name: 'weibo',

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import styles from './loginProviders.module.scss';
 import arrow from '../../images/arrow.jpg';
-import closeBtn from '../../images/close.png';
 import { providers } from "./providers";
-import CountryNumber from "./GetCountry/countryNumber";
+// import CountryNumber from "./GetCountry/countryNumber";
 import { Modal } from "semantic-ui-react";
 import { WALLET_ADAPTERS } from "@web3auth/base";
 import MetaLoader from "../../UI/loader/Loader";
+import { getPublicCompressed } from "@toruslabs/eccrypto";
+import { getTheme, setTheme } from '../../utils/storage';
 
 const ProvidersBlock = ({ item, moreProviders, onClick }) => {
     return (
@@ -46,7 +47,7 @@ const LoginProvidersModal = (props) => {
     const [moreProviders, setMoreProviders] = useState(false);
     const [email, setEmail] = useState(props.email || null);
     const [phoneNumber, setMobilePhoneNumber] = useState(props.phoneNumber || null);
-    const [continueMode, setContinueMode] = useState(false);
+    // const [continueMode, setContinueMode] = useState(false);
     const [loader, setLoader] = useState(false);
     const [emailError, setEmailError] = useState(null);
 
@@ -73,6 +74,18 @@ const LoginProvidersModal = (props) => {
             });
             if (web3authProvider) {
                 const data = await web3auth.getUserInfo();
+
+                const privateKey = await web3auth.provider.request({
+                    method: "eth_private_key"
+                });
+
+                const app_pub_key = getPublicCompressed(Buffer.from(privateKey.padStart(64, "0"), "hex")).toString("hex");
+
+                data.privateKey = privateKey;
+
+                data.web3Token = data.idToken;
+                data.web3PubKey = app_pub_key;
+
                 setLoader(false);
                 props.setOpen(false);
                 props.goToFaceKi(data);
@@ -87,9 +100,9 @@ const LoginProvidersModal = (props) => {
         props.setOpen(false);
     }
 
-    const handleContinueWith = async () => {
-        console.log('Handle Continue With');
-    }
+    // const handleContinueWith = async () => {
+    //     console.log('Handle Continue With');
+    // }
 
     const handleContinueWithProvider = async (item) => {
         setLoader(true);
@@ -103,12 +116,12 @@ const LoginProvidersModal = (props) => {
         await doAuth('email_passwordless');
     }
 
-    const handleContinueWithSms = async (e) => {
-        e.preventDefault();
-        setLoader(true);
-        console.log('Handle Continue With Mobile');
-        await doAuth('sms_passwordless');
-    }
+    // const handleContinueWithSms = async (e) => {
+    //     e.preventDefault();
+    //     setLoader(true);
+    //     console.log('Handle Continue With Mobile');
+    //     await doAuth('sms_passwordless');
+    // }
 
     const handleEmailChange = async (e) => {
         e.preventDefault();
@@ -143,7 +156,7 @@ const LoginProvidersModal = (props) => {
                         <>
                             <div className={styles.providerHeader}>
                                 <div className={styles.closeBtnWrapper}>
-                                    <img src={closeBtn} width={20} height={20} onClick={handleClose}></img>
+                                    <i className="fa fa-times" onClick={handleClose} style={{fontSize: 20}}/>
                                 </div>
                                 <p className={styles.welcomeText}>Welcome onboard</p>
                                 <p className={styles.descriptionText}>Select how you would like to continue</p>
@@ -160,7 +173,7 @@ const LoginProvidersModal = (props) => {
                                             return (
                                                 <ProvidersBlock item={item} key={item.id} onClick={() => handleContinueWithProvider(item)} />
                                             );
-                                        };
+                                        } else return null;
                                     })}
                                 </div>
                                 <p style={{ margin: "auto", textAlign: 'center' }}>OR</p>
@@ -175,7 +188,7 @@ const LoginProvidersModal = (props) => {
                                             type={"submit"}
                                             onClick={handleContinueWithEmail}
                                             disabled={!email || emailError}
-                                            style={(!email || emailError) ? {cursor: "not-allowed"} : {}}
+                                            style={(!email || emailError) ? { cursor: "not-allowed" } : {}}
                                         >
                                             Continue with Email
                                         </button>

@@ -33,7 +33,7 @@ function* loginHandler(data) {
 }
 function* getUserHandler(data) {
     const response = yield call(getUserData, data.payload);
-    if (response['tokenExpired']) {
+    if (response && response['tokenExpired']) {
         yield put(getUserError({ msg: response.responseMsg }));
     } else {
         if (response?.message?.userAvatar != null) {
@@ -67,7 +67,7 @@ function* deleteAvatarHandler(data) {
         } else {
             yield put(deleteAvatarSuccess());
         }
-            
+
     }
 }
 function* sendMailHandler(data) {
