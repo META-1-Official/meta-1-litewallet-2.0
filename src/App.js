@@ -168,6 +168,7 @@ function Application(props) {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
+    // console.log('@@@use effect0')
     // Update network status
     const handleStatusChange = () => {
       setIsOnline(navigator.onLine);
@@ -187,6 +188,7 @@ function Application(props) {
   }, [isOnline]);
 
   useEffect(() => {
+    // console.log('@@@use effect1')
     const init = async () => {
       try {
         const web3auth = new Web3AuthNoModal({
@@ -204,6 +206,7 @@ function Application(props) {
 
     init();
     _enablePersistingLog();
+    dispatch(getNotificationsRequest({login: ''}))
   }, []);
 
   const _enablePersistingLog = () => {
@@ -299,6 +302,7 @@ function Application(props) {
   };
 
   useEffect(() => {
+    // console.log('@@@use effect2')
     if (signatureParam[0] === 'signature') {
       if (!fromSignUpState) {
         setIsSignatureProcessing(true);
@@ -321,6 +325,7 @@ function Application(props) {
   }, [signatureParam]);
 
   useEffect(async () => {
+    // console.log('@@@use effect3')
     if (loginErrorState) {
       setIsLoading(false);
       setLoginDataError(true);
@@ -360,6 +365,7 @@ function Application(props) {
   }, [accountNameState, loginErrorState]);
 
   useEffect(() => {
+    // console.log('@@@use effect4')
     if (userDataState?.message?.currency === "USD") {
     } else if (userDataState?.message?.currency) {
       const userCurrencyData = `${crypt[userDataState?.message?.currency][1]} ${userDataState?.message?.currency} ${cryptoDataState.ExchangeRate[crypt[userDataState?.message?.currency][0]].rate
@@ -370,6 +376,7 @@ function Application(props) {
 
   // theme change
   useEffect(() => {
+    // console.log('@@@use effect5')
     const widget = document.getElementsByTagName("body");
     if (selectedTheme === 'light') {
       widget[0].className = '';
@@ -379,6 +386,7 @@ function Application(props) {
   }, [selectedTheme]);
 
   useEffect(() => {
+    // console.log('@@@use effect6')
     if (!isTokenValidState) {
       console.log('token invalid', errorMsgState)
       setTokenModalOpen(true);
@@ -395,6 +403,7 @@ function Application(props) {
   }
 
   useEffect(() => {
+    // console.log('@@@use effect7')
     async function fetchPortfolio() {
       if (portfolioReceiverState === null) return;
       if (portfolio !== null) return;
@@ -422,6 +431,7 @@ function Application(props) {
   }, [portfolioReceiverState, portfolio, accountName, refreshData]);
 
   useEffect(() => {
+    // console.log('@@@use effect8')
     async function connect() {
       setIsLoading(true);
       Meta1.connect(metaUrl || process.env.REACT_APP_MAIA).then(
@@ -471,7 +481,8 @@ function Application(props) {
               checkPasswordObj,
               senderApi: sendWithPasswordObj
             };
-            dispatch(meta1ConnectSuccess(obj))
+            dispatch(meta1ConnectSuccess(obj));
+            console.log('meta1 node connected.');
           }
         },
         () => {
@@ -1219,7 +1230,7 @@ function Application(props) {
             onClick={() => {
               setTokenModalOpen(false);
               setIsSignatureProcessing(false);
-              dispatch(logoutRequest())
+              dispatch(logoutRequest());
             }}
           >
             OK

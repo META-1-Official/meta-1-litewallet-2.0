@@ -4,7 +4,7 @@ import "./styles.css";
 import logo from "../../images/Logo.png";
 import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutRequest } from "../../store/account/actions";
+import { logoutRequest, getNotificationsRequest } from "../../store/account/actions";
 import { navbarProfileImageSelector } from "../../store/account/selector";
 import NotiIcon from "../../images/notification.png";
 import Notification from "../Notification";
@@ -58,6 +58,7 @@ const Navbar = (props) => {
   const handleClickLogout = () => {
     onClickResetIsSignatureProcessing();
     dispatch(logoutRequest());
+    dispatch(getNotificationsRequest({login: ''}));
   }
 
   const showNotifications = () => {
