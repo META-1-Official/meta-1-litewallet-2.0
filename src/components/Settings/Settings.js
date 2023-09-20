@@ -1,19 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useReducer } from "react";
 import styles from "./Settings.module.scss";
+import "./settings.css";
 import {
   Modal,
   Button,
   Grid,
   Icon,
 } from "semantic-ui-react";
-import CoinSelect from "./CoinSelect";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, userCurrencySelector } from "../../store/meta1/selector";
 import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector, profileImageSelector, uploadImageErrorSelector } from "../../store/account/selector";
 import { deleteAvatarRequest, passKeyRequestService, passKeyResetService, uploadAvatarRequest, uploadAvatarReset } from "../../store/account/actions";
 import { saveUserCurrencyRequest, saveUserCurrencyReset } from "../../store/meta1/actions";
 import Switch from "@mui/material/Switch";
+import Select from "@mui/material/Select";
+import MenuItem from '@mui/material/MenuItem';
 import { getImage } from "../../lib/images";
+import { toast } from 'react-toastify';
 
 // notification items
 import AnnouncementIcon from '../../images/announcements.png';
@@ -34,6 +37,12 @@ const Settings = (props) => {
   const [isRemoveBtn, setIsRemoveBtn] = useState(false);
   const [isPasswordTouch, setIsPasswordTouch] = useState(false);
   const [activeTab, setActiveTab] = useState('edit_profile');
+  const [notiMode, setNotiMode] = useState(null);
+  const [selectedCoinMovement, setSelectedCoinMovement] = useState('META1');
+  const [selectedTendency, setSelectedTendency] = useState('up');
+  const [selectedComparator, setSelectedComparator] = useState('price');
+  const [comparatorValue, setComparatorValue] = useState();
+  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
   const imageRef = useRef();
   const dispatch = useDispatch();
   const cryptoDataState = useSelector(cryptoDataSelector);
@@ -42,10 +51,48 @@ const Settings = (props) => {
   const changeCurrencyState = useSelector(changeCurrencySelector);
   const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
+  const iconList = {
+    events: EventIcon,
+    announcements: AnnouncementIcon,
+    deposits: DepositIcon,
+    withdrawals: WithdrawlIcon,
+    tradeExcuted: OrderCreatedIcon,
+    tradeCanceled: OrderCancelledIcon
+  }
 
-  const [notiMode, setNotiMode] = useState({
-    events: true,
-  });
+  useEffect(() => {
+    var conf = JSON.parse(localStorage.getItem("noti_conf"));
+    if (!conf) {
+      conf = {
+        specNotification: [
+          { events: true },
+          { announcements: true },
+          { deposits: true },
+          { tradeExcuted: true },
+          { tradeCanceled: true },
+        ],
+        coinMovements: [
+          {
+            meta1: {
+              toggle: true,
+              tendency: 'up',
+              comparator: ['percentage', 1]
+            }
+          },
+          {
+            usdt: {
+              toggle: true,
+              tendency: 'up',
+              comparator: ['price', 10]
+            }
+          }
+        ]
+      }
+    }
+    localStorage.setItem('noti_conf', JSON.stringify(conf));
+    setNotiMode(conf);
+    forceUpdate();
+  }, []);
 
   useEffect(() => {
     if (!isValidPasswordKeyState && passwordKeyErrorState) {
@@ -134,7 +181,7 @@ const Settings = (props) => {
   }
 
   const NotificationItem = (props) => {
-    const { icon, type, onToggle } = props;
+    const { icon, type, toggle, onToggle } = props;
 
     return (
       <div className={styles.notificationItem} >
@@ -145,10 +192,11 @@ const Settings = (props) => {
         <div className={styles.rightItem}>
           <Switch
             className={styles.switch}
-            checked={notiMode['events']}
+            value={type}
             onClick={onToggle}
             inputProps={{ "aria-label": "controlled" }}
             color={"warning"}
+            checked={toggle}
           />
         </div>
       </div>
@@ -156,7 +204,7 @@ const Settings = (props) => {
   }
 
   const CoinNotificationItem = (props) => {
-    const { asset, gteOrLte, value, onToggle } = props;
+    const { asset, gteOrLte, value, comparator, onToggle, toggle } = props;
 
     return (
       <div className={styles.coinNotificationItem} >
@@ -164,23 +212,152 @@ const Settings = (props) => {
           <img src={getImage(asset.toUpperCase())} alt="edit profile" />
           <div className={styles.coinSec}>
             <span>{asset}</span>
-            <span>{`Price move ${gteOrLte} than ${value}`}</span>
+            <span>{`Price move ${gteOrLte} by ${comparator === 'price' ? '$' : ''}${value}${comparator === 'percentage' ? '%' : ''}`}</span>
           </div>
         </div>
         <div className={styles.rightItem}>
           <Switch
             className={styles.switch}
-            checked={notiMode['events']}
+            checked={toggle}
             onClick={onToggle}
             inputProps={{ "aria-label": "controlled" }}
             color={"warning"}
+            value={asset}
           />
-          <button>
+          <button onClick={() => handleClose(asset)}>
             <i className="fa fa-times" />
           </button>
         </div>
       </div>
     )
+  }
+
+  const handleCoinSelect = (event) => {
+    setSelectedCoinMovement(event.target.value);
+  };
+
+  const handleTendencyChange = (event) => {
+    setSelectedTendency(event.target.value);
+  };
+
+  const handleComparatorChange = (event) => {
+    setSelectedComparator(event.target.value);
+  };
+
+  const handleComparatorValueChange = (event) => {
+    setComparatorValue(event.target.value);
+  }
+
+  const handleToggle = (event) => {
+    let type = event.target.value;
+    var new_conf = notiMode;
+
+    new_conf.specNotification.map((ele, index) => {
+      var obj_key, obj_value;
+      for (var key in ele) {
+        obj_key = key;
+        obj_value = ele[key];
+      }
+
+      if (obj_key === type) new_conf.specNotification[index][obj_key] = event.target.checked;
+    });
+
+    localStorage.setItem('noti_conf', JSON.stringify(new_conf));
+    setNotiMode(new_conf);
+    forceUpdate();
+  }
+
+  const handleCoinMovementToggle = (event) => {
+    let asset = event.target.value.toLowerCase();
+    var new_conf = notiMode;
+
+    new_conf.coinMovements.map((ele, index) => {
+      var obj_key, obj_value;
+      for (var key in ele) {
+        obj_key = key;
+        obj_value = ele[key];
+      }
+
+      if (obj_key === asset) new_conf.coinMovements[index][obj_key].toggle = event.target.checked;
+    });
+
+    localStorage.setItem('noti_conf', JSON.stringify(new_conf));
+    setNotiMode(new_conf);
+    forceUpdate();
+  }
+
+  const handleCoinSave = () => {
+    if (!selectedCoinMovement) {
+      toast('Please select asset');
+      return;
+    }
+    if (!selectedTendency) {
+      toast('Please select tendency');
+      return;
+    }
+    if (!selectedComparator) {
+      toast('Please select tendency');
+      return;
+    }
+    if (!comparatorValue) {
+      toast('Please adjust value');
+      return;
+    }
+
+    var new_conf = notiMode;
+    var flag = false;
+    var symbol = selectedCoinMovement.toLowerCase();
+
+    new_conf.coinMovements.map((ele, index) => {
+      var obj_key, obj_value;
+      for (var key in ele) {
+        obj_key = key;
+        obj_value = ele[key];
+      }
+
+      if (obj_key === symbol) {
+        new_conf.coinMovements[index][obj_key].toggle = true;
+        new_conf.coinMovements[index][obj_key].tendency = selectedTendency;
+        new_conf.coinMovements[index][obj_key].comparator = [selectedComparator, comparatorValue];
+        flag = true;
+      }
+    })
+
+    if (!flag) {
+      var pushVal = {};
+      pushVal[symbol] = {};
+      pushVal[symbol].toggle = true;
+      pushVal[symbol].tendency = selectedTendency;
+      pushVal[symbol].comparator = [selectedComparator, comparatorValue];
+      new_conf.coinMovements.push(pushVal);
+    }
+
+    localStorage.setItem('noti_conf', JSON.stringify(new_conf));
+    setNotiMode(new_conf);
+    forceUpdate();
+    toast('Successfully saved your settings');
+  }
+
+  const handleClose = (val) => {
+    var symbol = val.toLowerCase();
+    var new_conf = notiMode;
+
+    new_conf.coinMovements.map((ele, index) => {
+      var obj_key, obj_value;
+      for (var key in ele) {
+        obj_key = key;
+        obj_value = ele[key];
+      }
+
+      if (obj_key === symbol) {
+        new_conf.coinMovements.splice(index, 1);
+      }
+    })
+
+    localStorage.setItem('noti_conf', JSON.stringify(new_conf));
+    setNotiMode(new_conf);
+    forceUpdate();
+    toast('Successfully deleted.');
   }
 
   return (
@@ -428,18 +605,39 @@ const Settings = (props) => {
               <div className={styles.notificationPrefContent}>
                 <h5>Select the kind of notifications you get about your activities.</h5>
                 <hr />
-                <NotificationItem type='Events' icon={EventIcon} onToggle={() => console.log('event toggle')} />
-                <NotificationItem type='Announcements' icon={AnnouncementIcon} onToggle={() => console.log('announcement toggle')} />
-                <NotificationItem type='Deposits' icon={DepositIcon} onToggle={() => console.log('deposits toggle')} />
-                <NotificationItem type='Withdrawals' icon={WithdrawlIcon} onToggle={() => console.log('withdrawals toggle')} />
-                <NotificationItem type='Trade Executed' icon={OrderCreatedIcon} onToggle={() => console.log('trade executed toggle')} />
-                <NotificationItem type='Trade Canceled' icon={OrderCancelledIcon} onToggle={() => console.log('trade canceled toggle')} />
+                {
+                  notiMode.specNotification && notiMode.specNotification.map((ele) => {
+                    var obj_key, obj_value;
+                    for (var key in ele) {
+                      obj_key = key;
+                      obj_value = ele[key];
+                    }
+                    return <NotificationItem
+                      type={obj_key}
+                      icon={iconList[obj_key]}
+                      toggle={obj_value}
+                      onToggle={handleToggle}
+                    />
+                  })
+                }
                 <div className={styles.coinMovements}>Coin Movements</div>
-                <CoinNotificationItem asset="META1" gteOrLte='greater' value='10%' onToggle={() => console.log('price')} />
-                <CoinNotificationItem asset="USDT" gteOrLte='less' value='12.3%' onToggle={() => console.log('price')} />
-                <CoinNotificationItem asset="ETH" gteOrLte='greater' value='10.7%' onToggle={() => console.log('price')} />
-                <CoinNotificationItem asset="BTC" gteOrLte='less' value='20%' onToggle={() => console.log('price')} />
-                <CoinNotificationItem asset="DOGE" gteOrLte='greater' value='$10' onToggle={() => console.log('price')} />
+                {
+                  notiMode.coinMovements && notiMode.coinMovements.map((ele) => {
+                    var obj_key, obj_value;
+                    for (var key in ele) {
+                      obj_key = key;
+                      obj_value = ele[key];
+                    }
+                    return <CoinNotificationItem
+                      asset={obj_key.toUpperCase()}
+                      gteOrLte={obj_value.tendency}
+                      toggle={obj_value.toggle}
+                      value={obj_value.comparator[1]}
+                      comparator={obj_value.comparator[0]}
+                      onToggle={handleCoinMovementToggle}
+                    />
+                  })
+                }
               </div>
               <div className={styles.form_custom}>
                 <div className="row">
@@ -451,19 +649,33 @@ const Settings = (props) => {
                   <div className="col-lg-12">
                     <div className={styles.common_margin}>
                       <label className={styles.label_same}>Coins:</label>
-                      <CoinSelect
-                        onChange={(val) => console.log('change')}
-                        options={process.env.REACT_APP_CRYPTOS_ARRAY.split(',')}
-                        selectedValue='META1'
-                      />
+                      <Select
+                        value={selectedCoinMovement}
+                        onChange={handleCoinSelect}
+                      >
+                        {process.env.REACT_APP_CRYPTOS_ARRAY.split(',').map(ele => {
+                          return <MenuItem value={ele} className="wallet-option">
+                            <div className="wallet-option-picture">
+                              <img alt="eth" src={getImage(ele)} />
+                            </div>
+                            <div>
+                              <div className="wallet-option-content__currency">
+                                <span className="wallet-option-content__name">
+                                  {ele}{" "}
+                                </span>
+                              </div>
+                            </div>
+                          </MenuItem>
+                        })}
+                      </Select>
                     </div>
                   </div>
                   <div className="col-lg-12">
                     <div className={styles.common_margin}>
                       <label className={styles.label_same}>Movement:</label>
-                      <select className={styles.select_same}>
-                        <option>Greator Than</option>
-                        <option>Less Than</option>
+                      <select value={selectedTendency} onChange={handleTendencyChange} className={styles.select_same}>
+                        <option value='up'>Greator Than</option>
+                        <option value='down'>Less Than</option>
                       </select>
                     </div>
                   </div>
@@ -471,20 +683,21 @@ const Settings = (props) => {
                 <div className="row">
                   <div className="col-lg-6">
                     <div className={styles.common_margin}>
-                      <select className={styles.select_same}>
-                        <option>By Price</option>
-                        <option>By Percentage</option>
+                      <select value={selectedComparator} onChange={handleComparatorChange} className={styles.select_same} >
+                        <option value='price'>By Price</option>
+                        <option value='percentage'>By Percentage</option>
                       </select>
                     </div>
                   </div>
                   <div className="col-lg-6">
                     <div className={styles.common_margin}>
-                      <input placeholder="$10.00" />
+                      <input type="number" placeholder={selectedComparator === "price" ? '$10.00' : '5.00%'} value={comparatorValue} onChange={handleComparatorValueChange} />
                     </div>
                   </div>
+
+                  <Button className={styles.btn_save_movment} onClick={handleCoinSave}>Save</Button>
                 </div>
               </div>
-              <Button className={styles.btn_save_movment}>Save</Button>
             </div>
             }
           </div>
