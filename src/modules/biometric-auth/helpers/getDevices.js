@@ -1,5 +1,5 @@
 import { message } from "antd";
-import { camOptions } from "../constants";
+import { camOptions } from "../constants/constants";
 
 const getDevices = async (setDevices, setSelectedDevice, shouldCloseCamera) => {
     try {

@@ -1,5 +1,5 @@
-import {GREEN, LABEL_TO_COLOR, NUM_IRIS_KEYPOINTS, NUM_KEYPOINTS, RED, TUNABLE_FLAG_VALUE_RANGE_MAP} from './params';
-import {TRIANGULATION} from './triangulation';
+import {GREEN, LABEL_TO_COLOR, NUM_IRIS_KEYPOINTS, NUM_KEYPOINTS, RED, TUNABLE_FLAG_VALUE_RANGE_MAP} from '../shared/params';
+import {TRIANGULATION} from '../shared/triangulation';
 
 export function isiOS() {
   return /iPhone|iPad|iPod/i.test(navigator.userAgent);

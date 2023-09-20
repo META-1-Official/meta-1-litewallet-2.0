@@ -6,7 +6,7 @@ import useWidth from '../../lib/useWidth';
 import FASClient from '../../modules/biometric-auth/FASClient';
 
 import "./login.css";
-import { TASK } from "../../modules/biometric-auth/constants";
+import { TASK } from "../../modules/biometric-auth/constants/constants";
 
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);

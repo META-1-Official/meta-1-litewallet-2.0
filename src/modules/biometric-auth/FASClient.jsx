@@ -19,11 +19,11 @@ import CircleProgressBar from './CircleProgressBar';
 import ProgressScores from './ProgressScores';
 import Loader from './LoaderComponent';
 import parseTurnServer from './helpers/parseTurnServer';
-import calculateCompletionPercentage from './shared/calculateTasksProgress';
+import calculateCompletionPercentage from './helpers/calculateTasksProgress';
 import loadingImage from './helpers/loadingImage';
 import getDevices from "./helpers/getDevices";
 import { _black, setCanvasToDefault } from "./helpers/canvas";
-import { DEFAULT_COLOR, CAMERA_CONTRAINTS, camOptions } from "./constants";
+import { DEFAULT_COLOR, CAMERA_CONTRAINTS, camOptions } from "./constants/constants";
 
 
 const WSSignalingServer = process.env.REACT_APP_SIGNALIG_SERVER;

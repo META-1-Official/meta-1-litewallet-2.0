@@ -1,4 +1,4 @@
-import { DEFAULT_COLOR, FRAME_RATE } from "../constants";
+import { DEFAULT_COLOR, FRAME_RATE } from "../constants/constants";
 import loadingImage from "./loadingImage";
 
 function getRandomColor() {
