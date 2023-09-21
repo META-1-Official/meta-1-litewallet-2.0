@@ -544,7 +544,7 @@ function Application(props) {
       );
 
       websocket.onmessage = (message) => {
-        var filter = filterNotifications([message.data]);
+        var filter = filterNotifications([JSON.parse(message.data)]);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
           toast(content);
