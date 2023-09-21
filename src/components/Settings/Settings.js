@@ -10,7 +10,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { changeCurrencySelector, checkPasswordObjSelector, cryptoDataSelector, userCurrencySelector } from "../../store/meta1/selector";
 import { accountsSelector, isValidPasswordKeySelector, passwordKeyErrorSelector, profileImageSelector, uploadImageErrorSelector } from "../../store/account/selector";
-import { deleteAvatarRequest, passKeyRequestService, passKeyResetService, uploadAvatarRequest, uploadAvatarReset } from "../../store/account/actions";
+import { deleteAvatarRequest, getNotificationsRequest, passKeyRequestService, passKeyResetService, uploadAvatarRequest, uploadAvatarReset } from "../../store/account/actions";
 import { saveUserCurrencyRequest, saveUserCurrencyReset } from "../../store/meta1/actions";
 import Switch from "@mui/material/Switch";
 import Select from "@mui/material/Select";
@@ -42,7 +42,6 @@ const Settings = (props) => {
   const [selectedTendency, setSelectedTendency] = useState('up');
   const [selectedComparator, setSelectedComparator] = useState('price');
   const [comparatorValue, setComparatorValue] = useState();
-  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
   const imageRef = useRef();
   const dispatch = useDispatch();
   const cryptoDataState = useSelector(cryptoDataSelector);
@@ -51,6 +50,7 @@ const Settings = (props) => {
   const changeCurrencyState = useSelector(changeCurrencySelector);
   const isValidPasswordKeyState = useSelector(isValidPasswordKeySelector);
   const passwordKeyErrorState = useSelector(passwordKeyErrorSelector);
+  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
   const iconList = {
     events: EventIcon,
     announcements: AnnouncementIcon,
@@ -61,38 +61,9 @@ const Settings = (props) => {
   }
 
   useEffect(() => {
-    var conf = JSON.parse(localStorage.getItem("noti_conf"));
-    if (!conf) {
-      conf = {
-        specNotification: [
-          { events: true },
-          { announcements: true },
-          { deposits: true },
-          { tradeExcuted: true },
-          { tradeCanceled: true },
-        ],
-        coinMovements: [
-          {
-            meta1: {
-              toggle: true,
-              tendency: 'up',
-              comparator: ['percentage', 1]
-            }
-          },
-          {
-            usdt: {
-              toggle: true,
-              tendency: 'up',
-              comparator: ['price', 10]
-            }
-          }
-        ]
-      }
-    }
-    localStorage.setItem('noti_conf', JSON.stringify(conf));
-    setNotiMode(conf);
-    forceUpdate();
-  }, []);
+    var conf = JSON.parse(localStorage.getItem("noti_conf"));    
+    conf && setNotiMode(conf);
+  }, [localStorage.getItem("noti_conf")]);
 
   useEffect(() => {
     if (!isValidPasswordKeyState && passwordKeyErrorState) {
@@ -186,7 +157,7 @@ const Settings = (props) => {
     return (
       <div className={styles.notificationItem} >
         <div className={styles.leftItem}>
-          <img src={icon} alt="edit profile" />
+          <div><img src={icon} alt={type} /></div>
           <span>{type}</span>
         </div>
         <div className={styles.rightItem}>
@@ -263,6 +234,7 @@ const Settings = (props) => {
     });
 
     localStorage.setItem('noti_conf', JSON.stringify(new_conf));
+    dispatch(getNotificationsRequest({login: accountNameState}));
     setNotiMode(new_conf);
     forceUpdate();
   }
@@ -282,6 +254,7 @@ const Settings = (props) => {
     });
 
     localStorage.setItem('noti_conf', JSON.stringify(new_conf));
+    dispatch(getNotificationsRequest({login: accountNameState}));
     setNotiMode(new_conf);
     forceUpdate();
   }
@@ -333,9 +306,10 @@ const Settings = (props) => {
     }
 
     localStorage.setItem('noti_conf', JSON.stringify(new_conf));
+    dispatch(getNotificationsRequest({login: accountNameState}));
     setNotiMode(new_conf);
-    forceUpdate();
     toast('Successfully saved your settings');
+    forceUpdate();
   }
 
   const handleClose = (val) => {
@@ -355,9 +329,10 @@ const Settings = (props) => {
     })
 
     localStorage.setItem('noti_conf', JSON.stringify(new_conf));
+    dispatch(getNotificationsRequest({login: accountNameState}));
     setNotiMode(new_conf);
-    forceUpdate();
     toast('Successfully deleted.');
+    forceUpdate();
   }
 
   return (
@@ -613,6 +588,7 @@ const Settings = (props) => {
                       obj_value = ele[key];
                     }
                     return <NotificationItem
+                      key={key}
                       type={obj_key}
                       icon={iconList[obj_key]}
                       toggle={obj_value}
@@ -629,6 +605,7 @@ const Settings = (props) => {
                       obj_value = ele[key];
                     }
                     return <CoinNotificationItem
+                      key={key}
                       asset={obj_key.toUpperCase()}
                       gteOrLte={obj_value.tendency}
                       toggle={obj_value.toggle}
@@ -694,7 +671,6 @@ const Settings = (props) => {
                       <input type="number" placeholder={selectedComparator === "price" ? '$10.00' : '5.00%'} value={comparatorValue} onChange={handleComparatorValueChange} />
                     </div>
                   </div>
-
                   <Button className={styles.btn_save_movment} onClick={handleCoinSave}>Save</Button>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import Meta1 from "meta1-vision-dex";
 import {Apis} from 'meta1-vision-ws';
+import moment from 'moment';
 
 export const sleepHandler = (ms) =>  {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -41,4 +42,77 @@ export const signUpHandler = async (login, password) => {
         return { status: true };
     }
     return { status: false };
+}
+
+export const filterNotifications = (notifications) => {
+    let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) ?? [];
+    let notiConfig = JSON.parse(localStorage.getItem("noti_conf"));
+
+    notifications.map((ele, index) => {
+        var flag = false;
+        ele.time = moment(ele.createdAt).fromNow();
+        if (readNotifications.includes(ele.id)) notifications.splice(index, 1);
+
+        var category = '';
+        if (ele.category === 'Created Order') {
+            category = 'tradeExcuted';
+        } else if (ele.category === 'Cancelled Order') {
+            category = 'tradeCanceled';
+        } else if (ele.category === 'Deposit') {
+            category = 'deposits';
+        } else if (ele.category === 'Announcements') {
+            category = 'announcements';
+        } else if (ele.category === 'Events') {
+            category = 'events';
+        }
+
+        if (ele.category === 'Price Change') {
+            var str_array = ele.content.split(' ');
+            var symbol = str_array[0].toLowerCase();
+            var tendency = str_array[2].toLowerCase();
+            var change = Math.abs(str_array[3].substring(0, str_array[3].length - 1));
+
+            notiConfig.coinMovements.map((e) => {
+                var obj_key, obj_value;
+                for (var key in e) {
+                    obj_key = key;
+                    obj_value = e[key];
+                }
+                
+                if (obj_key === symbol) {
+                    if (obj_value.toggle === false) { // filter enabled
+                        flag = true;
+                    } else {
+                        if (obj_value.tendency !== tendency && obj_value.comparator[1] !== 0) { // in case same tedency up-up down-down
+                            flag = true;
+                        } else {
+                            if (obj_value.comparator[0] === 'percentage') {  // comparator percentage
+                                if (change < obj_value.comparator[1]) flag = true;
+                            } else { // comparator price
+                                Apis.db.get_ticker('USDT', symbol.toUpperCase()).then(ticker => {
+                                    if (ticker.latest * change / 100 < obj_value.comparator[1]) flag = true;
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            notiConfig.specNotification.map((e) => {
+                var obj_key, obj_value;
+                for (var key in e) {
+                    obj_key = key;
+                    obj_value = e[key];
+                }
+
+                if (obj_key === category && obj_value === false) {
+                    flag = true;
+                }
+            })
+        }
+
+        if (flag) notifications.splice(index, 1);
+    });
+
+    return notifications;
 }

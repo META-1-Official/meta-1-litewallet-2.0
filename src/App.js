@@ -1,5 +1,3 @@
-import axios from "axios";
-import { PrivateKey, Signature } from "meta1-vision-js";
 import "regenerator-runtime/runtime";
 import TradeWithPassword from "./lib/TradeWithPassword";
 import SendWithPassword from "./lib/SendWithPassword";
@@ -7,7 +5,7 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { checkToken } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { getUserData, changeLastLocation, getLastLocation, sendEmail } from "./API/API";
+import { sendEmail } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import WithdrawForm from "./components/WithdrawForm";
@@ -16,7 +14,6 @@ import SendForm from "./components/SendForm";
 import LoginScreen from "./components/LoginScreen";
 import Wallet from "./components/Wallet";
 import Settings from "./components/Settings/Settings";
-import "./App.css";
 import Meta1 from "meta1-vision-dex";
 import MetaLoader from "./UI/loader/Loader";
 import DisconnectedInternet from "./UI/loader/DisconnectedInternet";
@@ -30,14 +27,13 @@ import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
+import { accountsSelector, loaderSelector, isLoginSelector, loginErrorSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService, getNotificationsRequest } from "./store/account/actions";
-import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
+import {cryptoDataSelector, portfolioReceiverSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder from "./components/OpenOrder";
 import Notifications from "./components/Notification/Notifications";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
-import { useQuery } from "react-query";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
@@ -47,12 +43,15 @@ import * as Sentry from '@sentry/react';
 import { getTheme, setTheme } from './utils/storage';
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
+import "./App.css";
 
 // for the cache purpose
 import AppStore from "./images/app-store.png";
 import GooglePlay from "./images/google-play.png";
 import OfflineIcon from "./images/offline.png";
+import { filterNotifications } from "./utils/common";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -85,22 +84,15 @@ window.Meta1 = Meta1;
 function Application(props) {
   const accountNameState = useSelector(accountsSelector);
   const isLoginState = useSelector(isLoginSelector);
-  const tokenState = useSelector(tokenSelector);
   const loaderState = useSelector(loaderSelector);
   const loginErrorState = useSelector(loginErrorSelector);
   const isTokenValidState = useSelector(isTokenValidSelector);
   const userDataState = useSelector(userDataSelector);
   const errorMsgState = useSelector(errorMsgSelector);
-  const demoState = useSelector(demoSelector);
-  const meta1State = useSelector(meta1Selector);
   const cryptoDataState = useSelector(cryptoDataSelector);
   const fromSignUpState = useSelector(fromSignUpSelector);
   const portfolioReceiverState = useSelector(portfolioReceiverSelector);
-  const traderState = useSelector(traderSelector);
-  const checkPasswordObjState = useSelector(checkPasswordObjSelector);
-  const senderApiState = useSelector(senderApiSelector);
   const checkTransferableModelState = useSelector(checkTransferableModelSelector);
-
   const [selectedTheme, setSelectedTheme] = useState(getTheme('theme'));
 
   const { metaUrl } = props;
@@ -154,21 +146,11 @@ function Application(props) {
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
-  const updateBalances = () => {
-    if (portfolioReceiverState && accountName && !passwordShouldBeProvided) {
-      refetchPortfolio();
-    }
-  }
-
-  const newUpdatedBalance = useQuery(['updateBalance'], updateBalances, {
-    refetchInterval: 20000
-  });
-
+  
   // Online state
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    // console.log('@@@use effect0')
     // Update network status
     const handleStatusChange = () => {
       setIsOnline(navigator.onLine);
@@ -188,7 +170,6 @@ function Application(props) {
   }, [isOnline]);
 
   useEffect(() => {
-    // console.log('@@@use effect1')
     const init = async () => {
       try {
         const web3auth = new Web3AuthNoModal({
@@ -205,9 +186,41 @@ function Application(props) {
     };
 
     init();
+    initNotificationConfig();
     _enablePersistingLog();
-    dispatch(getNotificationsRequest({login: ''}))
   }, []);
+
+  const initNotificationConfig = () => {
+    var conf = JSON.parse(localStorage.getItem("noti_conf"));
+    if (!conf) {
+      conf = {
+        specNotification: [
+          { events: true },
+          { announcements: true },
+          { deposits: true },
+          { tradeExcuted: true },
+          { tradeCanceled: true },
+        ],
+        coinMovements: [
+          {
+            meta1: {
+              toggle: true,
+              tendency: 'up',
+              comparator: ['percentage', 1]
+            }
+          },
+          {
+            usdt: {
+              toggle: true,
+              tendency: 'up',
+              comparator: ['price', 10]
+            }
+          }
+        ]
+      }
+    }
+    localStorage.setItem('noti_conf', JSON.stringify(conf));
+  }
 
   const _enablePersistingLog = () => {
     const thiz = this;
@@ -284,7 +297,6 @@ function Application(props) {
     if (getAccessToken()) {
       console.log('loging', getAccessToken())
       dispatch(checkTransferableRequest({ login }))
-      dispatch(getNotificationsRequest({ login }))
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
@@ -302,7 +314,6 @@ function Application(props) {
   };
 
   useEffect(() => {
-    // console.log('@@@use effect2')
     if (signatureParam[0] === 'signature') {
       if (!fromSignUpState) {
         setIsSignatureProcessing(true);
@@ -325,7 +336,6 @@ function Application(props) {
   }, [signatureParam]);
 
   useEffect(async () => {
-    // console.log('@@@use effect3')
     if (loginErrorState) {
       setIsLoading(false);
       setLoginDataError(true);
@@ -365,7 +375,6 @@ function Application(props) {
   }, [accountNameState, loginErrorState]);
 
   useEffect(() => {
-    // console.log('@@@use effect4')
     if (userDataState?.message?.currency === "USD") {
     } else if (userDataState?.message?.currency) {
       const userCurrencyData = `${crypt[userDataState?.message?.currency][1]} ${userDataState?.message?.currency} ${cryptoDataState.ExchangeRate[crypt[userDataState?.message?.currency][0]].rate
@@ -376,7 +385,6 @@ function Application(props) {
 
   // theme change
   useEffect(() => {
-    // console.log('@@@use effect5')
     const widget = document.getElementsByTagName("body");
     if (selectedTheme === 'light') {
       widget[0].className = '';
@@ -386,7 +394,6 @@ function Application(props) {
   }, [selectedTheme]);
 
   useEffect(() => {
-    // console.log('@@@use effect6')
     if (!isTokenValidState) {
       console.log('token invalid', errorMsgState)
       setTokenModalOpen(true);
@@ -403,7 +410,6 @@ function Application(props) {
   }
 
   useEffect(() => {
-    // console.log('@@@use effect7')
     async function fetchPortfolio() {
       if (portfolioReceiverState === null) return;
       if (portfolio !== null) return;
@@ -431,7 +437,6 @@ function Application(props) {
   }, [portfolioReceiverState, portfolio, accountName, refreshData]);
 
   useEffect(() => {
-    // console.log('@@@use effect8')
     async function connect() {
       setIsLoading(true);
       Meta1.connect(metaUrl || process.env.REACT_APP_MAIA).then(
@@ -492,6 +497,7 @@ function Application(props) {
       );
     }
     connect();
+    dispatch(getNotificationsRequest({ login: accountNameState }));
   }, [accountNameState]);
 
   function refetchPortfolio() {
@@ -538,21 +544,11 @@ function Application(props) {
       );
 
       websocket.onmessage = (message) => {
-        console.log('notification arrived', message);
-        if (message && message.data) {
+        var filter = filterNotifications([message.data]);
+        if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
           toast(content);
           dispatch(getNotificationsRequest({ login: accountName }));
-          let unreadNotifications = [];
-
-          if (localStorage.getItem('unreadNotifications'))
-            unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
-          const notificationId = JSON.parse(message.data).id;
-
-          if (unreadNotifications.indexOf(notificationId) < 0)
-            unreadNotifications.push(notificationId);
-
-          localStorage.setItem('unreadNotifications', JSON.stringify(unreadNotifications));
         }
       };
 
@@ -562,7 +558,7 @@ function Application(props) {
             webSocketFactory.connectionTries - 1;
 
           if (webSocketFactory.connectionTries > 0) {
-            this.ws = null;
+            // this.ws = null;
             setTimeout(() => _onSetupWebSocket(accountName), 5000);
           } else {
             throw new Error(
@@ -1360,9 +1356,6 @@ export function App({ domElement }) {
 
   return (
     <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
-
-
-
       <Application
         {...{
           metaUrl,
@@ -1376,7 +1369,6 @@ export function App({ domElement }) {
       />
     </Worker>
   );
-
 }
 
 export default App;

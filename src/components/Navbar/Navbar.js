@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./Navbar.module.scss";
 import "./styles.css";
 import logo from "../../images/Logo.png";
 import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutRequest, getNotificationsRequest } from "../../store/account/actions";
-import { navbarProfileImageSelector } from "../../store/account/selector";
+import { logoutRequest } from "../../store/account/actions";
+import { navbarProfileImageSelector, notificationsSelector } from "../../store/account/selector";
 import NotiIcon from "../../images/notification.png";
+import { filterNotifications } from "../../utils/common";
+
 import Notification from "../Notification";
 import sunIcon from "../../images/sun.png";
 import moonIcon from "../../images/moon.png";
@@ -16,6 +18,8 @@ const Navbar = (props) => {
   const dispatch = useDispatch();
   const [showNotiDropDown, setShowNotiDropDown] = useState(false);
   const navbarProfileImageState = useSelector(navbarProfileImageSelector);
+  const [notifications, setNotifications] = useState();
+  const notificationState = useSelector(notificationsSelector);
 
   const {
     onClickHomeHandler,
@@ -42,40 +46,23 @@ const Navbar = (props) => {
 
   const ref = useRef(null);
 
-  useEffect(() => {
-    window.addEventListener('click', handleClickOutside, true);
-    return () => {
-      window.removeEventListener('click', handleClickOutside, true);
-    };
-  }, []);
-
-  const handleClickOutside = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) {
-      setShowNotiDropDown(false);
-    }
-  };
-
   const handleClickLogout = () => {
     onClickResetIsSignatureProcessing();
     dispatch(logoutRequest());
-    dispatch(getNotificationsRequest({login: ''}));
   }
 
   const showNotifications = () => {
-    setShowNotiDropDown(true);
+    setShowNotiDropDown(!showNotiDropDown);
   }
-
-  const unreadNotifications = useMemo(() => {
-    let unreadNotifications = [];
-    if (localStorage.getItem('unreadNotifications'))
-      unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
-    return unreadNotifications;
-  }, [localStorage.getItem('unreadNotifications')]);
 
   const showAllNotifications = () => {
     setShowNotiDropDown(false);
     setActiveScreen('notifications');
   }
+
+  useEffect(() => {
+    setNotifications(filterNotifications(notificationState));
+  }, [notificationState])
 
   return (
     <>
@@ -161,10 +148,12 @@ const Navbar = (props) => {
                     Get help
                   </span>
                 </div>
-                <div className={styles.blockNotification} onClick={showNotifications}>
-                  <img src={NotiIcon} className={styles.notiIcon} />
-                  { unreadNotifications.length > 0 && <div className={styles.badgeCount}>{unreadNotifications.length}</div>}
-                </div>
+                {
+                  notifications && <div className={styles.blockNotification} onClick={showNotifications}>
+                    <img src={NotiIcon} className={styles.notiIcon} />
+                    {notifications.length > 0 && <div className={styles.badgeCount}>{notifications.length}</div>}
+                  </div>
+                }
                 <div className="nav-item dropdown parent-this">
                   <a
                     className={styles.btn}
@@ -302,7 +291,7 @@ const Navbar = (props) => {
           </div>
         </div>
       </nav>
-      {showNotiDropDown && <div ref={ref}><Notification showAllNotifications={showAllNotifications}/></div>}
+      {showNotiDropDown && <div ref={ref}><Notification notifications={props.notifications} showAllNotifications={showAllNotifications} /></div>}
     </>
   );
 };

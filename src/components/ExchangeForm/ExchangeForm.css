@@ -253,6 +253,19 @@
   border: 1px solid var(--borderColor);
 }
 
+#detail-notification {
+  margin: auto auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: fit-content;
+  width: fit-content;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--borderColor);
+}
+
 #modalExch {
   margin: 3rem auto;
   top: 0;

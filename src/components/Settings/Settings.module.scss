@@ -392,11 +392,21 @@ hr {
     display: flex;
     align-items: center;
 
-    img {
+    div {
       width: 30px;
       height: 30px;
+      background: var(--circleBackgroundColor);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-right: 30px;
-    }
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }   
 
     span {
       font-size: 16px;

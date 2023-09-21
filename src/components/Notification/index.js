@@ -1,22 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from "react-redux";
-import moment from 'moment';
+import React, { useEffect, useState, useReducer } from 'react';
 import AnnouncementIcon from '../../images/announcements.png';
 import EventIcon from '../../images/events.png';
 import DepositIcon from '../../images/deposit.png';
 import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
+import { useSelector } from 'react-redux';
+import { filterNotifications } from '../../utils/common';
 
 import { NotificationItem } from './NotificationItem';
-import { notificationsSelector } from "../../store/account/selector";
+import { NotificationDetailModal } from './NotificationDetailModal';
 
 import styles from "./notification.module.scss";
+import { notificationsSelector } from '../../store/account/selector';
 
 const Notification = (props) => {
-    const [data, setData] = useState();
-    const notificationsState = useSelector(notificationsSelector);
-    const { forceUpdate, showAllNotifications } = props;
+    const { showAllNotifications } = props;
+    const [detail, setDetail] = useState();
+    const [notifications, setNotifications] = useState();
+    const [modalOpened, setModalOpened] = useState(false);
+    const notificationState = useSelector(notificationsSelector);
+    const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+
+    useEffect(() => {
+        setNotifications(filterNotifications(notificationState));
+    }, [notificationState]);
+
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         setNotifications(filterNotifications(notificationState));
+    //     }, 5000);
+    //     return () => clearTimeout(timer);
+    // }, []);
 
     const getItem = (category) => {
         switch (category) {
@@ -39,41 +54,31 @@ const Notification = (props) => {
         }
     }
 
-    const handleClick = (id) => {
-        let unreadNotifications = [];
-        if (localStorage.getItem('unreadNotifications'))
-            unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
-
-        if (unreadNotifications.indexOf(id) > -1) {
-            unreadNotifications.splice(unreadNotifications.indexOf(id), 1);
-        }
-        localStorage.setItem('unreadNotifications', JSON.stringify(unreadNotifications));
-        forceUpdate();
+    const handleClick = (index) => {
+        setDetail(notifications[index]);
+        setModalOpened(true);
     }
 
-    useEffect(() => {
-        for (const notification of notificationsState) {
-            notification.time = moment(notification.createdAt).fromNow();
-        }
-        setData(notificationsState);
-    }, [notificationsState]);
-
-
+    const handleModalToggle = (value) => {
+        forceUpdate();
+        setModalOpened(value);
+    }
     return (
         <div className={styles.notificationWrapper}>
             {
-                data && data.map((ele, index) => {
+                notifications && notifications.map((ele, index) => {
                     return index < 4 && <NotificationItem
                         icon={getItem(ele.category)}
                         title={ele.title}
                         category={ele.category}
                         description={ele.content}
                         time={ele.time}
-                        onClick={() => handleClick(ele.id)}
+                        onClick={() => handleClick(index)}
                     />
                 })
             }
             <div className={styles.viewAll} onClick={showAllNotifications}>View All Notifications</div>
+            <NotificationDetailModal detail={detail} isOpen={modalOpened} setModalOpened={(value) => handleModalToggle(value)} />
         </div>
     )
 }

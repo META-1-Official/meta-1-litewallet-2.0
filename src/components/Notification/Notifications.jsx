@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from "react-redux";
-import moment from 'moment';
+import React, { useEffect, useState, useReducer } from 'react';
 import AnnouncementIcon from '../../images/announcements.png';
 import EventIcon from '../../images/events.png';
 import DepositIcon from '../../images/deposit.png';
@@ -11,14 +9,23 @@ import PriceChangeIcon from '../../images/price-change.png';
 import NotificationTimeIcon from '../../images/notification-time.png';
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
-
-import { notificationsSelector } from "../../store/account/selector";
+import { NotificationDetailModal } from './NotificationDetailModal';
+import { notificationsSelector } from '../../store/account/selector';
+import { useSelector } from 'react-redux';
+import { filterNotifications } from '../../utils/common';
 
 import styles from "./notification.module.scss";
 
 const Notifications = (props) => {
-    const [data, setData] = useState();
-    const notificationsState = useSelector(notificationsSelector);
+    const [detail, setDetail] = useState(0);
+    const [modalOpened, setModalOpened] = useState(false);
+    const [notifications, setNotifications] = useState();
+    const notificationState = useSelector(notificationsSelector);
+    const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+
+    useEffect(() => {
+        setNotifications(filterNotifications(notificationState));
+    }, [notificationState])
 
     const getItem = (category) => {
         switch (category) {
@@ -41,31 +48,22 @@ const Notifications = (props) => {
         }
     }
 
-    const handleClick = (id) => {
-        let unreadNotifications = [];
-        if (localStorage.getItem('unreadNotifications'))
-            unreadNotifications = JSON.parse(localStorage.getItem('unreadNotifications'));
-
-        if (unreadNotifications.indexOf(id) > -1) {
-            unreadNotifications.splice(unreadNotifications.indexOf(id), 1);
-        }
-        localStorage.setItem('unreadNotifications', JSON.stringify(unreadNotifications));
+    const handleClick = (index) => {
+        setDetail(notifications[index]);
+        setModalOpened(true);
     }
 
-    useEffect(() => {
-        for (const notification of notificationsState) {
-            notification.time = moment(notification.createdAt).fromNow();
-        }
-        setData(notificationsState);
-    }, [notificationsState]);
-
-
+    const handleModalToggle = (value) => {
+        forceUpdate();
+        setModalOpened(value);
+    }
+    
     return (
         <div className={styles.notifications}>
             {
-                data && data.map((ele, index) => {
+                notifications && notifications.map((ele, index) => {
                     var d = new Date(ele.createdAt);
-                    return (<div className={styles.notificationCard} onClick={() => handleClick(ele.id)}>
+                    return (<div className={styles.notificationCard} onClick={() => handleClick(index)}>
                         <img
                             style={{ width: "40px", height: "40px" }}
                             src={getItem(ele.category)}
@@ -83,7 +81,7 @@ const Notifications = (props) => {
                                         style={{ width: "20px", height: "20px", marginLeft: '10px' }}
                                         src={NotificationTimeIcon}
                                         alt='meta1'
-                                        data-tooltip-id="time-tooltip" 
+                                        data-tooltip-id="time-tooltip"
                                         data-tooltip-content={d.toLocaleString()}
                                     />
                                 </div>
@@ -93,6 +91,7 @@ const Notifications = (props) => {
                 })
             }
             <Tooltip id="time-tooltip" style={{ backgroundColor: "rgb(80, 80, 80)" }} />
+            <NotificationDetailModal detail={detail} isOpen={modalOpened} setModalOpened={(value) => handleModalToggle(value)} />
         </div>
     )
 }
