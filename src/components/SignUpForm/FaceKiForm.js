@@ -4,6 +4,8 @@ import OvalImage from '../../images/oval/oval.png';
 import "./SignUpForm.css";
 import { Camera } from 'react-camera-pro';
 import useWidth from '../../lib/useWidth';
+import { TASK } from '../../modules/biometric-auth/constants/constants';
+import FASClient from '../../modules/biometric-auth/FASClient';
 
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
@@ -34,6 +36,14 @@ export default function FaceKiForm(props) {
       'It is not possible to switch camera to different one because there is only one video device accessible.',
     canvas: 'Canvas is not supported.',
   }
+
+  const fasClient = useRef();
+  useEffect(() => {
+    console.log('Loading fas');
+    if (fasClient.current) {
+      fasClient.current.load();
+    }
+  }, []);
 
   useEffect(() => {
     loadVideo(true);
@@ -152,7 +162,7 @@ export default function FaceKiForm(props) {
                 <h6 style={{ fontSize: '24px' }}>Bio-Metric 2 Factor Authentication</h6>
                 <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
               </div>
-              <div className='child-div' style={{ width: camWidth, height: camHeight }}>
+              <div className='child-div' style={{ width: camWidth, height: '100%' }}>
                 <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
                 <button className='btn_x'
@@ -162,44 +172,53 @@ export default function FaceKiForm(props) {
                       });
                     }}>X</button>
                 </div>
-                <img src={OvalImage} alt='oval-image' className='oval-image' />
-                <Camera
-                ref={webcamRef}
-                aspectRatio="cover"
-                numberOfCamerasCallback={(i) => setNumberOfCameras(i)}
-                videoSourceDeviceId={activeDeviceId}
-                errorMessages={{
-                  noCameraAccessible: errorCase.noCameraAccessible,
-                  permissionDenied: errorCase.permissionDenied,
-                  switchCamera: errorCase.switchCamera,
-                  canvas: errorCase.canvas,
-                }}
-              />
-                <div className='btn-div'>
-                  <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
-                  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
-                    Min camera resolution must be 720p
-                  </span>
-                  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
-                    Verifying will take 10 seconds as maximum.
-                  </span>
-                  <div className="btn-grp">
-                    <button className='btn-1' disabled={verifying} onClick={() => checkAndEnroll(0)}>{verifying ? "Verifying..." : "Verify"}</button>
-                  </div>
-                </div>
+              {/*  <img src={OvalImage} alt='oval-image' className='oval-image' />*/}
+              {/*  <Camera*/}
+              {/*  ref={webcamRef}*/}
+              {/*  aspectRatio="cover"*/}
+              {/*  numberOfCamerasCallback={(i) => setNumberOfCameras(i)}*/}
+              {/*  videoSourceDeviceId={activeDeviceId}*/}
+              {/*  errorMessages={{*/}
+              {/*    noCameraAccessible: errorCase.noCameraAccessible,*/}
+              {/*    permissionDenied: errorCase.permissionDenied,*/}
+              {/*    switchCamera: errorCase.switchCamera,*/}
+              {/*    canvas: errorCase.canvas,*/}
+              {/*  }}*/}
+              {/*/>*/}
+
+                <FASClient
+                  ref={fasClient}
+                  username={props.email}
+                  task={TASK.REGISTER}
+                  activeDeviceId={activeDeviceId}
+                  onComplete={() => setFaceKISuccess(true)}
+                />
+
+                {/*<div className='btn-div'>*/}
+                {/*  <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>*/}
+                {/*  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>*/}
+                {/*    Min camera resolution must be 720p*/}
+                {/*  </span>*/}
+                {/*  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>*/}
+                {/*    Verifying will take 10 seconds as maximum.*/}
+                {/*  </span>*/}
+                {/*  <div className="btn-grp">*/}
+                {/*    <button className='btn-1' disabled={verifying} onClick={() => checkAndEnroll(0)}>{verifying ? "Verifying..." : "Verify"}</button>*/}
+                {/*  </div>*/}
+                {/*</div>*/}
               </div>
             </div>
-            <select
-            onChange={(event) => {
-              setActiveDeviceId(event.target.value);
-            }}
-          >
-            {devices.map((d) => (
-              <option key={d.deviceId} value={d.deviceId}>
-                {d.label}
-              </option>
-            ))}
-          </select>
+          {/*  <select*/}
+          {/*  onChange={(event) => {*/}
+          {/*    setActiveDeviceId(event.target.value);*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  {devices.map((d) => (*/}
+          {/*    <option key={d.deviceId} value={d.deviceId}>*/}
+          {/*      {d.label}*/}
+          {/*    </option>*/}
+          {/*  ))}*/}
+          {/*</select>*/}
           </div>
         </div>
       </div>

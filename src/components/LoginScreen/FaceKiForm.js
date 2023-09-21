@@ -213,7 +213,7 @@ export default function FaceKiForm(props) {
 
               <FASClient
                 ref={fasClient}
-                username={props.accountName || 'user-x02'}
+                username={props.email}
                 task={TASK.VERIFY}
                 activeDeviceId={activeDeviceId}
                 onComplete={() => setFaceKISuccess(true)}
