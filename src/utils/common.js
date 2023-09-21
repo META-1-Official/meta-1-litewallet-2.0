@@ -50,7 +50,7 @@ export const filterNotifications = (notifications) => {
 
     notifications.map((ele, index) => {
         var flag = false;
-        ele.time = moment(ele.createdAt).fromNow();
+        notifications[index].time = moment(ele.createdAt).fromNow();
         if (readNotifications.includes(ele.id)) notifications.splice(index, 1);
 
         var category = '';
