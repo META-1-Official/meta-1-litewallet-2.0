@@ -1,0 +1,27 @@
+.css-1oj2twp-MuiPagination-root {
+    margin-bottom: 15px !important;
+    margin-top: 10px !important;
+}
+
+.css-wjh20t-MuiPagination-ul {
+    width: 100% !important;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected {
+    background: var(--textGrey) !important;
+}
+
+.css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root.Mui-disabled {
+    color: var(--calendarItemBorderColor) !important;
+}
+
+.css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root {
+    color: var(--textBrown) !important;
+}
+
+.css-1v2lvtn-MuiPaginationItem-root {
+    color: var(--textBrown) !important;
+}
