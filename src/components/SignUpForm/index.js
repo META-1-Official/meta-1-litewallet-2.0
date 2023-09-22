@@ -42,6 +42,7 @@ export default function SignUpForm(props) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [step, setStep] = useState('userform');
+  // const [step, setStep] = useState('faceki');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
   const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false);

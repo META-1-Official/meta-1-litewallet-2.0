@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import { verify, getUserKycProfile, livenessCheck } from "../../API/API";
-import OvalImage from '../../images/oval/oval.png';
-import { Camera } from 'react-camera-pro';
+import { getUserKycProfile, livenessCheck } from "../../API/API";
 import useWidth from '../../lib/useWidth';
+import FASClient from '../../modules/biometric-auth/FASClient';
 
 import "./login.css";
+import { TASK } from "../../modules/biometric-auth/constants/constants";
 
 export default function FaceKiForm(props) {
   const webcamRef = useRef(null);
@@ -34,17 +34,23 @@ export default function FaceKiForm(props) {
     canvas: 'Canvas is not supported.',
   }
 
+  const fasClient = useRef();
+  useEffect(() => {
+    console.log('Loading fas');
+    if (fasClient.current) {
+      fasClient.current.load();
+    }
+  }, []);
+
   useEffect(() => {
     if (browserstack_test_accounts.includes(props.accountName))
       setFaceKISuccess(true)
     else loadVideo(true);
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (faceKISuccess === true) {
-      loadVideo(false).then(() => {
         props.onSubmit();
-      });
     }
   }, [faceKISuccess])
 
@@ -78,52 +84,7 @@ export default function FaceKiForm(props) {
     return window.innerWidth < window.innerHeight;
   }
 
-  const dataURL2File = async (dataurl, filename) => {
-    var arr = dataurl.split(','),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new File([u8arr], filename, { type: mime });
-  }
-
-  const checkAndVerify = async (photoIndex) => {
-    const { email } = props;
-    if (!email) return;
-
-    setVerifying(true);
-
-    const imageSrc = webcamRef.current.takePhoto();
-
-    if (!imageSrc) {
-      alert(errorCase['Camera Not Found']);
-      setVerifying(false);
-      return;
-    }
-
-    const file = await dataURL2File(imageSrc, 'a.jpg');
-    const response = await livenessCheck(file);
-
-    if (!response || !response.data) {
-      alert(errorCase['Biometic Server Error']);
-      setVerifying(false);
-      return;
-    }
-
-    if (response.data.liveness !== 'Genuine' && photoIndex === 5) {
-      alert(errorCase['Face not Detected']);
-      setVerifying(false);
-    } else if (response.data.liveness === 'Genuine') {
-      await videoVerify(file);
-    } else {
-      await checkAndVerify(photoIndex + 1);
-    }
-  }
-
-  const videoVerify = async (file) => {
+  const videoVerify = async () => {
     const { email, accountName } = props;
 
     const response_user = await getUserKycProfile(email);
@@ -131,36 +92,20 @@ export default function FaceKiForm(props) {
     if (!response_user?.member1Name) {
       alert(errorCase['Not Matched']);
       return;
-    }
-    else {
-      const walletArry = response_user.member1Name.split(',');
+    } else {
+      const walletArray = response_user.member1Name.split(',');
 
-      if (!walletArry.includes(accountName)) {
+      if (!walletArray.includes(accountName)) {
         alert(errorCase['Not Matched']);
         return;
       }
-    };
+    }
 
     if (bypass_wallets.includes(accountName)) {
       setFaceKISuccess(true);
     } else {
-      const response_verify = await verify(file);
-      if (response_verify.status === 'Verify OK') {
-        const nameArry = response_verify.name.split(',');
-
-        if (nameArry.includes(email)) {
-          setFaceKISuccess(true);
-        } else {
-          alert(errorCase['Invalid Email']);
-        }
-      } else if (response_verify.status === 'Verify Failed') {
-        alert(errorCase['Verify Failed']);
-      } else if (response_verify.status === 'No Users') {
-        alert(errorCase['No Users']);
-      }
-      else {
-        alert('Please try again.');
-      }
+      alert(errorCase['Verify Failed']);
+      alert('Please try again.');
     }
   }
 
@@ -178,7 +123,7 @@ export default function FaceKiForm(props) {
               <h6 style={{ fontSize: '24px' }}>Authenticate Your Face</h6>
               <p className='header_ptag'>To log into your wallet, please complete biometric authentication.</p>
             </div>
-            <div className='child-div' style={{ width: camWidth, height: camHeight }}>
+            <div className='child-div' style={{ width: camWidth, height: '100%' }}>
               <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
                 <div className="position-head color-black">Position your face in the oval</div>
                 <button
@@ -189,44 +134,17 @@ export default function FaceKiForm(props) {
                     });
                   }}>X</button>
               </div>
-              <img src={OvalImage} alt='oval-image' className='oval-image' />
-              <Camera
-                ref={webcamRef}
-                aspectRatio="cover"
-                numberOfCamerasCallback={(i) => setNumberOfCameras(i)}
-                videoSourceDeviceId={activeDeviceId}
-                errorMessages={{
-                  noCameraAccessible: errorCase.noCameraAccessible,
-                  permissionDenied: errorCase.permissionDenied,
-                  switchCamera: errorCase.switchCamera,
-                  canvas: errorCase.canvas,
-                }}
+
+              <FASClient
+                ref={fasClient}
+                username={props.email}
+                task={TASK.VERIFY}
+                activeDeviceId={activeDeviceId}
+                onComplete={videoVerify}
               />
-              <div className='btn-div'>
-                <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>
-                <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
-                  Min camera resolution must be 720p
-                </span>
-                <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
-                  Verifying will take 10 seconds as maximum.
-                </span>
-                <div className="btn-grp">
-                  <button className='btn-1' onClick={() => checkAndVerify(0)} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>
-                </div>
-              </div>
+
             </div>
           </div>
-          <select
-            onChange={(event) => {
-              setActiveDeviceId(event.target.value);
-            }}
-          >
-            {devices.map((d) => (
-              <option key={d.deviceId} value={d.deviceId}>
-                {d.label}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
     </div>
