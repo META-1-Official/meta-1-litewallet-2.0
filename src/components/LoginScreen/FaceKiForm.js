@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { verify, getUserKycProfile, livenessCheck } from "../../API/API";
-import OvalImage from '../../images/oval/oval.png';
-import { Camera } from 'react-camera-pro';
+import { getUserKycProfile, livenessCheck } from "../../API/API";
 import useWidth from '../../lib/useWidth';
 import FASClient from '../../modules/biometric-auth/FASClient';
 
@@ -86,51 +84,6 @@ export default function FaceKiForm(props) {
     return window.innerWidth < window.innerHeight;
   }
 
-  const dataURL2File = async (dataurl, filename) => {
-    var arr = dataurl.split(','),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new File([u8arr], filename, { type: mime });
-  }
-
-  // const checkAndVerify = async (photoIndex) => {
-  //   const { email } = props;
-  //   if (!email) return;
-  //
-  //   setVerifying(true);
-  //
-  //   const imageSrc = webcamRef.current.takePhoto();
-  //
-  //   if (!imageSrc) {
-  //     alert(errorCase['Camera Not Found']);
-  //     setVerifying(false);
-  //     return;
-  //   }
-  //
-  //   const file = await dataURL2File(imageSrc, 'a.jpg');
-  //   const response = await livenessCheck(file);
-  //
-  //   if (!response || !response.data) {
-  //     alert(errorCase['Biometic Server Error']);
-  //     setVerifying(false);
-  //     return;
-  //   }
-  //
-  //   if (response.data.liveness !== 'Genuine' && photoIndex === 5) {
-  //     alert(errorCase['Face not Detected']);
-  //     setVerifying(false);
-  //   } else if (response.data.liveness === 'Genuine') {
-  //     await videoVerify(file);
-  //   } else {
-  //     await checkAndVerify(photoIndex + 1);
-  //   }
-  // }
-
   const videoVerify = async () => {
     const { email, accountName } = props;
 
@@ -181,19 +134,6 @@ export default function FaceKiForm(props) {
                     });
                   }}>X</button>
               </div>
-              {/*<img src={OvalImage} alt='oval-image' className='oval-image' />*/}
-              {/*<Camera*/}
-              {/*  ref={webcamRef}*/}
-              {/*  aspectRatio="cover"*/}
-              {/*  numberOfCamerasCallback={(i) => setNumberOfCameras(i)}*/}
-              {/*  videoSourceDeviceId={activeDeviceId}*/}
-              {/*  errorMessages={{*/}
-              {/*    noCameraAccessible: errorCase.noCameraAccessible,*/}
-              {/*    permissionDenied: errorCase.permissionDenied,*/}
-              {/*    switchCamera: errorCase.switchCamera,*/}
-              {/*    canvas: errorCase.canvas,*/}
-              {/*  }}*/}
-              {/*/>*/}
 
               <FASClient
                 ref={fasClient}
@@ -203,31 +143,8 @@ export default function FaceKiForm(props) {
                 onComplete={videoVerify}
               />
 
-              {/*<div className='btn-div'>*/}
-              {/*  <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to complete authentication and log in' : 'Verification Successful!'}</p>*/}
-              {/*  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>*/}
-              {/*    Min camera resolution must be 720p*/}
-              {/*  </span>*/}
-              {/*  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>*/}
-              {/*    Verifying will take 10 seconds as maximum.*/}
-              {/*  </span>*/}
-              {/*  <div className="btn-grp">*/}
-              {/*    <button className='btn-1' onClick={() => checkAndVerify(0)} disabled={verifying}>{verifying ? "Verifying..." : "Verify"}</button>*/}
-              {/*  </div>*/}
-              {/*</div>*/}
             </div>
           </div>
-          {/*<select*/}
-          {/*  onChange={(event) => {*/}
-          {/*    setActiveDeviceId(event.target.value);*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  {devices.map((d) => (*/}
-          {/*    <option key={d.deviceId} value={d.deviceId}>*/}
-          {/*      {d.label}*/}
-          {/*    </option>*/}
-          {/*  ))}*/}
-          {/*</select>*/}
         </div>
       </div>
     </div>

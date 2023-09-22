@@ -38,7 +38,7 @@ const FASClient = forwardRef((props, ref) => {
   const webcamRef = useRef(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [progress, setProgress] = useState(0.0);
-  const { username, task, activeDeviceId, onComplete } = props;
+  const { username, task, activeDeviceId, onComplete, onFailure = () => {} } = props;
 
   const updateWindowWidth = () => {
     setWindowWidth(window.innerWidth);
@@ -180,8 +180,11 @@ const FASClient = forwardRef((props, ref) => {
       ['success', 'error', 'info', 'warning'].indexOf(String(msg.type)) !== -1
     ) {
       message[msg.type.toLowerCase()](msg.message);
-      if (msg.type === 'success' && msg.message === 'Verification successful!!') {
+      if (msg.type === 'success' && ['Verification successful!!', 'Registration successful!!!'].includes(msg.message)) {
+        console.log('Message: ', msg);
         onComplete();
+      } else if (msg.type === 'error' && msg.message === 'Registration failure') {
+        onFailure();
       }
     } else if (typeof msg.type !== 'undefined' && msg.type === 'data') {
       console.log('log', msg);

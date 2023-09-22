@@ -317,7 +317,7 @@ export async function livenessCheck(image) {
 //     let form_data = new FormData();
 //     form_data.append('image', image);
 //     form_data.append('name', name);
-
+//
 //     const { data } = await axios.post(
 //       `${process.env.REACT_APP_BACK_URL}/enroll_user`,
 //       form_data,
@@ -329,17 +329,11 @@ export async function livenessCheck(image) {
 //   }
 // };
 
-export async function enroll(image, email, privKey) {
+export async function enroll(email, privKey, task) {
   try {
-    let form_data = new FormData();
-    form_data.append('image', image);
-    form_data.append('email', email);
-    form_data.append('privKey', privKey);
-
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/face_enroll`,
-      form_data,
-      { headers: { 'content-type': 'multipart/form-data' } },
+      { email, privKey, task },
     );
     return data;
   } catch (e) {

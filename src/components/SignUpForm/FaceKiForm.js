@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { livenessCheck, enroll } from "../../API/API";
-import OvalImage from '../../images/oval/oval.png';
+import { enroll } from "../../API/API";
 import "./SignUpForm.css";
-import { Camera } from 'react-camera-pro';
 import useWidth from '../../lib/useWidth';
 import { TASK } from '../../modules/biometric-auth/constants/constants';
 import FASClient from '../../modules/biometric-auth/FASClient';
@@ -14,6 +12,7 @@ export default function FaceKiForm(props) {
   const [devices, setDevices] = useState([]);
   const [activeDeviceId, setActiveDeviceId] = useState('');
   const [numberOfCameras, setNumberOfCameras] = useState(0);
+  const [task, setTask] = useState(TASK.REGISTER);
 
   const width = useWidth();
 
@@ -87,59 +86,14 @@ export default function FaceKiForm(props) {
     return window.innerWidth < window.innerHeight;
   }
 
-  const dataURL2File = async (dataurl, filename) => {
-    var arr = dataurl.split(','),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new File([u8arr], filename, { type: mime });
-  }
-
-  const checkAndEnroll = async (photoIndex) => {
+  const faceEnroll = async () => {
     const { privKey, email } = props;
-    if (!email || !privKey) return;
-
     setVerifying(true);
-
-    const imageSrc = webcamRef.current.takePhoto();
-
-    if (!imageSrc) {
-      alert(errorCase['Camera Not Found']);
-      setVerifying(false);
-      return;
-    }
-
-    const file = await dataURL2File(imageSrc, 'a.jpg');
-    const response = await livenessCheck(file);
-
-    if (!response || !response.data) {
-      alert(errorCase['Biometic Server Error']);
-      setVerifying(false);
-      return;
-    }
-
-    if (response.data.liveness !== 'Genuine' && photoIndex === 5) {
-      alert(errorCase['Not Proper Condition']);
-      setVerifying(false);
-    } else if (response.data.liveness === 'Genuine') {
-      await faceEnroll(file);
-    } else {
-      await checkAndEnroll(photoIndex + 1);
-    }
-  }
-
-  const faceEnroll = async (file) => {
-    const { privKey, email } = props;
-    const response = await enroll(file, email, privKey);
+    const response = await enroll(email, privKey);
 
     if (!response) {
       alert(errorCase['Biometic Server Error']);
       setVerifying(false);
-      return;
     } else {
       alert(errorCase[response.message]);
       if (response.message === 'Successfully Enrolled' || response.message === 'Already Enrolled') {
@@ -147,6 +101,11 @@ export default function FaceKiForm(props) {
       }
       setVerifying(false);
     }
+  }
+
+  const onFailure = () => {
+    alert('Email is already enrolled, please verify yourself');
+    setTask(TASK.REGISTER);
   }
 
   const camWidth = width > 576 ? 600 : width - 30;
@@ -172,53 +131,18 @@ export default function FaceKiForm(props) {
                       });
                     }}>X</button>
                 </div>
-              {/*  <img src={OvalImage} alt='oval-image' className='oval-image' />*/}
-              {/*  <Camera*/}
-              {/*  ref={webcamRef}*/}
-              {/*  aspectRatio="cover"*/}
-              {/*  numberOfCamerasCallback={(i) => setNumberOfCameras(i)}*/}
-              {/*  videoSourceDeviceId={activeDeviceId}*/}
-              {/*  errorMessages={{*/}
-              {/*    noCameraAccessible: errorCase.noCameraAccessible,*/}
-              {/*    permissionDenied: errorCase.permissionDenied,*/}
-              {/*    switchCamera: errorCase.switchCamera,*/}
-              {/*    canvas: errorCase.canvas,*/}
-              {/*  }}*/}
-              {/*/>*/}
 
                 <FASClient
                   ref={fasClient}
                   username={props.email}
-                  task={TASK.REGISTER}
+                  task={task}
                   activeDeviceId={activeDeviceId}
-                  onComplete={() => setFaceKISuccess(true)}
+                  onComplete={faceEnroll}
+                  onFailure={onFailure}
                 />
 
-                {/*<div className='btn-div'>*/}
-                {/*  <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>*/}
-                {/*  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>*/}
-                {/*    Min camera resolution must be 720p*/}
-                {/*  </span>*/}
-                {/*  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>*/}
-                {/*    Verifying will take 10 seconds as maximum.*/}
-                {/*  </span>*/}
-                {/*  <div className="btn-grp">*/}
-                {/*    <button className='btn-1' disabled={verifying} onClick={() => checkAndEnroll(0)}>{verifying ? "Verifying..." : "Verify"}</button>*/}
-                {/*  </div>*/}
-                {/*</div>*/}
               </div>
             </div>
-          {/*  <select*/}
-          {/*  onChange={(event) => {*/}
-          {/*    setActiveDeviceId(event.target.value);*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  {devices.map((d) => (*/}
-          {/*    <option key={d.deviceId} value={d.deviceId}>*/}
-          {/*      {d.label}*/}
-          {/*    </option>*/}
-          {/*  ))}*/}
-          {/*</select>*/}
           </div>
         </div>
       </div>
