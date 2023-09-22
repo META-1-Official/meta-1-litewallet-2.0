@@ -98,40 +98,40 @@ export default function FaceKiForm(props) {
     return new File([u8arr], filename, { type: mime });
   }
 
-  const checkAndVerify = async (photoIndex) => {
-    const { email } = props;
-    if (!email) return;
+  // const checkAndVerify = async (photoIndex) => {
+  //   const { email } = props;
+  //   if (!email) return;
+  //
+  //   setVerifying(true);
+  //
+  //   const imageSrc = webcamRef.current.takePhoto();
+  //
+  //   if (!imageSrc) {
+  //     alert(errorCase['Camera Not Found']);
+  //     setVerifying(false);
+  //     return;
+  //   }
+  //
+  //   const file = await dataURL2File(imageSrc, 'a.jpg');
+  //   const response = await livenessCheck(file);
+  //
+  //   if (!response || !response.data) {
+  //     alert(errorCase['Biometic Server Error']);
+  //     setVerifying(false);
+  //     return;
+  //   }
+  //
+  //   if (response.data.liveness !== 'Genuine' && photoIndex === 5) {
+  //     alert(errorCase['Face not Detected']);
+  //     setVerifying(false);
+  //   } else if (response.data.liveness === 'Genuine') {
+  //     await videoVerify(file);
+  //   } else {
+  //     await checkAndVerify(photoIndex + 1);
+  //   }
+  // }
 
-    setVerifying(true);
-
-    const imageSrc = webcamRef.current.takePhoto();
-
-    if (!imageSrc) {
-      alert(errorCase['Camera Not Found']);
-      setVerifying(false);
-      return;
-    }
-
-    const file = await dataURL2File(imageSrc, 'a.jpg');
-    const response = await livenessCheck(file);
-
-    if (!response || !response.data) {
-      alert(errorCase['Biometic Server Error']);
-      setVerifying(false);
-      return;
-    }
-
-    if (response.data.liveness !== 'Genuine' && photoIndex === 5) {
-      alert(errorCase['Face not Detected']);
-      setVerifying(false);
-    } else if (response.data.liveness === 'Genuine') {
-      await videoVerify(file);
-    } else {
-      await checkAndVerify(photoIndex + 1);
-    }
-  }
-
-  const videoVerify = async (file) => {
+  const videoVerify = async () => {
     const { email, accountName } = props;
 
     const response_user = await getUserKycProfile(email);
@@ -139,36 +139,20 @@ export default function FaceKiForm(props) {
     if (!response_user?.member1Name) {
       alert(errorCase['Not Matched']);
       return;
-    }
-    else {
-      const walletArry = response_user.member1Name.split(',');
+    } else {
+      const walletArray = response_user.member1Name.split(',');
 
-      if (!walletArry.includes(accountName)) {
+      if (!walletArray.includes(accountName)) {
         alert(errorCase['Not Matched']);
         return;
       }
-    };
+    }
 
     if (bypass_wallets.includes(accountName)) {
       setFaceKISuccess(true);
     } else {
-      const response_verify = await verify(file);
-      if (response_verify.status === 'Verify OK') {
-        const nameArry = response_verify.name.split(',');
-
-        if (nameArry.includes(email)) {
-          setFaceKISuccess(true);
-        } else {
-          alert(errorCase['Invalid Email']);
-        }
-      } else if (response_verify.status === 'Verify Failed') {
-        alert(errorCase['Verify Failed']);
-      } else if (response_verify.status === 'No Users') {
-        alert(errorCase['No Users']);
-      }
-      else {
-        alert('Please try again.');
-      }
+      alert(errorCase['Verify Failed']);
+      alert('Please try again.');
     }
   }
 
@@ -216,7 +200,7 @@ export default function FaceKiForm(props) {
                 username={props.email}
                 task={TASK.VERIFY}
                 activeDeviceId={activeDeviceId}
-                onComplete={() => setFaceKISuccess(true)}
+                onComplete={videoVerify}
               />
 
               {/*<div className='btn-div'>*/}
