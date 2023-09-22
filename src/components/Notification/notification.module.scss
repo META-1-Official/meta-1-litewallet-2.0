@@ -27,12 +27,11 @@
 
 .notifications {
   width: 100%;
-  max-height: calc(100vh - 105px);
   background: var(--blockBgColor);
-  overflow-y: scroll;
   margin: 30px;
   border: 1px solid var(--borderColor);
   border-radius: 5px;
+  height: calc(100vh - 232px);
 
   // Paddle
   &::after {
