@@ -218,3 +218,14 @@
     }
   }
 }
+
+.logoWrapper {
+  background: var(--calendarItemBorderColor);
+  border-radius: 50%;
+  padding: 5px;
+
+  img {
+    width: 30px;
+    height: 30px;
+  }
+}

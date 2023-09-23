@@ -93,27 +93,28 @@
   cursor: pointer;
 
   .notiIcon {
-    width: 18px;
-    height: 25px;
+    width: 23px;
+    height: 32px;
   }
 
   .badgeCount {
     position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 23px;
+    height: 23px;
     background: #fc0;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #300;
+    color: white;
     font-family: Poppins;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
     text-transform: uppercase;
-    top: 20px;
-    right: -16px;
+    top: 17px;
+    right: -19px;
+    text-shadow: 1px 1px 2px black;
   }
 }

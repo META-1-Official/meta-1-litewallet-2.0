@@ -208,13 +208,6 @@ function Application(props) {
               tendency: 'up',
               comparator: ['percentage', 1]
             }
-          },
-          {
-            usdt: {
-              toggle: true,
-              tendency: 'up',
-              comparator: ['price', 10]
-            }
           }
         ]
       }
