@@ -208,13 +208,6 @@ function Application(props) {
               tendency: 'up',
               comparator: ['percentage', 1]
             }
-          },
-          {
-            usdt: {
-              toggle: true,
-              tendency: 'up',
-              comparator: ['price', 10]
-            }
           }
         ]
       }
@@ -558,7 +551,7 @@ function Application(props) {
             webSocketFactory.connectionTries - 1;
 
           if (webSocketFactory.connectionTries > 0) {
-            // this.ws = null;
+            this.ws = null;
             setTimeout(() => _onSetupWebSocket(accountName), 5000);
           } else {
             throw new Error(

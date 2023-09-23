@@ -13,8 +13,10 @@ import { NotificationDetailModal } from './NotificationDetailModal';
 import { notificationsSelector } from '../../store/account/selector';
 import { useSelector } from 'react-redux';
 import { filterNotifications } from '../../utils/common';
+import Pagination from '@mui/material/Pagination';
 
 import styles from "./notification.module.scss";
+import "./notification.css";
 
 const Notifications = (props) => {
     const [detail, setDetail] = useState(0);
@@ -22,6 +24,7 @@ const Notifications = (props) => {
     const [notifications, setNotifications] = useState();
     const notificationState = useSelector(notificationsSelector);
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+    const [page, setPage] = useState(1);
 
     useEffect(() => {
         setNotifications(filterNotifications(notificationState));
@@ -57,39 +60,50 @@ const Notifications = (props) => {
         forceUpdate();
         setModalOpened(value);
     }
-    
+
+    const handlePageChange = (event, value) => {
+        setPage(value);
+    };
+
     return (
         <div className={styles.notifications}>
-            {
-                notifications && notifications.map((ele, index) => {
-                    var d = new Date(ele.createdAt);
-                    return (<div className={styles.notificationCard} onClick={() => handleClick(index)}>
-                        <img
-                            style={{ width: "40px", height: "40px" }}
-                            src={getItem(ele.category)}
-                            alt='meta1'
-                        />
-                        <div className={styles.info}>
-                            <div className={styles.time}>
-                                <div>
-                                    <h4>{ele.category}</h4>
-                                    <p>{ele.content}</p>
+            <div className={styles.notificationsWrapper}>
+                {
+                    notifications && notifications.map((ele, index) => {
+                        if (index >= page * 10 && (page + 1) * 10 > index) {
+                            var d = new Date(ele.createdAt);
+                            return (<div className={styles.notificationCard} onClick={() => handleClick(index)}>
+                                <div className={styles.logoWrapper}>
+                                <img
+                                    style={{ width: "30px", height: "30px" }}
+                                    src={getItem(ele.category)}
+                                    alt='meta1'
+                                />
                                 </div>
-                                <div>
-                                    <span>{ele.time}</span>
-                                    <img
-                                        style={{ width: "20px", height: "20px", marginLeft: '10px' }}
-                                        src={NotificationTimeIcon}
-                                        alt='meta1'
-                                        data-tooltip-id="time-tooltip"
-                                        data-tooltip-content={d.toLocaleString()}
-                                    />
+                                <div className={styles.info}>
+                                    <div className={styles.time}>
+                                        <div>
+                                            <h4>{ele.category}</h4>
+                                            <p>{ele.content}</p>
+                                        </div>
+                                        <div>
+                                            <span>{ele.time}</span>
+                                            <img
+                                                style={{ width: "20px", height: "20px", marginLeft: '10px' }}
+                                                src={NotificationTimeIcon}
+                                                alt='meta1'
+                                                data-tooltip-id="time-tooltip"
+                                                data-tooltip-content={d.toLocaleString()}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>)
-                })
-            }
+                            </div>)
+                        }
+                    })
+                }
+                {notifications && <Pagination count={Math.floor(notifications.length / 10)} page={page} onChange={handlePageChange} />}
+            </div>
             <Tooltip id="time-tooltip" style={{ backgroundColor: "rgb(80, 80, 80)" }} />
             <NotificationDetailModal detail={detail} isOpen={modalOpened} setModalOpened={(value) => handleModalToggle(value)} />
         </div>
