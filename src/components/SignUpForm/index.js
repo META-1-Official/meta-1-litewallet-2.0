@@ -415,6 +415,7 @@ export default function SignUpForm(props) {
               <RightSideHelpMenuFirstType
                 onClickExchangeAssetHandler={onClickExchangeAssetHandler}
                 portfolio={portfolio}
+                setActiveScreen={props.setActiveScreen}
               />
             </div>
           </div>

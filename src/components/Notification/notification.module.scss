@@ -31,7 +31,7 @@
   margin: 30px;
   border: 1px solid var(--borderColor);
   border-radius: 5px;
-  height: calc(100vh - 232px);
+  height: 100%;
 
   // Paddle
   &::after {

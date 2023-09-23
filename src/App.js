@@ -33,6 +33,7 @@ import {cryptoDataSelector, portfolioReceiverSelector } from "./store/meta1/sele
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder from "./components/OpenOrder";
 import Notifications from "./components/Notification/Notifications";
+import Announcements from "./components/Announcement/Announcements";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -721,6 +722,7 @@ function Application(props) {
                   signatureResult={signatureResult}
                   web3auth={web3auth}
                   assets={assets}
+                  setActiveScreen={setActiveScreen}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -837,6 +839,7 @@ function Application(props) {
                   }}
                   web3auth={web3auth}
                   assets={assets}
+                  setActiveScreen={setActiveScreen}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -1174,6 +1177,36 @@ function Application(props) {
                     </div>
                     <div className={"justFlexAndDirect justFlexAndDirectMobile"} style={{ backgroundColor: 'var(--backgroundColor2)' }} >
                       <Notifications />
+                    </div>
+                  </div>
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                      setIsSignatureProcessing(false);
+                    }}
+                  />
+                </div>
+              </>
+            )}
+            {activeScreen === "announcements" && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <div>
+                    <div className="notificationMainFlex" style={{ padding: "1.1rem 2rem" }}>
+                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                        <strong>All Annoucements</strong>
+                      </h5>
+                    </div>
+                    <div className={"justFlexAndDirect justFlexAndDirectMobile"} style={{ backgroundColor: 'var(--backgroundColor2)' }} >
+                      <Announcements />
                     </div>
                   </div>
                   <Footer

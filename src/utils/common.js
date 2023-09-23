@@ -106,7 +106,5 @@ export const filterNotifications = (n) => {
         return !flag;
     });
 
-
-    console.log(notifications);
     return notifications;
 }

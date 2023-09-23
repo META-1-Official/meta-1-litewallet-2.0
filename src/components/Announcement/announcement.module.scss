@@ -1,14 +1,14 @@
 // anouncement card
 .announcementCard {
     display: flex;
-    border-bottom: 1px solid var(--hrColor);
+    border-bottom: 1px solid var(--inputBorderColor);
     padding: 24px 0px;
     align-items: center;
     justify-content: space-between;
 }
 
 .info {
-    max-width: 520px;
+    // max-width: 520px;
 
     h4 {
         cursor: pointer;
@@ -18,6 +18,20 @@
         }
     }
 }
+
+.viewAll {
+    color: #FFC000;
+    font-family: Poppins;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-decoration-line: underline;
+    text-transform: capitalize;
+    margin-top: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
 
 .time {
     display: flex;
@@ -324,3 +338,13 @@
         font-weight: 600;
     }
 }
+
+.announcementsWrapper {
+    width: 100%;
+    background: var(--blockBgColor);
+    margin: 30px;
+    border: 1px solid var(--borderColor);
+    border-radius: 5px;
+    height: 100%;
+    padding: 20px;
+  }

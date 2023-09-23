@@ -83,7 +83,7 @@ const RightSideHelpMenuFirstType = (props) => {
         <h5 style={{ fontWeight: "bold", fontSize: "1rem" }}>Announcements</h5>
         <hr />
         <div className={styles.helpBlock}>
-          <Announcement />
+          <Announcement setActiveScreen={props.setActiveScreen}/>
         </div>
       </div>
     </>
