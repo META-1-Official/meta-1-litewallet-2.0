@@ -353,6 +353,7 @@ export default function LoginScreen(props) {
             <RightSideHelpMenuFirstType
               onClickExchangeAssetHandler={onClickExchangeAssetHandler}
               portfolio={portfolio}
+              setActiveScreen={props.setActiveScreen}
             />
           </div>
           <Modal

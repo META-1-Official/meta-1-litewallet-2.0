@@ -61,7 +61,7 @@ const Settings = (props) => {
   }
 
   useEffect(() => {
-    var conf = JSON.parse(localStorage.getItem("noti_conf"));    
+    var conf = JSON.parse(localStorage.getItem("noti_conf"));
     conf && setNotiMode(conf);
   }, [localStorage.getItem("noti_conf")]);
 
@@ -234,7 +234,7 @@ const Settings = (props) => {
     });
 
     localStorage.setItem('noti_conf', JSON.stringify(new_conf));
-    dispatch(getNotificationsRequest({login: accountNameState}));
+    dispatch(getNotificationsRequest({ login: accountNameState }));
     setNotiMode(new_conf);
     forceUpdate();
   }
@@ -254,7 +254,7 @@ const Settings = (props) => {
     });
 
     localStorage.setItem('noti_conf', JSON.stringify(new_conf));
-    dispatch(getNotificationsRequest({login: accountNameState}));
+    dispatch(getNotificationsRequest({ login: accountNameState }));
     setNotiMode(new_conf);
     forceUpdate();
   }
@@ -306,7 +306,7 @@ const Settings = (props) => {
     }
 
     localStorage.setItem('noti_conf', JSON.stringify(new_conf));
-    dispatch(getNotificationsRequest({login: accountNameState}));
+    dispatch(getNotificationsRequest({ login: accountNameState }));
     setNotiMode(new_conf);
     toast('Successfully saved your settings');
     forceUpdate();
@@ -329,7 +329,7 @@ const Settings = (props) => {
     })
 
     localStorage.setItem('noti_conf', JSON.stringify(new_conf));
-    dispatch(getNotificationsRequest({login: accountNameState}));
+    dispatch(getNotificationsRequest({ login: accountNameState }));
     setNotiMode(new_conf);
     toast('Successfully deleted.');
     forceUpdate();
@@ -631,18 +631,20 @@ const Settings = (props) => {
                         onChange={handleCoinSelect}
                       >
                         {process.env.REACT_APP_CRYPTOS_ARRAY.split(',').map(ele => {
-                          return <MenuItem value={ele} className="wallet-option">
-                            <div className="wallet-option-picture">
-                              <img alt="eth" src={getImage(ele)} />
-                            </div>
-                            <div>
-                              <div className="wallet-option-content__currency">
-                                <span className="wallet-option-content__name">
-                                  {ele}{" "}
-                                </span>
+                          if (ele !== 'USDT') {
+                            return <MenuItem value={ele} className="wallet-option">
+                              <div className="wallet-option-picture">
+                                <img alt="eth" src={getImage(ele)} />
                               </div>
-                            </div>
-                          </MenuItem>
+                              <div>
+                                <div className="wallet-option-content__currency">
+                                  <span className="wallet-option-content__name">
+                                    {ele}{" "}
+                                  </span>
+                                </div>
+                              </div>
+                            </MenuItem>
+                          }
                         })}
                       </Select>
                     </div>

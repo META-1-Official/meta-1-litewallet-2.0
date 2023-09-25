@@ -31,7 +31,7 @@
   margin: 30px;
   border: 1px solid var(--borderColor);
   border-radius: 5px;
-  height: calc(100vh - 232px);
+  height: 100%;
 
   // Paddle
   &::after {
@@ -216,5 +216,16 @@
       line-height: 22px;
       height: 500px;
     }
+  }
+}
+
+.logoWrapper {
+  background: var(--calendarItemBorderColor);
+  border-radius: 50%;
+  padding: 5px;
+
+  img {
+    width: 30px;
+    height: 30px;
   }
 }

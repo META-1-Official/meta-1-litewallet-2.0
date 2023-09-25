@@ -73,11 +73,13 @@ const Notifications = (props) => {
                         if (index >= page * 10 && (page + 1) * 10 > index) {
                             var d = new Date(ele.createdAt);
                             return (<div className={styles.notificationCard} onClick={() => handleClick(index)}>
+                                <div className={styles.logoWrapper}>
                                 <img
-                                    style={{ width: "40px", height: "40px" }}
+                                    style={{ width: "30px", height: "30px" }}
                                     src={getItem(ele.category)}
                                     alt='meta1'
                                 />
+                                </div>
                                 <div className={styles.info}>
                                     <div className={styles.time}>
                                         <div>

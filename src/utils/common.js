@@ -44,14 +44,19 @@ export const signUpHandler = async (login, password) => {
     return { status: false };
 }
 
-export const filterNotifications = (notifications) => {
+export const filterNotifications = (n) => {
     let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) ?? [];
     let notiConfig = JSON.parse(localStorage.getItem("noti_conf"));
 
-    notifications.map((ele, index) => {
+    let notifications = [...n];
+
+    let coinMove = notiConfig.coinMovements.reduce((prev, curr) => ({ ...prev, [Object.keys(curr)[0]]: curr[Object.keys(curr)[0]] }), {});
+    let specificNote = notiConfig.specNotification.reduce((prev, curr) => ({ ...prev, [Object.keys(curr)[0]]: curr[Object.keys(curr)[0]] }), {});
+
+    notifications = notifications.filter((ele) => {
         var flag = false;
         ele.time = moment(ele.createdAt).fromNow();
-        if (readNotifications.includes(ele.id)) notifications.splice(index, 1);
+        if (readNotifications.includes(ele.id)) return false;
 
         var category = '';
         if (ele.category === 'Created Order') {
@@ -72,46 +77,33 @@ export const filterNotifications = (notifications) => {
             var tendency = str_array[2].toLowerCase();
             var change = Math.abs(str_array[3].substring(0, str_array[3].length - 1));
 
-            notiConfig.coinMovements.map((e) => {
-                var obj_key, obj_value;
-                for (var key in e) {
-                    obj_key = key;
-                    obj_value = e[key];
-                }
-                
-                if (obj_key === symbol) {
-                    if (obj_value.toggle === false) { // filter enabled
-                        flag = true;
-                    } else {
-                        if (obj_value.tendency !== tendency && obj_value.comparator[1] !== 0) { // in case same tedency up-up down-down
-                            flag = true;
-                        } else {
-                            if (obj_value.comparator[0] === 'percentage') {  // comparator percentage
-                                if (change < obj_value.comparator[1]) flag = true;
-                            } else { // comparator price
-                                Apis.db.get_ticker('USDT', symbol.toUpperCase()).then(ticker => {
-                                    if (ticker.latest * change / 100 < obj_value.comparator[1]) flag = true;
-                                });
-                            }
-                        }
+            const obj_value = coinMove[symbol];
+
+            if (!obj_value) return true;
+            if (obj_value.toggle === false) { // filter enabled                        
+                flag = true;
+            } else {
+                if (obj_value.tendency !== tendency && obj_value.comparator[1] !== 0) { // in case same tedency up-up down-down
+                    flag = true;
+                } else {
+                    if (obj_value.comparator[0] === 'percentage') {  // comparator percentage
+                        if (change < obj_value.comparator[1]) flag = true;
+                    } else { // comparator price
+                        Apis.db.get_ticker('USDT', symbol.toUpperCase()).then(ticker => {
+                            if (ticker.latest * change / 100 < obj_value.comparator[1]) flag = true;
+                        });
                     }
                 }
-            });
+            }
         } else {
-            notiConfig.specNotification.map((e) => {
-                var obj_key, obj_value;
-                for (var key in e) {
-                    obj_key = key;
-                    obj_value = e[key];
-                }
-
-                if (obj_key === category && obj_value === false) {
-                    flag = true;
-                }
-            })
+            const obj_value = specificNote[category];
+            if (obj_value === null) return true;
+            if (obj_value === false) {
+                flag = true;
+            }
         }
 
-        if (flag) notifications.splice(index, 1);
+        return !flag;
     });
 
     return notifications;
