@@ -5,6 +5,9 @@ import DepositIcon from '../../images/deposit.png';
 import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
+import SendIcon from '../../images/send.png';
+import ReceiveIcon from '../../images/receive.png';
+import PriceChangeIcon from '../../images/price-change.png';
 import { useSelector } from 'react-redux';
 import { filterNotifications } from '../../utils/common';
 
@@ -12,7 +15,7 @@ import { NotificationItem } from './NotificationItem';
 import { NotificationDetailModal } from './NotificationDetailModal';
 
 import styles from "./notification.module.scss";
-import { notificationsSelector } from '../../store/account/selector';
+import { notificationsSelector, accountsSelector } from '../../store/account/selector';
 
 const Notification = (props) => {
     const { showAllNotifications } = props;
@@ -20,15 +23,16 @@ const Notification = (props) => {
     const [notifications, setNotifications] = useState();
     const [modalOpened, setModalOpened] = useState(false);
     const notificationState = useSelector(notificationsSelector);
+    const account = useSelector(accountsSelector);
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
 
     useEffect(() => {
-        setNotifications(filterNotifications(notificationState));
+        setNotifications(filterNotifications(notificationState, account));
     }, [notificationState]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setNotifications(filterNotifications(notificationState));
+            setNotifications(filterNotifications(notificationState, account));
         }, 10000);
         return () => clearTimeout(timer);
     }, []);
@@ -47,8 +51,12 @@ const Notification = (props) => {
                 return DepositIcon;
             case 'Withdraw':
                 return WithdrawlIcon;
+            case 'Send':
+                return SendIcon;
+            case 'Receive':
+                return ReceiveIcon;
             case 'Price Change':
-                return WithdrawlIcon;
+                return PriceChangeIcon;
             default:
                 return AnnouncementIcon;
         }

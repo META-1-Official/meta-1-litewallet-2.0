@@ -6,11 +6,13 @@ import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
 import PriceChangeIcon from '../../images/price-change.png';
+import SendIcon from '../../images/send.png';
+import ReceiveIcon from '../../images/receive.png';
 import NotificationTimeIcon from '../../images/notification-time.png';
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 import { NotificationDetailModal } from './NotificationDetailModal';
-import { notificationsSelector } from '../../store/account/selector';
+import { notificationsSelector, accountsSelector } from '../../store/account/selector';
 import { useSelector } from 'react-redux';
 import { filterNotifications } from '../../utils/common';
 import Pagination from '@mui/material/Pagination';
@@ -23,6 +25,7 @@ const Notifications = (props) => {
     const [modalOpened, setModalOpened] = useState(false);
     const [notifications, setNotifications] = useState();
     const notificationState = useSelector(notificationsSelector);
+    const account = useSelector(accountsSelector);
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const [page, setPage] = useState(1);
     const [count, setCount] = useState(1);
@@ -39,8 +42,8 @@ const Notifications = (props) => {
     }, []);
 
     const initData = () => {
-        let filtered = filterNotifications(notificationState);
-        let count = filtered.length % 10 === 0 ? Math.floor(filtered.length / 10): Math.floor(filtered.length / 10) + 1;
+        let filtered = filterNotifications(notificationState, account);
+        let count = filtered.length % 10 === 0 ? Math.floor(filtered.length / 10) : Math.floor(filtered.length / 10) + 1;
         setNotifications(filtered);
         setCount(count);
         if (page >= count) {
@@ -62,6 +65,10 @@ const Notifications = (props) => {
                 return DepositIcon;
             case 'Withdraw':
                 return WithdrawlIcon;
+            case 'Send':
+                return SendIcon;
+            case 'Receive':
+                return ReceiveIcon;
             case 'Price Change':
                 return PriceChangeIcon;
             default:
@@ -92,11 +99,11 @@ const Notifications = (props) => {
                             var d = new Date(ele.createdAt);
                             return (<div className={styles.notificationCard} onClick={() => handleClick(index)}>
                                 <div className={styles.logoWrapper}>
-                                <img
-                                    style={{ width: "30px", height: "30px" }}
-                                    src={getItem(ele.category)}
-                                    alt='meta1'
-                                />
+                                    <img
+                                        style={{ width: "30px", height: "30px" }}
+                                        src={getItem(ele.category)}
+                                        alt='meta1'
+                                    />
                                 </div>
                                 <div className={styles.info}>
                                     <div className={styles.time}>
