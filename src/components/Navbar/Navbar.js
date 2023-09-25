@@ -35,7 +35,8 @@ const Navbar = (props) => {
     portfolio,
     name,
     onClickResetIsSignatureProcessing,
-    setActiveScreen
+    setActiveScreen,
+    closeWebsocket
   } = props;
 
   const { innerWidth: width } = window;
@@ -48,6 +49,7 @@ const Navbar = (props) => {
 
   const handleClickLogout = () => {
     onClickResetIsSignatureProcessing();
+    closeWebsocket();
     dispatch(logoutRequest());
   }
 

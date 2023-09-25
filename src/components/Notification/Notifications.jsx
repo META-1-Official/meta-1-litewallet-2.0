@@ -28,21 +28,25 @@ const Notifications = (props) => {
     const [count, setCount] = useState(1);
 
     useEffect(() => {
+        initData();
+    }, [notificationState])
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            initData();
+        }, 10000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const initData = () => {
         let filtered = filterNotifications(notificationState);
-        let count = filtered.length % 10 === 0 ? Math.floor(filtered.length / 10) - 1 : Math.floor(filtered.length / 10);
+        let count = filtered.length % 10 === 0 ? Math.floor(filtered.length / 10): Math.floor(filtered.length / 10) + 1;
         setNotifications(filtered);
         setCount(count);
         if (page >= count) {
             setPage(count);
         }
-    }, [notificationState])
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setNotifications(filterNotifications(notificationState));
-        }, 5000);
-        return () => clearTimeout(timer);
-    }, []);
+    }
 
     const getItem = (category) => {
         switch (category) {
@@ -84,7 +88,7 @@ const Notifications = (props) => {
             <div className={styles.notificationsWrapper}>
                 {
                     notifications && notifications.map((ele, index) => {
-                        if (index >= page * 10 && (page + 1) * 10 > index) {
+                        if (index >= (page - 1) * 10 && (page) * 10 > index) {
                             var d = new Date(ele.createdAt);
                             return (<div className={styles.notificationCard} onClick={() => handleClick(index)}>
                                 <div className={styles.logoWrapper}>

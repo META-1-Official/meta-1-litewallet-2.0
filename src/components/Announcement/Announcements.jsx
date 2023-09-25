@@ -21,7 +21,7 @@ const Announcements = (props) => {
 
     useEffect(async () => {
         let announcements = await getAllAnnouncements();
-        let count = announcements.length % 10 === 0 ? Math.floor(announcements.length / 10) - 1 : Math.floor(announcements.length / 10);
+        let count = announcements.length % 10 === 0 ? Math.floor(announcements.length / 10) : Math.floor(announcements.length / 10) + 1;
         setData(announcements);
         setCount(count);
         if (page >= count) {
@@ -37,14 +37,15 @@ const Announcements = (props) => {
         <div className={styles.announcementsWrapper}>
             {
                 data ? data.map((ele, index) => {
-                    if (index >= page * 10 && (page + 1) * 10 > index) {
-                    return <AnnouncementCard
-                        title={ele.title}
-                        description={ele.description}
-                        time={moment(ele.announced_time).fromNow()}
-                        onClick={() => handleClick(index)}
-                    />
-                }}) : <div>No Annoucement</div>
+                    if (index >= (page - 1) * 10 && page * 10 > index) {
+                        return <AnnouncementCard
+                            title={ele.title}
+                            description={ele.description}
+                            time={moment(ele.announced_time).fromNow()}
+                            onClick={() => handleClick(index)}
+                        />
+                    }
+                }) : <div>No Annoucement</div>
             }
             {data && <Pagination count={count} page={page} onChange={handlePageChange} />}
             <AnnouncementDetailModal data={data} index={index} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />

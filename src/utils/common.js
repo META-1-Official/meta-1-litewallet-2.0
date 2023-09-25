@@ -55,7 +55,6 @@ export const filterNotifications = (n) => {
 
     notifications = notifications.filter((ele) => {
         var flag = false;
-        ele.time = moment(ele.createdAt).fromNow();
         if (readNotifications.includes(ele.id)) return false;
 
         var category = '';
@@ -111,6 +110,11 @@ export const filterNotifications = (n) => {
 
         return !flag;
     });
+
+    notifications = notifications.map((ele) => {        
+        ele.time = moment(ele.createdAt).fromNow();
+        return ele;
+    })
 
     return notifications;
 }

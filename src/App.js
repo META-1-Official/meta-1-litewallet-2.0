@@ -143,6 +143,7 @@ function Application(props) {
   const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] = useState(false);
   const [web3auth, setWeb3auth] = useState(null);
+  const [kafkaWebsocket, setKafkaWebSocket] = useState(null);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
@@ -535,11 +536,12 @@ function Application(props) {
         },
       };
 
-      const websocket = new webSocketFactory.connect(
+      let websocket = new webSocketFactory.connect(
         `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
 
       websocket.onmessage = (message) => {
+        console.log('@@@@message', message);
         var filter = filterNotifications([JSON.parse(message.data)]);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
@@ -549,20 +551,23 @@ function Application(props) {
       };
 
       websocket.onclose = (event) => {
-        if (event.code > 1001) {
-          webSocketFactory.connectionTries =
-            webSocketFactory.connectionTries - 1;
+        console.log('@@@@@abc', event);
+        setKafkaWebSocket(null);
 
-          if (webSocketFactory.connectionTries > 0) {
-            this.ws = null;
-            setTimeout(() => _onSetupWebSocket(accountName), 5000);
-          } else {
-            throw new Error(
-              'Maximum number of connection trials has been reached'
-            );
-          }
-        }
+        // if (event.code > 1001) {
+        //   webSocketFactory.connectionTries = webSocketFactory.connectionTries - 1;
+
+        //   if (webSocketFactory.connectionTries > 0) {
+        //     setTimeout(() => _onSetupWebSocket(accountName), 5000);
+        //   } else {
+        //     throw new Error(
+        //       'Maximum number of connection trials has been reached'
+        //     );
+        //   }
+        // }
       };
+
+      setKafkaWebSocket(websocket);
     } catch (e) {
       console.log('notification connection error', e);
     }
@@ -645,6 +650,7 @@ function Application(props) {
         themeSetter={themeChangeHandler}
         themeMode={selectedTheme}
         setActiveScreen={setActiveScreen}
+        closeWebsocket={() => kafkaWebsocket && kafkaWebsocket.close()}
       />
       <div className={"forAdapt"}>
         <LeftPanel

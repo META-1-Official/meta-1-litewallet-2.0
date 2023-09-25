@@ -204,8 +204,9 @@
 
   .modalBody {
     padding: 20px 40px;
-    overflow-y: auto;
+    overflow-y: hidden;
     margin-bottom: 30px;
+    max-height: 200px;
 
     p {
       color: var(--textBrown);

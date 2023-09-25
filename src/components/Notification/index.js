@@ -26,12 +26,12 @@ const Notification = (props) => {
         setNotifications(filterNotifications(notificationState));
     }, [notificationState]);
 
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         setNotifications(filterNotifications(notificationState));
-    //     }, 5000);
-    //     return () => clearTimeout(timer);
-    // }, []);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setNotifications(filterNotifications(notificationState));
+        }, 10000);
+        return () => clearTimeout(timer);
+    }, []);
 
     const getItem = (category) => {
         switch (category) {
