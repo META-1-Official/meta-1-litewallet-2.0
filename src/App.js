@@ -198,11 +198,11 @@ function Application(props) {
         specNotification: [
           { events: true },
           { announcements: true },
-          { deposits: true },
+          // { deposits: true },
           { send: true },
           { receive: true },
-          { tradeExcuted: true },
-          { tradeCanceled: true },
+          // { tradeExcuted: true },
+          // { tradeCanceled: true },
         ],
         coinMovements: [
           {
