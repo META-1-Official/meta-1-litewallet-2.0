@@ -41,7 +41,7 @@ const Announcements = (props) => {
                         return <AnnouncementCard
                             title={ele.title}
                             description={ele.description}
-                            time={moment(ele.announced_time).fromNow()}
+                            time={moment(ele.created_at).fromNow()}
                             onClick={() => handleClick(index)}
                         />
                     }
