@@ -12,10 +12,15 @@
 
     h4 {
         cursor: pointer;
+        color: var(--textBrown) !important;
 
         &:hover {
             text-decoration: underline;
         }
+    }
+
+    p {
+        color: var(--textBrown) !important;
     }
 }
 
