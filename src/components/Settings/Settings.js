@@ -23,6 +23,8 @@ import AnnouncementIcon from '../../images/announcements.png';
 import EventIcon from '../../images/events.png';
 import DepositIcon from '../../images/deposit.png';
 import WithdrawlIcon from '../../images/withdrawal.png';
+import SendIcon from '../../images/send.png';
+import ReceiveIcon from '../../images/receive.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
 
@@ -57,7 +59,9 @@ const Settings = (props) => {
     deposits: DepositIcon,
     withdrawals: WithdrawlIcon,
     tradeExcuted: OrderCreatedIcon,
-    tradeCanceled: OrderCancelledIcon
+    tradeCanceled: OrderCancelledIcon,
+    send: SendIcon,
+    receive: ReceiveIcon
   }
 
   useEffect(() => {

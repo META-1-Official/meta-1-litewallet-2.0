@@ -25,10 +25,24 @@ const Notifications = (props) => {
     const notificationState = useSelector(notificationsSelector);
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const [page, setPage] = useState(1);
+    const [count, setCount] = useState(1);
 
     useEffect(() => {
-        setNotifications(filterNotifications(notificationState));
+        let filtered = filterNotifications(notificationState);
+        let count = filtered.length % 10 === 0 ? Math.floor(filtered.length / 10) - 1 : Math.floor(filtered.length / 10);
+        setNotifications(filtered);
+        setCount(count);
+        if (page >= count) {
+            setPage(count);
+        }
     }, [notificationState])
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setNotifications(filterNotifications(notificationState));
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, []);
 
     const getItem = (category) => {
         switch (category) {
@@ -102,7 +116,7 @@ const Notifications = (props) => {
                         }
                     })
                 }
-                {notifications && <Pagination count={Math.floor(notifications.length / 10)} page={page} onChange={handlePageChange} />}
+                {notifications && <Pagination count={count} page={page} onChange={handlePageChange} />}
             </div>
             <Tooltip id="time-tooltip" style={{ backgroundColor: "rgb(80, 80, 80)" }} />
             <NotificationDetailModal detail={detail} isOpen={modalOpened} setModalOpened={(value) => handleModalToggle(value)} />

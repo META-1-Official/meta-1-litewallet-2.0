@@ -69,6 +69,12 @@ export const filterNotifications = (n) => {
             category = 'announcements';
         } else if (ele.category === 'Events') {
             category = 'events';
+        } else {
+            if (ele.content.includes('sent')) {
+                category = 'send';
+            } else if (ele.content.includes('received')) {
+                category = 'receive';
+            }
         }
 
         if (ele.category === 'Price Change') {
