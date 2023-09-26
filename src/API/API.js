@@ -594,3 +594,22 @@ export async function getNotifications(login) {
     return { message: "Something is wrong", error: true };
   }
 }
+
+export async function getFASToken(email, task) {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getFASToken`, { email, task })
+    return data;
+  } catch (error) {
+    return { message: "Something went wrong", error, }
+  }
+}
+
+
+export async function fasEnroll(email, privKey, fasToken) {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/fasEnroll`, { email, privKey, fasToken })
+    return data;
+  } catch (error) {
+    return { message: "Something went wrong", error, }
+  }
+}

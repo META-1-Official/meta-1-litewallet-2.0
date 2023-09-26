@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { getUserKycProfile, livenessCheck } from "../../API/API";
+import { fasEnroll, getFASToken, getUserKycProfile, livenessCheck } from '../../API/API';
 import useWidth from '../../lib/useWidth';
 import FASClient from '../../modules/biometric-auth/FASClient';
 
@@ -7,12 +7,15 @@ import "./login.css";
 import { TASK } from "../../modules/biometric-auth/constants/constants";
 
 export default function FaceKiForm(props) {
+  const { email, privKey, accountName } = props;
+
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [devices, setDevices] = useState([]);
   const [activeDeviceId, setActiveDeviceId] = useState('');
   const [numberOfCameras, setNumberOfCameras] = useState(0);
+  const [token, setToken] = useState(null);
 
   const width = useWidth();
 
@@ -34,13 +37,20 @@ export default function FaceKiForm(props) {
     canvas: 'Canvas is not supported.',
   }
 
+  useEffect(() => {
+    const data = getFASToken(email, TASK.VERIFY);
+    setToken(data.token);
+  }, []);
+
   const fasClient = useRef();
   useEffect(() => {
-    console.log('Loading fas');
-    if (fasClient.current) {
-      fasClient.current.load();
+    if (token) {
+      console.log('Loading fas');
+      if (fasClient.current) {
+        fasClient.current.load();
+      }
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (browserstack_test_accounts.includes(props.accountName))
@@ -85,23 +95,9 @@ export default function FaceKiForm(props) {
   }
 
   const videoVerify = async () => {
-    const { email, accountName } = props;
+    const { message } = await fasEnroll(email, privKey, token);
 
-    const response_user = await getUserKycProfile(email);
-
-    if (!response_user?.member1Name) {
-      alert(errorCase['Not Matched']);
-      return;
-    } else {
-      const walletArray = response_user.member1Name.split(',');
-
-      if (!walletArray.includes(accountName)) {
-        alert(errorCase['Not Matched']);
-        return;
-      }
-    }
-
-    if (bypass_wallets.includes(accountName)) {
+    if (message === "Successfully Enrolled") {
       setFaceKISuccess(true);
     } else {
       alert(errorCase['Verify Failed']);
@@ -137,7 +133,8 @@ export default function FaceKiForm(props) {
 
               <FASClient
                 ref={fasClient}
-                username={props.email}
+                token={token}
+                username={accountName}
                 task={TASK.VERIFY}
                 activeDeviceId={activeDeviceId}
                 onComplete={videoVerify}

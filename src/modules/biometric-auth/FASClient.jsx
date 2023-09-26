@@ -38,7 +38,7 @@ const FASClient = forwardRef((props, ref) => {
   const webcamRef = useRef(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [progress, setProgress] = useState(0.0);
-  const { username, task, activeDeviceId, onComplete, onFailure = () => {} } = props;
+  const { token, username, task, activeDeviceId, onComplete, onFailure = () => {} } = props;
 
   const updateWindowWidth = () => {
     setWindowWidth(window.innerWidth);
@@ -68,9 +68,7 @@ const FASClient = forwardRef((props, ref) => {
   const remoteVideoRef = useRef(null);
   const remoteVideoDisplayRef = useRef(null);
 
-  let jwtTokenRef = useRef(
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYXBwIiwiaWF0IjoxNjkyMjAzOTU4LCJleHAiOjI1OTIzMDQ1NTh9.nnF7sVYpWlLSLNn9ZPnSjlREWp3DEAaotTP2cfRxAZk',
-  ); // App Token
+  let jwtTokenRef = useRef(token);
 
   const jwtAuth = new JWTAuth();
 

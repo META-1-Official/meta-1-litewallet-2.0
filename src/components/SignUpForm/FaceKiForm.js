@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { enroll } from "../../API/API";
+import { enroll, fasEnroll, getFASToken } from '../../API/API';
 import "./SignUpForm.css";
 import useWidth from '../../lib/useWidth';
 import { TASK } from '../../modules/biometric-auth/constants/constants';
 import FASClient from '../../modules/biometric-auth/FASClient';
 
 export default function FaceKiForm(props) {
+  const { email, privKey, accountName } = props;
+
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -13,6 +15,7 @@ export default function FaceKiForm(props) {
   const [activeDeviceId, setActiveDeviceId] = useState('');
   const [numberOfCameras, setNumberOfCameras] = useState(0);
   const [task, setTask] = useState(TASK.REGISTER);
+  const [token, setToken] = useState(null);
 
   const width = useWidth();
 
@@ -36,13 +39,20 @@ export default function FaceKiForm(props) {
     canvas: 'Canvas is not supported.',
   }
 
+  useEffect(() => {
+    const data = getFASToken(email, task);
+    setToken(data.token);
+  }, []);
+
   const fasClient = useRef();
   useEffect(() => {
-    console.log('Loading fas');
-    if (fasClient.current) {
-      fasClient.current.load();
+    if (token) {
+      console.log('Loading fas');
+      if (fasClient.current) {
+        fasClient.current.load();
+      }
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     loadVideo(true);
@@ -87,9 +97,8 @@ export default function FaceKiForm(props) {
   }
 
   const faceEnroll = async () => {
-    const { privKey, email } = props;
     setVerifying(true);
-    const response = await enroll(email, privKey);
+    const response = await fasEnroll(email, privKey, token);
 
     if (!response) {
       alert(errorCase['Biometic Server Error']);
@@ -105,7 +114,7 @@ export default function FaceKiForm(props) {
 
   const onFailure = () => {
     alert('Email is already enrolled, please verify yourself');
-    setTask(TASK.REGISTER);
+    // setTask(TASK.REGISTER);
   }
 
   const camWidth = width > 576 ? 600 : width - 30;
@@ -134,7 +143,8 @@ export default function FaceKiForm(props) {
 
                 <FASClient
                   ref={fasClient}
-                  username={props.email}
+                  token={token}
+                  username={accountName}
                   task={task}
                   activeDeviceId={activeDeviceId}
                   onComplete={faceEnroll}
