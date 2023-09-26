@@ -551,20 +551,19 @@ function Application(props) {
       };
 
       websocket.onclose = (event) => {
-        console.log('@@@@@abc', event);
         setKafkaWebSocket(null);
 
-        // if (event.code > 1001) {
-        //   webSocketFactory.connectionTries = webSocketFactory.connectionTries - 1;
+        if (event.code > 1001) {
+          webSocketFactory.connectionTries = webSocketFactory.connectionTries - 1;
 
-        //   if (webSocketFactory.connectionTries > 0) {
-        //     setTimeout(() => _onSetupWebSocket(accountName), 5000);
-        //   } else {
-        //     throw new Error(
-        //       'Maximum number of connection trials has been reached'
-        //     );
-        //   }
-        // }
+          if (webSocketFactory.connectionTries > 0) {
+            setTimeout(() => _onSetupWebSocket(accountName), 5000);
+          } else {
+            throw new Error(
+              'Maximum number of connection trials has been reached'
+            );
+          }
+        }
       };
 
       setKafkaWebSocket(websocket);

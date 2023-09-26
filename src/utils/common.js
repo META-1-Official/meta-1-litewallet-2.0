@@ -109,6 +109,10 @@ export const filterNotifications = (n, accountName) => {
             if (accountName && str_array[str_array.length - 1] === accountName) {
                 flag = true;
             }
+
+            if (!str_array.includes(accountName)) {
+                flag = true;
+            }
         }
 
         return !flag;
