@@ -3,7 +3,7 @@ import styles from "./announcement.module.scss";
 
 import { Modal } from "semantic-ui-react";
 import MicroPhoneIcon from "../../images/microphone.png";
-import Utils from '../../utils/utils';
+import moment from 'moment';
 
 export const AnnouncementDetailModal = (props) => {
     const { data, index } = props;
@@ -30,7 +30,7 @@ export const AnnouncementDetailModal = (props) => {
                                 </div>
                                 <div className={styles.titleWrapper}>
                                     <span className={styles.title}>{detail?.title}</span>
-                                    <div className={styles.time}>{Utils.get_time_diff(detail?.created_at)}</div>
+                                    <div className={styles.time}>{moment(detail?.created_at).fromNow()}</div>
                                 </div>
                             </div>
                             <div className={styles.cancelBtn} onClick={() => props.setModalOpened(false)}>X</div>

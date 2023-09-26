@@ -4,22 +4,29 @@ import styles from "./announcement.module.scss";
 import { Modal } from "semantic-ui-react";
 import TimerIcon from "../../images/timer.png";
 import LocationIcon from "../../images/location.png";
-
-import { getEventsInMonth } from '../../API/API';
+import { toast } from 'react-toastify';
 
 export const UpComingEventDetailModal = (props) => {
-    const {data, date} = props;
+    const { data, date } = props;
     const [detail, setDetail] = useState([]);
 
     useEffect(() => {
         if (data) {
             let events = data[date.getDate()];
             events && setDetail(events[0]);
-        }        
+        }
     }, [data, date]);
 
     const isPastEvent = () => {
         return new Date() > date;
+    }
+
+    const handleRegister = () => {
+        if (detail?.registration)
+            window.open(detail.registration);
+        else {
+            toast('Registration is not ready yet.');
+        }
     }
 
     return (
@@ -56,11 +63,14 @@ export const UpComingEventDetailModal = (props) => {
                     <p className={styles.infoText}>
                         {detail?.description}
                     </p>
+                    <p className={styles.infoText}>
+                        {detail?.registration}
+                    </p>
                     <div className={styles.splitterLine} />
                     <div className={styles.actionWrapper}>
                         <button
                             className={styles.actionBtn}
-                            onClick={() => console.log('registernow')}
+                            onClick={handleRegister}
                             disabled={isPastEvent()}
                             style={{
                                 cursor: isPastEvent() ? 'not-allowed' : 'pointer',

@@ -143,6 +143,7 @@ function Application(props) {
   const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] = useState(false);
   const [web3auth, setWeb3auth] = useState(null);
+  const [kafkaWebsocket, setKafkaWebSocket] = useState(null);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
@@ -198,9 +199,11 @@ function Application(props) {
         specNotification: [
           { events: true },
           { announcements: true },
-          { deposits: true },
-          { tradeExcuted: true },
-          { tradeCanceled: true },
+          // { deposits: true },
+          { send: true },
+          { receive: true },
+          // { tradeExcuted: true },
+          // { tradeCanceled: true },
         ],
         coinMovements: [
           {
@@ -533,12 +536,13 @@ function Application(props) {
         },
       };
 
-      const websocket = new webSocketFactory.connect(
+      let websocket = new webSocketFactory.connect(
         `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
 
       websocket.onmessage = (message) => {
-        var filter = filterNotifications([JSON.parse(message.data)]);
+        console.log('@@@@message', message);
+        var filter = filterNotifications([JSON.parse(message.data)], accountName);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
           toast(content);
@@ -547,12 +551,12 @@ function Application(props) {
       };
 
       websocket.onclose = (event) => {
+        setKafkaWebSocket(null);
+
         if (event.code > 1001) {
-          webSocketFactory.connectionTries =
-            webSocketFactory.connectionTries - 1;
+          webSocketFactory.connectionTries = webSocketFactory.connectionTries - 1;
 
           if (webSocketFactory.connectionTries > 0) {
-            this.ws = null;
             setTimeout(() => _onSetupWebSocket(accountName), 5000);
           } else {
             throw new Error(
@@ -561,6 +565,8 @@ function Application(props) {
           }
         }
       };
+
+      setKafkaWebSocket(websocket);
     } catch (e) {
       console.log('notification connection error', e);
     }
@@ -643,6 +649,7 @@ function Application(props) {
         themeSetter={themeChangeHandler}
         themeMode={selectedTheme}
         setActiveScreen={setActiveScreen}
+        closeWebsocket={() => kafkaWebsocket && kafkaWebsocket.close()}
       />
       <div className={"forAdapt"}>
         <LeftPanel

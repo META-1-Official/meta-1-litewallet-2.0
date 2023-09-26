@@ -12,10 +12,15 @@
 
     h4 {
         cursor: pointer;
+        color: var(--textBrown) !important;
 
         &:hover {
             text-decoration: underline;
         }
+    }
+
+    p {
+        color: var(--textBrown) !important;
     }
 }
 
@@ -34,11 +39,12 @@
   }
 
 .time {
+    padding: 5px;
     display: flex;
     border: none;
     border-radius: 3px;
     height: 25px;
-    width: 100px;
+    width: fit-content;
     background: var(--lightGold);
     color: rgba(51, 0, 0, 0.90);
     font-family: Poppins;
@@ -215,7 +221,6 @@
                     border: none;
                     border-radius: 3px;
                     height: 25px;
-                    width: 100px;
                     background: rgba(255, 255, 255, 0.70);
                     color: #471300;
                     text-align: center;
@@ -264,7 +269,9 @@
             font-style: normal;
             font-weight: 400;
             line-height: 22px;
-            height: 500px;
+            min-height: 100px;
+            max-height: 500px;
+            word-wrap: break-word;
         }
     }
 }

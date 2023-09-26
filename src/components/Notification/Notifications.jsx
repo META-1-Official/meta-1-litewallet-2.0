@@ -6,11 +6,13 @@ import WithdrawlIcon from '../../images/withdrawal.png';
 import OrderCreatedIcon from '../../images/order-created.png';
 import OrderCancelledIcon from '../../images/order-cancelled.png';
 import PriceChangeIcon from '../../images/price-change.png';
+import SendIcon from '../../images/send.png';
+import ReceiveIcon from '../../images/receive.png';
 import NotificationTimeIcon from '../../images/notification-time.png';
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 import { NotificationDetailModal } from './NotificationDetailModal';
-import { notificationsSelector } from '../../store/account/selector';
+import { notificationsSelector, accountsSelector } from '../../store/account/selector';
 import { useSelector } from 'react-redux';
 import { filterNotifications } from '../../utils/common';
 import Pagination from '@mui/material/Pagination';
@@ -23,12 +25,31 @@ const Notifications = (props) => {
     const [modalOpened, setModalOpened] = useState(false);
     const [notifications, setNotifications] = useState();
     const notificationState = useSelector(notificationsSelector);
+    const account = useSelector(accountsSelector);
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
     const [page, setPage] = useState(1);
+    const [count, setCount] = useState(1);
 
     useEffect(() => {
-        setNotifications(filterNotifications(notificationState));
+        initData();
     }, [notificationState])
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            initData();
+        }, 10000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const initData = () => {
+        let filtered = filterNotifications(notificationState, account);
+        let count = filtered.length % 10 === 0 ? Math.floor(filtered.length / 10) : Math.floor(filtered.length / 10) + 1;
+        setNotifications(filtered);
+        setCount(count);
+        if (page >= count) {
+            setPage(count);
+        }
+    }
 
     const getItem = (category) => {
         switch (category) {
@@ -44,6 +65,10 @@ const Notifications = (props) => {
                 return DepositIcon;
             case 'Withdraw':
                 return WithdrawlIcon;
+            case 'Send':
+                return SendIcon;
+            case 'Receive':
+                return ReceiveIcon;
             case 'Price Change':
                 return PriceChangeIcon;
             default:
@@ -69,16 +94,16 @@ const Notifications = (props) => {
         <div className={styles.notifications}>
             <div className={styles.notificationsWrapper}>
                 {
-                    notifications && notifications.map((ele, index) => {
-                        if (index >= page * 10 && (page + 1) * 10 > index) {
+                    notifications ? notifications.map((ele, index) => {
+                        if (index >= (page - 1) * 10 && (page) * 10 > index) {
                             var d = new Date(ele.createdAt);
                             return (<div className={styles.notificationCard} onClick={() => handleClick(index)}>
                                 <div className={styles.logoWrapper}>
-                                <img
-                                    style={{ width: "30px", height: "30px" }}
-                                    src={getItem(ele.category)}
-                                    alt='meta1'
-                                />
+                                    <img
+                                        style={{ width: "30px", height: "30px" }}
+                                        src={getItem(ele.category)}
+                                        alt='meta1'
+                                    />
                                 </div>
                                 <div className={styles.info}>
                                     <div className={styles.time}>
@@ -100,9 +125,9 @@ const Notifications = (props) => {
                                 </div>
                             </div>)
                         }
-                    })
+                    }) : <div>No Notifications</div>
                 }
-                {notifications && <Pagination count={Math.floor(notifications.length / 10)} page={page} onChange={handlePageChange} />}
+                {notifications && <Pagination count={count} page={page} onChange={handlePageChange} />}
             </div>
             <Tooltip id="time-tooltip" style={{ backgroundColor: "rgb(80, 80, 80)" }} />
             <NotificationDetailModal detail={detail} isOpen={modalOpened} setModalOpened={(value) => handleModalToggle(value)} />

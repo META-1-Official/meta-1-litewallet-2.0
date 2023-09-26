@@ -28,7 +28,7 @@ export const Announcement = (props) => {
                     return index < 3 && <AnnouncementCard
                         title={ele.title}
                         description={ele.description}
-                        time={moment(ele.announced_time).fromNow()}
+                        time={moment(ele.created_at).fromNow()}
                         onClick={() => handleClick(index)}
                     />
                 }) : <div>No Annoucement</div>

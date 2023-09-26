@@ -5,7 +5,7 @@ import logo from "../../images/Logo.png";
 import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutRequest } from "../../store/account/actions";
-import { navbarProfileImageSelector, notificationsSelector } from "../../store/account/selector";
+import { navbarProfileImageSelector, notificationsSelector, accountsSelector } from "../../store/account/selector";
 import NotiIcon from "../../images/notification.png";
 import { filterNotifications } from "../../utils/common";
 
@@ -20,6 +20,7 @@ const Navbar = (props) => {
   const navbarProfileImageState = useSelector(navbarProfileImageSelector);
   const [notifications, setNotifications] = useState();
   const notificationState = useSelector(notificationsSelector);
+  const account = useSelector(accountsSelector);
 
   const {
     onClickHomeHandler,
@@ -35,7 +36,8 @@ const Navbar = (props) => {
     portfolio,
     name,
     onClickResetIsSignatureProcessing,
-    setActiveScreen
+    setActiveScreen,
+    closeWebsocket
   } = props;
 
   const { innerWidth: width } = window;
@@ -48,6 +50,7 @@ const Navbar = (props) => {
 
   const handleClickLogout = () => {
     onClickResetIsSignatureProcessing();
+    closeWebsocket();
     dispatch(logoutRequest());
   }
 
@@ -61,7 +64,7 @@ const Navbar = (props) => {
   }
 
   useEffect(() => {
-    setNotifications(filterNotifications(notificationState));
+    setNotifications(filterNotifications(notificationState, account));
   }, [notificationState])
 
   return (

@@ -1,8 +1,8 @@
 import Meta1 from "meta1-vision-dex";
-import {Apis} from 'meta1-vision-ws';
+import { Apis } from 'meta1-vision-ws';
 import moment from 'moment';
 
-export const sleepHandler = (ms) =>  {
+export const sleepHandler = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 const isUserExistHandler = async (login, password, checkCount, status) => {
@@ -13,8 +13,8 @@ const isUserExistHandler = async (login, password, checkCount, status) => {
             status = true;
         }
         return { status };
-    } catch(err) {
-        if (checkCount === 10 ){
+    } catch (err) {
+        if (checkCount === 10) {
             status = false;
             return { status };
         }
@@ -44,7 +44,7 @@ export const signUpHandler = async (login, password) => {
     return { status: false };
 }
 
-export const filterNotifications = (n) => {
+export const filterNotifications = (n, accountName) => {
     let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) ?? [];
     let notiConfig = JSON.parse(localStorage.getItem("noti_conf"));
 
@@ -55,7 +55,6 @@ export const filterNotifications = (n) => {
 
     notifications = notifications.filter((ele) => {
         var flag = false;
-        ele.time = moment(ele.createdAt).fromNow();
         if (readNotifications.includes(ele.id)) return false;
 
         var category = '';
@@ -63,12 +62,14 @@ export const filterNotifications = (n) => {
             category = 'tradeExcuted';
         } else if (ele.category === 'Cancelled Order') {
             category = 'tradeCanceled';
-        } else if (ele.category === 'Deposit') {
-            category = 'deposits';
         } else if (ele.category === 'Announcements') {
             category = 'announcements';
         } else if (ele.category === 'Events') {
             category = 'events';
+        } else if (ele.category === 'Send') {
+            category = 'send';
+        } else if (ele.category === 'Receive') {
+            category = 'receive';
         }
 
         if (ele.category === 'Price Change') {
@@ -103,8 +104,24 @@ export const filterNotifications = (n) => {
             }
         }
 
+        if (ele.category === 'Send' || ele.category === 'Receive') {
+            var str_array = ele.content.split(' ');
+            if (accountName && str_array[str_array.length - 1] === accountName) {
+                flag = true;
+            }
+
+            if (!str_array.includes(accountName)) {
+                flag = true;
+            }
+        }
+
         return !flag;
     });
+
+    notifications = notifications.map((ele) => {
+        ele.time = moment(ele.createdAt).fromNow();
+        return ele;
+    })
 
     return notifications;
 }

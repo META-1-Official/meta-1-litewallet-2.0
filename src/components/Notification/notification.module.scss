@@ -162,6 +162,7 @@
         }
 
         .time {
+          padding: 5px;
           display: flex;
           border: none;
           border-radius: 3px;
@@ -214,7 +215,9 @@
       font-style: normal;
       font-weight: 400;
       line-height: 22px;
-      height: 500px;
+      min-height: 100px;
+      max-height: 500px;
+      word-wrap: break-word;
     }
   }
 }
