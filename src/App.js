@@ -1,5 +1,3 @@
-import axios from "axios";
-import { PrivateKey, Signature } from "meta1-vision-js";
 import "regenerator-runtime/runtime";
 import TradeWithPassword from "./lib/TradeWithPassword";
 import SendWithPassword from "./lib/SendWithPassword";
@@ -7,7 +5,7 @@ import fetchDepositAddress from "./lib/fetchDepositAddress";
 import Portfolio from "./lib/Portfolio";
 import { checkToken } from "./API/API";
 import React, { useState, useEffect } from "react";
-import { getUserData, changeLastLocation, getLastLocation, sendEmail } from "./API/API";
+import { sendEmail } from "./API/API";
 import SignUpForm from "./components/SignUpForm";
 import DepositForm from "./components/DepositForm";
 import WithdrawForm from "./components/WithdrawForm";
@@ -16,7 +14,6 @@ import SendForm from "./components/SendForm";
 import LoginScreen from "./components/LoginScreen";
 import Wallet from "./components/Wallet";
 import Settings from "./components/Settings/Settings";
-import "./App.css";
 import Meta1 from "meta1-vision-dex";
 import MetaLoader from "./UI/loader/Loader";
 import DisconnectedInternet from "./UI/loader/DisconnectedInternet";
@@ -30,23 +27,45 @@ import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken } from "./utils/localstorage";
 import { useDispatch, useSelector } from "react-redux";
-import { accountsSelector, tokenSelector, loaderSelector, isLoginSelector, loginErrorSelector, demoSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
-import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService } from "./store/account/actions";
-import { checkPasswordObjSelector, cryptoDataSelector, meta1Selector, portfolioReceiverSelector, senderApiSelector, traderSelector } from "./store/meta1/selector";
+import { accountsSelector, loaderSelector, isLoginSelector, loginErrorSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
+import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService, getNotificationsRequest } from "./store/account/actions";
+import {cryptoDataSelector, portfolioReceiverSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder from "./components/OpenOrder";
+import Notifications from "./components/Notification/Notifications";
+import Announcements from "./components/Announcement/Announcements";
 import CustomizeColumns from "./components/OpenOrder/CustomizedColumns";
-import { useQuery } from "react-query";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Worker } from '@react-pdf-viewer/core';
 import * as Sentry from '@sentry/react';
+import { getTheme, setTheme } from './utils/storage';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
+import "./App.css";
 
 // for the cache purpose
 import AppStore from "./images/app-store.png";
 import GooglePlay from "./images/google-play.png";
 import OfflineIcon from "./images/offline.png";
+import { filterNotifications } from "./utils/common";
+
+const chainConfig = {
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  chainId: "0x1",
+  rpcTarget: "https://rpc.ankr.com/eth",
+  blockExplorer: "https://goerli.etherscan.io",
+  ticker: "ETH",
+  tickerName: "Ethereum",
+}
+
+const privateKeyProvider = new EthereumPrivateKeyProvider({
+  config: { chainConfig },
+});
 
 const openloginAdapter = new OpenloginAdapter({
   adapterSettings: {
@@ -55,31 +74,27 @@ const openloginAdapter = new OpenloginAdapter({
       name: "META1",
       logoLight: "https://pbs.twimg.com/profile_images/980143928769839105/hK3RnAff_400x400.jpg",
       defaultLanguage: "en",
-      dark: false,
+      dark: getTheme('theme') === "dark" ? true : false,
     }
   },
+  privateKeyProvider
 });
+
 
 window.Meta1 = Meta1;
 function Application(props) {
   const accountNameState = useSelector(accountsSelector);
   const isLoginState = useSelector(isLoginSelector);
-  const tokenState = useSelector(tokenSelector);
   const loaderState = useSelector(loaderSelector);
   const loginErrorState = useSelector(loginErrorSelector);
   const isTokenValidState = useSelector(isTokenValidSelector);
   const userDataState = useSelector(userDataSelector);
   const errorMsgState = useSelector(errorMsgSelector);
-  const demoState = useSelector(demoSelector);
-  const meta1State = useSelector(meta1Selector);
   const cryptoDataState = useSelector(cryptoDataSelector);
   const fromSignUpState = useSelector(fromSignUpSelector);
   const portfolioReceiverState = useSelector(portfolioReceiverSelector);
-  const traderState = useSelector(traderSelector);
-  const checkPasswordObjState = useSelector(checkPasswordObjSelector);
-  const senderApiState = useSelector(senderApiSelector);
   const checkTransferableModelState = useSelector(checkTransferableModelSelector);
-
+  const [selectedTheme, setSelectedTheme] = useState(getTheme('theme'));
 
   const { metaUrl } = props;
   const domAccount =
@@ -128,21 +143,12 @@ function Application(props) {
   const [fetchAssetModalOpen, setFetchAssetModalOpen] = useState(false);
   const [passwordShouldBeProvided, setPasswordShouldBeProvided] = useState(false);
   const [web3auth, setWeb3auth] = useState(null);
+  const [kafkaWebsocket, setKafkaWebSocket] = useState(null);
   const dispatch = useDispatch();
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
-
-  const updateBalances = () => {
-    if (portfolioReceiverState && accountName && !passwordShouldBeProvided) {
-      refetchPortfolio();
-    }
-  }
-
-  const newUpdatedBalance = useQuery(['updateBalance'], updateBalances, {
-    refetchInterval: 20000
-  });
-
+  
   // Online state
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -171,13 +177,8 @@ function Application(props) {
         const web3auth = new Web3AuthNoModal({
           clientId: process.env.REACT_APP_TORUS_PROJECT_ID,
           web3AuthNetwork: process.env.REACT_APP_TORUS_NETWORK,
-          chainConfig: {
-            chainNamespace: CHAIN_NAMESPACES.EIP155,
-            rpcTarget: "https://rpc.ankr.com/eth",
-            chainId: "0x1",
-          }
+          chainConfig
         });
-
         web3auth.configureAdapter(openloginAdapter);
         setWeb3auth(web3auth);
         await web3auth.init();
@@ -187,9 +188,36 @@ function Application(props) {
     };
 
     init();
+    initNotificationConfig();
     _enablePersistingLog();
   }, []);
 
+  const initNotificationConfig = () => {
+    var conf = JSON.parse(localStorage.getItem("noti_conf"));
+    if (!conf) {
+      conf = {
+        specNotification: [
+          { events: true },
+          { announcements: true },
+          // { deposits: true },
+          { send: true },
+          { receive: true },
+          // { tradeExcuted: true },
+          // { tradeCanceled: true },
+        ],
+        coinMovements: [
+          {
+            meta1: {
+              toggle: true,
+              tendency: 'up',
+              comparator: ['percentage', 1]
+            }
+          }
+        ]
+      }
+    }
+    localStorage.setItem('noti_conf', JSON.stringify(conf));
+  }
 
   const _enablePersistingLog = () => {
     const thiz = this;
@@ -311,7 +339,8 @@ function Application(props) {
     }
     if (accountNameState) {
       setLoginDataError(false);
-      onLogin(accountNameState, false)
+      onLogin(accountNameState, false);
+      _onSetupWebSocket(accountNameState);
       if (fromSignUp) {
         setPortfolio(null);
         setRefreshData(prev => !prev);
@@ -350,6 +379,16 @@ function Application(props) {
       dispatch(setUserCurrencyAction(userCurrencyData))
     }
   }, [cryptoDataState]);
+
+  // theme change
+  useEffect(() => {
+    const widget = document.getElementsByTagName("body");
+    if (selectedTheme === 'light') {
+      widget[0].className = '';
+    } else {
+      widget[0].className = "theme-dark";
+    }
+  }, [selectedTheme]);
 
   useEffect(() => {
     if (!isTokenValidState) {
@@ -444,7 +483,8 @@ function Application(props) {
               checkPasswordObj,
               senderApi: sendWithPasswordObj
             };
-            dispatch(meta1ConnectSuccess(obj))
+            dispatch(meta1ConnectSuccess(obj));
+            console.log('meta1 node connected.');
           }
         },
         () => {
@@ -454,6 +494,7 @@ function Application(props) {
       );
     }
     connect();
+    dispatch(getNotificationsRequest({ login: accountNameState }));
   }, [accountNameState]);
 
   function refetchPortfolio() {
@@ -478,12 +519,71 @@ function Application(props) {
     setActiveScreen("wallet");
   };
 
+  const _onSetupWebSocket = (accountName) => {
+    try {
+      const webSocketFactory = {
+        connectionTries: 5,
+        connect: function (url) {
+          let ws = new WebSocket(url);
+          ws.onerror = (error) => {
+            console.log('websocket error', error);
+          };
+          ws.onopen = () => {
+            console.log('setup notification websocket');
+            webSocketFactory.connectionTries = 5;
+          };
+          return ws;
+        },
+      };
+
+      let websocket = new webSocketFactory.connect(
+        `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
+      );
+
+      websocket.onmessage = (message) => {
+        console.log('@@@@message', message);
+        var filter = filterNotifications([JSON.parse(message.data)]);
+        if (message && message.data && filter.length > 0) {
+          const content = JSON.parse(message.data).content;
+          toast(content);
+          dispatch(getNotificationsRequest({ login: accountName }));
+        }
+      };
+
+      websocket.onclose = (event) => {
+        setKafkaWebSocket(null);
+
+        if (event.code > 1001) {
+          webSocketFactory.connectionTries = webSocketFactory.connectionTries - 1;
+
+          if (webSocketFactory.connectionTries > 0) {
+            setTimeout(() => _onSetupWebSocket(accountName), 5000);
+          } else {
+            throw new Error(
+              'Maximum number of connection trials has been reached'
+            );
+          }
+        }
+      };
+
+      setKafkaWebSocket(websocket);
+    } catch (e) {
+      console.log('notification connection error', e);
+    }
+  }
+
   if (!isOnline) {
-    return <DisconnectedInternet appStoreIcon={AppStore} googlePlayIcon={GooglePlay} offlineIcon={OfflineIcon}/>;
+    return <DisconnectedInternet appStoreIcon={AppStore} googlePlayIcon={GooglePlay} offlineIcon={OfflineIcon} />;
   }
 
   if (isLoading || loaderState || activeScreen == null) {
     return <MetaLoader size={"large"} />;
+  }
+
+  const themeChangeHandler = () => {
+    const newTheme = selectedTheme === "light" ? "dark" : "light";
+    setSelectedTheme(newTheme);
+    setTheme('theme', newTheme);
   }
 
   return (
@@ -546,6 +646,10 @@ function Application(props) {
         portfolio={portfolio}
         name={accountName}
         activeScreen={activeScreen}
+        themeSetter={themeChangeHandler}
+        themeMode={selectedTheme}
+        setActiveScreen={setActiveScreen}
+        closeWebsocket={() => kafkaWebsocket && kafkaWebsocket.close()}
       />
       <div className={"forAdapt"}>
         <LeftPanel
@@ -625,6 +729,7 @@ function Application(props) {
                   signatureResult={signatureResult}
                   web3auth={web3auth}
                   assets={assets}
+                  setActiveScreen={setActiveScreen}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -710,7 +815,6 @@ function Application(props) {
                 />
               </div>
             )}
-
             {activeScreen === "login" && (
               <div
                 style={{
@@ -742,6 +846,7 @@ function Application(props) {
                   }}
                   web3auth={web3auth}
                   assets={assets}
+                  setActiveScreen={setActiveScreen}
                 />
                 <Footer
                   onClickHomeHandler={(e) => {
@@ -871,7 +976,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="headerBlock">
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Portfolio</strong>
                       </h5>
@@ -950,7 +1055,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="paperWallet" style={{ padding: "1.1rem 2rem" }}>
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Paper Wallet</strong>
                       </h5>
@@ -980,7 +1085,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="headerBlock">
                       <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                         <strong>Transaction History</strong>
                       </h5>
@@ -996,7 +1101,8 @@ function Application(props) {
                       </div>
                       <div className={"bottomAdaptBlock margin-class newBottomAdaptBlock"}>
                         <RightSideHelpMenuSecondType
-                          onClickExchangeUSDTHandler={(e, asset) => {
+                          onClickExchangeAssetHandler={(e, asset) => {
+                            console.log('@@@@@order')
                             e.preventDefault();
                             setTradeAsset(asset);
                             setActiveScreen("exchange");
@@ -1028,7 +1134,7 @@ function Application(props) {
                   }}
                 >
                   <div>
-                    <div className="orderOrderMainFlex" style={{ background: "#fff", padding: "1.1rem 2rem" }}>
+                    <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
                       <div>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
                           <strong>Open Order</strong>
@@ -1048,6 +1154,66 @@ function Application(props) {
                           portfolio={portfolio}
                         />
                       </div>
+                    </div>
+                  </div>
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                      setIsSignatureProcessing(false);
+                    }}
+                  />
+                </div>
+              </>
+            )}
+            {activeScreen === "notifications" && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <div>
+                    <div className="notificationMainFlex" style={{ padding: "1.1rem 2rem" }}>
+                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                        <strong>All Notifications</strong>
+                      </h5>
+                    </div>
+                    <div className={"justFlexAndDirect justFlexAndDirectMobile"} style={{ backgroundColor: 'var(--backgroundColor2)' }} >
+                      <Notifications />
+                    </div>
+                  </div>
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                      setIsSignatureProcessing(false);
+                    }}
+                  />
+                </div>
+              </>
+            )}
+            {activeScreen === "announcements" && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <div>
+                    <div className="notificationMainFlex" style={{ padding: "1.1rem 2rem" }}>
+                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                        <strong>All Annoucements</strong>
+                      </h5>
+                    </div>
+                    <div className={"justFlexAndDirect justFlexAndDirectMobile"} style={{ backgroundColor: 'var(--backgroundColor2)' }} >
+                      <Announcements />
                     </div>
                   </div>
                   <Footer
@@ -1093,7 +1259,7 @@ function Application(props) {
             onClick={() => {
               setTokenModalOpen(false);
               setIsSignatureProcessing(false);
-              dispatch(logoutRequest())
+              dispatch(logoutRequest());
             }}
           >
             OK
@@ -1184,7 +1350,6 @@ function Application(props) {
         <Modal.Content >
           <div
             className="claim_wallet_btn_div"
-
           >
             <h3 className="claim_model_content">
               Hello {accountName}<br />
@@ -1202,9 +1367,11 @@ function Application(props) {
             OK</Button>
         </Modal.Actions>
       </Modal>
-      <img src={AppStore} style={{display: 'none'}}/>
-      <img src={GooglePlay} style={{display: 'none'}}/>
-      <img src={OfflineIcon} style={{display: 'none'}}/>
+
+      <img src={AppStore} style={{ display: 'none' }} />
+      <img src={GooglePlay} style={{ display: 'none' }} />
+      <img src={OfflineIcon} style={{ display: 'none' }} />
+      <ToastContainer theme='light' />
     </>
   );
 }
@@ -1235,7 +1402,6 @@ export function App({ domElement }) {
       />
     </Worker>
   );
-
 }
 
 export default App;

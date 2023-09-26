@@ -193,11 +193,7 @@ const LeftPanelAdapt = (props) => {
       </li>
       <li
         className={styles.Li + " nav-item"}
-        onClick={() => {
-          localStorage.removeItem("login");
-          sessionStorage.setItem("location", "wallet");
-          window.location.reload();
-        }}
+        onClick={() => props.onClick()}
       >
         <div className={styles.containerLi}>
           <div className={styles.circle}>

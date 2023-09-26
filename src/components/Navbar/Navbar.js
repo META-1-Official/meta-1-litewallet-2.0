@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./Navbar.module.scss";
 import "./styles.css";
 import logo from "../../images/Logo.png";
 import LeftPanelAdapt from "../LeftPanelAdapt/LeftPanelAdapt";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutRequest } from "../../store/account/actions";
-import { navbarProfileImageSelector } from "../../store/account/selector";
+import { navbarProfileImageSelector, notificationsSelector, accountsSelector } from "../../store/account/selector";
+import NotiIcon from "../../images/notification.png";
+import { filterNotifications } from "../../utils/common";
+
+import Notification from "../Notification";
+import sunIcon from "../../images/sun.png";
+import moonIcon from "../../images/moon.png";
+
 
 const Navbar = (props) => {
   const dispatch = useDispatch();
-  const navbarProfileImageState = useSelector(navbarProfileImageSelector)
+  const [showNotiDropDown, setShowNotiDropDown] = useState(false);
+  const navbarProfileImageState = useSelector(navbarProfileImageSelector);
+  const [notifications, setNotifications] = useState();
+  const notificationState = useSelector(notificationsSelector);
+  const account = useSelector(accountsSelector);
+
   const {
     onClickHomeHandler,
     onClickPortfolioHandler,
@@ -19,9 +31,13 @@ const Navbar = (props) => {
     onClickSettingsHandler,
     onClickHistoryHandler,
     onClickOpenOrderHandler,
+    themeSetter,
+    themeMode,
     portfolio,
     name,
-    onClickResetIsSignatureProcessing
+    onClickResetIsSignatureProcessing,
+    setActiveScreen,
+    closeWebsocket
   } = props;
 
   const { innerWidth: width } = window;
@@ -29,6 +45,28 @@ const Navbar = (props) => {
   const openInNewTab = url => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+
+  const ref = useRef(null);
+
+  const handleClickLogout = () => {
+    onClickResetIsSignatureProcessing();
+    closeWebsocket();
+    dispatch(logoutRequest());
+  }
+
+  const showNotifications = () => {
+    setShowNotiDropDown(!showNotiDropDown);
+  }
+
+  const showAllNotifications = () => {
+    setShowNotiDropDown(false);
+    setActiveScreen('notifications');
+  }
+
+  useEffect(() => {
+    setNotifications(filterNotifications(notificationState, account));
+  }, [notificationState])
+
   return (
     <>
       <div
@@ -113,6 +151,12 @@ const Navbar = (props) => {
                     Get help
                   </span>
                 </div>
+                {
+                  notifications && <div className={styles.blockNotification} onClick={showNotifications}>
+                    <img src={NotiIcon} className={styles.notiIcon} />
+                    {notifications.length > 0 && <div className={styles.badgeCount}>{notifications.length}</div>}
+                  </div>
+                }
                 <div className="nav-item dropdown parent-this">
                   <a
                     className={styles.btn}
@@ -123,10 +167,10 @@ const Navbar = (props) => {
                     aria-expanded="false"
                   >
                     Fund Wallet
-                   <span 
-                   className="nav-link dropdown-toggle for-dropdown"
-                    id="navbarScrollingDropdown"
-                   ></span>
+                    <span
+                      className="nav-link dropdown-toggle for-dropdown"
+                      id="navbarScrollingDropdown"
+                    ></span>
                     <div
                       className={"imgUser"}
                       style={{ marginLeft: ".3rem" }}
@@ -171,6 +215,17 @@ const Navbar = (props) => {
                 </div>
                 <div className={styles.line + styles.adaptNeed} />
                 <div
+                  className={"imgUser"}
+                  style={{ marginLeft: ".3rem" }}
+                >
+                  <img
+                    className={styles.themeChanger}
+                    src={themeMode == "dark" ? moonIcon : sunIcon}
+                    alt="user"
+                    onClick={() => themeSetter()}
+                  />
+                </div>
+                <div
                   className={styles.adaptNeed}
                   style={{
                     marginRight: "1rem",
@@ -210,10 +265,7 @@ const Navbar = (props) => {
                           <p
                             className="dropdown-item"
                             style={{ textAlign: "center" }}
-                            onClick={() => {
-                              onClickResetIsSignatureProcessing();
-                              dispatch(logoutRequest());
-                            }}
+                            onClick={handleClickLogout}
                           >
                             Log Out
                           </p>
@@ -233,14 +285,16 @@ const Navbar = (props) => {
                 onClickOrderTableHandler={onClickOrderTableHandler}
                 onClickSettingsHandler={onClickSettingsHandler}
                 onClickHistoryHandler={onClickHistoryHandler}
+                onClickResetIsSignatureProcessing={onClickResetIsSignatureProcessing}
                 portfolio={portfolio}
                 name={name}
-                onClickOpenOrderHandler={onClickOpenOrderHandler}
+                onClick={handleClickLogout}
               />
             ) : null}
           </div>
         </div>
       </nav>
+      {showNotiDropDown && <div ref={ref}><Notification notifications={props.notifications} showAllNotifications={showAllNotifications} /></div>}
     </>
   );
 };

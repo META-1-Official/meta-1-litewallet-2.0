@@ -96,14 +96,14 @@
 .icon_customize {
     margin-left: 10px;
     font-size: 22px;
-    color: black;
+    color: var(--textBrown);
 }
 
 .icon_customize_1 {
     margin-left: 10px;
     font-size: 22px;
     margin-top: -8px;
-    color: black;
+    color: var(--textBrown);
 }
 
 .check_customize-active svg:not(:root) {

@@ -362,10 +362,11 @@ export const opText = (operation_type, operation, result) => {
 
             var divideby = Math.pow(10, asset_precision);
             var amount = new Intl.NumberFormat('en',
-              { minimumFractionDigits: 6,
+              {
+                minimumFractionDigits: 6,
                 maximumFractionDigits: 6
               })
-            .format(amount_amount / divideby);
+              .format(amount_amount / divideby);
 
             operation_text = (
               <div>
@@ -373,7 +374,7 @@ export const opText = (operation_type, operation, result) => {
                 <span>
                   &nbsp;sent {amount}&nbsp;
                 </span>
-                <AssetName name={asset_name}/>
+                <AssetName name={asset_name} />
                 <span>
                   &nbsp;to&nbsp;
                 </span>
@@ -403,27 +404,28 @@ export const opText = (operation_type, operation, result) => {
             var receive_asset_precision = response_asset2.data.precision;
 
             var order_id = result
-                  ? typeof result[1] == 'string'
-                    ? '#' + result[1].substring(4)
-                    : ''
-                  : '';
+              ? typeof result[1] == 'string'
+                ? '#' + result[1].substring(4)
+                : ''
+              : '';
 
-            const {first, second} = getMarketName(
+            const { first, second } = getMarketName(
               response_asset2.data,
               response_asset1.data
             );
 
             const isBid = operation.amount_to_sell.asset_id === second.id;
 
-            var receive_amount = isBid? 
+            var receive_amount = isBid ?
               Number(min_to_receive_amount / Math.pow(10, receive_asset_precision))
               :
               Number(amount_to_sell_amount / Math.pow(10, sell_asset_precision));
             receive_amount = new Intl.NumberFormat('en',
-              { minimumFractionDigits: 6,
+              {
+                minimumFractionDigits: 6,
                 maximumFractionDigits: 6
               })
-            .format(receive_amount);
+              .format(receive_amount);
 
             let priceBase = amount_to_sell_amount;
             let priceQuote = min_to_receive_amount;
@@ -436,13 +438,13 @@ export const opText = (operation_type, operation, result) => {
 
             operation_text = (
               <>
-                <AccountName name={response_name} style={{float:'left'}}/>
+                <AccountName name={response_name} style={{ float: 'left' }} />
 
                 <span className="float-left">
-                  &nbsp;placed order {order_id} to {isBid? 'buy': 'sell'} {receive_amount}&nbsp;
+                  &nbsp;placed order {order_id} to {isBid ? 'buy' : 'sell'} {receive_amount}&nbsp;
                 </span>
 
-                <AssetName name={first.symbol} style={{float:'left'}}/>
+                <AssetName name={first.symbol} style={{ float: 'left' }} />
 
                 <FormattedPrice
                   priceBase={priceBase}
@@ -461,11 +463,11 @@ export const opText = (operation_type, operation, result) => {
     case 2:
       fee_paying_account = operation.fee_paying_account;
       operation_account = fee_paying_account;
-      var order_id = operation.order? `#${operation.order.substring(4)}`: '';
+      var order_id = operation.order ? `#${operation.order.substring(4)}` : '';
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <AccountName name={response_name}/>
+            <AccountName name={response_name} />
             <span>
               &nbsp;cancelled order {order_id}
             </span>
@@ -488,7 +490,7 @@ export const opText = (operation_type, operation, result) => {
 
             operation_text = (
               <div>
-                <AccountName name={response_name}/>
+                <AccountName name={response_name} />
 
                 <span>
                   &nbsp;update debt/collateral for&nbsp;
@@ -518,9 +520,9 @@ export const opText = (operation_type, operation, result) => {
             // var receive_asset_name = response_asset2.data.symbol;
             var receive_asset_precision = response_asset2.data.precision;
 
-            var order_id = operation.order_id? `#${operation.order_id.substring(4)}`: '';
+            var order_id = operation.order_id ? `#${operation.order_id.substring(4)}` : '';
 
-            const {first, second} = getMarketName(
+            const { first, second } = getMarketName(
               response_asset2.data,
               response_asset1.data
             );
@@ -536,27 +538,28 @@ export const opText = (operation_type, operation, result) => {
               priceQuote = tempAmount;
             }
 
-            let precision = isBid? receive_asset_precision: pays_asset_precision;
+            let precision = isBid ? receive_asset_precision : pays_asset_precision;
             let receivedAmount =
               operation.fee.asset_id === amount.asset_id
                 ? amount.amount - operation.fee.amount
                 : amount.amount;
 
             receivedAmount = new Intl.NumberFormat('en',
-              { minimumFractionDigits: 6,
+              {
+                minimumFractionDigits: 6,
                 maximumFractionDigits: 6
               })
-            .format(receivedAmount / Math.pow(10, precision));
+              .format(receivedAmount / Math.pow(10, precision));
 
             operation_text = (
               <div>
-                <AccountName name={response_name} style={{float:'left'}}/>
+                <AccountName name={response_name} style={{ float: 'left' }} />
 
                 <span className="float-left">
-                  &nbsp;{isBid? 'bought': 'sold'} {receivedAmount}&nbsp;
+                  &nbsp;{isBid ? 'bought' : 'sold'} {receivedAmount}&nbsp;
                 </span>
 
-                <AssetName name={first.symbol} style={{float:'left'}}/>
+                <AssetName name={first.symbol} style={{ float: 'left' }} />
 
                 <FormattedPrice
                   priceBase={priceBase.amount}
@@ -585,12 +588,12 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <AccountName name={response_name}/>
+            <AccountName name={response_name} />
             <span>
               &nbsp;register&nbsp;
             </span>
 
-            <AccountName name={name}/>
+            <AccountName name={name} />
           </div>
         );
 
@@ -599,12 +602,12 @@ export const opText = (operation_type, operation, result) => {
 
             operation_text = (
               <div>
-                <AccountName name={response_name}/>
+                <AccountName name={response_name} />
                 <span>
                   &nbsp;thanks to&nbsp;
                 </span>
 
-                <AccountName name={response_name2}/>
+                <AccountName name={response_name2} />
               </div>
             );
 
@@ -619,13 +622,13 @@ export const opText = (operation_type, operation, result) => {
 
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
-            <div>
-              <AccountName name={response_name}/>
-              <span>
-                &nbsp;updated their wallet data change&nbsp;
-              </span>
-            </div>
-          );
+          <div>
+            <AccountName name={response_name} />
+            <span>
+              &nbsp;updated their wallet data change&nbsp;
+            </span>
+          </div>
+        );
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
 
@@ -640,12 +643,12 @@ export const opText = (operation_type, operation, result) => {
         return UseAccount(account_to_list).then((response_name2) => {
           operation_text = (
             <div>
-              <AccountName name={response_name}/>
+              <AccountName name={response_name} />
               <span>
                 {type} the wallet&nbsp;
               </span>
 
-              <AccountName name={response_name2}/>
+              <AccountName name={response_name2} />
             </div>
           );
 
@@ -660,13 +663,13 @@ export const opText = (operation_type, operation, result) => {
           ' upgraded the wallet ';
 
         operation_text = (
-            <div>
-              <AccountName name={response}/>
-              <span>
-                &nbsp;upgraded the wallet&nbsp;
-              </span>
-            </div>
-          );
+          <div>
+            <AccountName name={response} />
+            <span>
+              &nbsp;upgraded the wallet&nbsp;
+            </span>
+          </div>
+        );
 
         return { op_text: operation_text, symbol: null, amount: 0 };
       });
@@ -687,18 +690,18 @@ export const opText = (operation_type, operation, result) => {
           return UseAccount(issue_to_account).then((response_name2) => {
             operation_text = (
               <div>
-                <AccountName name={response_name}/>
+                <AccountName name={response_name} />
                 <span>
                   &nbsp;issued {amount}&nbsp;
                 </span>
 
-                <AssetName name={response_asset.data.symbol}/>
+                <AssetName name={response_asset.data.symbol} />
 
                 <span>
                   &nbsp;to&nbsp;
                 </span>
 
-                <AccountName name={response_name2}/>
+                <AccountName name={response_name2} />
               </div>
             );
 
@@ -722,12 +725,36 @@ export const opText = (operation_type, operation, result) => {
 
           operation_text = (
             <div>
-              <AccountName name={response_name}/>
+              <AccountName name={response_name} />
               <span>
                 &nbsp;burned(reserved){formatNumber(amount)}&nbsp;
               </span>
 
-              <AssetName name={asset_name}/>
+              <AssetName name={asset_name} />
+            </div>
+          );
+          return { op_text: operation_text, symbol: null, amount: formatNumber(amount) };
+        });
+      });
+
+    case 16:
+      return UseAccount(operation.from_account).then(async (response_name) => {
+        return UseAsset(operation.asset_id).then((response_asset) => {
+          var asset_name = response_asset.data.symbol;
+          var asset_precision = response_asset.data.precision;
+          var divideby = Math.pow(10, asset_precision);
+          var amount = Number(operation.amount / divideby);
+
+          operation_text = (
+            <div>
+              <AccountName name={response_name} />
+              <span>
+                &nbsp;funded {formatNumber(amount)}&nbsp;
+              </span>
+              <AssetName name={asset_name} />
+              <span>
+                &nbsp;fee pool
+              </span>
             </div>
           );
           return { op_text: operation_text, symbol: null, amount: formatNumber(amount) };
@@ -743,12 +770,12 @@ export const opText = (operation_type, operation, result) => {
         return UseAsset(asset_id).then((response_asset) => {
           operation_text = (
             <div>
-              <AccountName name={response_name}/>
+              <AccountName name={response_name} />
               <span>
                 &nbsp;published feed for&nbsp;
               </span>
 
-              <AssetName name={response_asset.data.symbol}/>
+              <AssetName name={response_asset.data.symbol} />
             </div>
           );
           return { op_text: operation_text, symbol: response_asset.data.symbol, amount: 0 };
@@ -762,7 +789,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <AccountName name={response_name}/>
+            <AccountName name={response_name} />
             <span>
               &nbsp;created a proposal&nbsp;
             </span>
@@ -779,7 +806,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <AccountName name={response_name}/>
+            <AccountName name={response_name} />
             <span>
               &nbsp;updated proposal {proposal}&nbsp;
             </span>
@@ -793,16 +820,16 @@ export const opText = (operation_type, operation, result) => {
       operation_account = fee_paying_account;
 
       return UseAccount(operation_account).then((response_name) => {
-         operation_text = (
+        operation_text = (
           <div>
-            <AccountName name={response_name}/>
+            <AccountName name={response_name} />
             <span>
               &nbsp;deleted a proposal
             </span>
           </div>
         );
         return { op_text: operation_text, symbol: null, amount: 0 };
-    });
+      });
 
     case 33:
       operation_account = operation.owner_;
@@ -819,12 +846,12 @@ export const opText = (operation_type, operation, result) => {
 
           operation_text = (
             <div>
-              <AccountName name={response_name}/>
+              <AccountName name={response_name} />
               <span>
                 &nbsp;withdrew vesting balance of {formatNumber(amount)}&nbsp;
               </span>
 
-              <AssetName name={asset_name}/>
+              <AssetName name={asset_name} />
             </div>
           );
 
@@ -847,12 +874,12 @@ export const opText = (operation_type, operation, result) => {
 
           operation_text = (
             <div>
-              <AccountName name={response_name}/>
+              <AccountName name={response_name} />
               <span>
                 &nbsp;claimed a balance of {formatNumber(amount)}&nbsp;
               </span>
 
-              <AssetName name={asset_name}/>
+              <AssetName name={asset_name} />
             </div>
           );
 
@@ -887,18 +914,18 @@ export const opText = (operation_type, operation, result) => {
 
                 operation_text = (
                   <div>
-                    <AccountName name={response_name}/>
+                    <AccountName name={response_name} />
                     <span>
                       &nbsp;bid {formatNumber(amount1)}&nbsp;
                     </span>
 
-                    <AssetName name={asset_name1}/>
+                    <AssetName name={asset_name1} />
 
                     <span>
                       &nbsp;for {formatNumber(amount2)}&nbsp;
                     </span>
 
-                    <AssetName name={asset_name2}/>
+                    <AssetName name={asset_name2} />
                   </div>
                 );
 
@@ -927,17 +954,17 @@ export const opText = (operation_type, operation, result) => {
           return UseAccount(to).then((response_name2) => {
             operation_text = (
               <div>
-                <AccountName name={response_name}/>
+                <AccountName name={response_name} />
                 <span>
                   &nbsp;create HTLC to&nbsp;
                 </span>
-                <AccountName name={response_name2}/>
+                <AccountName name={response_name2} />
 
                 <span>
                   &nbsp;to transfer {formatNumber(amount)}&nbsp;
                 </span>
 
-                <AssetName name={asset_name}/>
+                <AssetName name={asset_name} />
               </div>
             );
 
@@ -952,7 +979,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <AccountName name={response_name}/>
+            <AccountName name={response_name} />
             <span>
               &nbsp;redeem HTLC&nbsp;
             </span>
@@ -968,7 +995,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <AccountName name={response_name}/>
+            <AccountName name={response_name} />
             <span>
               &nbsp;redeemed HTLC&nbsp;
             </span>
@@ -984,7 +1011,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <AccountName name={response_name}/>
+            <AccountName name={response_name} />
             <span>
               &nbsp;extend HTLC&nbsp;
             </span>
@@ -999,7 +1026,7 @@ export const opText = (operation_type, operation, result) => {
       return UseAccount(operation_account).then((response_name) => {
         operation_text = (
           <div>
-            <AccountName name={response_name}/>
+            <AccountName name={response_name} />
             <span>
               &nbsp;refund HTLC&nbsp;
             </span>
@@ -1052,18 +1079,18 @@ export const opText = (operation_type, operation, result) => {
 
           operation_text = (
             <div>
-              <AccountName name={response_name}/>
+              <AccountName name={response_name} />
               <span>
                 &nbsp;published price {operation_text} {usd_amount} / {symbol_amount}&nbsp;
               </span>
 
-              <AssetName name={'USD'}/>
+              <AssetName name={'USD'} />
 
               <span>
                 /
               </span>
 
-              <AssetName name={asset_name}/>
+              <AssetName name={asset_name} />
             </div>
           );
 

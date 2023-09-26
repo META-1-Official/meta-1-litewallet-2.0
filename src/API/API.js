@@ -474,3 +474,129 @@ export async function removeQRPoll(qr_hash) {
   }
 }
 
+// ANNOUNCEMENT & EVENTS CALENDAR
+export async function addEvent(title, description, location, location_bg_url, start, end, plus_title, plus_description) {
+  const config = {
+    headers: {
+      authorization: getAccessToken()
+    }
+  }
+
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_BACK_URL}/add_event`,
+      {
+        title,
+        description,
+        location,
+        location_bg_url,
+        start,
+        end,
+        plus_title,
+        plus_description
+      },
+      config
+    );
+    return data;
+  } catch (err) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error: true };
+  }
+}
+
+export async function getEvent(id) {
+  const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/get_event?id=${id}`);
+  return data;
+}
+
+export async function updateEvent(id, title, description, location, location_bg_url, start, end, plus_title, plus_description) {
+  try {
+    const { data } = await axios.patch(
+      `${process.env.REACT_APP_BACK_URL}/update_event?id=${id}`,
+      {title, description, location, location_bg_url, start, end, plus_title, plus_description},
+      {
+        headers: {
+          authorization: getAccessToken()
+        }
+      }
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+
+export async function getEventsInMonth(month) {
+  const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/get_all_events_in_month?month=${month}`);
+  return data;
+}
+
+export async function addAnnouncement(type, title, description, announced_time) {
+  const config = {
+    headers: {
+      authorization: getAccessToken()
+    }
+  }
+
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_BACK_URL}/add_announcement`,
+      {
+        type,
+        title,
+        description,
+        announced_time
+      },
+      config
+    );
+    return data;
+  } catch (err) {
+    if (err.response.data.error.toLowerCase() === 'unauthorized') {
+      tokenFail();
+      return { message: null, tokenExpired: true, responseMsg: "Authentication failed", error: true };
+    }
+    return { message: null, tokenExpired: false, responseMsg: err.response.data.message, error: true };
+  }
+}
+
+export async function getAnnouncement(id) {
+  const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/get_announcement?id=${id}`);
+  return data;
+}
+
+export async function getAllAnnouncements() {
+  const { data } = await axios.get(`${process.env.REACT_APP_BACK_URL}/get_all_announcements`);
+  return data;
+}
+
+export async function updateAnnouncement(id, type, title, description, announced_time) {
+  try {
+    const { data } = await axios.patch(
+      `${process.env.REACT_APP_BACK_URL}/update_announcement?id=${id}`,
+      {type, title, description, announced_time},
+      {
+        headers: {
+          authorization: getAccessToken()
+        }
+      }
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+}
+
+export async function getNotifications(login) {
+  const config = {}
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getNotifications`, {
+      accountName: login,
+    }, config);
+    return data;
+  } catch (err) {
+    return { message: "Something is wrong", error: true };
+  }
+}

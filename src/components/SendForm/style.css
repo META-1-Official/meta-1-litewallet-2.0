@@ -7,28 +7,43 @@
 .MuiTextField-root {
   width: 100%;
   margin-top: 1rem;
-  background: #fff !important;
 }
-.MuiTextField-root:hover {
-  background-color: #fff;
+input:focus {
+  outline: none !important;
+  border: none !important;
 }
 .Mui-disabled {
-  background: #fff !important;
+  -webkit-text-fill-color: var(--textGrey) !important;
 }
 input[type="number"] {
   -moz-appearance: textfield;
 }
-
-.css-1pw81iq-MuiInputBase-root-MuiFilledInput-root {
-  background: #fff !important;
-  border: 1px solid #e2e2e1 !important;
+.MuiFilledInput-root {
+  background: var(--blockBgColor2) !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
+  border-radius: 8px !important;
 }
-
+.MuiInputBase-input {
+  border-radius: 8px !important;
+  background-color: transparent !important;
+  color: var(--textBrown) !important;
+}
+.MuiInputAdornment-root {
+  color: var(--inputOutlineColor) !important;
+}
+.css-q0jhri-MuiInputBase-root-MuiInput-root:before {
+  border-bottom: 2px solid var(--inputOutlineColor);
+}
+.css-q0jhri-MuiInputBase-root-MuiInput-root:after {
+  border-bottom: 2px solid var(--inputOutlineColor) !important;
+}
+.MuiOutlinedInput-notchedOutline { border: 0 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
-.css-88kbi2-MuiFormControl-root-MuiTextField-root {
+.MuiFormControl-root-MuiTextField-root {
   width: 100%;
 }
 #reddit-input-label {

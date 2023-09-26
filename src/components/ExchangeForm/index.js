@@ -199,6 +199,9 @@ export default function ExchangeForm(props) {
     const marketLiquidity = await calculateMarketLiquidity();
     const newMarketPrice = await calcMarketPrice(baseAsset, quoteAsset, selectedToAmount);
 
+    // console.log('@111 0 - marketLiquidity', marketLiquidity)
+    // console.log('@111 1 - selectedToAmount, newMarketPrice', selectedToAmount, newMarketPrice)
+
     if (marketLiquidity < selectedToAmount) {
       var msg;
 
@@ -237,20 +240,27 @@ export default function ExchangeForm(props) {
     estPrice = estSellAmount / estBuyAmount;
     estPrice = estPrice * Math.pow(10, buyAsset.pre - sellAsset.pre);
 
-    if (floorFloat(estPrice, buyAsset.pre) < price) {
-      while (floorFloat(estPrice, buyAsset.pre) <= price && delta < 5000) {
-        delta += 1;
-        _sellAmount += 1;
+    // console.log('@111 2 - estSellAmount, estBuyAmount', estSellAmount, estBuyAmount)
+    // console.log('@111 3 - price, estPrice', price, estPrice)
+
+    if (floorFloat(estPrice, sellAsset.pre) < price) {
+      while (floorFloat(estPrice, sellAsset.pre) <= price && delta < 5000) {
+        delta += 2;
+        _sellAmount += 2;
         estPrice = _sellAmount / estBuyAmount;
         estPrice = estPrice * Math.pow(10, buyAsset.pre - sellAsset.pre);
+        // console.log('@111 31 - delta, _sellAmount, estPrice', delta, estPrice, floorFloat(estPrice, sellAsset.pre), price)
       }
     }
     // *********************************************** //
+
+    // console.log('@111 4 - delta, _sellAmount, price, updatedEstPrice', delta, _sellAmount, price, estPrice)
 
     // *** Check backingAsset level *** //
     if (backingAssetValue) {
       const isQuoting = selectedTo.label === 'META1';
 
+      // console.log('@111 5 - isQuoting, backingAssetValue, estPrice', isQuoting, backingAssetValue, estPrice)
       if (
         (isQuoting && backingAssetValue >= estPrice) ||
         (!isQuoting && backingAssetValue <= estPrice)
@@ -347,19 +357,22 @@ export default function ExchangeForm(props) {
 
         if (_selectedFrom.value === 'META1' || _selectedTo.value === 'META1') {
           const asset_usdt = isQuoting ? baseAssetPrice : quoteAssetPrice;
-          let ratio = isQuoting ? meta1_usdt / asset_usdt : asset_usdt / meta1_usdt;
-          ratio = isQuoting ? ceilFloat(ratio, _selectedTo.pre) : floorFloat(ratio, _selectedTo.pre);
+          let _backingAssetValue = isQuoting ? meta1_usdt / asset_usdt : asset_usdt / meta1_usdt;
+          const backingAssetValuePrecision = Math.max(_selectedTo.pre, _selectedFrom.pre);
+          _backingAssetValue = isQuoting
+            ? ceilFloat(_backingAssetValue, backingAssetValuePrecision)
+            : floorFloat(_backingAssetValue, backingAssetValuePrecision);
           console.log(
             LOG_ID, isQuoting ? _selectedFrom.value : _selectedTo.value, ': USDT', asset_usdt
           );
 
           if (!isQuoting) {
-            console.log(LOG_ID, 'BUY/SELL price should be lower than', ratio);
+            console.log(LOG_ID, 'BUY/SELL price should be lower than', _backingAssetValue);
           } else {
-            console.log(LOG_ID, 'BUY/SELL price should be bigger than', ratio);
+            console.log(LOG_ID, 'BUY/SELL price should be bigger than', _backingAssetValue);
           }
 
-          setBackingAssetValue(ratio);
+          setBackingAssetValue(_backingAssetValue);
         }
 
         setBaseAssetPrice(baseAssetPrice);
@@ -620,7 +633,7 @@ export default function ExchangeForm(props) {
 
       console.log("marketPrice:", baseAsset.symbol, quoteAsset.symbol, _marketPrice);
       setIsInputsEnabled(true);
-      setMarketPrice(ceilFloat(_marketPrice, 5));
+      setMarketPrice(ceilFloat(_marketPrice, Math.min(baseAsset.precision, quoteAsset.precision)));
     }
 
     setIsLoadingPrice(false);

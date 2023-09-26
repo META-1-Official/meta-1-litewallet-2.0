@@ -13,18 +13,39 @@
 	font-weight: 600;
 }
 .qr-section {
-	background: #fff;
+	background: transparent;
+	border: 1px solid var(--borderColor);
 	border-radius: 3px;
 	box-shadow: var(--boxShadowIndex);
 	margin: 1rem;
 	padding: 1rem;
 	width: 50%;
 }
+.qr-body {
+	background: var(--blockBgColor3);
+	padding: 1rem;
+	width: 96%;
+	margin: 0 auto;
+	border-radius: 10px;
+}
+.qr-asset {
+	color: var(--textBrown);
+	font-weight: bold;
+	font-size: .8rem;
+	margin: 1rem;
+}
+.copy-button {
+	width: 100%;	
+}
 .input, .qr-section .message {
 	width: 100%;
 	max-width: 100%;
 	margin-left: auto !important;
 	margin-right: auto !important;
+}
+.message {
+	background: var(--infoBgColor) !important;
+	color: var(--infoTextColor) !important;
 }
 .button-group-wrapper {
 	padding-left: 20px;
@@ -44,15 +65,22 @@
 	display: flex !important;
 	justify-content: center !important;
 	align-items: center !important;
+	background: var(--backgroundColor) !important;
+	color: var(--textBrown) !important;
+	border: 1px solid var(--borderColor) !important;
 }
 .depo-selected {
 	background-color: #ffcc00 !important;
 }
-
+input {
+	border: 1px solid var(--borderColor) !important;
+	/* width: 100% !important; */
+	color: var(--textBrown) !important;
+}
 @media (min-width: 768px) {
 	.qr-section .input, .qr-section .message {
-		width: 500px;
-		max-width: 500px;
+		width: 100%;
+		max-width: 600px;
 	}	
 }
 @media (min-width: 768px) {
@@ -78,7 +106,12 @@
 	margin: 1rem 21%;
 	box-shadow: var(--boxShadowIndex);
 }
-
+.minimum-deposit-text {
+	margin: 1rem;
+    color: var(--textBrown);
+    font-weight: 600;
+    font-size: 0.8rem;
+}
 
 #from .ui.pointing.label, #to .ui.pointing.label {
     position: absolute;

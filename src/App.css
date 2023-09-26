@@ -1,8 +1,13 @@
 .App {
   background: var(--bodybg);
+  margin-top: 65px;
 }
 .AppContent {
   height: 100%;
+  overflow: auto;
+}
+.meta_one_widget {
+  overflow: hidden;
 }
 .meta_one_widget .router-link {
   color: black;
@@ -10,9 +15,11 @@
 .forAdapt {
   display: flex;
   flex-direction: row;
+  height: 100vh;
 }
 .paperWalletStyles {
-  background: #fff;
+  background: var(--blockBgColor);
+  border: 1px solid var(--borderColor);
   box-shadow: 0 0 10px 6px rgba(0, 0, 0, 0.11);
   width: 50%;
   padding: 2rem;
@@ -20,7 +27,8 @@
   border-radius: 4px;
 }
 .paperWalletStylesTH {
-  background: #fff;
+  background: var(--blockBgColor);
+  border: 1px solid var(--borderColor);
   box-shadow: 0 0 10px 6px rgba(0, 0, 0, 0.11);
   width: 96%;
   margin: 1.5rem;
@@ -32,7 +40,16 @@
   justify-content: space-between;
   height: 100%;
 }
-
+.modal-content {
+  background: var(--modalBgColor) !important;
+  border: 1px solid var(--borderColor) !important;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+.ui.mini.modal {
+  background: transparent !important;
+  border: 1px solid var(--borderColor);
+}
 span.css-1fzkqb4,
 span.css-llftvd {
   border: 0 !important;
@@ -55,12 +72,6 @@ span.css-llftvd {
   padding: 30px 0px;
 }
 
-/*@media (max-width: 600px) {
-  .meta_one_widget .AppContent {
-    width: 90%;
-  }
-}*/
-
 .meta_one_widget .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -81,20 +92,6 @@ span.css-llftvd {
   .blockInfoYourCryptoCustom {
     padding: 1rem 0 1rem 0.5rem;
   }
-}
-.css-yk16xz-control,
-.css-1pahdxg-control {
-  width: 100% !important;
-}
-
-.css-1pahdxg-control:active,
-.css-yk16xz-control:active {
-  width: 100% !important;
-}
-
-.css-1pahdxg-control:focus,
-.css-yk16xz-control:focus {
-  width: 100% !important;
 }
 
 .meta_one_widget .App-header {
@@ -130,12 +127,18 @@ span.css-llftvd {
 .marginBottomCustom {
   margin-bottom: 1rem;
 }
+.headerBlock {
+  border-bottom: 1px solid var(--borderColor);
+  padding: 1.1rem 2rem;
+  color: var(--textBrown);
+}
 .claim_wallet_btn {
   background-color: #fdc000 !important;
   color: #240000 !important;
-  margin: 0 auto;
   height:3rem !important;
   font-family: inherit !important;
+  color: var(--textBrown) !important;
+  margin-top: 10px !important;
 }
 .claim_wallet_btn_div {
   width: 100%;
@@ -143,7 +146,6 @@ span.css-llftvd {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 .claim_wallet_modal {
   margin: 13rem auto !important;
@@ -151,26 +153,37 @@ span.css-llftvd {
 }
 .claim_modal-action{
   text-align:center !important;
-  background: #ffffff !important;
+  background: transparent !important;
   padding: 0px 0px !important;
   border-top: 0 !important;
 }
 .claim_model_content{
   text-align: center !important;
 }
-.orderOrderMainFlex {
+.openOrderMainFlex {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: transparent !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
 }
-/*.modal {*/
-/*  height: 20rem!important;*/
-/*  margin: auto!important;*/
-/*  top: 0!important;*/
-/*  left: 0!important;*/
-/*  right: 0!important;*/
-/*  bottom: 0!important;*/
-/*}*/
+.paperWallet {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
+}
+.notificationMainFlex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent !important;
+  border: 1px solid var(--borderColor) !important;
+  color: var(--textBrown) !important;
+}
 @media (max-width: 1366px) {
   .newBottomAdaptBlock {
     width: 96%;
@@ -247,4 +260,13 @@ span.css-llftvd {
 @media(max-width: 991px){
 .customJustFlexAndDirect .blockInfoYourCrypto {width: 100% !important;margin: 0 !important;}
 .customJustFlexAndDirect .bottomAdaptBlock {width: 100% !important;margin: 0 !important;}
+}
+
+.css-6hp17o-MuiList-root-MuiMenu-list {
+  background-color: var(--blockBgColor) !important;
+  border: 1px solid var(--borderColor);
+}
+
+.css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper {
+  color: var(--textBrown) !important;
 }

@@ -2,6 +2,8 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import React, { useState, useEffect } from "react";
 import { Message, Input, Segment, Button } from "semantic-ui-react";
 import QRCode from "react-qr-code";
+import Loader from "semantic-ui-react";
+import MetaLoader from '../../UI/loader/Loader';
 
 import "./style.css";
 
@@ -101,48 +103,26 @@ export default function DepositForm(props) {
               }
             </div>
           </div>
-          <div
-            style={{
-              background: "#F0F1F4",
-              padding: "1rem",
-              width: "96%",
-              margin: "0 auto",
-              borderRadius: "10px",
-            }}
-          >
-            <span
-              style={{
-                color: "#000",
-                fontWeight: "bold",
-                fontSize: ".8rem",
-                margin: "1rem",
-              }}
-            >
+          <div className="qr-body">
+            <span className="qr-asset">
               DEPOSIT <span style={{ color: "#FFC000" }}>{asset}</span>
             </span>
             <div className={"needAdaptToQR"}>
+              {isLoading && <MetaLoader size="small" />}
               {!isLoading && !canDeposit && <p> Cannot deposit </p>}
               {!isLoading && canDeposit && (
                 <QRCode value={address} size={200} />
               )}
             </div>
           </div>
-          <p
-            style={{
-              margin: "1rem",
-              color: "#505361",
-              fontWeight: "600",
-              fontSize: ".8rem",
-            }}
-          >
+          <p className="minimum-deposit-text">
             Minimum deposit: {getMinAmount(asset)} {asset} {asset.toLowerCase() === 'usdt' ? '(ERC20)' : ''}
           </p>
           <div>
             {!isLoading && canDeposit && (
               <CopyToClipboard text={address} onCopy={() => { }}>
-                <div style={{ width: "100%" }}>
+                <div className="copy-button">
                   <Input
-                    style={{ width: "100%" }}
                     action={{
                       color: "yellow",
                       labelPosition: "right",
@@ -155,7 +135,6 @@ export default function DepositForm(props) {
               </CopyToClipboard>
             )}
           </div>
-
           <Message
             className={"messageRed"}
             icon="attention"
