@@ -542,7 +542,7 @@ function Application(props) {
 
       websocket.onmessage = (message) => {
         console.log('@@@@message', message);
-        var filter = filterNotifications([JSON.parse(message.data)]);
+        var filter = filterNotifications([JSON.parse(message.data)], accountName);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
           toast(content);
