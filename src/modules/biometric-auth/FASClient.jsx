@@ -14,7 +14,7 @@ import {
   Select
 } from 'antd';
 import Webcam from 'react-webcam';
-import JWTAuth from './services/JWTAuth';
+// import JWTAuth from './services/JWTAuth';
 import CircleProgressBar from './CircleProgressBar';
 import ProgressScores from './ProgressScores';
 import Loader from './LoaderComponent';
@@ -69,8 +69,6 @@ const FASClient = forwardRef((props, ref) => {
   const remoteVideoDisplayRef = useRef(null);
 
   let jwtTokenRef = useRef(token);
-
-  const jwtAuth = new JWTAuth();
 
   const checkAndAddDir = (description) => {
     // if (!description.sdp.includes('a=sendrecv')) {
@@ -603,11 +601,8 @@ const FASClient = forwardRef((props, ref) => {
       );
       return toggleConnected();
     } else {
-      jwtAuth.createToken(username).then((token) => {
-        jwtTokenRef.current = token;
-        console.log('Token Generated and set', token);
-        start();
-      });
+      jwtTokenRef.current = token;
+      start();
     }
   };
 
