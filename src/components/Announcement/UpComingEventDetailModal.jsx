@@ -54,15 +54,7 @@ export const UpComingEventDetailModal = (props) => {
                         </p>
                     </div>
                     <div className={styles.splitterLine} />
-                    <span className={styles.infoText} style={{ fontWeight: 500, color: '#FC0', lineHeight: '2.0' }}>
-                        {detail?.plus_title}
-                    </span>
-                    <p className={styles.infoText} style={{ fontWeight: 500 }}>
-                        {detail?.plus_description}
-                    </p>
-                    <p className={styles.infoText}>
-                        {detail?.description}
-                    </p>
+                    <p dangerouslySetInnerHTML={{__html: detail?.description}} className={styles.infoText} />
                     <p className={styles.infoText}>
                         {detail?.registration}
                     </p>
