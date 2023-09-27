@@ -8,7 +8,7 @@ import styles from './announcement.module.scss';
 import { getAllAnnouncements } from '../../API/API';
 
 const Announcements = (props) => {
-    const [data, setData] = useState();
+    const [data, setData] = useState(null);
     const [index, setIndex] = useState(0);
     const [modalOpened, setModalOpened] = useState(false);
     const [page, setPage] = useState(1);
@@ -36,7 +36,7 @@ const Announcements = (props) => {
     return (
         <div className={styles.announcementsWrapper}>
             {
-                data ? data.map((ele, index) => {
+                (data && data.length > 0) ? data.map((ele, index) => {
                     if (index >= (page - 1) * 10 && page * 10 > index) {
                         return <AnnouncementCard
                             title={ele.title}
@@ -47,7 +47,7 @@ const Announcements = (props) => {
                     }
                 }) : <div>No Annoucement</div>
             }
-            {data && <Pagination count={count} page={page} onChange={handlePageChange} />}
+            {(data && data.length > 0) && <Pagination count={count} page={page} onChange={handlePageChange} />}
             <AnnouncementDetailModal data={data} index={index} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
         </div>
     )
