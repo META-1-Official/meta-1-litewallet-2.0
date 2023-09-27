@@ -38,8 +38,10 @@ export default function FaceKiForm(props) {
   }
 
   useEffect(() => {
-    const data = getFASToken(email, TASK.VERIFY);
-    setToken(data.token);
+    (async () => {
+      const { token } = await getFASToken(email, TASK.VERIFY);
+      setToken(token);
+    })()
   }, []);
 
   const fasClient = useRef();
@@ -130,16 +132,16 @@ export default function FaceKiForm(props) {
                     });
                   }}>X</button>
               </div>
-              {!token ? 'loading ...' :
-              <FASClient
-                ref={fasClient}
-                token={token}
-                username={email}
-                task={TASK.VERIFY}
-                activeDeviceId={activeDeviceId}
-                onComplete={videoVerify}
-              />}
-
+              {!token ? 'loading ...' : (
+                <FASClient
+                  ref={fasClient}
+                  token={token}
+                  username={email}
+                  task={TASK.VERIFY}
+                  activeDeviceId={activeDeviceId}
+                  onComplete={videoVerify}
+                />
+              )}
             </div>
           </div>
         </div>
