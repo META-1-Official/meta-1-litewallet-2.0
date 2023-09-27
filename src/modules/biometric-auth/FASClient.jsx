@@ -435,7 +435,7 @@ const FASClient = forwardRef((props, ref) => {
 
   const sendMessageToServer = (message) => {
     message = JSON.stringify(message);
-    if (dc.current) {
+    if (dc.current && dc.current.readyState === 'open') {
       dc.current.send(message);
     } else if (ws.current) {
       ws.current.send(message);
