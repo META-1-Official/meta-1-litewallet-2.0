@@ -130,7 +130,7 @@ export default function FaceKiForm(props) {
                     });
                   }}>X</button>
               </div>
-
+              {!token ? 'loading ...' :
               <FASClient
                 ref={fasClient}
                 token={token}
@@ -138,7 +138,7 @@ export default function FaceKiForm(props) {
                 task={TASK.VERIFY}
                 activeDeviceId={activeDeviceId}
                 onComplete={videoVerify}
-              />
+              />}
 
             </div>
           </div>
