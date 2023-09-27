@@ -44,12 +44,12 @@ export default function FaceKiForm(props) {
 
   const fasClient = useRef();
   useEffect(() => {
-    if (token) {
+    // if (token) {
       console.log('Loading fas');
       if (fasClient.current) {
         fasClient.current.load();
       }
-    }
+    // }
   }, [token]);
 
   useEffect(() => {

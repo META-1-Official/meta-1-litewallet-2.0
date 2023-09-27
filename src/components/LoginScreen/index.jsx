@@ -41,8 +41,8 @@ export default function LoginScreen(props) {
     errorMsg: '',
     error: false
   });
-  const [step, setStep] = useState('userform');
-  // const [step, setStep] = useState('faceki');
+  // const [step, setStep] = useState('userform');
+  const [step, setStep] = useState('faceki');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
   const [loader, setLoader] = useState(false);
@@ -192,8 +192,8 @@ export default function LoginScreen(props) {
       <FaceKiForm
         {...props}
         onSubmit={handleFaceKiSubmit}
-        accountName={login}
-        email={email}
+        accountName={login || 'user-x01-1'}
+        email={email || 'user-x01@yopmail.com'}
         privKey={privKey}
         setStep={setStep}
       />
