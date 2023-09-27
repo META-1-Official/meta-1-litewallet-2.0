@@ -60,11 +60,11 @@ export default function FaceKiForm(props) {
     else loadVideo(true);
   }, []);
 
-  useEffect(() => {
-    if (faceKISuccess === true) {
-        props.onSubmit();
-    }
-  }, [faceKISuccess])
+  // useEffect(() => {
+  //   if (faceKISuccess === true) {
+  //       props.onSubmit(accountName, token);
+  //   }
+  // }, [faceKISuccess])
 
   const loadVideo = async (flag) => {
     const videoTag = document.querySelector('video');
@@ -97,13 +97,9 @@ export default function FaceKiForm(props) {
   }
 
   const videoVerify = async (token) => {
-    const { message } = await fasEnroll(email, privKey, token);
-
-    if (message === "Successfully Enrolled") {
+    if (token) {
       setFaceKISuccess(true);
-    } else {
-      alert(errorCase['Verify Failed']);
-      alert('Please try again.');
+      props.onSubmit(accountName, email, token);
     }
   }
 

@@ -25,7 +25,7 @@ import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
-import { getAccessToken } from "./utils/localstorage";
+import { getAccessToken } from './utils/localstorage';
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, loaderSelector, isLoginSelector, loginErrorSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService, getNotificationsRequest } from "./store/account/actions";
@@ -148,7 +148,7 @@ function Application(props) {
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
-  
+
   // Online state
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -286,10 +286,10 @@ function Application(props) {
   //   }
   // }, [urlParams])
 
-  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", web3Token = "", web3PubKey = "") => {
+  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", web3Token = "", web3PubKey = "", fasToken) => {
     setIsLoading(true);
     if (clicked) {
-      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, web3Token, web3PubKey }));
+      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, web3Token, web3PubKey, fasToken }));
     }
     if (getAccessToken()) {
       console.log('loging', getAccessToken())
