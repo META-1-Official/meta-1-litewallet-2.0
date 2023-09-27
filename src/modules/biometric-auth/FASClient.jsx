@@ -175,6 +175,7 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   const handleFASData = (msg) => {
+    console.log('MSG: ', msg);
     if (
       typeof msg.type !== 'undefined' &&
       ['success', 'error', 'info', 'warning'].indexOf(String(msg.type)) !== -1
@@ -187,7 +188,7 @@ const FASClient = forwardRef((props, ref) => {
         )
       ) {
         console.log('Message: ', msg);
-        onComplete();
+        onComplete(msg.token);
       } else if (
         msg.type === 'error' &&
         msg.message === 'Registration failure'
@@ -691,12 +692,12 @@ const FASClient = forwardRef((props, ref) => {
             <div
               style={{
                 position: 'absolute',
-                bottom: 0,
+                bottom: 10,
                 left: 0,
                 zIndex: 1,
                 width: '100%',
                 display: 'flex',
-                justifyContent: 'center'
+                justifyContent: 'center',
               }}
             >
               <Button
@@ -786,7 +787,6 @@ const FASClient = forwardRef((props, ref) => {
                 backgroundColor: '#f0f0f0',
                 position: 'relative',
                 margin: '0 auto',
-                top: -25
               }}
             >
               <Webcam

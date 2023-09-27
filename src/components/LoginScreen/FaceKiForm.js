@@ -96,7 +96,7 @@ export default function FaceKiForm(props) {
     return window.innerWidth < window.innerHeight;
   }
 
-  const videoVerify = async () => {
+  const videoVerify = async (token) => {
     const { message } = await fasEnroll(email, privKey, token);
 
     if (message === "Successfully Enrolled") {
