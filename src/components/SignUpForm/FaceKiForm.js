@@ -40,8 +40,10 @@ export default function FaceKiForm(props) {
   }
 
   useEffect(() => {
-    const data = getFASToken(email, task);
-    setToken(data.token);
+    (async () => {
+      const { token } = await getFASToken(email, TASK.REGISTER);
+      setToken(token);
+    })()
   }, []);
 
   const fasClient = useRef();
@@ -96,7 +98,7 @@ export default function FaceKiForm(props) {
     return window.innerWidth < window.innerHeight;
   }
 
-  const faceEnroll = async () => {
+  const faceEnroll = async (token) => {
     setVerifying(true);
     const response = await fasEnroll(email, privKey, token);
 
@@ -140,17 +142,17 @@ export default function FaceKiForm(props) {
                       });
                     }}>X</button>
                 </div>
-
-                <FASClient
-                  ref={fasClient}
-                  token={token}
-                  username={accountName}
-                  task={task}
-                  activeDeviceId={activeDeviceId}
-                  onComplete={faceEnroll}
-                  onFailure={onFailure}
-                />
-
+                {!token ? 'loading ...' : (
+                  <FASClient
+                    ref={fasClient}
+                    token={token}
+                    username={email}
+                    task={TASK.REGISTER}
+                    activeDeviceId={activeDeviceId}
+                    onComplete={faceEnroll}
+                    onFailure={onFailure}
+                  />
+                )}
               </div>
             </div>
           </div>
