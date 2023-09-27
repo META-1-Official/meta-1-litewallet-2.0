@@ -8,23 +8,20 @@ import React, {
   useState,
 } from 'react';
 import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import {
-  Button,
-  message,
-  Select
-} from 'antd';
+import { Button, message, Select } from 'antd';
 import Webcam from 'react-webcam';
-// import JWTAuth from './services/JWTAuth';
 import CircleProgressBar from './CircleProgressBar';
 import ProgressScores from './ProgressScores';
 import Loader from './LoaderComponent';
 import parseTurnServer from './helpers/parseTurnServer';
 import calculateCompletionPercentage from './helpers/calculateTasksProgress';
-import loadingImage from './helpers/loadingImage';
-import getDevices from "./helpers/getDevices";
-import { _black, setCanvasToDefault } from "./helpers/canvas";
-import { DEFAULT_COLOR, CAMERA_CONTRAINTS, camOptions } from "./constants/constants";
-
+import getDevices from './helpers/getDevices';
+import { _black, setCanvasToDefault } from './helpers/canvas';
+import {
+  DEFAULT_COLOR,
+  CAMERA_CONTRAINTS,
+  camOptions,
+} from './constants/constants';
 
 const WSSignalingServer = process.env.REACT_APP_SIGNALIG_SERVER;
 
@@ -38,7 +35,14 @@ const FASClient = forwardRef((props, ref) => {
   const webcamRef = useRef(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [progress, setProgress] = useState(0.0);
-  const { token, username, task, activeDeviceId, onComplete, onFailure = () => {} } = props;
+  const {
+    token,
+    username,
+    task,
+    activeDeviceId,
+    onComplete,
+    onFailure = () => {},
+  } = props;
 
   const updateWindowWidth = () => {
     setWindowWidth(window.innerWidth);
@@ -176,10 +180,18 @@ const FASClient = forwardRef((props, ref) => {
       ['success', 'error', 'info', 'warning'].indexOf(String(msg.type)) !== -1
     ) {
       message[msg.type.toLowerCase()](msg.message);
-      if (msg.type === 'success' && ['Verification successful!!', 'Registration successful!!!'].includes(msg.message)) {
+      if (
+        msg.type === 'success' &&
+        ['Verification successful!!', 'Registration successful!!!'].includes(
+          msg.message,
+        )
+      ) {
         console.log('Message: ', msg);
         onComplete();
-      } else if (msg.type === 'error' && msg.message === 'Registration failure') {
+      } else if (
+        msg.type === 'error' &&
+        msg.message === 'Registration failure'
+      ) {
         onFailure();
       }
     } else if (typeof msg.type !== 'undefined' && msg.type === 'data') {
@@ -602,6 +614,7 @@ const FASClient = forwardRef((props, ref) => {
       return toggleConnected();
     } else {
       jwtTokenRef.current = token;
+      console.log('Token set', token);
       start();
     }
   };
@@ -652,7 +665,10 @@ const FASClient = forwardRef((props, ref) => {
 
   return (
     <div>
-      <div className="FASClient" style={{ maxWidth: '100vw', margin: '0 auto' }}>
+      <div
+        className="FASClient"
+        style={{ maxWidth: '100vw', margin: '0 auto' }}
+      >
         <div style={{ width: '100%' }}>
           <div>
             <div style={{ marginTop: 15, position: 'relative', zIndex: 1 }}>
@@ -698,9 +714,10 @@ const FASClient = forwardRef((props, ref) => {
               <div
                 style={{
                   display: 'flex',
+                  flexDirection: 'column',
                   justifyContent: 'center',
-                  width: 360,
-                  height: 640,
+                  width: 770,
+                  height: 720,
                   backgroundColor: '#f0f0f0',
                 }}
               >
@@ -710,24 +727,28 @@ const FASClient = forwardRef((props, ref) => {
                   }
                   ref={remoteVideoDisplayRef}
                   // autoPlay
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                  hidden
+                  style={
+                    {
+                      // width: '100%',
+                      // height: '100%',
+                      // objectFit: 'cover',
+                    }
+                  }
+                  // hidden
                   muted
                   playsInline
                 ></video>
                 <canvas
                   ref={processingCanvasRef}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                  width={360}
-                  height={640}
+                  style={
+                    {
+                      // width: '100%',
+                      // height: '100%',
+                      // objectFit: 'cover',
+                    }
+                  }
+                  width={770}
+                  height={720}
                 ></canvas>
                 {loading && (
                   <div
@@ -748,6 +769,12 @@ const FASClient = forwardRef((props, ref) => {
                   </div>
                 )}
               </div>
+              <canvas
+                ref={preloadCanvasRef}
+                width={770}
+                height={720}
+                style={{ display: 'none' }}
+              ></canvas>
             </div>
 
             <div
@@ -802,12 +829,6 @@ const FASClient = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-      <canvas
-        ref={preloadCanvasRef}
-        width={360}
-        height={640}
-        style={{ display: 'none' }}
-      ></canvas>
     </div>
   );
 });
