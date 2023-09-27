@@ -134,7 +134,7 @@ export default function FaceKiForm(props) {
               <FASClient
                 ref={fasClient}
                 token={token}
-                username={accountName}
+                username={email}
                 task={TASK.VERIFY}
                 activeDeviceId={activeDeviceId}
                 onComplete={videoVerify}
