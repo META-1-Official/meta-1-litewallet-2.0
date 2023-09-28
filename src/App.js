@@ -513,9 +513,10 @@ function Application(props) {
     }, 2000);
   }
 
-  const onRegistration = async (acc, pass, regEmail, web3Token, web3PubKey) => {
+  const onRegistration = async (acc, pass, regEmail, web3Token, web3PubKey, fasToken) => {
     setCredentials(acc, pass);
-    onLogin(acc, true, pass, true, regEmail, web3Token, web3PubKey);
+    localStorage.removeItem('fastoken');
+    onLogin(acc, true, pass, true, regEmail, web3Token, web3PubKey, fasToken);
     setActiveScreen("wallet");
   };
 
