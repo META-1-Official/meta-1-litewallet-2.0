@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { enroll, fasEnroll, getFASToken } from '../../API/API';
+import { fasEnroll, getFASToken, fasMigrationStatus } from '../../API/API';
 import "./SignUpForm.css";
 import useWidth from '../../lib/useWidth';
 import { TASK } from '../../modules/biometric-auth/constants/constants';
@@ -14,7 +14,7 @@ export default function FaceKiForm(props) {
   const [devices, setDevices] = useState([]);
   const [activeDeviceId, setActiveDeviceId] = useState('');
   const [numberOfCameras, setNumberOfCameras] = useState(0);
-  const [task, setTask] = useState(TASK.REGISTER);
+  const [task, setTask] = useState(null);
   const [token, setToken] = useState(null);
 
   const width = useWidth();
@@ -41,7 +41,10 @@ export default function FaceKiForm(props) {
 
   useEffect(() => {
     (async () => {
-      const { token } = await getFASToken(email, TASK.REGISTER);
+      const { doesUserExistsInFAS } = await fasMigrationStatus(email);
+      setTask(doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER);
+
+      const { token } = await getFASToken(email, doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER);
       setToken(token);
     })()
   }, []);
@@ -100,18 +103,25 @@ export default function FaceKiForm(props) {
 
   const faceEnroll = async (token) => {
     setVerifying(true);
-    const response = await fasEnroll(email, privKey, token);
-
-    if (!response) {
-      alert(errorCase['Biometic Server Error']);
+    if (task === TASK.VERIFY) {
+      alert(errorCase['Already Enrolled']);
+      localStorage.setItem('fastoken', token);
+      setFaceKISuccess(true);
       setVerifying(false);
     } else {
-      alert(errorCase[response.message]);
-      if (response.message === 'Successfully Enrolled' || response.message === 'Already Enrolled') {
-        localStorage.setItem('fastoken', token);
-        setFaceKISuccess(true);
+      const response = await fasEnroll(email, privKey, token);
+
+      if (!response) {
+        alert(errorCase['Biometic Server Error']);
+        setVerifying(false);
+      } else {
+        alert(errorCase[response.message]);
+        if (response.message === 'Successfully Enrolled') {
+          localStorage.setItem('fastoken', token);
+          setFaceKISuccess(true);
+        }
+        setVerifying(false);
       }
-      setVerifying(false);
     }
   }
 
@@ -135,20 +145,20 @@ export default function FaceKiForm(props) {
               </div>
               <div className='child-div' style={{ width: camWidth, height: '100%' }}>
                 <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
-                <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
-                <button className='btn_x'
+                  <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
+                  <button className='btn_x'
                     onClick={() => {
                       loadVideo(false).then(() => {
                         props.setStep('userform');
                       });
                     }}>X</button>
                 </div>
-                {!token ? 'loading ...' : (
+                {(!token || !task)? 'loading ...' : (
                   <FASClient
                     ref={fasClient}
                     token={token}
                     username={email}
-                    task={TASK.REGISTER}
+                    task={task}
                     activeDeviceId={activeDeviceId}
                     onComplete={faceEnroll}
                     onFailure={onFailure}
