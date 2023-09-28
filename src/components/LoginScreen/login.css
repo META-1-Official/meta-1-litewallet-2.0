@@ -245,6 +245,16 @@ select {
   background-color: var(--blockBgColor4) !important;
 }
 
+.migration-page {
+  width: 60%;
+  margin: 0 auto !important;
+  margin-top: 30px;
+}
+
+.migration_subtitle {
+  display: block;
+}
+
 @media screen and (max-width: 678px) {
   .under-div {
     width: 100% !important;

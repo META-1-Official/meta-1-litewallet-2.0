@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
 
-import "../SignUpForm/SignUpForm.css";
+import "./login.css";
 
 export default function PassKeyForm(props) {
   const [passkey, setPasskey] = useState("");
@@ -11,9 +11,6 @@ export default function PassKeyForm(props) {
     <Grid className="migration-page">
       <div className="migration_title">
         Input Your Passkey
-      </div>
-      <div className="migration_subtitle">
-        To continue Sign In/Sign Up, we need your passkey
       </div>
       <Grid.Column width={16} className="singup-grid">
         <Form autoComplete="off">
