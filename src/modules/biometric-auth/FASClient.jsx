@@ -593,8 +593,8 @@ const FASClient = forwardRef((props, ref) => {
                   objectFit: 'cover',
                 }}
                 videoConstraints={{
-                  width: 1920,
-                  height: 1080,
+                  width: 720,
+                  height: 720,
                   facingMode: 'user',
                 }}
                 onUserMedia={() => {
