@@ -55,8 +55,10 @@ export default function FaceKiForm(props) {
   }, [token]);
 
   useEffect(() => {
-    if (browserstack_test_accounts.includes(props.accountName))
-      setFaceKISuccess(true)
+    if (browserstack_test_accounts.includes(props.accountName)) {
+      setFaceKISuccess(true);
+      props.onSubmit(accountName, email, token);
+    }
     else loadVideo(true);
   }, []);
 
