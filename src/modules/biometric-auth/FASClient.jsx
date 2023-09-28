@@ -96,25 +96,26 @@ const FASClient = forwardRef((props, ref) => {
       const sender = pc.current
         .getSenders()
         .find((s) => s.track.kind === 'video');
-      const parameters = sender.getParameters();
+      if (sender) {
+        const parameters = sender.getParameters();
+        if (!parameters.encodings) {
+          parameters.encodings = [{}];
+        }
 
-      if (!parameters.encodings) {
-        parameters.encodings = [{}];
+        if (parameters.encodings && parameters.encodings.length > 0) {
+          parameters.encodings[0].active = true;
+          parameters.encodings[0].maxBitrate = 30000000; // e.g., 30 Mbps
+          parameters.encodings[0].scaleResolutionDownBy = 1;
+          parameters.encodings[0].priority = 'high';
+        } else {
+          console.warn('Encodings is not defined or empty.');
+        }
+
+        sender
+            .setParameters(parameters)
+            .then((success) => console.log(success))
+            .catch((err) => console.log('Failed to set params'));
       }
-
-      if (parameters.encodings && parameters.encodings.length > 0) {
-        parameters.encodings[0].active = true;
-        parameters.encodings[0].maxBitrate = 30000000; // e.g., 30 Mbps
-        parameters.encodings[0].scaleResolutionDownBy = 1;
-        parameters.encodings[0].priority = 'high';
-      } else {
-        console.warn('Encodings is not defined or empty.');
-      }
-
-      sender
-        .setParameters(parameters)
-        .then((success) => console.log(success))
-        .catch((err) => console.log('Failed to set params'));
 
       openAndBindDCEvents();
       bindRTCEvents();
