@@ -157,9 +157,9 @@ export default function LoginScreen(props) {
 
   const goPassKeyOrFaceKi = async () => {
     const fasMigrationStatusRes = await fasMigrationStatus(email);
-    const {ifUserEnrolledInNewBiometric, wasUserEnrolledInOldBiometric} = fasMigrationStatusRes;
+    const {doesUserExistsInFAS, wasUserEnrolledInOldBiometric} = fasMigrationStatusRes;
 
-    if (ifUserEnrolledInNewBiometric == false && wasUserEnrolledInOldBiometric == true) {
+    if (doesUserExistsInFAS == false && wasUserEnrolledInOldBiometric == true) {
       setStep('passkey');
     } else {
       setStep('faceki');
