@@ -97,6 +97,7 @@ const FASClient = forwardRef((props, ref) => {
         .getSenders()
         .find((s) => s.track.kind === 'video');
       if (sender) {
+        console.log('SENDER: ', sender);
         const parameters = sender.getParameters();
         if (!parameters.encodings) {
           parameters.encodings = [{}];
