@@ -59,7 +59,6 @@ const FASClient = forwardRef((props, ref) => {
   const processingCanvasRef = useRef(null);
   // const preloadCanvasRef = useRef(null);
   const emptyStreamRef = useRef(null);
-  const remoteVideoRef = useRef(null);
 
   let jwtTokenRef = useRef(token);
 
@@ -249,7 +248,7 @@ const FASClient = forwardRef((props, ref) => {
     pc.current.ontrack = (event) => {
       console.log('Track received', event);
       // if (remoteVideoRef.current.srcObject) {return;
-      remoteVideoRef.current = event.streams[0];
+      // remoteVideoRef.current = event.streams[0];
     };
 
     pc.current.onicecandidate = (event) => {
@@ -581,6 +580,20 @@ const FASClient = forwardRef((props, ref) => {
                   width: '100%',
                   maxHeight: '100%',
                   objectFit: 'cover',
+                }}
+                videoConstraints={{
+                  width: 1920,
+                  height: 1080,
+                  facingMode: 'user',
+                }}
+                onUserMedia={() => {
+                  const videoConstraints = webcamRef.current.videoConstraints;
+                  const videoTrack =
+                    webcamRef.current.video.srcObject.getVideoTracks()[0];
+                  const currentSettings = videoTrack.getSettings();
+
+                  console.log('Video Constraints:', videoConstraints);
+                  console.log('Current Video Settings:', currentSettings);
                 }}
               />
               <CircleProgressBar
