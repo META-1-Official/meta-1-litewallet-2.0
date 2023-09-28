@@ -5,14 +5,18 @@ import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideH
 import { useDispatch, useSelector } from "react-redux";
 import { checkAccountSignatureReset, checkTransferableModelAction, logoutRequest } from "../../store/account/actions";
 import { accountsSelector, isLoginSelector, isSignatureValidSelector, loginErrorMsgSelector, oldUserSelector, signatureErrorSelector } from "../../store/account/selector";
-import { checkMigrationable, migrate, validateSignature, getUserKycProfileByAccount } from "../../API/API";
+import { checkMigrationable, migrate, validateSignature, getUserKycProfileByAccount, fasMigrationStatus, getFASToken } from "../../API/API";
 
 import FaceKiForm from "./FaceKiForm";
+import PassKeyForm from "./PassKeyForm";
 import { Button, Modal } from "semantic-ui-react";
 import AccountApi from "../../lib/AccountApi";
 import MetaLoader from "../../UI/loader/Loader";
 import LoginProvidersModal from "../Web3Auth"
 import { UpComingEvents } from "../Announcement/UpComingEvents";
+import { buildSignature4Fas } from "../../utils/signature";
+import { toast } from 'react-toastify';
+import { TASK } from "../../modules/biometric-auth/constants/constants";
 
 export default function LoginScreen(props) {
   const {
@@ -47,6 +51,7 @@ export default function LoginScreen(props) {
   const [privKey, setPrivKey] = useState(null);
   const [loader, setLoader] = useState(false);
   const [isMigrationPasskeyValid, setIsMigrationPasskeyValid] = useState(true);
+  const [token, setToken] = useState(null);
   const accountState = useSelector(accountsSelector);
   const isLoginState = useSelector(isLoginSelector);
   const oldUserState = useSelector(oldUserSelector);
@@ -56,7 +61,7 @@ export default function LoginScreen(props) {
   const dispatch = useDispatch();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'bond-02', 'antman-kok357', 'user-x01', 'jin124'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'bond-02', 'antman-kok357', 'user-x01'];
 
   useEffect(() => {
     if (signatureErrorState) {
@@ -150,12 +155,24 @@ export default function LoginScreen(props) {
     }
   };
 
+  const goPassKeyOrFaceKi = async () => {
+    const fasMigrationStatusRes = await fasMigrationStatus(email);
+    const {ifUserEnrolledInNewBiometric, wasUserEnrolledInOldBiometric} = fasMigrationStatusRes;
+
+    if (ifUserEnrolledInNewBiometric == false && wasUserEnrolledInOldBiometric == true) {
+      setStep('passkey');
+    } else {
+      setStep('faceki');
+    }
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validationHandler()) {
       setLoginDataError(false);
       return;
     }
+
     if (login) {
       AccountApi.lookupAccounts(login, 1)
         .then(async (res) => {
@@ -167,7 +184,8 @@ export default function LoginScreen(props) {
                   if (browserstack_test_accounts.includes(login)) {
                     const user = await getUserKycProfileByAccount(login);
                     setEmail(user?.email);
-                    setStep('faceki');
+                    goPassKeyOrFaceKi();
+                    // setStep('faceki');
                   }
                   else setAuthModalOpen(true);
                 }
@@ -187,6 +205,32 @@ export default function LoginScreen(props) {
     onSubmit(login, true, email, false, "", authData?.web3Token, authData?.web3PubKey, fasToken);
   }
 
+  const handlePassKeyFormSubmit = async (passkey) => {
+    const result = await buildSignature4Fas(login, passkey, email);
+    const {publicKey, signature, signatureContent} = result;
+
+    if (!publicKey || !signature) {
+      toast('Passkey is not valid!');
+      return;
+    }
+
+    const { token } = await getFASToken(email, TASK.REGISTER, publicKey, signature, signatureContent);
+    setToken(token);
+    setStep('faceki');
+  }
+
+  const renderPassKeyForm = () => {
+    return (
+      <PassKeyForm
+        {...props}
+        onSubmit={handlePassKeyFormSubmit}
+        accountName={login || 'user-x01-1'}
+        email={email || 'user-x01@yopmail.com'}
+        setStep={setStep}
+      />
+    )
+  }
+
   const renderFaceKi = () => {
     return (
       <FaceKiForm
@@ -196,6 +240,7 @@ export default function LoginScreen(props) {
         email={email || 'user-x01@yopmail.com'}
         privKey={privKey}
         setStep={setStep}
+        token={token}
       />
     )
   }
@@ -204,7 +249,8 @@ export default function LoginScreen(props) {
     setAuthData(data);
     setPrivKey(data?.privateKey);
     setEmail(data?.email.toLowerCase());
-    setStep('faceki');
+    goPassKeyOrFaceKi();
+    // setStep('faceki');
   }
 
   const renderLoginScreen = () => {
@@ -416,6 +462,7 @@ export default function LoginScreen(props) {
         </div>
       </header>
       {step === 'userform' && renderLoginScreen()}
+      {step === 'passkey' && renderPassKeyForm()}
       {step === 'faceki' && renderFaceKi()}
     </div>
   );
