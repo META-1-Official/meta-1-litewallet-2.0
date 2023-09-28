@@ -70,6 +70,7 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   const bindWSEvents = () => {
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
     ws.current.onclose = (event) => console.log('WS Closed', event);
     ws.current.onerror = (event) => console.log('WS error', event);
 
@@ -83,10 +84,13 @@ const FASClient = forwardRef((props, ref) => {
 
       emptyStreamRef.current = webcamRef.current.video.srcObject;
 
-      addOrReplaceTrack(
-        emptyStreamRef.current.getTracks()[0],
-        emptyStreamRef.current,
-      );
+      if (emptyStreamRef.current) {
+        addOrReplaceTrack(
+            emptyStreamRef.current.getTracks()[0],
+            emptyStreamRef.current,
+        );
+      }
+
       setCurrentStream('empty');
 
       const sender = pc.current
