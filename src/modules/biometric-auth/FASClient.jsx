@@ -11,25 +11,16 @@ import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { Button, message, Select } from 'antd';
 import Webcam from 'react-webcam';
 import CircleProgressBar from './CircleProgressBar';
+import useDevices from './hooks/useDevices';
 import ProgressScores from './ProgressScores';
 import Loader from './LoaderComponent';
 import parseTurnServer from './helpers/parseTurnServer';
 import calculateCompletionPercentage from './helpers/calculateTasksProgress';
-import getDevices from './helpers/getDevices';
-import { _black, setCanvasToDefault } from './helpers/canvas';
-import {
-  DEFAULT_COLOR,
-  CAMERA_CONTRAINTS,
-  camOptions,
-} from './constants/constants';
+import { camOptions } from './constants/constants';
 
 const WSSignalingServer = process.env.REACT_APP_SIGNALIG_SERVER;
 
 const IceServer = parseTurnServer();
-
-let black = (...args) => new MediaStream([_black(...args)]);
-
-const minCamera = CAMERA_CONTRAINTS['720p'];
 
 const FASClient = forwardRef((props, ref) => {
   const webcamRef = useRef(null);
@@ -50,8 +41,9 @@ const FASClient = forwardRef((props, ref) => {
 
   const polite = true; // Set whether this peer is the polite peer
 
-  const [devices, setDevices] = useState([]);
-  const [selectedDevice, setSelectedDevice] = useState(activeDeviceId || null);
+  const [devices, selectedDevice, setSelectedDevice] =
+    useDevices(activeDeviceId);
+
   const [makingOffer, setMakingOffer] = useState(false);
   const [connected, setConnected] = useState(false);
   const [logs, setLogs] = useState([]);
@@ -65,12 +57,9 @@ const FASClient = forwardRef((props, ref) => {
   const dc = useRef(null);
 
   const processingCanvasRef = useRef(null);
-  const preloadCanvasRef = useRef(null);
+  // const preloadCanvasRef = useRef(null);
   const emptyStreamRef = useRef(null);
-  const localTrackRef = useRef(null);
-  const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
-  const remoteVideoDisplayRef = useRef(null);
 
   let jwtTokenRef = useRef(token);
 
@@ -93,16 +82,13 @@ const FASClient = forwardRef((props, ref) => {
         // iceCandidatePoolSize: 10,
       });
 
-      emptyStreamRef.current = black(preloadCanvasRef.current);
-      // if (shouldCloseCamera) {
+      emptyStreamRef.current = webcamRef.current.video.srcObject;
+
       addOrReplaceTrack(
         emptyStreamRef.current.getTracks()[0],
         emptyStreamRef.current,
       );
       setCurrentStream('empty');
-      // } else {
-      // @todo
-      // }
 
       const sender = pc.current
         .getSenders()
@@ -299,33 +285,6 @@ const FASClient = forwardRef((props, ref) => {
     bindWSEvents();
   };
 
-  const addWebCamToPeer = () => {
-    if (currentStream !== 'usercam') {
-      console.time('get track');
-      navigator.mediaDevices
-        .getUserMedia({
-          video: {
-            ...camOptions,
-            deviceId: selectedDevice,
-          },
-        })
-        .then((stream) => {
-          localTrackRef.current = stream;
-          addOrReplaceTrack(stream.getVideoTracks()[0], stream);
-          setCurrentStream('usercam');
-          remoteVideoDisplayRef.current.srcObject = stream;
-          // remoteVideoDisplayRef.current.srcObject = remoteVideoRef.current
-          remoteVideoDisplayRef.current.play();
-          console.timeEnd('get track');
-        })
-        .catch((error) => console.log(error));
-    } else {
-      remoteVideoDisplayRef.current.srcObject = localTrackRef.current;
-      remoteVideoDisplayRef.current.play();
-      // remoteVideoDisplayRef.current.srcObject = remoteVideoRef.current
-    }
-  };
-
   const addOrReplaceTrack = (track, stream) => {
     const senders = pc.current.getSenders();
 
@@ -350,8 +309,6 @@ const FASClient = forwardRef((props, ref) => {
   const stop = () => {
     console.log('@1 STOP');
     setLoading(false);
-    remoteVideoDisplayRef.current.srcObject = null;
-    setCanvasToDefault(processingCanvasRef);
 
     if (pc.current && emptyStreamRef.current) {
       sendMessageToServer({ type: 'msg', message: { fas: 'stop' } });
@@ -381,11 +338,8 @@ const FASClient = forwardRef((props, ref) => {
 
   const start = () => {
     setLoading(true);
-    // remoteVideoDisplayRef.current.srcObject = remoteVideoRef.current
-    requestAnimationFrame(renderFrame);
     if (pc.current) {
       if (pc.current.connectionState === 'connected') {
-        addWebCamToPeer();
         sendMessageToServer({
           type: 'msg',
           message: { fas: 'start', token: jwtTokenRef.current, task: task },
@@ -395,7 +349,6 @@ const FASClient = forwardRef((props, ref) => {
           console.log('Current connection state', pc.current.connectionState);
 
           if (pc.current.connectionState === 'connected') {
-            addWebCamToPeer();
             sendMessageToServer({
               type: 'msg',
               message: { fas: 'start', token: jwtTokenRef.current, task: task },
@@ -460,133 +413,12 @@ const FASClient = forwardRef((props, ref) => {
     message.info('Disconnected forcefully, Please reload!!!', 9999999);
   }
 
-  function renderFrame() {
-    const canvasContext = processingCanvasRef.current.getContext('2d');
-
-    if (
-      remoteVideoDisplayRef.current.networkState ===
-      remoteVideoDisplayRef.current.NETWORK_LOADING
-    ) {
-      // console.count("The user agent is actively trying to download data.")
-    }
-
-    if (
-      remoteVideoDisplayRef.current.readyState <
-      remoteVideoDisplayRef.current.HAVE_FUTURE_DATA
-    ) {
-      // console.count("There is not enough data to keep playing from this point")
-    }
-
-    if (
-      remoteVideoDisplayRef.current.readyState ===
-      remoteVideoDisplayRef.current.HAVE_ENOUGH_DATA
-    ) {
-      canvasContext.clearRect(
-        0,
-        0,
-        processingCanvasRef.current.width,
-        processingCanvasRef.current.height,
-      );
-      // console.count("Rendered Frames")
-      canvasContext.drawImage(
-        remoteVideoDisplayRef.current,
-        0,
-        0,
-        processingCanvasRef.current.width,
-        processingCanvasRef.current.height,
-      );
-
-      // Get if the image is static or what
-      const imageData = canvasContext.getImageData(
-        0,
-        0,
-        processingCanvasRef.current.width,
-        processingCanvasRef.current.height,
-      );
-      const pixels = imageData.data;
-
-      let redTotal = 0;
-      const pixelCount = pixels.length / 4; // Since each pixel is represented by 4 values (R, G, B, A)
-
-      for (let i = 0; i < pixels.length; i += 4) {
-        redTotal += pixels[i];
-      }
-
-      const avgRed = redTotal / pixelCount;
-
-      // console.log(`Average Color: r(${Math.round(avgRed)})`);
-
-      if (avgRed !== DEFAULT_COLOR) {
-        // Get the transformation matrix
-        const transform = canvasContext.getTransform
-          ? canvasContext.getTransform()
-          : canvasContext.currentTransform;
-
-        // Check if it's flipped horizontally
-        const isFlipped = transform.a === -1;
-
-        if (!isFlipped) {
-          canvasContext.translate(processingCanvasRef.current.width, 0);
-          canvasContext.scale(-1, 1);
-        }
-
-        // console.log("Frame Arrived!!!!!")
-        setLoading(false);
-      }
-
-      // Draw the oval
-
-      let ovalWidth = 400; // Configurable width of the oval
-      let ovalHeight = 600; // Configurable height of the oval
-
-      // Draw the translucent overlay
-      canvasContext.beginPath();
-      canvasContext.rect(
-        0,
-        0,
-        processingCanvasRef.current.width,
-        processingCanvasRef.current.height,
-      );
-
-      // Draw the inner oval
-      canvasContext.moveTo(
-        processingCanvasRef.current.width / 2 + ovalWidth / 2,
-        processingCanvasRef.current.height / 2,
-      );
-      canvasContext.ellipse(
-        processingCanvasRef.current.width / 2,
-        processingCanvasRef.current.height / 2,
-        ovalWidth / 2,
-        ovalHeight / 2,
-        0,
-        0,
-        Math.PI * 2,
-        false,
-      );
-
-      // Set translucent fill style and fill using evenodd rule
-      canvasContext.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      canvasContext.fill('evenodd');
-    }
-    setTimeout(() => {
-      requestAnimationFrame(renderFrame);
-    }, 50);
-  }
-
   const toggleConnected = () => {
     setConnected(!connected);
   };
 
-  const handleKeepWebCamOpenSwitchChange = (value, event) => {
-    setShouldCloseCamera(value);
-  };
-
   const __load = () => {
-    getDevices(setDevices, setSelectedDevice, shouldCloseCamera).then((r) => {
-      console.log(devices);
-    });
     connect();
-    setCanvasToDefault(processingCanvasRef);
 
     setTimeout(() => {
       forceCleanUp();
@@ -649,7 +481,6 @@ const FASClient = forwardRef((props, ref) => {
   useEffect(() => {
     if (selectedDevice && !shouldCloseCamera) {
       setCurrentStream('altcam');
-      addWebCamToPeer();
     }
   }, [selectedDevice]);
 
@@ -711,72 +542,23 @@ const FASClient = forwardRef((props, ref) => {
               </Button>
             </div>
 
-            <div style={{ display: 'none' }}>
+            {!!progress && (
               <div
                 style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 1000,
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
-                  width: 770,
-                  height: 720,
-                  backgroundColor: '#f0f0f0',
+                  alignItems: 'center',
                 }}
               >
-                <video
-                  poster={
-                    'https://designhub.co/wp-content/uploads/2020/09/startingsoon13-1.jpg'
-                  }
-                  ref={remoteVideoDisplayRef}
-                  // autoPlay
-                  style={
-                    {
-                      // width: '100%',
-                      // height: '100%',
-                      // objectFit: 'cover',
-                    }
-                  }
-                  // hidden
-                  muted
-                  playsInline
-                ></video>
-                <canvas
-                  ref={processingCanvasRef}
-                  style={
-                    {
-                      // width: '100%',
-                      // height: '100%',
-                      // objectFit: 'cover',
-                    }
-                  }
-                  width={770}
-                  height={720}
-                ></canvas>
-                {loading && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      zIndex: 1000,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '100%',
-                    }}
-                  >
-                    <Loader />
-                  </div>
-                )}
+                <Loader />
               </div>
-              <canvas
-                ref={preloadCanvasRef}
-                width={770}
-                height={720}
-                style={{ display: 'none' }}
-              ></canvas>
-            </div>
+            )}
 
             <div
               className="camera-container"
