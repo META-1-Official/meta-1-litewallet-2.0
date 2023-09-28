@@ -108,6 +108,7 @@ export default function FaceKiForm(props) {
     } else {
       alert(errorCase[response.message]);
       if (response.message === 'Successfully Enrolled' || response.message === 'Already Enrolled') {
+        localStorage.setItem('fastoken', token);
         setFaceKISuccess(true);
       }
       setVerifying(false);

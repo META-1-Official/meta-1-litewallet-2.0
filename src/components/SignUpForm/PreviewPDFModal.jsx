@@ -59,8 +59,9 @@ const PreviewPDFModal = (props) => {
     alink.download = `meta-paper-wallet-${(isLocked() ? 'public-' : 'private-')}${accountName}.pdf`;
     alink.click();
     localStorage.removeItem('paperWalletData');
+    const fasToken = localStorage.getItem('fastoken');
 
-    onRegistration(accountName, password, email, authData?.web3Token, authData?.web3PubKey);
+    onRegistration(accountName, password, email, authData?.web3Token, authData?.web3PubKey, fasToken);
   }
 
   return <Modal
