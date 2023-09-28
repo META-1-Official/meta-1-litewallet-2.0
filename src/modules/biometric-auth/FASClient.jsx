@@ -97,7 +97,6 @@ const FASClient = forwardRef((props, ref) => {
         .getSenders()
         .find((s) => s.track.kind === 'video');
       if (sender) {
-        console.log('SENDER: ', sender);
         const parameters = sender.getParameters();
         if (!parameters.encodings) {
           parameters.encodings = [{}];
@@ -285,9 +284,15 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   const connect = () => {
-    setLoading(true);
-    ws.current = new WebSocket(WSSignalingServer);
-    bindWSEvents();
+    console.log('Trying to get connect!');
+    navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
+      console.log('Connected!');
+      setLoading(true);
+      ws.current = new WebSocket(WSSignalingServer);
+      bindWSEvents();
+    }).catch(() => {
+      console.log('Connection error!')
+    })
   };
 
   const addOrReplaceTrack = (track, stream) => {
