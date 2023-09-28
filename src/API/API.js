@@ -469,7 +469,7 @@ export async function removeQRPoll(qr_hash) {
 }
 
 // ANNOUNCEMENT & EVENTS CALENDAR
-export async function addEvent(title, description, location, location_bg_url, start, end, plus_title, plus_description) {
+export async function addEvent(title, description, location, location_bg_url, start, end ) {
   const config = {
     headers: {
       authorization: getAccessToken()
@@ -485,9 +485,7 @@ export async function addEvent(title, description, location, location_bg_url, st
         location,
         location_bg_url,
         start,
-        end,
-        plus_title,
-        plus_description
+        end
       },
       config
     );
@@ -506,11 +504,11 @@ export async function getEvent(id) {
   return data;
 }
 
-export async function updateEvent(id, title, description, location, location_bg_url, start, end, plus_title, plus_description) {
+export async function updateEvent(id, title, description, location, location_bg_url, start, end) {
   try {
     const { data } = await axios.patch(
       `${process.env.REACT_APP_BACK_URL}/update_event?id=${id}`,
-      {title, description, location, location_bg_url, start, end, plus_title, plus_description},
+      {title, description, location, location_bg_url, start, end},
       {
         headers: {
           authorization: getAccessToken()

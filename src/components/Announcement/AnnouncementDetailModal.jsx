@@ -36,7 +36,7 @@ export const AnnouncementDetailModal = (props) => {
                             <div className={styles.cancelBtn} onClick={() => props.setModalOpened(false)}>X</div>
                         </div>
                         <div className={styles.modalBody}>
-                            <p>{detail?.description}</p>
+                            <p dangerouslySetInnerHTML={{__html: detail?.description}} />
                         </div>
                     </div>
                 </Modal.Content>

@@ -52,13 +52,6 @@ export const UpComingEvents = () => {
                     }
                 })
             }
-            {/* {
-                !eventExistDay(dayOfDate) &&
-                <div className={styles.noEventImgWrapper}>
-                    <img src={NoEvent} />
-                    <span>No Event</span>
-                </div>
-            } */}
         </div>
     }
 
@@ -85,7 +78,6 @@ export const UpComingEvents = () => {
         <div className={styles.block}>
             <div className={styles.calendarHeader}>
                 <span className={styles.headerTitle}>Upcoming Events</span>
-                {/* <button className={styles.addEvBtn}>Add Events</button> */}
             </div>
             <Calendar
                 onChange={handleChange}

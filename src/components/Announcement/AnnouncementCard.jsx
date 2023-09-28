@@ -6,7 +6,7 @@ export const AnnouncementCard = (props) => {
         <div className={styles.announcementCard}>
             <div className={styles.info}>
                 <h4 onClick={props.onClick}>{props.title}</h4>
-                <p>{props.description}</p>
+                <p dangerouslySetInnerHTML={{__html: props.description}} />
                 <div className={styles.time}>
                     {props.time}
                 </div>
