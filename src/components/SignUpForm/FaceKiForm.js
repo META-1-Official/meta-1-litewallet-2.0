@@ -14,7 +14,7 @@ export default function FaceKiForm(props) {
   const [devices, setDevices] = useState([]);
   const [activeDeviceId, setActiveDeviceId] = useState('');
   const [numberOfCameras, setNumberOfCameras] = useState(0);
-  const [task, setTask] = useState(null);
+  const [task, setTask] = useState(TASK.REGISTER);
   const [token, setToken] = useState(fasToken);
 
   const width = useWidth();
