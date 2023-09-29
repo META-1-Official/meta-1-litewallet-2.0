@@ -155,11 +155,11 @@ export default function LoginScreen(props) {
     }
   };
 
-  const goPassKeyOrFaceKi = async (email) => {
+  const goPassKeyOrFaceKi = async (email, acc) => {
     const fasMigrationStatusRes = await fasMigrationStatus(email);
     const {doesUserExistsInFAS, wasUserEnrolledInOldBiometric} = fasMigrationStatusRes;
 
-    if (doesUserExistsInFAS == false && wasUserEnrolledInOldBiometric == true) {
+    if (doesUserExistsInFAS == false && wasUserEnrolledInOldBiometric == true && !(browserstack_test_accounts.includes(acc))) {
       setStep('passkey');
     } else {
       setStep('faceki');
@@ -184,7 +184,7 @@ export default function LoginScreen(props) {
                   if (browserstack_test_accounts.includes(login)) {
                     const user = await getUserKycProfileByAccount(login);
                     setEmail(user?.email);
-                    goPassKeyOrFaceKi(user?.email);
+                    goPassKeyOrFaceKi(user?.email, login);
                     // setStep('faceki');
                   }
                   else setAuthModalOpen(true);
@@ -249,7 +249,7 @@ export default function LoginScreen(props) {
     setAuthData(data);
     setPrivKey(data?.privateKey);
     setEmail(data?.email.toLowerCase());
-    goPassKeyOrFaceKi(data?.email.toLowerCase());
+    goPassKeyOrFaceKi(data?.email.toLowerCase(), accountState);
     // setStep('faceki');
   }
 
