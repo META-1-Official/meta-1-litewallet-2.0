@@ -1,4 +1,5 @@
 import 'webrtc-adapter';
+import './style/style.css';
 
 import React, {
   forwardRef,
@@ -16,15 +17,25 @@ import ProgressScores from './ProgressScores';
 import Loader from './LoaderComponent';
 import parseTurnServer from './helpers/parseTurnServer';
 import calculateCompletionPercentage from './helpers/calculateTasksProgress';
-import { camOptions } from './constants/constants';
 
 const WSSignalingServer = process.env.REACT_APP_SIGNALIG_SERVER;
 
 const IceServer = parseTurnServer();
 
 const FASClient = forwardRef((props, ref) => {
+  message.config({
+    // top: 100,
+    duration: 2,
+    maxCount: 3,
+    rtl: true,
+    getContainer: () => {
+      return document.getElementById('notification-container');
+    },
+  });
+
   const webcamRef = useRef(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
   const [progress, setProgress] = useState(0.0);
   const {
     token,
@@ -71,7 +82,6 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   const bindWSEvents = () => {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
     ws.current.onclose = (event) => console.log('WS Closed', event);
     ws.current.onerror = (event) => console.log('WS error', event);
 
@@ -87,8 +97,8 @@ const FASClient = forwardRef((props, ref) => {
 
       if (emptyStreamRef.current) {
         addOrReplaceTrack(
-            emptyStreamRef.current.getTracks()[0],
-            emptyStreamRef.current,
+          emptyStreamRef.current.getTracks()[0],
+          emptyStreamRef.current,
         );
       }
 
@@ -113,9 +123,9 @@ const FASClient = forwardRef((props, ref) => {
         }
 
         sender
-            .setParameters(parameters)
-            .then((success) => console.log(success))
-            .catch((err) => console.log('Failed to set params'));
+          .setParameters(parameters)
+          .then((success) => console.log(success))
+          .catch((err) => console.log('Failed to set params'));
       }
 
       openAndBindDCEvents();
@@ -210,12 +220,12 @@ const FASClient = forwardRef((props, ref) => {
     dc.current.onclose = () => {
       setIsReady(false);
       console.log('data channel closed');
-    }
+    };
 
     dc.current.onopen = () => {
       setIsReady(true);
       console.log('data channel opened');
-    }
+    };
 
     dc.current.onmessage = function (event) {
       // console.log(evt.data);
@@ -292,14 +302,17 @@ const FASClient = forwardRef((props, ref) => {
 
   const connect = () => {
     console.log('Trying to get connect!');
-    navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
-      console.log('Connected!');
-      setLoading(true);
-      ws.current = new WebSocket(WSSignalingServer);
-      bindWSEvents();
-    }).catch(() => {
-      console.log('Connection error!')
-    })
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(() => {
+        console.log('Connected!');
+        setLoading(true);
+        ws.current = new WebSocket(WSSignalingServer);
+        bindWSEvents();
+      })
+      .catch(() => {
+        console.log('Connection error!');
+      });
   };
 
   const addOrReplaceTrack = (track, stream) => {
@@ -632,6 +645,16 @@ const FASClient = forwardRef((props, ref) => {
                 backgroundLineLength={10}
                 progressLineLength={16}
                 progressLineSpacing={3}
+              />
+              <div
+                id="notification-container"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                }}
               />
             </div>
             <div
