@@ -74,7 +74,7 @@ export async function buildSignature4Fas(accountName, passkey, email) {
             const ownerPrivateKey = account.privKeys.owner.toWif();
             publicKey = account.pubKeys.owner;
             const signerPkey = PrivateKey.fromWif(ownerPrivateKey);
-            signature = Signature.sign(accountName, signerPkey).toHex();
+            signature = Signature.sign(signatureContent, signerPkey).toHex();
         }
     }
 
