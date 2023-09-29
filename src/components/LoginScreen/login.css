@@ -248,7 +248,7 @@ select {
 .migration-page {
   width: 60%;
   margin: 0 auto !important;
-  margin-top: 30px;
+  margin-top: 30px !important;
 }
 
 .migration_subtitle {

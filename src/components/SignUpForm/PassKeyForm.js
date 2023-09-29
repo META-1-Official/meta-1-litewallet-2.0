@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import { Button, Form, Grid, Input, Popup } from "semantic-ui-react";
 
-import "./login.css";
+import "./SignUpForm.css";
 
 export default function PassKeyForm(props) {
   const [passkey, setPasskey] = useState("");
@@ -54,7 +54,7 @@ export default function PassKeyForm(props) {
             <Button
               className="red"
               style={{ color: "#240000", marginTop: '1em' }}
-              onClick={() => props.onSubmit(passkey)}
+              onClick={() => props.setStep('userform')}
             >
               Back
             </Button>
