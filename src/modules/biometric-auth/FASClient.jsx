@@ -52,14 +52,17 @@ const FASClient = forwardRef((props, ref) => {
 
   const polite = true; // Set whether this peer is the polite peer
 
-  const [devices, selectedDevice, setSelectedDevice] =
-    useDevices(activeDeviceId);
-
   const [makingOffer, setMakingOffer] = useState(false);
   const [connected, setConnected] = useState(false);
   const [logs, setLogs] = useState([]);
   const [shouldCloseCamera, setShouldCloseCamera] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [isPermissionsProvided, setIsPermissionsProvided] = useState(false);
+
+  const [devices, selectedDevice, setSelectedDevice] = useDevices(
+    activeDeviceId,
+    isPermissionsProvided,
+  );
 
   const [loading, setLoading] = useState(false);
   const [currentStream, setCurrentStream] = useState('empty');
@@ -501,18 +504,18 @@ const FASClient = forwardRef((props, ref) => {
   }, []);
 
   useEffect(() => {
-    if (connected) {
+    if (connected && isPermissionsProvided) {
       __start();
     } else {
       __stop();
     }
-  }, [connected]);
+  }, [connected, isPermissionsProvided]);
 
   useEffect(() => {
-    if (selectedDevice && !shouldCloseCamera) {
+    if (selectedDevice && isPermissionsProvided) {
       setCurrentStream('altcam');
     }
-  }, [selectedDevice]);
+  }, [selectedDevice, isPermissionsProvided]);
 
   useEffect(() => {
     const data = logs[logs.length - 1]?.msg;
@@ -620,6 +623,7 @@ const FASClient = forwardRef((props, ref) => {
                   facingMode: 'user',
                 }}
                 onUserMedia={() => {
+                  setIsPermissionsProvided(true);
                   const videoConstraints = webcamRef.current.videoConstraints;
                   const videoTrack =
                     webcamRef.current.video.srcObject.getVideoTracks()[0];

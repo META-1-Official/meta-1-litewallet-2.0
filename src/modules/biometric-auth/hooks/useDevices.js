@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const useDevices = (activeDeviceId) => {
+const useDevices = (activeDeviceId, isPermissionProvided) => {
   const [devices, setDevices] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState(activeDeviceId || null);
 
@@ -12,13 +12,13 @@ const useDevices = (activeDeviceId) => {
 
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then(handleDevices);
-  }, [handleDevices]);
+  }, [handleDevices, isPermissionProvided]);
 
   useEffect(() => {
     if (devices.length > 0) {
       setSelectedDevice(devices[0].deviceId);
     }
-  }, [devices]);
+  }, [devices, isPermissionProvided]);
 
   return [devices, selectedDevice, setSelectedDevice];
 };
