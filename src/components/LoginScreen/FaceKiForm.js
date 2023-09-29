@@ -7,7 +7,7 @@ import "./login.css";
 import { TASK } from "../../modules/biometric-auth/constants/constants";
 
 export default function FaceKiForm(props) {
-  const { email, privKey, accountName } = props;
+  const { email, privKey, accountName, token: fasToken } = props;
 
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
@@ -15,7 +15,7 @@ export default function FaceKiForm(props) {
   const [devices, setDevices] = useState([]);
   const [activeDeviceId, setActiveDeviceId] = useState('');
   const [numberOfCameras, setNumberOfCameras] = useState(0);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(fasToken);
 
   const width = useWidth();
 
@@ -38,11 +38,13 @@ export default function FaceKiForm(props) {
   }
 
   useEffect(() => {
-    (async () => {
-      const { token } = await getFASToken(email, TASK.VERIFY);
-      setToken(token);
-    })()
-  }, []);
+    if (!fasToken) {
+      (async () => {
+        const { token } = await getFASToken(email, TASK.VERIFY);
+        setToken(token);
+      })()
+    }
+  }, [fasToken]);
 
   const fasClient = useRef();
   useEffect(() => {
@@ -135,7 +137,7 @@ export default function FaceKiForm(props) {
                   ref={fasClient}
                   token={token}
                   username={email}
-                  task={TASK.VERIFY}
+                  task={fasToken ? TASK.REGISTER : TASK.VERIFY}
                   activeDeviceId={activeDeviceId}
                   onComplete={videoVerify}
                 />

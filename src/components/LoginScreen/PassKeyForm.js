@@ -55,7 +55,7 @@ export default function PassKeyForm(props) {
               className="yellow"
               style={{ color: "#240000", marginTop: '1em' }}
               disabled={props.accountName === "" || passkey === ""}
-              onClick={props.onSubmit(passkey)}
+              onClick={() => props.onSubmit(passkey)}
             >
               Continue
             </Button>
