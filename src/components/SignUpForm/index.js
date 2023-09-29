@@ -109,8 +109,8 @@ export default function SignUpForm(props) {
     }
   };
 
-  const handlePassKeyFormSubmit = async (passkey) => {
-    const result = await buildSignature4Fas(accountName, passkey, email);
+  const handlePassKeyFormSubmit = async (passkey, existingAccountName) => {
+    const result = await buildSignature4Fas(existingAccountName, passkey, email);
     const {publicKey, signature, signatureContent} = result;
 
     if (!publicKey || !signature) {
