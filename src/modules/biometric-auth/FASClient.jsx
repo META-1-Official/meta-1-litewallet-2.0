@@ -52,15 +52,17 @@ const FASClient = forwardRef((props, ref) => {
 
   const polite = true; // Set whether this peer is the polite peer
 
-  const [devices, selectedDevice, setSelectedDevice] =
-    useDevices(activeDeviceId);
-
   const [makingOffer, setMakingOffer] = useState(false);
   const [connected, setConnected] = useState(false);
   const [logs, setLogs] = useState([]);
   const [shouldCloseCamera, setShouldCloseCamera] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isPermissionsProvided, setIsPermissionsProvided] = useState(false);
+
+  const [devices, selectedDevice, setSelectedDevice] = useDevices(
+    activeDeviceId,
+    isPermissionsProvided,
+  );
 
   const [loading, setLoading] = useState(false);
   const [currentStream, setCurrentStream] = useState('empty');
