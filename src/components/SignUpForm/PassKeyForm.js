@@ -6,6 +6,7 @@ import "./SignUpForm.css";
 
 export default function PassKeyForm(props) {
   const [passkey, setPasskey] = useState("");
+  const [existingAccountName, setExistingAccountName] = useState("");
 
   return (
     <Grid className="migration-page">
@@ -18,7 +19,7 @@ export default function PassKeyForm(props) {
             <Grid stackable>
               <Grid.Column>
                 <Form.Field>
-                  <label>META Legacy Wallet Name</label>
+                  <label>New Wallet Name</label>
                   <input
                     control={Input}
                     value={props.accountName}
@@ -36,8 +37,21 @@ export default function PassKeyForm(props) {
                   />
                 </Form.Field>
                 <Form.Field>
+                  <label>Existing Wallet Name (connected with this email)</label>
+                  <input
+                    required
+                    control={Input}
+                    value={existingAccountName}
+                    type="text"
+                    onChange={(event) => {
+                      setExistingAccountName(event.target.value);
+                    }}
+                  />
+                </Form.Field>
+                <Form.Field>
                   <label>Your Passkey</label>
                   <input
+                    required
                     control={Input}
                     value={passkey}
                     type="password"
@@ -62,7 +76,7 @@ export default function PassKeyForm(props) {
               className="yellow"
               style={{ color: "#240000", marginTop: '1em' }}
               disabled={props.accountName === "" || passkey === ""}
-              onClick={() => props.onSubmit(passkey)}
+              onClick={() => props.onSubmit(passkey, existingAccountName)}
             >
               Continue
             </Button>
