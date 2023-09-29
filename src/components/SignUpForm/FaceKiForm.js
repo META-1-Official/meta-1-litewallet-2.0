@@ -6,7 +6,7 @@ import { TASK } from '../../modules/biometric-auth/constants/constants';
 import FASClient from '../../modules/biometric-auth/FASClient';
 
 export default function FaceKiForm(props) {
-  const { email, privKey, accountName } = props;
+  const { email, privKey, accountName, token: fasToken } = props;
 
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
@@ -15,7 +15,7 @@ export default function FaceKiForm(props) {
   const [activeDeviceId, setActiveDeviceId] = useState('');
   const [numberOfCameras, setNumberOfCameras] = useState(0);
   const [task, setTask] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(fasToken);
 
   const width = useWidth();
 
@@ -40,14 +40,16 @@ export default function FaceKiForm(props) {
   }
 
   useEffect(() => {
-    (async () => {
-      const { doesUserExistsInFAS } = await fasMigrationStatus(email);
-      setTask(doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER);
+    if (!fasToken) {
+      (async () => {
+        const { doesUserExistsInFAS } = await fasMigrationStatus(email);
+        setTask(doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER);
 
-      const { token } = await getFASToken(email, doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER);
-      setToken(token);
-    })()
-  }, []);
+        const { token } = await getFASToken(email, doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER);
+        setToken(token);
+      })()
+    }
+  }, [fasToken]);
 
   const fasClient = useRef();
   useEffect(() => {
@@ -158,7 +160,7 @@ export default function FaceKiForm(props) {
                     ref={fasClient}
                     token={token}
                     username={email}
-                    task={task}
+                    task={fasToken ? task : TASK.VERIFY}
                     activeDeviceId={activeDeviceId}
                     onComplete={faceEnroll}
                     onFailure={onFailure}
