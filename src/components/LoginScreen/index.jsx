@@ -51,7 +51,7 @@ export default function LoginScreen(props) {
   const [privKey, setPrivKey] = useState(null);
   const [loader, setLoader] = useState(false);
   const [isMigrationPasskeyValid, setIsMigrationPasskeyValid] = useState(true);
-  const [token, setToken] = useState(null);
+  const [fasToken, setFasToken] = useState(null);
   const accountState = useSelector(accountsSelector);
   const isLoginState = useSelector(isLoginSelector);
   const oldUserState = useSelector(oldUserSelector);
@@ -155,17 +155,6 @@ export default function LoginScreen(props) {
     }
   };
 
-  const goPassKeyOrFaceKi = async (email) => {
-    const fasMigrationStatusRes = await fasMigrationStatus(email);
-    const {doesUserExistsInFAS, wasUserEnrolledInOldBiometric} = fasMigrationStatusRes;
-
-    if (doesUserExistsInFAS == false && wasUserEnrolledInOldBiometric == true) {
-      setStep('passkey');
-    } else {
-      setStep('faceki');
-    }
-  }
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validationHandler()) {
@@ -215,7 +204,13 @@ export default function LoginScreen(props) {
     }
 
     const { token } = await getFASToken(email, TASK.REGISTER, publicKey, signature, signatureContent);
-    setToken(token);
+
+    if (!token) {
+      toast('Passkey is not valid!');
+      return;
+    }
+
+    setFasToken(token);
     setStep('faceki');
   }
 
@@ -226,7 +221,6 @@ export default function LoginScreen(props) {
         onSubmit={handlePassKeyFormSubmit}
         accountName={login || 'user-x01-1'}
         email={email || 'user-x01@yopmail.com'}
-        setStep={setStep}
       />
     )
   }
@@ -240,9 +234,20 @@ export default function LoginScreen(props) {
         email={email || 'user-x01@yopmail.com'}
         privKey={privKey}
         setStep={setStep}
-        token={token}
+        token={fasToken}
       />
     )
+  }
+
+  const goPassKeyOrFaceKi = async (email) => {
+    const fasMigrationStatusRes = await fasMigrationStatus(email);
+    const {doesUserExistsInFAS, wasUserEnrolledInOldBiometric} = fasMigrationStatusRes;
+
+    if (doesUserExistsInFAS == false && wasUserEnrolledInOldBiometric == true) {
+      setStep('passkey');
+    } else {
+      setStep('faceki');
+    }
   }
 
   const goToFaceKi = (data) => {
