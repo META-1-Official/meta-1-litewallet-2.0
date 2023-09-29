@@ -48,6 +48,7 @@ const FASClient = forwardRef((props, ref) => {
   const [connected, setConnected] = useState(false);
   const [logs, setLogs] = useState([]);
   const [shouldCloseCamera, setShouldCloseCamera] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [currentStream, setCurrentStream] = useState('empty');
@@ -206,9 +207,15 @@ const FASClient = forwardRef((props, ref) => {
       maxPacketLifetime: 500,
     });
 
-    dc.current.onclose = () => console.log('data channel closed');
+    dc.current.onclose = () => {
+      setIsReady(false);
+      console.log('data channel closed');
+    }
 
-    dc.current.onopen = () => console.log('data channel opened');
+    dc.current.onopen = () => {
+      setIsReady(true);
+      console.log('data channel opened');
+    }
 
     dc.current.onmessage = function (event) {
       // console.log(evt.data);
@@ -420,7 +427,7 @@ const FASClient = forwardRef((props, ref) => {
 
   function forceCleanUp() {
     // disconnect();
-    message.info('Disconnected forcefully, Please reload!!!', 9999999);
+    message.info('Disconnected forcefully, Please reload!!!');
   }
 
   const toggleConnected = () => {
@@ -530,29 +537,31 @@ const FASClient = forwardRef((props, ref) => {
               ) : null}
             </div>
 
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 10,
-                left: 0,
-                zIndex: 1,
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <Button
-                type="primary"
-                icon={
-                  connected ? <PauseCircleOutlined /> : <PlayCircleOutlined />
-                }
-                onClick={toggleConnected}
+            {isReady && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 10,
+                  left: 0,
+                  zIndex: 1,
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
               >
-                {connected ? 'Stop' : 'Start'}
-              </Button>
-            </div>
+                <Button
+                  type="primary"
+                  icon={
+                    connected ? <PauseCircleOutlined /> : <PlayCircleOutlined />
+                  }
+                  onClick={toggleConnected}
+                >
+                  {connected ? 'Stop' : 'Start'}
+                </Button>
+              </div>
+            )}
 
-            {!!progress && (
+            {loading && (
               <div
                 style={{
                   position: 'absolute',
@@ -602,7 +611,6 @@ const FASClient = forwardRef((props, ref) => {
                   const videoTrack =
                     webcamRef.current.video.srcObject.getVideoTracks()[0];
                   const currentSettings = videoTrack.getSettings();
-
                   console.log('Video Constraints:', videoConstraints);
                   console.log('Current Video Settings:', currentSettings);
                 }}
