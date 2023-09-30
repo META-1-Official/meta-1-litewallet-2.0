@@ -160,7 +160,7 @@ export default function FaceKiForm(props) {
                     ref={fasClient}
                     token={token}
                     username={email}
-                    task={fasToken ? task : TASK.VERIFY}
+                    task={task}
                     activeDeviceId={activeDeviceId}
                     onComplete={faceEnroll}
                     onFailure={onFailure}
