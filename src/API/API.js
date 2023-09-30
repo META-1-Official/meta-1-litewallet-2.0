@@ -593,10 +593,17 @@ export async function getNotifications(login) {
   }
 }
 
-export async function getFASToken(email, task, publicKey=null, signature=null, signatureContent=null) {
+export async function getFASToken({
+  account= null,
+  email,
+  task,
+  publicKey= null,
+  signature= null,
+  signatureContent= null
+}) {
   try {
     const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getFASToken`, {
-      email, task, publicKey, signature, signatureContent
+      account, email, task, publicKey, signature, signatureContent
     })
     return data;
   } catch (error) {

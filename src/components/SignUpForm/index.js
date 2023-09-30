@@ -118,7 +118,13 @@ export default function SignUpForm(props) {
       return;
     }
 
-    const { token } = await getFASToken(email, TASK.REGISTER, publicKey, signature, signatureContent);
+    const { token } = await getFASToken({
+      email,
+      task: TASK.REGISTER,
+      publicKey,
+      signature,
+      signatureContent
+    });
 
     if (!token) {
       toast('Passkey is not valid!');

@@ -40,8 +40,17 @@ export default function FaceKiForm(props) {
   useEffect(() => {
     if (!fasToken) {
       (async () => {
-        const { token } = await getFASToken(email, TASK.VERIFY);
-        setToken(token);
+        const { token } = await getFASToken({
+          account: accountName,
+          email,
+          task: TASK.VERIFY
+        });
+        if (token) {
+          setToken(token);
+        } else {
+          alert(`Wallet name: ${accountName} is not assigned to email: ${email}`);
+          props.setStep('userform');
+        }
       })()
     }
   }, [fasToken]);
