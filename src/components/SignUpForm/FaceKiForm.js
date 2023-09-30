@@ -46,6 +46,7 @@ export default function FaceKiForm(props) {
         setTask(doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER);
 
         const { token } = await getFASToken({
+          account: doesUserExistsInFAS ? accountName : null,
           email,
           task: doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER
         });
