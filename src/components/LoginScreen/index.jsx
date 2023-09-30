@@ -449,6 +449,7 @@ export default function LoginScreen(props) {
             web3auth={web3auth}
             authMode="login"
             goToFaceKi={goToFaceKi}
+            login={login}
           />
         }
       </>

@@ -8,6 +8,7 @@ import { WALLET_ADAPTERS } from "@web3auth/base";
 import MetaLoader from "../../UI/loader/Loader";
 import { getPublicCompressed } from "@toruslabs/eccrypto";
 import { getTheme, setTheme } from '../../utils/storage';
+import { getUserKycProfileByAccount } from "../../API/API";
 
 const ProvidersBlock = ({ item, moreProviders, onClick }) => {
     return (
@@ -52,12 +53,27 @@ const LoginProvidersModal = (props) => {
     const [emailError, setEmailError] = useState(null);
 
     const doAuth = async (provider) => {
-        const { web3auth } = props;
+        const { web3auth, login } = props;
 
         if (
             !web3auth
         ) {
+            alert('web3Auth not initialized yet.');
+            setLoader(false);
             return;
+        }
+
+        const user = await getUserKycProfileByAccount(login);
+        if (!user) {
+            alert('Something went wrong from the server.');
+            setLoader(false);
+            return;
+        } else {
+            if (user.email !== email) {
+                alert('Email and wallet name are not matched.');
+                setLoader(false);
+                return;
+            }
         }
 
         try {
@@ -74,7 +90,7 @@ const LoginProvidersModal = (props) => {
             });
             if (web3authProvider) {
                 const data = await web3auth.getUserInfo();
-                
+
                 const privateKey = await web3auth.provider.request({
                     method: "eth_private_key"
                 });
@@ -82,10 +98,10 @@ const LoginProvidersModal = (props) => {
                 const app_pub_key = getPublicCompressed(Buffer.from(privateKey.padStart(64, "0"), "hex")).toString("hex");
 
                 data.privateKey = privateKey;
-                
+
                 data.web3Token = data.idToken;
                 data.web3PubKey = app_pub_key;
-                
+
                 setLoader(false);
                 props.setOpen(false);
                 props.goToFaceKi(data);
@@ -156,7 +172,7 @@ const LoginProvidersModal = (props) => {
                         <>
                             <div className={styles.providerHeader}>
                                 <div className={styles.closeBtnWrapper}>
-                                    <i className="fa fa-times" onClick={handleClose} style={{fontSize: 20}}/>
+                                    <i className="fa fa-times" onClick={handleClose} style={{ fontSize: 20 }} />
                                 </div>
                                 <p className={styles.welcomeText}>Welcome onboard</p>
                                 <p className={styles.descriptionText}>Select how you would like to continue</p>
