@@ -48,7 +48,7 @@ export default function FaceKiForm(props) {
         if (token) {
           setToken(token);
         } else {
-          alert(`Wallet name: ${accountName} is not assigned to email: ${email}`);
+          alert(`Email and wallet name doesn't match`);
           props.setStep('userform');
         }
       })()
