@@ -27,9 +27,9 @@ export const UpComingEvents = () => {
     const prevIcon = <i class="fas fa-chevron-left" />;
     const nextIcon = <i class="fas fa-chevron-right" />;
 
-    const eventExistDay = (day) => {
+    const eventExistDay = (day, month) => {
         if (!data) return false;
-        return data[day]?.length > 0;
+        return (month === selectedMonth) && data[day]?.length > 0;
     };
 
     const renderTile = (activeStartDate, date, view) => {
@@ -37,10 +37,10 @@ export const UpComingEvents = () => {
         let dayOfDate = date.getDate();
         let month = date.getMonth() + 1;
 
-        let cardBorder = `2px solid ${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
-        let cardBackground = `${eventExistDay(dayOfDate) ? 'linear-gradient(0, rgba(255, 255, 255, 0.00) 0%, rgba(236, 240, 245, 0.50) 100%)' : 'transparent'}`;
-        let cardColor = `${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
-        let events = (eventExistDay(dayOfDate) && data && date > activeStartDate && month === selectedMonth) ? data[dayOfDate] : [];
+        let cardBorder = `2px solid ${eventExistDay(dayOfDate, month) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
+        let cardBackground = `${eventExistDay(dayOfDate, month) ? 'linear-gradient(0, rgba(255, 255, 255, 0.00) 0%, rgba(236, 240, 245, 0.50) 100%)' : 'transparent'}`;
+        let cardColor = `${eventExistDay(dayOfDate, month) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
+        let events = (eventExistDay(dayOfDate, month) && data && date > activeStartDate) ? data[dayOfDate] : [];
         return <div className={styles.eventCard} style={{ borderTop: cardBorder, background: cardBackground }}>
             <span className={styles.dateText} style={{ color: cardColor }}>{dayOfDate}</span>            
             {
@@ -59,8 +59,9 @@ export const UpComingEvents = () => {
 
     const handleClick = (value, event) => {
         let dayOfDate = value.getDate();
+        let month = value.getMonth() + 1;
 
-        let isValid = eventExistDay(dayOfDate);
+        let isValid = eventExistDay(dayOfDate, month);
         isValid && setModalOpened(true);
     }
 
