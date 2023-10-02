@@ -562,7 +562,9 @@ const FASClient = forwardRef((props, ref) => {
                   zIndex: 1,
                   width: '100%',
                   display: 'flex',
-                  justifyContent: 'center',
+                  justifyContent: 'right',
+                  paddingLeft: 10,
+                  paddingRight: 10
                 }}
               >
                 <Button

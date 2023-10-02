@@ -546,7 +546,7 @@ function Application(props) {
         var filter = filterNotifications([JSON.parse(message.data)], accountName);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
-          toast(content);
+          toast(<p dangerouslySetInnerHTML={{__html: content}} />);
           dispatch(getNotificationsRequest({ login: accountName }));
         }
       };
