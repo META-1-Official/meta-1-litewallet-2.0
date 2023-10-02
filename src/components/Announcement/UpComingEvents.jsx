@@ -35,10 +35,12 @@ export const UpComingEvents = () => {
     const renderTile = (activeStartDate, date, view) => {
         let weekOfDate = date.getDay();
         let dayOfDate = date.getDate();
+        let month = date.getMonth() + 1;
+
         let cardBorder = `2px solid ${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
         let cardBackground = `${eventExistDay(dayOfDate) ? 'linear-gradient(0, rgba(255, 255, 255, 0.00) 0%, rgba(236, 240, 245, 0.50) 100%)' : 'transparent'}`;
         let cardColor = `${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
-        let events = (eventExistDay(dayOfDate) && data && date > activeStartDate) ? data[dayOfDate] : [];
+        let events = (eventExistDay(dayOfDate) && data && date > activeStartDate && month === selectedMonth) ? data[dayOfDate] : [];
         return <div className={styles.eventCard} style={{ borderTop: cardBorder, background: cardBackground }}>
             <span className={styles.dateText} style={{ color: cardColor }}>{dayOfDate}</span>            
             {

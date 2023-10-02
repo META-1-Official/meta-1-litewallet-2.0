@@ -83,6 +83,12 @@
   }
 }
 
+.contentHtml {
+  img {
+    max-width: 320px !important;
+  }
+}
+
 .time {
   display: flex;
   color: var(--textBrown);
