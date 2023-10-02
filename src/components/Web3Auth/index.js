@@ -53,7 +53,7 @@ const LoginProvidersModal = (props) => {
     const [emailError, setEmailError] = useState(null);
 
     const doAuth = async (provider) => {
-        const { web3auth, login } = props;
+        const { web3auth, login, authMode } = props;
 
         if (
             !web3auth
@@ -63,16 +63,18 @@ const LoginProvidersModal = (props) => {
             return;
         }
 
-        const user = await getUserKycProfileByAccount(login);
-        if (!user) {
-            alert('Something went wrong from the server.');
-            setLoader(false);
-            return;
-        } else {
-            if (user.email !== email) {
-                alert('Email and wallet name are not matched.');
+        if (authMode === 'login') {
+            const user = await getUserKycProfileByAccount(login);
+            if (!user) {
+                alert('Something went wrong from the server.');
                 setLoader(false);
                 return;
+            } else {
+                if (user.email !== email) {
+                    alert('Email and wallet name are not matched.');
+                    setLoader(false);
+                    return;
+                }
             }
         }
 

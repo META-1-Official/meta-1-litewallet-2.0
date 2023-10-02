@@ -20,6 +20,7 @@ export const UpComingEvents = () => {
     }
 
     useEffect(async () => {
+        setData(null);
         let res = await fetchEventData(selectedMonth);
         setData(res);
     }, [selectedMonth]);
