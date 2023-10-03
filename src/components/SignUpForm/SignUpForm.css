@@ -135,7 +135,6 @@ input {
 .child-div {
   margin: auto;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -198,7 +197,6 @@ input {
   background-color: transparent;
   float: right;
   color: #eb7134;
-  width: 40px !important;
   opacity: 1;
   font-size: 20px;
 }
@@ -531,4 +529,8 @@ select {
 
 .margin-bottom-zero {
   margin-bottom: 0 !important;
+}
+
+.none {
+  display: none;
 }

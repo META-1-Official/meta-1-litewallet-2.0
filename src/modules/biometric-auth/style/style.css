@@ -2,3 +2,22 @@
   position: static !important;
   transform: translateY(10px) !important;
 }
+
+.btn_x {
+  position: absolute;
+  z-index: 10;
+  right: 3px;
+  top: 5px;
+}
+
+.camera-container {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tip-text {
+  position: absolute;
+  color: white;
+  bottom: 100px;
+  z-index: 10;
+}
