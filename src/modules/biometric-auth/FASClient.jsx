@@ -43,6 +43,7 @@ const FASClient = forwardRef((props, ref) => {
     task,
     activeDeviceId,
     onComplete,
+    onCancel,
     onFailure = () => {},
   } = props;
 
@@ -608,6 +609,8 @@ const FASClient = forwardRef((props, ref) => {
                 margin: '0 auto',
               }}
             >
+              <button className='btn_x' onClick={() => onCancel()}>Cancel</button>
+              <div className="tip-text">{'Slowly move your head up and down to look up and down'}</div>
               <Webcam
                 audio={false}
                 ref={webcamRef}
