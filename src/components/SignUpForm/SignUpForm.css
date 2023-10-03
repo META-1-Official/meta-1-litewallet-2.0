@@ -82,7 +82,7 @@ input {
   flex-direction: row;
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 1366px) {
   .adaptThing {
     flex-direction: column;
     width: 100%;
@@ -90,6 +90,11 @@ input {
 
   .justFlexAndDirect {
     flex-direction: column;
+  }
+
+  .regForm {
+    width: 100%;
+    margin: 30px;
   }
 }
 

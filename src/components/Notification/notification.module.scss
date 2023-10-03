@@ -11,6 +11,8 @@
   border-bottom-right-radius: 8px;
   width: 440px;
   padding-bottom: 20px;
+  height: 550px;
+  overflow-y: auto;
 
   // Paddle
   &::after {
@@ -84,8 +86,10 @@
 }
 
 .contentHtml {
+  max-width: 350px;
+
   img {
-    max-width: 320px !important;
+    max-width: 100% !important;
   }
 }
 
@@ -100,6 +104,16 @@
   text-transform: capitalize;
   justify-content: space-between;
   align-items: center;
+
+  div {
+    &:first-child {
+      width: 100%;
+    }
+
+    &:last-child {
+      min-width: 150px;
+    }
+  }
 }
 
 .logo {

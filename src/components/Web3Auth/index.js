@@ -70,7 +70,7 @@ const LoginProvidersModal = (props) => {
                 setLoader(false);
                 return;
             } else {
-                if (user.email !== email) {
+                if (user.email.toLowerCase() !== email.toLowerCase()) {
                     alert('Email and wallet name are not matched.');
                     setLoader(false);
                     return;
