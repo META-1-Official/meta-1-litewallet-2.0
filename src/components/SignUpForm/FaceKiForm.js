@@ -136,6 +136,12 @@ export default function FaceKiForm(props) {
     // setTask(TASK.REGISTER);
   }
 
+  const onCancel = () => {
+    loadVideo(false).then(() => {
+      props.setStep('userform');
+    });
+  }
+
   const camWidth = width > 576 ? 600 : width - 30;
   const camHeight = camWidth / 1.07;
 
@@ -150,15 +156,6 @@ export default function FaceKiForm(props) {
                 <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
               </div>
               <div className='child-div' style={{ width: camWidth, height: '100%' }}>
-                <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
-                  <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
-                  <button className='btn_x'
-                    onClick={() => {
-                      loadVideo(false).then(() => {
-                        props.setStep('userform');
-                      });
-                    }}>X</button>
-                </div>
                 {(!token || !task)? 'loading ...' : (
                   <FASClient
                     ref={fasClient}
@@ -168,6 +165,7 @@ export default function FaceKiForm(props) {
                     activeDeviceId={activeDeviceId}
                     onComplete={faceEnroll}
                     onFailure={onFailure}
+                    onCancel={onCancel}
                   />
                 )}
               </div>

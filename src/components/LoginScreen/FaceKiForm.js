@@ -116,6 +116,12 @@ export default function FaceKiForm(props) {
     }
   }
 
+  const onCancel = () => {
+    loadVideo(false).then(() => {
+      props.setStep('userform');
+    });
+  }
+
   const camWidth = width > 576 ? 600 : width - 30;
   const camHeight = camWidth / 1.07;
 
@@ -131,16 +137,6 @@ export default function FaceKiForm(props) {
               <p className='header_ptag'>To log into your wallet, please complete biometric authentication.</p>
             </div>
             <div className='child-div' style={{ width: camWidth, height: '100%' }}>
-              <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
-                <div className="position-head color-black">Position your face in the oval</div>
-                <button
-                  className='btn_x'
-                  onClick={() => {
-                    loadVideo(false).then(() => {
-                      props.setStep('userform');
-                    });
-                  }}>X</button>
-              </div>
               {!token ? 'loading ...' : (
                 <FASClient
                   ref={fasClient}
@@ -149,6 +145,7 @@ export default function FaceKiForm(props) {
                   task={fasToken ? TASK.REGISTER : TASK.VERIFY}
                   activeDeviceId={activeDeviceId}
                   onComplete={videoVerify}
+                  onCancel={onCancel}
                 />
               )}
             </div>
