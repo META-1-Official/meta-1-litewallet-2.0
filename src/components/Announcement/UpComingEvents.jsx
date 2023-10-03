@@ -46,7 +46,7 @@ export const UpComingEvents = () => {
             <span className={styles.dateText} style={{ color: cardColor }}>{dayOfDate}</span>            
             {
                 events && events.map((ev, index) => {
-                    if (index < 2) {
+                    if (index < 1) {
                         return <div className={styles.cardInfo}>
                             <div className={styles.title}>{ev.title}</div>
                             <div className={styles.location}>{ev.location}</div>

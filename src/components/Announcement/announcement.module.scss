@@ -5,13 +5,12 @@
     padding: 24px 0px;
     align-items: center;
     justify-content: space-between;
+    cursor: pointer;
 }
 
 .info {
-    max-width: 90%;
-
+    width: 100%;
     h4 {
-        cursor: pointer;
         color: var(--textBrown) !important;
 
         &:hover {
@@ -21,10 +20,10 @@
 
     p {
         color: var(--textBrown) !important;
+    }
 
-        span {
-            img {width: 100%;}
-        }
+    table {
+        background: transparent !important;
     }
 }
 

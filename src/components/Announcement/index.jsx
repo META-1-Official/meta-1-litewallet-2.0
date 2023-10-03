@@ -30,6 +30,7 @@ export const Announcement = (props) => {
                         description={ele.description}
                         time={moment(ele.created_at).fromNow()}
                         onClick={() => handleClick(index)}
+                        viewMode="feed"
                     />
                 }) : <div>No Annoucement</div>
             }

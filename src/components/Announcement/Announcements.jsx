@@ -43,6 +43,7 @@ const Announcements = (props) => {
                             description={ele.description}
                             time={moment(ele.created_at).fromNow()}
                             onClick={() => handleClick(index)}
+                            viewMode="all"
                         />
                     }
                 }) : <div>No Annoucement</div>

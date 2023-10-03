@@ -108,7 +108,7 @@ const Notifications = (props) => {
                                 <div className={styles.info}>
                                     <div className={styles.time}>
                                         <div>
-                                            <h4>{ele.category}</h4>
+                                            <h4>{ele.title ?? ele.category}</h4>
                                             <p dangerouslySetInnerHTML={{__html: ele.content}} />
                                         </div>
                                         <div>
