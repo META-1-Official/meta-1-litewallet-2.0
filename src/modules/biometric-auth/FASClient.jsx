@@ -1,41 +1,41 @@
 import 'webrtc-adapter';
-import './style/style.css';
+import './css/style.css';
 
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
-import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import { Button, message, Select } from 'antd';
+import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState,} from 'react';
+import {PauseCircleOutlined, PlayCircleOutlined} from '@ant-design/icons';
+import {Button, message, Select} from 'antd';
 import Webcam from 'react-webcam';
-import CircleProgressBar from './CircleProgressBar';
 import useDevices from './hooks/useDevices';
-import ProgressScores from './ProgressScores';
+import ProgressScores from './hud/ProgressScores';
 import Loader from './LoaderComponent';
 import parseTurnServer from './helpers/parseTurnServer';
 import calculateCompletionPercentage from './helpers/calculateTasksProgress';
+import HudNotification from "./hud/HudNotification";
+import HudUserGuidanceAlert from "./hud/HudUserGuidanceAlert";
+import HudFaceMagnetProgress from "./hud/HudFaceMagnetProgress";
+import HudBitrateMonitor from "./hud/HudBitrateMonitor";
+import ProcessingCanvasComponent from "./ProcessingCanvasComponent";
 
 const WSSignalingServer = process.env.REACT_APP_SIGNALIG_SERVER;
 
 const IceServer = parseTurnServer();
 
+console.log("ICE Turn Server", IceServer)
+
 const FASClient = forwardRef((props, ref) => {
+
   message.config({
     // top: 100,
     duration: 2,
-    maxCount: 3,
+    maxCount: 1,
     rtl: true,
     getContainer: () => {
-      return document.getElementById('notification-container');
-    },
+      return document.getElementById('notification-container')
+    }
   });
 
   const webcamRef = useRef(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
   const [progress, setProgress] = useState(0.0);
   const {
     token,
@@ -43,7 +43,6 @@ const FASClient = forwardRef((props, ref) => {
     task,
     activeDeviceId,
     onComplete,
-    onCancel,
     onFailure = () => {},
   } = props;
 
@@ -53,17 +52,13 @@ const FASClient = forwardRef((props, ref) => {
 
   const polite = true; // Set whether this peer is the polite peer
 
+  const [devices, selectedDevice, setSelectedDevice] =
+    useDevices(activeDeviceId);
+
   const [makingOffer, setMakingOffer] = useState(false);
   const [connected, setConnected] = useState(false);
   const [logs, setLogs] = useState([]);
   const [shouldCloseCamera, setShouldCloseCamera] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const [isPermissionsProvided, setIsPermissionsProvided] = useState(false);
-
-  const [devices, selectedDevice, setSelectedDevice] = useDevices(
-    activeDeviceId,
-    isPermissionsProvided,
-  );
 
   const [loading, setLoading] = useState(false);
   const [currentStream, setCurrentStream] = useState('empty');
@@ -71,8 +66,12 @@ const FASClient = forwardRef((props, ref) => {
   const ws = useRef(null);
   const pc = useRef(null);
   const dc = useRef(null);
+  const notificationRef = useRef();
+  const hudUserGuidanceAlertRef = useRef();
+  const hudFacemagnetRef = useRef();
+  // const hudBirateMonitorRef = useRef();
 
-  const processingCanvasRef = useRef(null);
+  const processingCanvasComponentref = useRef(null);
   // const preloadCanvasRef = useRef(null);
   const emptyStreamRef = useRef(null);
 
@@ -94,48 +93,11 @@ const FASClient = forwardRef((props, ref) => {
       pc.current = new RTCPeerConnection({
         iceServers: IceServer,
         // iceTransportPolicy: 'relay',
-        // iceCandidatePoolSize: 10,
+        iceCandidatePoolSize: 10,
       });
-
-      emptyStreamRef.current = webcamRef.current.video.srcObject;
-
-      if (emptyStreamRef.current) {
-        addOrReplaceTrack(
-          emptyStreamRef.current.getTracks()[0],
-          emptyStreamRef.current,
-        );
-      }
-
-      setCurrentStream('empty');
-
-      const sender = pc.current
-        .getSenders()
-        .find((s) => s.track.kind === 'video');
-      if (sender) {
-        const parameters = sender.getParameters();
-        if (!parameters.encodings) {
-          parameters.encodings = [{}];
-        }
-
-        if (parameters.encodings && parameters.encodings.length > 0) {
-          parameters.encodings[0].active = true;
-          parameters.encodings[0].maxBitrate = 30000000; // e.g., 30 Mbps
-          parameters.encodings[0].scaleResolutionDownBy = 1;
-          parameters.encodings[0].priority = 'high';
-        } else {
-          console.warn('Encodings is not defined or empty.');
-        }
-
-        sender
-          .setParameters(parameters)
-          .then((success) => console.log(success))
-          .catch((err) => console.log('Failed to set params'));
-      }
-
-      openAndBindDCEvents();
-      bindRTCEvents();
-
       // Get user media and add track to the connection
+      console.log('@111 - ')
+      beginSession();
     };
 
     ws.current.onmessage = async (event) => {
@@ -167,6 +129,7 @@ const FASClient = forwardRef((props, ref) => {
         }
       } else if (msg.candidate) {
         try {
+          if (Boolean(String(msg.candidate.candidate).trim().length))
           await pc.current.addIceCandidate(msg.candidate);
         } catch (err) {
           if (!polite) {
@@ -185,7 +148,7 @@ const FASClient = forwardRef((props, ref) => {
       typeof msg.type !== 'undefined' &&
       ['success', 'error', 'info', 'warning'].indexOf(String(msg.type)) !== -1
     ) {
-      message[msg.type.toLowerCase()](msg.message);
+      notificationRef.current.showNotification(msg.message, msg.type.toLowerCase());
       if (
         msg.type === 'success' &&
         ['Verification successful!!', 'Registration successful!!!'].includes(
@@ -193,15 +156,31 @@ const FASClient = forwardRef((props, ref) => {
         )
       ) {
         console.log('Message: ', msg);
+        message.success(msg.message, 10000)
+        hudUserGuidanceAlertRef.current.clear()
         onComplete(msg.token);
       } else if (
-        msg.type === 'error' &&
-        msg.message === 'Registration failure'
+        (msg.type === 'error' &&
+        msg.message === 'Registration failure') ||
+        (msg.type === "warning" && msg.message === "Liveliness check failed!!!")
       ) {
+        hudUserGuidanceAlertRef.current.clear()
+        message.error(msg.message, 10000)
         onFailure();
       }
     } else if (typeof msg.type !== 'undefined' && msg.type === 'data') {
       console.log('log', msg);
+      hudUserGuidanceAlertRef.current.updateData(msg.message)
+
+      if (webcamRef.current && webcamRef.current.video) {
+        const video = webcamRef.current.video;
+        if (video.videoWidth && video.videoHeight) {
+          hudFacemagnetRef.current.setOriginalWidth(video.videoWidth);
+          hudFacemagnetRef.current.setOriginalHeight(video.videoHeight);
+        }
+      }
+
+      hudFacemagnetRef.current.setData(msg.message)
       setLogs((prevLogs) => [...prevLogs, { msg, timestamp: new Date() }]);
     }
 
@@ -211,6 +190,7 @@ const FASClient = forwardRef((props, ref) => {
       msg.message === 'Session completed!!!'
     ) {
       forceCleanUp();
+      hudUserGuidanceAlertRef.current.clear()
       setConnected(false);
     }
   };
@@ -221,15 +201,9 @@ const FASClient = forwardRef((props, ref) => {
       maxPacketLifetime: 500,
     });
 
-    dc.current.onclose = () => {
-      setIsReady(false);
-      console.log('data channel closed');
-    };
+    dc.current.onclose = () => console.log('data channel closed');
 
-    dc.current.onopen = () => {
-      setIsReady(true);
-      console.log('data channel opened');
-    };
+    dc.current.onopen = () => console.log('data channel opened');
 
     dc.current.onmessage = function (event) {
       // console.log(evt.data);
@@ -305,21 +279,15 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   const connect = () => {
-    console.log('Trying to get connect!');
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then(() => {
-        console.log('Connected!');
-        setLoading(true);
-        ws.current = new WebSocket(WSSignalingServer);
-        bindWSEvents();
-      })
-      .catch(() => {
-        console.log('Connection error!');
-      });
+    setLoading(true);
+    ws.current = new WebSocket(WSSignalingServer);
+    bindWSEvents();
   };
 
-  const addOrReplaceTrack = (track, stream) => {
+  const addOrReplaceTrack = async (track, stream) => {
+
+    console.log(track)
+
     const senders = pc.current.getSenders();
 
     const videoSender = senders.find(
@@ -444,7 +412,7 @@ const FASClient = forwardRef((props, ref) => {
 
   function forceCleanUp() {
     // disconnect();
-    message.info('Disconnected forcefully, Please reload!!!');
+    // message.info('Disconnected forcefully, Please reload!!!', 9999999);
   }
 
   const toggleConnected = () => {
@@ -505,18 +473,18 @@ const FASClient = forwardRef((props, ref) => {
   }, []);
 
   useEffect(() => {
-    if (connected && isPermissionsProvided) {
+    if (connected) {
       __start();
     } else {
       __stop();
     }
-  }, [connected, isPermissionsProvided]);
+  }, [connected]);
 
   useEffect(() => {
-    if (selectedDevice && isPermissionsProvided) {
+    if (selectedDevice && !shouldCloseCamera) {
       setCurrentStream('altcam');
     }
-  }, [selectedDevice, isPermissionsProvided]);
+  }, [selectedDevice]);
 
   useEffect(() => {
     const data = logs[logs.length - 1]?.msg;
@@ -529,13 +497,70 @@ const FASClient = forwardRef((props, ref) => {
     }
   }, [logs]);
 
+  const onProcessingTrackReady = (track, stream) => {
+    console.log("FASC", "processing track is ready")
+    addOrReplaceTrack(
+      track,
+      stream,
+    ).then(() => {
+      setCurrentStream('empty');
+
+      const sender = pc.current
+        .getSenders()
+        .find((s) => s.track.kind === 'video');
+
+      const parameters = sender.getParameters();
+
+      if (!parameters.encodings) {
+        parameters.encodings = [{}];
+      }
+
+      if (parameters.encodings && parameters.encodings.length > 0) {
+        parameters.encodings[0].active = true;
+        parameters.encodings[0].maxBitrate = 30000000; // e.g., 30 Mbps
+        parameters.encodings[0].scaleResolutionDownBy = 1;
+        parameters.encodings[0].priority = 'high';
+      } else {
+        console.warn('Encodings is not defined or empty.');
+      }
+
+      sender
+        .setParameters(parameters)
+        .then((success) => console.log(success))
+        .catch((err) => console.log('Failed to set params'));
+
+      openAndBindDCEvents();
+      bindRTCEvents();
+    });
+  }
+
+  const beginSession = () => {
+    processingCanvasComponentref.current.setOriginalStream(emptyStreamRef.current)
+
+    // hudBirateMonitorRef.current.setPc(pc.current)
+  }
+
+  const getCanvasWidth = () => {
+    if (!document.getElementsByClassName('camera-container').length) return 0
+    const width = parseInt(getComputedStyle(document.getElementsByClassName('camera-container')[0]).width)
+    // console.log("Canvas Width", width)
+    return width;
+  }
+
+  const getCanvasHeight = () => {
+    if (!document.getElementsByClassName('camera-container').length) return 0
+    const height = parseInt(getComputedStyle(document.getElementsByClassName('camera-container')[0]).height)
+    // console.log("Canvas Height", height)
+    return height;
+  }
+
   return (
     <div>
       <div
         className="FASClient"
-        style={{ maxWidth: '100vw', margin: '0 auto' }}
+        style={{ maxWidth: '900px', margin: 'auto' }}
       >
-        <div style={{ width: '100%' }}>
+        <div style={{ maxWidth: '900px', margin: 'auto', position: 'relative' }}>
           <div>
             <div style={{ marginTop: 15, position: 'relative', zIndex: 1 }}>
               {devices.length > 0 ? (
@@ -554,33 +579,29 @@ const FASClient = forwardRef((props, ref) => {
               ) : null}
             </div>
 
-            {isReady && (
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: 10,
-                  left: 0,
-                  zIndex: 1,
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'right',
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 10,
+                left: 0,
+                zIndex: 1,
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Button
+                type="primary"
+                icon={
+                  connected ? <PauseCircleOutlined /> : <PlayCircleOutlined />
+                }
+                onClick={toggleConnected}
               >
-                <Button
-                  type="primary"
-                  icon={
-                    connected ? <PauseCircleOutlined /> : <PlayCircleOutlined />
-                  }
-                  onClick={toggleConnected}
-                >
-                  {connected ? 'Stop' : 'Start'}
-                </Button>
-              </div>
-            )}
+                {connected ? 'Stop' : 'Start'}
+              </Button>
+            </div>
 
-            {loading && (
+            {!!progress && (
               <div
                 style={{
                   position: 'absolute',
@@ -609,8 +630,6 @@ const FASClient = forwardRef((props, ref) => {
                 margin: '0 auto',
               }}
             >
-              <button className='btn_x' onClick={() => onCancel()}>Cancel</button>
-              <div className="tip-text">{'Slowly move your head up and down to look up and down'}</div>
               <Webcam
                 audio={false}
                 ref={webcamRef}
@@ -623,52 +642,60 @@ const FASClient = forwardRef((props, ref) => {
                   objectFit: 'cover',
                 }}
                 videoConstraints={{
-                  width: 720,
-                  height: 720,
+                  width: 1920,
+                  height: 1080,
                   facingMode: 'user',
                 }}
                 onUserMedia={() => {
-                  setIsPermissionsProvided(true);
                   const videoConstraints = webcamRef.current.videoConstraints;
                   const videoTrack =
                     webcamRef.current.video.srcObject.getVideoTracks()[0];
                   const currentSettings = videoTrack.getSettings();
+
                   console.log('Video Constraints:', videoConstraints);
                   console.log('Current Video Settings:', currentSettings);
+
+
+                  emptyStreamRef.current = webcamRef.current.video.srcObject;
+
+                  hudFacemagnetRef.current.setCanvasWidth(getCanvasWidth())
+                  hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight())
+
+                  if (typeof ws.current.readyState !== "undefined" && ws.current.readyState === 1) {
+                    beginSession()
+                  } else {
+                    ws.current.onopen = () => {
+                      // beginSession()
+                    }
+                  }
                 }}
               />
-              <CircleProgressBar
-                width={windowWidth}
-                height={640}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  position: 'absolute',
-                  objectFit: 'cover',
-                }}
-                progress={progress}
-                backgroundLineColor="#e9e9e9"
-                progressLineColor="#00DA60"
-                backgroundLineSize={2}
-                progressLineSize={4}
-                backgroundLineLength={10}
-                progressLineLength={16}
-                progressLineSpacing={3}
-              />
-              <div
-                id="notification-container"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                }}
-              />
+
+              <div id="hud-bitrate-monitor">
+                {/*<HudBitrateMonitor ref={hudBirateMonitorRef}></HudBitrateMonitor>*/}
+              </div>
+
+              <div id="hud-facemagnet-container" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '100%' }} >
+                <HudFaceMagnetProgress ref={hudFacemagnetRef} canvasWidth={getCanvasWidth()} canvasHeight={getCanvasHeight()}/>
+              </div>
+              <div id="notification-container" style={{ position: 'absolute', top: 0, left: 0, paddingTop: "7%", width: '100%', height: '100%' }} >
+
+              </div>
+              <div id="hud-notification-container" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} >
+                <HudNotification ref={notificationRef} duration={1000} />
+              </div>
+              <div id="hud-user-guidance-text-container" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '100%' }} >
+                <HudUserGuidanceAlert ref={hudUserGuidanceAlertRef} />
+              </div>
+
+              <div id="hud-processing-canvas-component" style={{ display: "none", bottom: 0, left: 0, width: '100%', height: '100%' }} >
+                <ProcessingCanvasComponent onTrackReady={onProcessingTrackReady} ref={processingCanvasComponentref} />
+              </div>
+
             </div>
             <div
               className="aspect-3-2"
-              style={{ position: 'absolute', bottom: 0, left: 0 }}
+              style={{ position: 'absolute', top: 40, left: 0, width: '100%' }}
             >
               <ProgressScores logs={logs}></ProgressScores>
             </div>

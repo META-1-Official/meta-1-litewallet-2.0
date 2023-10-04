@@ -1,0 +1,9 @@
+#notification-container > .ant-message.ant-message-top {
+  position: static !important;
+  transform: translateY(10px) !important;
+}
+
+ant-message *, ant-message-top *, .ant-message-notice-content * {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
