@@ -38,7 +38,7 @@ export default function FaceKiForm(props) {
   }
 
   useEffect(() => {
-    if (!fasToken) {
+    if (accountName && email && !fasToken && !browserstack_test_accounts.includes(props.accountName)) {
       (async () => {
         const { token } = await getFASToken({
           account: accountName,
