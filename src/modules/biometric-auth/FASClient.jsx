@@ -571,7 +571,7 @@ const FASClient = forwardRef((props, ref) => {
             <div style={{ marginTop: 15, position: 'relative', zIndex: 1 }}>
               {devices.length > 0 ? (
                 <Select
-                  style={{ width: 200 }}
+                  style={{ width: '100%' }}
                   placeholder="Please select a camera"
                   value={selectedDevice}
                   onChange={(value) => setSelectedDevice(value)}
@@ -664,8 +664,10 @@ const FASClient = forwardRef((props, ref) => {
 
                   emptyStreamRef.current = webcamRef.current.video.srcObject;
 
-                  hudFacemagnetRef.current.setCanvasWidth(getCanvasWidth())
-                  hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight())
+                  setTimeout(() => {
+                    hudFacemagnetRef.current.setCanvasWidth(getCanvasWidth());
+                    hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight());
+                  }, 1000);
 
                   if (typeof ws.current.readyState !== "undefined" && ws.current.readyState === 1) {
                     beginSession()
@@ -678,7 +680,7 @@ const FASClient = forwardRef((props, ref) => {
               </div>
 
               <div id="hud-facemagnet-container" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '100%' }} >
-                <HudFaceMagnetProgress ref={hudFacemagnetRef} canvasWidth={getCanvasWidth()} canvasHeight={getCanvasHeight()}/>
+                <HudFaceMagnetProgress ref={hudFacemagnetRef} />
               </div>
               <div id="notification-container" style={{ position: 'absolute', top: 0, left: 0, paddingTop: "7%", width: '100%', height: '100%' }} >
 
