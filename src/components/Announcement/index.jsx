@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { AnnouncementCard } from './AnnouncementCard';
 import { AnnouncementDetailModal } from './AnnouncementDetailModal';
+import MetaLoader from "../../UI/loader/Loader";
+
 import styles from "./announcement.module.scss";
 
 import { getAllAnnouncements } from '../../API/API';
@@ -9,6 +11,7 @@ import { getAllAnnouncements } from '../../API/API';
 export const Announcement = (props) => {
     const [data, setData] = useState();
     const [index, setIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
     const [modalOpened, setModalOpened] = useState(false);
 
     const handleClick = (index) => {
@@ -17,14 +20,16 @@ export const Announcement = (props) => {
     }
 
     useEffect(async () => {
+        setLoading(true);
         let res = await getAllAnnouncements();
         setData(res);
+        setLoading(false);
     }, []);
 
     return (
         <div>
             {
-                data ? data.map((ele, index) => {
+                loading ? <MetaLoader size="mini" /> : data ? data.map((ele, index) => {
                     return index < 3 && <AnnouncementCard
                         title={ele.title}
                         description={ele.description}

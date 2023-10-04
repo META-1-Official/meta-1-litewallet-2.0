@@ -4,6 +4,7 @@ import { AnnouncementCard } from './AnnouncementCard';
 import { AnnouncementDetailModal } from './AnnouncementDetailModal';
 import Pagination from '@mui/material/Pagination';
 import styles from './announcement.module.scss';
+import MetaLoader from "../../UI/loader/Loader";
 
 import { getAllAnnouncements } from '../../API/API';
 
@@ -13,6 +14,7 @@ const Announcements = (props) => {
     const [modalOpened, setModalOpened] = useState(false);
     const [page, setPage] = useState(1);
     const [count, setCount] = useState(1);
+    const [loading, setLoading] = useState(false);
 
     const handleClick = (index) => {
         setIndex(index);
@@ -20,6 +22,7 @@ const Announcements = (props) => {
     }
 
     useEffect(async () => {
+        setLoading(true);
         let announcements = await getAllAnnouncements();
         let count = announcements.length % 10 === 0 ? Math.floor(announcements.length / 10) : Math.floor(announcements.length / 10) + 1;
         setData(announcements);
@@ -27,6 +30,7 @@ const Announcements = (props) => {
         if (page >= count) {
             setPage(count);
         }
+        setLoading(false);
     }, []);
 
     const handlePageChange = async (event, value) => {
@@ -36,7 +40,7 @@ const Announcements = (props) => {
     return (
         <div className={styles.announcementsWrapper}>
             {
-                (data && data.length > 0) ? data.map((ele, index) => {
+                loading ? <MetaLoader size="mini" /> : (data && data.length > 0) ? data.map((ele, index) => {
                     if (index >= (page - 1) * 10 && page * 10 > index) {
                         return <AnnouncementCard
                             title={ele.title}
