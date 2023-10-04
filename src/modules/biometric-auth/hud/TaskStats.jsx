@@ -1,8 +1,7 @@
 import React from 'react';
-import { Progress } from 'antd';
+import {Progress, Tooltip} from 'antd';
 
 const processData = (data, parentKey = '') => {
-  // console.log(data)
   const entries = Object.entries(data);
 
   return entries.flatMap(([key, value]) => {
@@ -10,9 +9,9 @@ const processData = (data, parentKey = '') => {
       typeof value === 'number'
         ? parseInt(String(value))
         : value === null
-        ? 0
-        : value;
-    // Direct numeric value
+          ? 0
+          : value;
+
     if (
       typeof _value === 'number' &&
       [
@@ -26,28 +25,29 @@ const processData = (data, parentKey = '') => {
       const progressStatus =
         _value > 75 ? 'success' : _value > 50 ? 'active' : 'exception';
       const progressBarKey = parentKey ? `${parentKey} (${key})` : key;
+      const tooltipTitle = `${progressBarKey}: ${_value}% (${progressStatus})`;
 
       return (
-        <div key={progressBarKey} style={{ margin: '0' }}>
-          <span style={{ color: '#ffffff', fontSize: 10 }}>{progressBarKey}</span>
-          <Progress
-            percent={_value}
-            status={progressStatus}
-            strokeWidth={6}
-            strokeColor={{
-              '0%': '#ff4d4f',
-              '100%': '#52c41a',
-            }}
-            style={{
-              margin: 0,
-              lineHeight: 0
-            }}
-          />
-        </div>
+        <Tooltip title={tooltipTitle} key={progressBarKey}>
+          <div style={{ flex: 1, marginRight: '2px', transition: 'transform 0.3s', cursor: 'pointer' }}>
+            <Progress
+              percent={_value}
+              status={progressStatus}
+              strokeWidth={15}
+              strokeColor={{
+                '0%': '#ff4d4f',
+                '100%': '#52c41a',
+              }}
+              style={{
+                margin: 0,
+                lineHeight: 0,
+              }}
+            />
+          </div>
+        </Tooltip>
       );
     }
 
-    // Object with 'current_score' subkey
     if (
       typeof value === 'object' &&
       value !== null &&
@@ -56,7 +56,6 @@ const processData = (data, parentKey = '') => {
       return processData(value, `${parentKey ? `${parentKey} > ` : ''}${key}`);
     }
 
-    // Recursively process 'tasks' object
     if (typeof value === 'object' && value !== null && key === 'tasks') {
       return processData(value, `${parentKey ? `${parentKey} > ` : ''}${key}`);
     }
@@ -66,7 +65,11 @@ const processData = (data, parentKey = '') => {
 };
 
 const ProgressBarComponent = ({ data }) => {
-  return <div>{processData(data)}</div>;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+      {processData(data)}
+    </div>
+  );
 };
 
 export default ProgressBarComponent;

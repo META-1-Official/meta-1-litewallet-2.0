@@ -108,6 +108,7 @@ export default function FaceKiForm(props) {
   }
 
   const faceEnroll = async (token) => {
+    fasClient.current.unload()
     setVerifying(true);
     if (task === TASK.VERIFY) {
       alert(errorCase['Already Enrolled']);
@@ -132,11 +133,13 @@ export default function FaceKiForm(props) {
   }
 
   const onFailure = () => {
+    fasClient.current.unload()
     alert('Email is already enrolled, please verify yourself');
     // setTask(TASK.REGISTER);
   }
 
   const onCancel = () => {
+    fasClient.current.unload()
     loadVideo(false).then(() => {
       props.setStep('userform');
     });

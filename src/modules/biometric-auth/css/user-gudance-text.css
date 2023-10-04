@@ -1,0 +1,17 @@
+/*// Notification.css*/
+.hud-user-guidance-text {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease-in-out;
+  /*opacity: 0;*/
+}
+
+.hud-user-guidance-text > .ant-alert {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.hud-user-guidance-text > .ant-alert {
+  opacity: 1;
+}

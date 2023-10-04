@@ -111,12 +111,14 @@ export default function FaceKiForm(props) {
 
   const videoVerify = async (token) => {
     if (token) {
+      fasClient.current.unload()
       setFaceKISuccess(true);
       props.onSubmit(accountName, email, token);
     }
   }
 
   const onCancel = () => {
+    fasClient.current.unload()
     loadVideo(false).then(() => {
       props.setStep('userform');
     });
