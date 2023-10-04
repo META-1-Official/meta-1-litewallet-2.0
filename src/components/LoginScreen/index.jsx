@@ -32,8 +32,8 @@ export default function LoginScreen(props) {
     onClickResetIsSignatureProcessing,
     onClickExchangeAssetHandler
   } = props;
-  const [login, setLogin] = useState("jin-1001");
-  const [email, setEmail] = useState("jin-1001@yopmail.com");
+  const [login, setLogin] = useState("zenieth-21");
+  const [email, setEmail] = useState("janruls1@gmail.com");
   const [openModal, setOpenModal] = useState(false);
   const [migrationMsg, setMigrationMsg] = useState('');
   const [openVideoModal, setOpenVideoModal] = useState(false);

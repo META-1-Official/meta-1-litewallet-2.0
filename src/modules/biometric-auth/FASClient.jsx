@@ -69,7 +69,7 @@ const FASClient = forwardRef((props, ref) => {
   const notificationRef = useRef();
   const hudUserGuidanceAlertRef = useRef();
   const hudFacemagnetRef = useRef();
-  // const hudBirateMonitorRef = useRef();
+  const hudBirateMonitorRef = useRef();
 
   const processingCanvasComponentref = useRef(null);
   // const preloadCanvasRef = useRef(null);
@@ -95,9 +95,12 @@ const FASClient = forwardRef((props, ref) => {
         // iceTransportPolicy: 'relay',
         iceCandidatePoolSize: 10,
       });
+
+      if (webcamRef.current && typeof webcamRef.current.video !== "undefined") {
+        beginSession()
+      }
+
       // Get user media and add track to the connection
-      console.log('@111 - ')
-      beginSession();
     };
 
     ws.current.onmessage = async (event) => {
@@ -361,7 +364,7 @@ const FASClient = forwardRef((props, ref) => {
     }
   };
 
-  const disconnect = () => {
+  const __unload = () => {
     // Close ws connection
     if (ws.current !== null) {
       ws.current.close();
@@ -422,6 +425,8 @@ const FASClient = forwardRef((props, ref) => {
   const __load = () => {
     connect();
 
+    console.log("Started FAS Loading!!!")
+
     setTimeout(() => {
       forceCleanUp();
     }, 30000); // 5 Mins
@@ -463,6 +468,7 @@ const FASClient = forwardRef((props, ref) => {
     load: __load,
     start: __start,
     stop: __stop,
+    unload: __unload
   }));
 
   useEffect(() => {
@@ -537,7 +543,7 @@ const FASClient = forwardRef((props, ref) => {
   const beginSession = () => {
     processingCanvasComponentref.current.setOriginalStream(emptyStreamRef.current)
 
-    // hudBirateMonitorRef.current.setPc(pc.current)
+    hudBirateMonitorRef.current.setPc(pc.current)
   }
 
   const getCanvasWidth = () => {
@@ -663,16 +669,12 @@ const FASClient = forwardRef((props, ref) => {
 
                   if (typeof ws.current.readyState !== "undefined" && ws.current.readyState === 1) {
                     beginSession()
-                  } else {
-                    ws.current.onopen = () => {
-                      // beginSession()
-                    }
                   }
                 }}
               />
 
               <div id="hud-bitrate-monitor">
-                {/*<HudBitrateMonitor ref={hudBirateMonitorRef}></HudBitrateMonitor>*/}
+                <HudBitrateMonitor ref={hudBirateMonitorRef}></HudBitrateMonitor>
               </div>
 
               <div id="hud-facemagnet-container" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '100%' }} >
