@@ -110,9 +110,12 @@ const LoginProvidersModal = (props) => {
                     return;
                 }
 
-                setLoader(false);
-                props.setOpen(false);
                 props.goToFaceKi(data);
+
+                setTimeout(() => {
+                    setLoader(false);
+                    props.setOpen(false);
+                }, 2000);
             }
         } catch (error) {
             setLoader(false);
