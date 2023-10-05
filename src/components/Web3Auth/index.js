@@ -104,9 +104,12 @@ const LoginProvidersModal = (props) => {
                 data.web3Token = data.idToken;
                 data.web3PubKey = app_pub_key;
 
-                setLoader(false);
-                props.setOpen(false);
                 props.goToFaceKi(data);
+
+                setTimeout(() => {
+                    setLoader(false);
+                    props.setOpen(false);
+                }, 2000);
             }
         } catch (error) {
             console.log('Error in Web3Auth', error);
