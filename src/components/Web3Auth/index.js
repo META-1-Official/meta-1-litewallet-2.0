@@ -54,6 +54,7 @@ const LoginProvidersModal = (props) => {
 
     const doAuth = async (provider) => {
         const { web3auth, login, authMode } = props;
+        let user = null;
 
         if (
             !web3auth
@@ -64,13 +65,13 @@ const LoginProvidersModal = (props) => {
         }
 
         if (authMode === 'login') {
-            const user = await getUserKycProfileByAccount(login);
+            user = await getUserKycProfileByAccount(login);
             if (!user) {
                 alert('Something went wrong from the server.');
                 setLoader(false);
                 return;
             } else {
-                if (user.email.toLowerCase() !== email.toLowerCase()) {
+                if (user.email.toLowerCase() !== email.toLowerCase() && provider === "email_passwordless") {
                     alert('Email and wallet name are not matched.');
                     setLoader(false);
                     return;
@@ -103,13 +104,17 @@ const LoginProvidersModal = (props) => {
 
                 data.web3Token = data.idToken;
                 data.web3PubKey = app_pub_key;
+                if (authMode === 'login' && user.email.toLowerCase() !== data.email.toLowerCase()) {
+                    alert('Email and wallet name are not matched.');
+                    setLoader(false);
+                    return;
+                }
 
                 setLoader(false);
                 props.setOpen(false);
                 props.goToFaceKi(data);
             }
         } catch (error) {
-            console.log('Error in Web3Auth', error);
             setLoader(false);
         }
     }
@@ -130,7 +135,6 @@ const LoginProvidersModal = (props) => {
     const handleContinueWithEmail = async (e) => {
         e.preventDefault();
         setLoader(true);
-        console.log('Handle Continue With Email', email);
         await doAuth('email_passwordless');
     }
 

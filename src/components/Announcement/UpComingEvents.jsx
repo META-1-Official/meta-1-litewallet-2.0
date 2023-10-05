@@ -52,7 +52,7 @@ export const UpComingEvents = () => {
                             <div className={styles.location}>{ev.location}</div>
                             <div className={styles.duration}>{new Date(ev.start).toLocaleTimeString('en-US')}-{new Date(ev.end).toLocaleTimeString('en-US')}</div>
                         </div>
-                    }
+                    } else if (index == 1) { return <div style={{fontSize: 20}}> ... </div> }
                 })
             }
         </div>
