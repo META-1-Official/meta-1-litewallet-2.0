@@ -167,7 +167,7 @@ const FASClient = forwardRef((props, ref) => {
 				)
 			) {
 				console.log('Message: ', msg);
-				message.success(msg.message, 10000);
+				// message.success(msg.message, 10000);
 				hudUserGuidanceAlertRef.current.clear();
 				onComplete(msg.token);
 			} else if (
@@ -175,7 +175,7 @@ const FASClient = forwardRef((props, ref) => {
 				(msg.type === 'warning' && msg.message === 'Liveliness check failed!!!')
 			) {
 				hudUserGuidanceAlertRef.current.clear();
-				message.error(msg.message, 10000);
+				// message.error(msg.message, 10000);
 				onFailure();
 			}
 		} else if (typeof msg.type !== 'undefined' && msg.type === 'data') {
