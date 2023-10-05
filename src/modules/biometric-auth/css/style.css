@@ -9,3 +9,10 @@ ant-message-top *,
 	animation-duration: 0s !important;
 	transition-duration: 0s !important;
 }
+
+.btn_x {
+  position: absolute;
+  z-index: 10;
+  right: 3px;
+  top: 5px;
+}
