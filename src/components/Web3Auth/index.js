@@ -54,6 +54,7 @@ const LoginProvidersModal = (props) => {
 
     const doAuth = async (provider) => {
         const { web3auth, login, authMode } = props;
+        let user = null;
 
         if (
             !web3auth
@@ -64,13 +65,16 @@ const LoginProvidersModal = (props) => {
         }
 
         if (authMode === 'login') {
-            const user = await getUserKycProfileByAccount(login);
+            user = await getUserKycProfileByAccount(login);
             if (!user) {
+                console.log('@@@@@1', user);
                 alert('Something went wrong from the server.');
                 setLoader(false);
                 return;
             } else {
-                if (user.email.toLowerCase() !== email.toLowerCase()) {
+                console.log('@@@@@2', user);
+                if (user.email.toLowerCase() !== email.toLowerCase() && provider === "email_passwordless") {
+                    console.log('@@@@@20', user);
                     alert('Email and wallet name are not matched.');
                     setLoader(false);
                     return;
@@ -103,6 +107,13 @@ const LoginProvidersModal = (props) => {
 
                 data.web3Token = data.idToken;
                 data.web3PubKey = app_pub_key;
+                console.log('@@@@@data', data);
+                if (authMode === 'login' && user.email.toLowerCase() !== data.email.toLowerCase()) {
+                    console.log('@@@@@ddd');
+                    alert('Email and wallet name are not matched.');
+                    setLoader(false);
+                    return;
+                }
 
                 setLoader(false);
                 props.setOpen(false);
