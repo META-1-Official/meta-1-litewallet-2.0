@@ -158,7 +158,7 @@ export default function FaceKiForm(props) {
                 <h6 style={{ fontSize: '24px' }}>Bio-Metric 2 Factor Authentication</h6>
                 <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
               </div>
-              <div className='child-div' style={{ width: camWidth, height: '100%' }}>
+              <div className='child-div' style={{ width: camWidth, height: '100%', color: 'var(--textBrown)' }}>
                 {(!token || !task)? 'loading ...' : (
                   <FASClient
                     ref={fasClient}
