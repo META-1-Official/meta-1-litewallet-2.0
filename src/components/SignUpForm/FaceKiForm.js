@@ -111,7 +111,7 @@ export default function FaceKiForm(props) {
     fasClient.current.unload()
     setVerifying(true);
     if (task === TASK.VERIFY) {
-      alert(errorCase['Already Enrolled']);
+      console.log(errorCase['Already Enrolled']);
       localStorage.setItem('fastoken', token);
       setFaceKISuccess(true);
       setVerifying(false);
@@ -119,10 +119,10 @@ export default function FaceKiForm(props) {
       const response = await fasEnroll(email, privKey, token);
 
       if (!response) {
-        alert(errorCase['Biometic Server Error']);
+        console.log(errorCase['Biometic Server Error']);
         setVerifying(false);
       } else {
-        alert(errorCase[response.message]);
+        console.log(errorCase[response.message]);
         if (response.message === 'Successfully Enrolled') {
           localStorage.setItem('fastoken', token);
           setFaceKISuccess(true);
