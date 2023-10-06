@@ -192,6 +192,8 @@ const FASClient = forwardRef((props, ref) => {
 
 			hudFacemagnetRef.current.setData(msg.message);
 			setLogs((prevLogs) => [...prevLogs, {msg, timestamp: new Date()}]);
+		} else if (typeof msg.type !== 'undefined' && msg.type === 'task-state') {
+			hudFacemagnetRef.current.setTaskState(msg.state)
 		}
 
 		if (
