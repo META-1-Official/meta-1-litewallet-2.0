@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { AnnouncementCard } from './AnnouncementCard';
 import { AnnouncementDetailModal } from './AnnouncementDetailModal';
+import { isLoginSelector } from "../../store/account/selector";
+import { useSelector } from "react-redux";
+
 import MetaLoader from "../../UI/loader/Loader";
 
 import styles from "./announcement.module.scss";
@@ -13,6 +16,7 @@ export const Announcement = (props) => {
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [modalOpened, setModalOpened] = useState(false);
+    const isLoginState = useSelector(isLoginSelector);
 
     const handleClick = (index) => {
         setIndex(index);
@@ -29,7 +33,7 @@ export const Announcement = (props) => {
     return (
         <div>
             {
-                loading ? <MetaLoader size="mini" /> : data ? data.map((ele, index) => {
+                isLoginState === false ? <div>Need to login</div> : loading ? <MetaLoader size="mini" /> : data ? data.map((ele, index) => {
                     return index < 3 && <AnnouncementCard
                         title={ele.title}
                         description={ele.description}
@@ -39,7 +43,7 @@ export const Announcement = (props) => {
                     />
                 }) : <div>No Annoucement</div>
             }
-            <div className={styles.viewAll} onClick={() => props.setActiveScreen('announcements')}>View All Announcements</div>
+            {isLoginState === true && <div className={styles.viewAll} onClick={() => props.setActiveScreen('announcements')}>View All Announcements</div>}
             <AnnouncementDetailModal data={data} index={index} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
         </div>
     )
