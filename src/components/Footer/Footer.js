@@ -2,6 +2,9 @@ import * as React from "react";
 import styles from "./Footer.module.scss";
 
 const Footer = (props) => {
+  const { innerWidth: width } = window;
+  const isMobile = width <= 600;
+
   return (
     <>
       <div
@@ -356,17 +359,12 @@ const Footer = (props) => {
             <li
               data-bs-toggle="modal"
               data-bs-target="#termsCond"
-              style={{
-                width: "26rem",
-                textAlign: "left",
-                paddingLeft: ".7rem",
-              }}
             >
               <span>Terms & Conditions & Privacy</span>
             </li>
           </ul>
         </div>
-        <div style={{ padding: ".9rem 0 .9rem 3rem", width: "13rem" }}>
+        <div className={isMobile ? styles.copyrightMobile : styles.copyrightPc}>
           <span style={{ fontSize: ".7rem" }}>Copyright © 2023 META 1</span>
         </div>
       </div>
