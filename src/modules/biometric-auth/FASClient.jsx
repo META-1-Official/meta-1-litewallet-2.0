@@ -668,9 +668,7 @@ const FASClient = forwardRef((props, ref) => {
 									objectFit: 'cover',
 								}}
 								videoConstraints={{
-									width: 1920,
-									height: 1080,
-									facingMode: 'user',
+									deviceId: selectedDevice,
 								}}
 								onUserMedia={() => {
 									const videoConstraints = webcamRef.current.videoConstraints;
