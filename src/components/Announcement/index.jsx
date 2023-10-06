@@ -24,7 +24,6 @@ export const Announcement = (props) => {
     }
 
     useEffect(async () => {
-        console.log('@@@@@login', isLoginState);
         setLoading(true);
         let res = await getAllAnnouncements();
         setData(res);
