@@ -11,7 +11,9 @@ const useDevices = (activeDeviceId) => {
 	);
 
 	useEffect(() => {
-		navigator.mediaDevices.enumerateDevices().then(handleDevices);
+		navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
+			navigator.mediaDevices.enumerateDevices().then(handleDevices);
+		})
 	}, [handleDevices]);
 
 	useEffect(() => {

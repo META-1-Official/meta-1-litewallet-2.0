@@ -16,6 +16,7 @@ const CircleProgressBar = ({
 	progressLineSpacing,
 	style,
 }) => {
+  	const isMobile = window.innerWidth <= 600;
 	const canvasRef = useRef(null);
 
 	const animationRef = useRef(null);
@@ -63,9 +64,10 @@ const CircleProgressBar = ({
 			const centerX = interpolated.cx || width / 2;
 			const centerY = interpolated.cy || height / 2;
 
+			const maxRadius = isMobile ? 150 : 200;
 			const radius1 = Math.max(
 				Math.min(Math.min(width, height) / 2, interpolated.radius),
-				200
+				maxRadius
 			);
 			const radius2 = radius1 + 5;
 

@@ -171,7 +171,7 @@ const FASClient = forwardRef((props, ref) => {
 				hudUserGuidanceAlertRef.current.clear();
 				onComplete(msg.token);
 			} else if (
-				(msg.type === 'error' && msg.message === 'Registration failure') ||
+				(msg.type === 'error' && (msg.message === "Timed out, try again" || msg.message === "Liveness failed, move your face")) ||
 				(msg.type === 'warning' && msg.message === 'Liveliness check failed!!!')
 			) {
 				hudUserGuidanceAlertRef.current.clear();
@@ -192,6 +192,8 @@ const FASClient = forwardRef((props, ref) => {
 
 			hudFacemagnetRef.current.setData(msg.message);
 			setLogs((prevLogs) => [...prevLogs, {msg, timestamp: new Date()}]);
+		} else if (typeof msg.type !== 'undefined' && msg.type === 'task-state') {
+			hudFacemagnetRef.current.setTaskState(msg.state)
 		}
 
 		if (

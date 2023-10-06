@@ -25,7 +25,6 @@ const HudFaceMagnetProgress = forwardRef(
 		const [canvasWidth, setCanvasWidth] = useState(props._canvasWidth);
 		const [canvasHeight, setCanvasHeight] = useState(props._canvasHeight);
 		const [data, setData] = useState(null);
-		const [oldTask, setOldTask] = useState(null);
 
 		const taskSuccessRef = useRef();
 		const taskFailedRef = useRef();
@@ -39,6 +38,7 @@ const HudFaceMagnetProgress = forwardRef(
 			setOriginalHeight,
 			setCanvasWidth,
 			setCanvasHeight,
+			setTaskState
 		}));
 
 		function translateBbx(bbox) {
@@ -105,6 +105,17 @@ const HudFaceMagnetProgress = forwardRef(
 			return `rgb(${Math.round(red)}, ${Math.round(green)}, 0)`;
 		}
 
+		function setTaskState(taskState) {
+			if (taskState) {
+				console.log("Task state");
+				if (taskState === "successful") {
+					taskSuccessRef.current.animate(faceBounds.centerX, faceBounds.centerY, faceBounds.radius);
+				} else if (taskState === "failed" || taskState === "timeout") {
+					taskFailedRef.current.animate(faceBounds.centerX, faceBounds.centerY, faceBounds.radius);
+				}
+			}
+		}
+
 		useEffect(() => {
 			if (!data || !data.face_bounds) {
 				if (
@@ -131,41 +142,21 @@ const HudFaceMagnetProgress = forwardRef(
 				const centerX = (left + right) / 2;
 				const centerY = (top - top * 0.15 + (bottom - bottom * 0.15)) / 2;
 
-				// taskSuccessRef.current.animate(centerX, centerY, radius)
-
 				setFaceBounds({centerX, centerY, radius});
 
-				if (data.face_liveliness) {
-					const subPipelines = Object.values(data.face_liveliness.tasks);
+				if (data.face_liveliness || data.registration) {
+					let subPipelines;
+					if (data.face_liveliness)
+						subPipelines = Object.values(data.face_liveliness.tasks);
+
+					if (data.registration)
+						subPipelines = Object.values(data.face_liveliness.tasks);
+
 					const lastPipeline = subPipelines[subPipelines.length - 1];
-					const subPipelineNames = Object.keys(data.face_liveliness.tasks);
-
-					if (
-						oldTask &&
-						subPipelineNames[subPipelineNames.length - 1] !== oldTask
-					) {
-						// task changed
-						// Check why ?
-						if (
-							subPipelineNames.length >= 2 &&
-							subPipelineNames[subPipelineNames.length - 2] === oldTask
-						) {
-							// Task changed, trigger animation
-							if (subPipelines[subPipelines.length - 2].is_live) {
-								taskSuccessRef.current.animate(centerX, centerY, radius);
-							} else {
-								taskFailedRef.current.animate(centerX, centerY, radius);
-							}
-						}
-					}
-
-					setOldTask(subPipelineNames[subPipelineNames.length - 1]);
 
 					const percentage =
 						(lastPipeline.current_score / lastPipeline.target_score) * 100;
 					setFillPercent(percentage);
-
-					console.log('fill percent', percentage);
 
 					setFillColor(getFillColor(percentage));
 				} else {
