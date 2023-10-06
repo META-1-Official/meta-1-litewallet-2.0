@@ -171,7 +171,7 @@ const FASClient = forwardRef((props, ref) => {
 				hudUserGuidanceAlertRef.current.clear();
 				onComplete(msg.token);
 			} else if (
-				(msg.type === 'error' && msg.message === 'Registration failure') ||
+				(msg.type === 'error' && (msg.message === "Timed out, try again" || msg.message === "Liveness failed, move your face")) ||
 				(msg.type === 'warning' && msg.message === 'Liveliness check failed!!!')
 			) {
 				hudUserGuidanceAlertRef.current.clear();
