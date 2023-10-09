@@ -17,6 +17,7 @@ const CircleProgressBar = ({
 	style,
 }) => {
   	const isMobile = window.innerWidth <= 600;
+	let fixedRadius = null;
 	const canvasRef = useRef(null);
 
 	const animationRef = useRef(null);
@@ -69,6 +70,7 @@ const CircleProgressBar = ({
 				Math.min(Math.min(width, height) / 2, interpolated.radius),
 				maxRadius
 			);
+			fixedRadius = radius1;
 			const radius2 = radius1 + 5;
 
 			// console.log("Radius", Math.min(width, height) / 2, interpolated.radius)
@@ -158,10 +160,11 @@ const CircleProgressBar = ({
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 
+		const _radius = fixedRadius ? fixedRadius : radius;
 		const newValues = {
 			cx: cx,
 			cy: cy,
-			radius: radius,
+			radius: _radius,
 			progress: progress,
 		};
 
