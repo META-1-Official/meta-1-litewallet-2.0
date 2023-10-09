@@ -704,22 +704,36 @@ const FASClient = forwardRef((props, ref) => {
 									deviceId: selectedDevice,
 								}}
 								onUserMedia={() => {
-									const videoConstraints = webcamRef.current.videoConstraints;
-									const videoTrack =
-										webcamRef.current.video.srcObject.getVideoTracks()[0];
-									const currentSettings = videoTrack.getSettings();
+									console.log("On user media")
+									const interval = setInterval(() => {
+										console.log(webcamRef.current)
+										if (typeof webcamRef.current.stream !== "undefined") {
+											console.log("Got user permission")
+											clearInterval(interval)
 
-									console.log('Video Constraints:', videoConstraints);
-									console.log('Current Video Settings:', currentSettings);
+											const videoConstraints = webcamRef.current.videoConstraints;
+											const videoTrack =
+												webcamRef.current.video.srcObject.getVideoTracks()[0];
+											const currentSettings = videoTrack.getSettings();
 
-									emptyStreamRef.current = webcamRef.current.video.srcObject;
+											console.log('Video Constraints:', videoConstraints);
+											console.log('Current Video Settings:', currentSettings);
 
-									setTimeout(() => {
-										hudFacemagnetRef.current.setCanvasWidth(getCanvasWidth());
-										hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight());
-									}, 1000);
+											emptyStreamRef.current = webcamRef.current.video.srcObject;
 
-									setWebCamOpened(true)
+											setTimeout(() => {
+												hudFacemagnetRef.current.setCanvasWidth(getCanvasWidth());
+												hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight());
+											}, 1000);
+											setWebCamOpened(true)
+										} else {
+											console.log("Waiting for user permission")
+										}
+									}, 100)
+								}}
+
+								onUserMediaError={() => {
+									setWebCamOpened(false)
 								}}
 							/>
 
