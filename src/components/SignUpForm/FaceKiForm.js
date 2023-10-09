@@ -134,7 +134,7 @@ export default function FaceKiForm(props) {
 
   const onFailure = () => {
     fasClient.current.unload()
-    alert('Email is already enrolled, please verify yourself');
+    // alert('Email is already enrolled, please verify yourself');
     // setTask(TASK.REGISTER);
   }
 
