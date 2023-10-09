@@ -16,14 +16,16 @@ const pipelineTextMap = {
 		Right: 'Slowly turn your head to right',
 		Blink: 'Close your eyes for 1 second',
 		Smile: 'Please Smile',
-		FrontForRegistrationV2: 'Capturing your face, Please wait...',
 	},
+	registration: {
+		FrontForRegistrationV2: 'Look straight into the camera, capturing your face, Please wait...',
+	}
 };
 
 const parsePipelineData = (data) => {
 	if (!data) return {text: '', loading: false}; // handle undefined data
 
-	const {face_detection, face_verification, face_liveliness} = data;
+	const {face_detection, face_verification, face_liveliness, registration} = data;
 
 	// Check for initial conditions
 	if (face_detection === 0)
@@ -37,12 +39,14 @@ const parsePipelineData = (data) => {
 	// Check for later pipeline conditions
 	if (
 		face_detection === 100 &&
-		((face_verification === 100 && face_liveliness) || face_liveliness)
+		(face_liveliness || registration)
 	) {
-		const subPipelines = Object.keys(face_liveliness.tasks);
+		let subPipelines;
+		if (face_liveliness) subPipelines = Object.keys(face_liveliness.tasks);
+		if (registration) subPipelines = Object.keys(registration.tasks);
 		const lastSubPipeline = subPipelines[subPipelines.length - 1];
 		return {
-			text: pipelineTextMap.face_liveliness[lastSubPipeline],
+			text: registration ? pipelineTextMap.registration[lastSubPipeline] : pipelineTextMap.face_liveliness[lastSubPipeline],
 			loading: false,
 		};
 	}
