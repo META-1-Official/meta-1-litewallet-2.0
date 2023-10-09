@@ -64,6 +64,7 @@ const FASClient = forwardRef((props, ref) => {
 	const [connected, setConnected] = useState(false);
 	const [logs, setLogs] = useState([]);
 	const [shouldCloseCamera, setShouldCloseCamera] = useState(false);
+	const [dataChannelOpened, setDataChannelOpened] = useState(false);
 
 	const [loading, setLoading] = useState(false);
 	const [currentStream, setCurrentStream] = useState('empty');
@@ -198,6 +199,16 @@ const FASClient = forwardRef((props, ref) => {
 
 		if (
 			typeof msg.type !== 'undefined' &&
+			msg.type === 'msg' &&
+			msg.message.fas === 'stop'
+		) {
+			forceCleanUp();
+			hudUserGuidanceAlertRef.current.clear();
+			setConnected(false);
+		}
+
+		if (
+			typeof msg.type !== 'undefined' &&
 			msg.type === 'info' &&
 			msg.message === 'Session completed!!!'
 		) {
@@ -213,9 +224,17 @@ const FASClient = forwardRef((props, ref) => {
 			maxPacketLifetime: 500,
 		});
 
-		dc.current.onclose = () => console.log('data channel closed');
+		dc.current.onclose = () => {
+			setDataChannelOpened(false);
+			__unload();
+			__load();
+			console.log('data channel closed')
+		};
 
-		dc.current.onopen = () => console.log('data channel opened');
+		dc.current.onopen = () => {
+			setDataChannelOpened(true);
+			console.log('data channel opened');
+		};
 
 		dc.current.onmessage = function (event) {
 			// console.log(evt.data);
@@ -621,6 +640,7 @@ const FASClient = forwardRef((props, ref) => {
 									height: 40,
 									fontWeight: 600,
 								}}
+								disabled={!dataChannelOpened}
 							>
 								{connected ? 'Stop' : 'Start'}
 							</Button>
