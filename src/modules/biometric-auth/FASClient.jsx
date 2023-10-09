@@ -65,6 +65,8 @@ const FASClient = forwardRef((props, ref) => {
 	const [logs, setLogs] = useState([]);
 	const [shouldCloseCamera, setShouldCloseCamera] = useState(false);
 	const [dataChannelOpened, setDataChannelOpened] = useState(false);
+	const [webCamOpened, setWebCamOpened] = useState(false)
+	const [wsOpened, setWsOpened] = useState(false)
 
 	const [loading, setLoading] = useState(false);
 	const [currentStream, setCurrentStream] = useState('empty');
@@ -90,9 +92,21 @@ const FASClient = forwardRef((props, ref) => {
 		return description;
 	};
 
+	useEffect(() => {
+		if (emptyStreamRef.current && wsOpened) {
+			beginSession()
+		}
+	}, [webCamOpened, wsOpened])
+
 	const bindWSEvents = () => {
-		ws.current.onclose = (event) => console.log('WS Closed', event);
-		ws.current.onerror = (event) => console.log('WS error', event);
+		ws.current.onclose = (event) => {
+			console.log('WS Closed', event)
+			setWsOpened(false)
+		};
+		ws.current.onerror = (event) => {
+			console.log('WS error', event);
+			setWsOpened(false)
+		}
 
 		ws.current.onopen = (event) => {
 			console.log('WS Opened', event);
@@ -102,12 +116,8 @@ const FASClient = forwardRef((props, ref) => {
 				iceCandidatePoolSize: 10,
 			});
 
-			if (webcamRef.current && typeof webcamRef.current.video !== 'undefined') {
-				console.log("Beginning session")
-				beginSession();
-			}
+			setWsOpened(true)
 
-			// Get user media and add track to the connection
 		};
 
 		ws.current.onmessage = async (event) => {
@@ -566,7 +576,9 @@ const FASClient = forwardRef((props, ref) => {
 	};
 
 	const beginSession = () => {
-		processingCanvasComponentref.current.setOriginalStream(
+		console.log("Beginning session", emptyStreamRef.current)
+
+		processingCanvasComponentref.current.updateOriginalStream(
 			emptyStreamRef.current
 		);
 
@@ -707,12 +719,7 @@ const FASClient = forwardRef((props, ref) => {
 										hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight());
 									}, 1000);
 
-									if (
-										typeof ws.current.readyState !== 'undefined' &&
-										ws.current.readyState === 1
-									) {
-										beginSession();
-									}
+									setWebCamOpened(true)
 								}}
 							/>
 

@@ -9,24 +9,26 @@ const ProcessingCanvasComponent = React.forwardRef(
 	) => {
 		const canvasRef = useRef();
 		const videoRef = useRef();
-		const [stream, setStream] = useState(null);
-		const [originalStream, setOriginalStream] = useState(null);
+		const [sendInterval, setSendInterval] = useState(null);
 		const [frameRate, setFrameRate] = useState(2);
 		const [frameSize, setFrameSize] = useState({width: 720, height: 480});
 		const [fillColor, setFillColor] = useState([255, 255, 255]);
-		const [track, setTrack] = useState(null);
 
-		const startResampling = () => {
-			console.log('PCC', originalStream);
-			if (originalStream) {
-				console.log('PCC', 'resampling started ');
+		const startResampling = (newStream) => {
+			console.log('PCC', 'stream updated', newStream);
+			if (newStream) {
+				console.log('PCC', 'resampling started');
 				const canvas = canvasRef.current;
 				const video = videoRef.current;
-				video.srcObject = originalStream;
+				video.srcObject = newStream;
 
 				const ctx = canvas.getContext('2d');
 
-				const sendInterval = setInterval(() => {
+				if (sendInterval) {
+					clearInterval(sendInterval)
+				}
+
+				const _sendInterval = setInterval(() => {
 					const originalWidth = video.videoWidth;
 					const originalHeight = video.videoHeight;
 
@@ -51,11 +53,10 @@ const ProcessingCanvasComponent = React.forwardRef(
 					// ctx.drawImage(video, 0, 0, frameSize.width, frameSize.height);
 				}, 1000 / frameRate);
 
+				setSendInterval(_sendInterval)
+
 				const stream = canvas.captureStream(frameRate);
 				const track = stream.getTracks()[0];
-
-				setTrack(track);
-				setStream(stream);
 
 				if (props.onTrackReady) {
 					console.log('PCC', 'calling on track ready');
@@ -67,23 +68,10 @@ const ProcessingCanvasComponent = React.forwardRef(
 		}
 
 		useImperativeHandle(ref, () => ({
-			setOriginalStream: (newStream) => {
-				setOriginalStream(newStream);
-				startResampling()
-			},
-			setFrameRate: (newFrameRate) => setFrameRate(newFrameRate),
-			setFrameSize: (newFrameSize) => setFrameSize(newFrameSize),
-			getTrack: () => {
-				return track;
-			},
-			getStream: () => {
-				return stream;
-			},
+			updateOriginalStream: (newStream) => {
+				startResampling(newStream)
+			}
 		}));
-
-		useEffect(() => {
-			startResampling()
-		}, [originalStream, frameRate, frameSize]);
 
 		return (
 			<>
