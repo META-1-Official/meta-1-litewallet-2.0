@@ -96,7 +96,6 @@ const LeftPanelAdapt = (props) => {
             style={{ marginTop: "1.4rem", marginRight: "1rem" }}
           >
             <i
-              style={{ color: "#240000" }}
               className="fas fa-chevron-right event"
             />
           </div>
