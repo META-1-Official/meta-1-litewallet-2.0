@@ -150,7 +150,7 @@ const HudFaceMagnetProgress = forwardRef(
 						subPipelines = Object.values(data.face_liveliness.tasks);
 
 					if (data.registration)
-						subPipelines = Object.values(data.face_liveliness.tasks);
+						subPipelines = Object.values(data.registration.tasks);
 
 					const lastPipeline = subPipelines[subPipelines.length - 1];
 
