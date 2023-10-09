@@ -111,7 +111,7 @@ export default function FaceKiForm(props) {
     fasClient.current.unload()
     setVerifying(true);
     if (task === TASK.VERIFY) {
-      alert(errorCase['Already Enrolled']);
+      console.log(errorCase['Already Enrolled']);
       localStorage.setItem('fastoken', token);
       setFaceKISuccess(true);
       setVerifying(false);
@@ -119,10 +119,10 @@ export default function FaceKiForm(props) {
       const response = await fasEnroll(email, privKey, token);
 
       if (!response) {
-        alert(errorCase['Biometic Server Error']);
+        console.log(errorCase['Biometic Server Error']);
         setVerifying(false);
       } else {
-        alert(errorCase[response.message]);
+        console.log(errorCase[response.message]);
         if (response.message === 'Successfully Enrolled') {
           localStorage.setItem('fastoken', token);
           setFaceKISuccess(true);
@@ -134,7 +134,7 @@ export default function FaceKiForm(props) {
 
   const onFailure = () => {
     fasClient.current.unload()
-    alert('Email is already enrolled, please verify yourself');
+    // alert('Email is already enrolled, please verify yourself');
     // setTask(TASK.REGISTER);
   }
 
@@ -158,7 +158,7 @@ export default function FaceKiForm(props) {
                 <h6 style={{ fontSize: '24px' }}>Bio-Metric 2 Factor Authentication</h6>
                 <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
               </div>
-              <div className='child-div' style={{ width: camWidth, height: '100%' }}>
+              <div className='child-div' style={{ width: camWidth, height: '100%', color: 'var(--textBrown)' }}>
                 {(!token || !task)? 'loading ...' : (
                   <FASClient
                     ref={fasClient}

@@ -447,7 +447,7 @@ export default function LoginScreen(props) {
             </Modal.Actions>
           </Modal>
         </div>
-        <UpComingEvents />
+        {isLoginState && <UpComingEvents />}
         {
           authModalOpen && <LoginProvidersModal
             open={authModalOpen}

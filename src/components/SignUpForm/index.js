@@ -119,6 +119,7 @@ export default function SignUpForm(props) {
     }
 
     const { token } = await getFASToken({
+      account: accountName,
       email,
       task: TASK.REGISTER,
       publicKey,

@@ -138,7 +138,7 @@ export default function FaceKiForm(props) {
               <h6 style={{ fontSize: '24px' }}>Authenticate Your Face</h6>
               <p className='header_ptag'>To log into your wallet, please complete biometric authentication.</p>
             </div>
-            <div className='child-div' style={{ width: camWidth, height: '100%' }}>
+            <div className='child-div' style={{ width: camWidth, height: '100%', color: 'var(--textBrown)' }}>
               {!token ? 'loading ...' : (
                 <FASClient
                   ref={fasClient}
