@@ -103,6 +103,7 @@ const FASClient = forwardRef((props, ref) => {
 			});
 
 			if (webcamRef.current && typeof webcamRef.current.video !== 'undefined') {
+				console.log("Beginning session")
 				beginSession();
 			}
 
@@ -424,9 +425,9 @@ const FASClient = forwardRef((props, ref) => {
 			setLoading(false);
 		}
 
-		if (jwtTokenRef.current !== null) {
-			jwtTokenRef.current = null;
-		}
+		// if (jwtTokenRef.current !== null) {
+		// 	jwtTokenRef.current = null;
+		// }
 	};
 
 	const sendMessageToServer = (message) => {

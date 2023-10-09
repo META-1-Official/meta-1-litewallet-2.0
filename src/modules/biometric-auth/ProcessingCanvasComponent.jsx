@@ -16,22 +16,10 @@ const ProcessingCanvasComponent = React.forwardRef(
 		const [fillColor, setFillColor] = useState([255, 255, 255]);
 		const [track, setTrack] = useState(null);
 
-		useImperativeHandle(ref, () => ({
-			setOriginalStream: (newStream) => setOriginalStream(newStream),
-			setFrameRate: (newFrameRate) => setFrameRate(newFrameRate),
-			setFrameSize: (newFrameSize) => setFrameSize(newFrameSize),
-			getTrack: () => {
-				return track;
-			},
-			getStream: () => {
-				return stream;
-			},
-		}));
-
-		useEffect(() => {
-			console.log('PCC', 'soo', originalStream);
+		const startResampling = () => {
+			console.log('PCC', originalStream);
 			if (originalStream) {
-				console.log('PCC', 'doing canvas thingy');
+				console.log('PCC', 'resampling started ');
 				const canvas = canvasRef.current;
 				const video = videoRef.current;
 				video.srcObject = originalStream;
@@ -76,6 +64,25 @@ const ProcessingCanvasComponent = React.forwardRef(
 
 				return () => clearInterval(sendInterval);
 			}
+		}
+
+		useImperativeHandle(ref, () => ({
+			setOriginalStream: (newStream) => {
+				setOriginalStream(newStream);
+				startResampling()
+			},
+			setFrameRate: (newFrameRate) => setFrameRate(newFrameRate),
+			setFrameSize: (newFrameSize) => setFrameSize(newFrameSize),
+			getTrack: () => {
+				return track;
+			},
+			getStream: () => {
+				return stream;
+			},
+		}));
+
+		useEffect(() => {
+			startResampling()
 		}, [originalStream, frameRate, frameSize]);
 
 		return (
