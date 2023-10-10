@@ -61,7 +61,7 @@ export default function LoginScreen(props) {
   const dispatch = useDispatch();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'bond-02', 'antman-kok357', 'user-x01'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'bond-02', 'antman-kok357', 'user-x01', 'jin124'];
 
   useEffect(() => {
     if (signatureErrorState) {
@@ -147,7 +147,7 @@ export default function LoginScreen(props) {
         setOpenModal(true);
         setIsMigrationPasskeyValid(true);
       } else {
-        setMigrationMsg('Something went wrong');
+        setMigrationMsg(response_migrate['message']);
         setOpenModal(true);
       }
     } else {
