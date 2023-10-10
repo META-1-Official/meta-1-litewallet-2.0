@@ -543,10 +543,8 @@ function Application(props) {
         `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
 
-      console.log('@@@@websocket setup', curWebsocket, websocket);
 
       websocket.onmessage = (message) => {
-        console.log('@@@@message', message);
         var filter = filterNotifications([JSON.parse(message.data)], accountName);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
@@ -556,7 +554,6 @@ function Application(props) {
       };
 
       websocket.onclose = (event) => {
-        console.log('@@@@event', event);
         setKafkaWebSocket(null);
 
         if (event.code > 1001) {
