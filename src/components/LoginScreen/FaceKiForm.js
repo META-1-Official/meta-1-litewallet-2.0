@@ -19,7 +19,7 @@ export default function FaceKiForm(props) {
 
   const width = useWidth();
 
-  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'antman-kok357', 'bond-02', 'user-x01'];
+  const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'antman-kok357', 'bond-02', 'user-x01', 'jin124'];
   const bypass_wallets = process.env.REACT_APP_FACEKI_SKIP_WALLETS.split(',');
   const errorCase = {
     "Camera Not Found": "Please check your camera.",
