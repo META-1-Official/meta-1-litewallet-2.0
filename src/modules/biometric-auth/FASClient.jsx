@@ -503,7 +503,6 @@ const FASClient = forwardRef((props, ref) => {
 
 
 		if (DetectRTC.isWebsiteHasWebcamPermissions === false) {
-			// Don't unload in this case as user might be waiting for camera permissions
 			notificationRef.current.showNotification(
 				"We don't have camera permissions yet, please allow camera permissions to proceed",
 				'warning'
