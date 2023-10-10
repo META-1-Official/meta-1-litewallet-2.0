@@ -704,31 +704,54 @@ const FASClient = forwardRef((props, ref) => {
 									deviceId: selectedDevice,
 								}}
 								onUserMedia={() => {
-									console.log("On user media")
+									console.log("On user media called")
 									const interval = setInterval(() => {
-										console.log(webcamRef.current)
-										if (typeof webcamRef.current.stream !== "undefined") {
-											console.log("Got user permission")
-											clearInterval(interval)
-
-											const videoConstraints = webcamRef.current.videoConstraints;
-											const videoTrack =
-												webcamRef.current.video.srcObject.getVideoTracks()[0];
-											const currentSettings = videoTrack.getSettings();
-
-											console.log('Video Constraints:', videoConstraints);
-											console.log('Current Video Settings:', currentSettings);
-
-											emptyStreamRef.current = webcamRef.current.video.srcObject;
-
-											setTimeout(() => {
-												hudFacemagnetRef.current.setCanvasWidth(getCanvasWidth());
-												hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight());
-											}, 1000);
-											setWebCamOpened(true)
-										} else {
-											console.log("Waiting for user permission")
+										if (typeof webcamRef.current.video === "undefined") {
+											console.log("Video element not rendered")
+											return
 										}
+
+										const video = webcamRef.current.video
+
+										if (typeof video === "undefined" || !video || typeof video.srcObject === "undefined" || !video.srcObject.active) {
+											console.log("Video element is not ready yet")
+											return
+										}
+
+										const stream = video.srcObject;
+
+										if (typeof stream === "undefined" || !stream || stream.getVideoTracks().length <= 0) {
+											console.log("Stream is not ready yet")
+											return
+										}
+
+										const track = stream.getVideoTracks()[0]
+
+										if (typeof track === "undefined" || track.readyState !== "live") {
+											console.log("Track is not ready yet")
+											return
+										}
+
+										console.log("Video, Stream and Track is ready, Hooking stream to WebRTC")
+
+										clearInterval(interval)
+
+										const currentSettings = track.getSettings();
+
+										console.log('Video:', video);
+										console.log('Current stream:', stream);
+										console.log('Current track:', track);
+										console.log('Current settings:', currentSettings);
+
+										emptyStreamRef.current = stream;
+
+										setTimeout(() => {
+											hudFacemagnetRef.current.setCanvasWidth(getCanvasWidth());
+											hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight());
+										}, 1000);
+
+										setWebCamOpened(true)
+
 									}, 100)
 								}}
 
