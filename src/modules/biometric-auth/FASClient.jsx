@@ -21,12 +21,13 @@ import HudUserGuidanceAlert from './hud/HudUserGuidanceAlert';
 import HudFaceMagnetProgress from './hud/HudFaceMagnetProgress';
 import HudBitrateMonitor from './hud/HudBitrateMonitor';
 import ProcessingCanvasComponent from './ProcessingCanvasComponent';
+import DetectRTC from "detectrtc";
 
 const WSSignalingServer = process.env.REACT_APP_SIGNALIG_SERVER;
 
 const IceServer = parseTurnServer();
 
-console.log('ICE Turn Server', IceServer);
+// console.log('ICE Turn Server', IceServer);
 
 const FASClient = forwardRef((props, ref) => {
 	message.config({
@@ -41,6 +42,7 @@ const FASClient = forwardRef((props, ref) => {
 	const webcamRef = useRef(null);
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	const [progress, setProgress] = useState(0.0);
+	const [isSupported, setIsSupported] = useState(false);
 	const {
 		token,
 		username,
@@ -460,14 +462,77 @@ const FASClient = forwardRef((props, ref) => {
 		setConnected(!connected);
 	};
 
+	const loadDetectRTC = () => {
+		return new Promise((resolve) => {
+			DetectRTC.load(() => {
+				resolve();
+			});
+		});
+	}
+
+	const checkForSupport = async () => {
+		console.log(DetectRTC)
+		if (DetectRTC.isWebRTCSupported === false
+			|| DetectRTC.isWebSocketsSupported === false
+			|| DetectRTC.isCanvasSupportsStreamCapturing === false) {
+			notificationRef.current.showNotification(
+				'Biometric is not supported on this browser',
+				'error'
+			);
+			return false
+		}
+
+		if (DetectRTC.hasWebcam === false) {
+			notificationRef.current.showNotification(
+				"Your device doesn't seems to have a camera, We need camera enabled device to proceed with biometric authentication",
+				'error'
+			);
+			return false
+		}
+
+		if (DetectRTC.isWebSocketsBlocked === true) {
+			notificationRef.current.showNotification(
+				"Your device seems to be blocking websocket connections, please restart your browser and your system if the problem persists",
+				'error'
+			);
+			return false
+		}
+
+		await navigator.mediaDevices.getUserMedia({ video: true }).catch(() => console.error);
+		await loadDetectRTC()
+
+
+		if (DetectRTC.isWebsiteHasWebcamPermissions === false) {
+			// Don't unload in this case as user might be waiting for camera permissions
+			notificationRef.current.showNotification(
+				"We don't have camera permissions yet, please allow camera permissions to proceed",
+				'warning'
+			);
+			return false
+		}
+
+		return true
+	}
+
+
 	const __load = () => {
-		connect();
+		loadDetectRTC().then( () => {
+			checkForSupport().then(supported => {
+				if (supported) {
+					setIsSupported(supported)
+					// Wait for camera permissions, then begin
+					connect();
 
-		console.log('Started FAS Loading!!!');
+					console.log('Started FAS Loading!!!');
 
-		setTimeout(() => {
-			forceCleanUp();
-		}, 30000); // 5 Mins
+					setTimeout(() => {
+						forceCleanUp();
+					}, 30000); // 5 Mins
+				} else {
+					__unload()
+				}
+			})
+		})
 	};
 
 	const __start = () => {
@@ -689,76 +754,78 @@ const FASClient = forwardRef((props, ref) => {
 							}}
 						>
 							<button className='btn_x' onClick={() => onCancel()}>X</button>
-							<Webcam
-								audio={false}
-								ref={webcamRef}
-								mirrored
-								screenshotFormat="image/jpeg"
-								className="cropped-video"
-								style={{
-									width: '100%',
-									maxHeight: '100%',
-									objectFit: 'cover',
-								}}
-								videoConstraints={{
-									deviceId: selectedDevice,
-								}}
-								onUserMedia={() => {
-									console.log("On user media called")
-									const interval = setInterval(() => {
-										if (typeof webcamRef.current.video === "undefined") {
-											console.log("Video element not rendered")
-											return
-										}
+							{ isSupported &&
+								<Webcam
+									audio={false}
+									ref={webcamRef}
+									mirrored
+									screenshotFormat="image/jpeg"
+									className="cropped-video"
+									style={{
+										width: '100%',
+										maxHeight: '100%',
+										objectFit: 'cover',
+									}}
+									videoConstraints={{
+										deviceId: selectedDevice,
+									}}
+									onUserMedia={() => {
+										console.log("On user media called")
+										const interval = setInterval(() => {
+											if (typeof webcamRef.current.video === "undefined") {
+												console.log("Video element not rendered")
+												return
+											}
 
-										const video = webcamRef.current.video
+											const video = webcamRef.current.video
 
-										if (typeof video === "undefined" || !video || typeof video.srcObject === "undefined" || !video.srcObject.active) {
-											console.log("Video element is not ready yet")
-											return
-										}
+											if (typeof video === "undefined" || !video || typeof video.srcObject === "undefined" || !video.srcObject.active) {
+												console.log("Video element is not ready yet")
+												return
+											}
 
-										const stream = video.srcObject;
+											const stream = video.srcObject;
 
-										if (typeof stream === "undefined" || !stream || stream.getVideoTracks().length <= 0) {
-											console.log("Stream is not ready yet")
-											return
-										}
+											if (typeof stream === "undefined" || !stream || stream.getVideoTracks().length <= 0) {
+												console.log("Stream is not ready yet")
+												return
+											}
 
-										const track = stream.getVideoTracks()[0]
+											const track = stream.getVideoTracks()[0]
 
-										if (typeof track === "undefined" || track.readyState !== "live") {
-											console.log("Track is not ready yet")
-											return
-										}
+											if (typeof track === "undefined" || track.readyState !== "live") {
+												console.log("Track is not ready yet")
+												return
+											}
 
-										console.log("Video, Stream and Track is ready, Hooking stream to WebRTC")
+											console.log("Video, Stream and Track is ready, Hooking stream to WebRTC")
 
-										clearInterval(interval)
+											clearInterval(interval)
 
-										const currentSettings = track.getSettings();
+											const currentSettings = track.getSettings();
 
-										console.log('Video:', video);
-										console.log('Current stream:', stream);
-										console.log('Current track:', track);
-										console.log('Current settings:', currentSettings);
+											console.log('Video:', video);
+											console.log('Current stream:', stream);
+											console.log('Current track:', track);
+											console.log('Current settings:', currentSettings);
 
-										emptyStreamRef.current = stream;
+											emptyStreamRef.current = stream;
 
-										setTimeout(() => {
-											hudFacemagnetRef.current.setCanvasWidth(getCanvasWidth());
-											hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight());
-										}, 1000);
+											setTimeout(() => {
+												hudFacemagnetRef.current.setCanvasWidth(getCanvasWidth());
+												hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight());
+											}, 1000);
 
-										setWebCamOpened(true)
+											setWebCamOpened(true)
 
-									}, 100)
-								}}
+										}, 100)
+									}}
 
-								onUserMediaError={() => {
-									setWebCamOpened(false)
-								}}
-							/>
+									onUserMediaError={() => {
+										setWebCamOpened(false)
+									}}
+								/>
+							}
 
 							<div id="hud-bitrate-monitor">
 								<HudBitrateMonitor ref={hudBirateMonitorRef}></HudBitrateMonitor>
