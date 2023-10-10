@@ -520,8 +520,10 @@ function Application(props) {
     setActiveScreen("wallet");
   };
 
-  const _onSetupWebSocket = (accountName) => {
+  const _onSetupWebSocket = (accountName, curWebsocket=null) => {
     try {
+      curWebsocket && curWebsocket.close();
+
       const webSocketFactory = {
         connectionTries: 5,
         connect: function (url) {
@@ -541,6 +543,8 @@ function Application(props) {
         `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
 
+      console.log('@@@@websocket setup', curWebsocket, websocket);
+
       websocket.onmessage = (message) => {
         console.log('@@@@message', message);
         var filter = filterNotifications([JSON.parse(message.data)], accountName);
@@ -552,13 +556,14 @@ function Application(props) {
       };
 
       websocket.onclose = (event) => {
+        console.log('@@@@event', event);
         setKafkaWebSocket(null);
 
         if (event.code > 1001) {
           webSocketFactory.connectionTries = webSocketFactory.connectionTries - 1;
 
           if (webSocketFactory.connectionTries > 0) {
-            setTimeout(() => _onSetupWebSocket(accountName), 5000);
+            setTimeout(() => _onSetupWebSocket(accountName, websocket), 5000);
           } else {
             throw new Error(
               'Maximum number of connection trials has been reached'
