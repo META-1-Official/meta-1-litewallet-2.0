@@ -27,6 +27,7 @@
     "@web3auth/openlogin-adapter": "^6.1.7",
     "antd": "^5.9.2",
     "axios": "^0.23.0",
+    "detectrtc": "^1.4.1",
     "immutable": "^4.2.4",
     "jquery": "^3.6.3",
     "jspdf": "^1.5.3",
