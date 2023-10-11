@@ -32,6 +32,8 @@ const HudNotification = forwardRef((props, ref) => {
 				return;
 			} else {
 				toast(content, {type});
+				setNotification({ content, type });
+				resetTimeout();
 			}
 			// setNotification({ content, type });
 			// setVisible(true);
