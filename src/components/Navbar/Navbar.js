@@ -86,7 +86,7 @@ const Navbar = (props) => {
                 data-bs-dismiss="modal"
                 aria-label="Close"
               />
-              <iframe
+              {process.env.REACT_APP_CURRENT_NET !== "TEST_NET" && <iframe
                 src={`${process.env.REACT_APP_ONRAMPER_URL}?color=ffc000&defaultAmount=1000&defaultFiat=USD&defaultCrypto=BTC&apiKey=${process.env.REACT_APP_ONRAMPER_API_KEY}`}
                 title="Meta1 Onramper Interface"
                 style={{ border: "0" }}
@@ -96,7 +96,7 @@ const Navbar = (props) => {
                 width="100%"
                 height="600"
                 frameBorder="0"
-              />
+              />}
             </div>
           </div>
         </div>

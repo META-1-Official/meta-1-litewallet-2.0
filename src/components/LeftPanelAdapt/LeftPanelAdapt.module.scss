@@ -1,9 +1,10 @@
 .mainBlockAdapt {
   width: 100%;
   margin-bottom: 1rem;
-  background: #fff;
+  background: var(--backgroundColor);
   box-shadow: var(--boxShadowIndex);
   z-index: 2;
+  border: 1px solid var(--borderColor);
 }
 ul {
   list-style: none;
@@ -35,11 +36,12 @@ ul {
   background: #fff;
 }
 .circle {
-  background: #e2e2e2;
+  background: var(--circleBackgroundColor);
   width: 2rem;
   height: 2rem;
   border-radius: 50px;
   margin: 1rem 0 0 2rem;
+  color: var(--iconColor);
 }
 .containerLi {
   display: flex;

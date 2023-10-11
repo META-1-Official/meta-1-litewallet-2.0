@@ -11,6 +11,7 @@ import { UpComingEventDetailModal } from './UpComingEventDetailModal';
 export const UpComingEvents = () => {
     const [date, setDate] = useState(new Date());
     const [data, setData] = useState();
+    const [detail, setDetail] = useState(null);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [modalOpened, setModalOpened] = useState(false);
 
@@ -20,6 +21,7 @@ export const UpComingEvents = () => {
     }
 
     useEffect(async () => {
+        setData(null);
         let res = await fetchEventData(selectedMonth);
         setData(res);
     }, [selectedMonth]);
@@ -27,29 +29,31 @@ export const UpComingEvents = () => {
     const prevIcon = <i class="fas fa-chevron-left" />;
     const nextIcon = <i class="fas fa-chevron-right" />;
 
-    const eventExistDay = (day) => {
+    const eventExistDay = (day, month) => {
         if (!data) return false;
-        return data[day]?.length > 0;
+        return (month === selectedMonth) && data[day]?.length > 0;
     };
 
     const renderTile = (activeStartDate, date, view) => {
         let weekOfDate = date.getDay();
         let dayOfDate = date.getDate();
-        let cardBorder = `2px solid ${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
-        let cardBackground = `${eventExistDay(dayOfDate) ? 'linear-gradient(0, rgba(255, 255, 255, 0.00) 0%, rgba(236, 240, 245, 0.50) 100%)' : 'transparent'}`;
-        let cardColor = `${eventExistDay(dayOfDate) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
-        let events = (eventExistDay(dayOfDate) && data && date > activeStartDate) ? data[dayOfDate] : [];
+        let month = date.getMonth() + 1;
+
+        let cardBorder = `2px solid ${eventExistDay(dayOfDate, month) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
+        let cardBackground = `${eventExistDay(dayOfDate, month) ? 'linear-gradient(0, rgba(255, 255, 255, 0.00) 0%, rgba(236, 240, 245, 0.50) 100%)' : 'transparent'}`;
+        let cardColor = `${eventExistDay(dayOfDate, month) ? '#FFC000' : (weekOfDate === 6 || weekOfDate === 0) ? 'red' : 'var(--textBrown)'}`;
+        let events = (eventExistDay(dayOfDate, month) && data && date > activeStartDate) ? data[dayOfDate] : [];
         return <div className={styles.eventCard} style={{ borderTop: cardBorder, background: cardBackground }}>
             <span className={styles.dateText} style={{ color: cardColor }}>{dayOfDate}</span>            
             {
                 events && events.map((ev, index) => {
-                    if (index < 2) {
-                        return <div className={styles.cardInfo}>
-                            <div className={styles.title}>{ev.title}</div>
-                            <div className={styles.location}>{ev.location}</div>
-                            <div className={styles.duration}>{new Date(ev.start).toLocaleTimeString('en-US')}-{new Date(ev.end).toLocaleTimeString('en-US')}</div>
+                    if (index < 4) {
+                        return <div className={styles.cardInfo} onClick={() => handleClick(date, ev)}>
+                            <div className={styles.title}>{index + 1}. {ev.title}</div>
+                            {/* <div className={styles.location}>{ev.location}</div>
+                            <div className={styles.duration}>{new Date(ev.start).toLocaleTimeString('en-US')}-{new Date(ev.end).toLocaleTimeString('en-US')}</div> */}
                         </div>
-                    }
+                    } else if (index == 4) { return <div style={{fontSize: 14}}> ... </div> }
                 })
             }
         </div>
@@ -57,8 +61,10 @@ export const UpComingEvents = () => {
 
     const handleClick = (value, event) => {
         let dayOfDate = value.getDate();
+        let month = value.getMonth() + 1;
 
-        let isValid = eventExistDay(dayOfDate);
+        let isValid = eventExistDay(dayOfDate, month);
+        setDetail(event);
         isValid && setModalOpened(true);
     }
 
@@ -89,10 +95,10 @@ export const UpComingEvents = () => {
                 goToRangeStartOnSelect={false}
                 onViewChange={handleViewChange}
                 tileContent={({ activeStartDate, date, view }) => renderTile(activeStartDate, date, view)}
-                onClickDay={handleClick}
+                // onClickDay={handleClick}
                 onActiveStartDateChange={handleActiveStartDateChange}
             />
-            <UpComingEventDetailModal data={data} date={date} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
+            <UpComingEventDetailModal date={date} detail={detail} isOpen={modalOpened} setModalOpened={(value) => setModalOpened(value)} />
         </div>
     )
 }

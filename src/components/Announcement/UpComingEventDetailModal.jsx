@@ -7,15 +7,7 @@ import LocationIcon from "../../images/location.png";
 import { toast } from 'react-toastify';
 
 export const UpComingEventDetailModal = (props) => {
-    const { data, date } = props;
-    const [detail, setDetail] = useState([]);
-
-    useEffect(() => {
-        if (data) {
-            let events = data[date.getDate()];
-            events && setDetail(events[0]);
-        }
-    }, [data, date]);
+    const { data, date, detail } = props;
 
     const isPastEvent = () => {
         return new Date() > date;
@@ -34,49 +26,62 @@ export const UpComingEventDetailModal = (props) => {
             open={props.isOpen}
             id={"detail-event"}
         >
-            <Modal.Content style={{ padding: 0 }}>
-                <div className={styles.modalContent} >
+            <Modal.Content style={{ padding: 0, overflowY: 'auto', maxHeight: 750 }}>
+                <div
+                    className={styles.modalContent}
+                    style={{
+                        flexDirection: 'column',
+                        width: '468px',
+                        borderBottom: 'unset',
+                    }}
+                >
                     <img
                         src={detail?.location_bg_url}
                         className={styles.locationImage}
+                        alt={detail?.location}
+                        style={{
+                            marginRight: 'unset'
+                        }}
                     />
-                    <span className={styles.locationText}>{detail?.location}</span>
-                    <div className={styles.infoWrapper}>
-                        <div className={styles.infoIcon}><img src={TimerIcon} style={{ width: 16 }} /></div>
-                        <p className={styles.infoText} style={{ fontWeight: 600 }}>
-                            {new Date(detail?.start).toLocaleTimeString('en-US')}-{new Date(detail?.end).toLocaleTimeString('en-US')}
-                        </p>
-                    </div>
-                    <div className={styles.infoWrapper} style={{ marginTop: 10 }}>
-                        <div className={styles.infoIcon}><img src={LocationIcon} style={{ width: 13, marginTop: 5, marginLeft: 2, marginRight: 2 }} /></div>
+                    <div>
+                        <span className={styles.locationText}>{detail?.location}</span>
+                        <div className={styles.infoWrapper}>
+                            <div className={styles.infoIcon}><img src={TimerIcon} style={{ width: 16 }} alt="" /></div>
+                            <p className={styles.infoText} style={{ fontWeight: 600 }}>
+                                {new Date(detail?.start).toLocaleTimeString('en-US')}-{new Date(detail?.end).toLocaleTimeString('en-US')}
+                            </p>
+                        </div>
+                        <div className={styles.infoWrapper} style={{ marginTop: 10 }}>
+                            <div className={styles.infoIcon}><img src={LocationIcon} style={{ width: 13, marginTop: 5, marginLeft: 2, marginRight: 2 }} alt="" /></div>
+                            <p className={styles.infoText}>
+                                {detail?.location}
+                            </p>
+                        </div>
+                        <div className={styles.splitterLine} />
+                        <p dangerouslySetInnerHTML={{ __html: detail?.description }} className={styles.infoText} />
                         <p className={styles.infoText}>
-                            {detail?.location}
+                            {detail?.registration}
                         </p>
-                    </div>
-                    <div className={styles.splitterLine} />
-                    <p dangerouslySetInnerHTML={{__html: detail?.description}} className={styles.infoText} />
-                    <p className={styles.infoText}>
-                        {detail?.registration}
-                    </p>
-                    <div className={styles.splitterLine} />
-                    <div className={styles.actionWrapper}>
-                        <button
-                            className={styles.actionBtn}
-                            onClick={handleRegister}
-                            disabled={isPastEvent()}
-                            style={{
-                                cursor: isPastEvent() ? 'not-allowed' : 'pointer',
-                                opacity: isPastEvent() ? 0.5 : 1.0
-                            }}
-                        >
-                            Register Now
-                        </button>
-                        <button
-                            className={styles.actionBtn}
-                            onClick={() => props.setModalOpened(false)}
-                        >
-                            Close
-                        </button>
+                        <div className={styles.actionWrapper}>
+                            <button
+                                className={styles.actionBtn}
+                                onClick={handleRegister}
+                                disabled={isPastEvent()}
+                                style={{
+                                    cursor: isPastEvent() ? 'not-allowed' : 'pointer',
+                                    opacity: isPastEvent() ? 0.5 : 1.0
+                                }}
+                            >
+                                Register Now
+                            </button>
+                            <button
+                                className={styles.actionBtn}
+                                onClick={() => props.setModalOpened(false)}
+                                style={{cursor: 'pointer'}}
+                            >
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             </Modal.Content>

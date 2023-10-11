@@ -1,0 +1,17 @@
+/*// Notification.css*/
+.hud-notification {
+	position: absolute;
+	top: 15%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	transition: opacity 0.3s ease-in-out;
+	/*opacity: 0;*/
+}
+
+.hud-notification > .ant-alert {
+	transition: opacity 0.3s ease-in-out;
+}
+
+.hud-notification > .ant-alert {
+	opacity: 1;
+}

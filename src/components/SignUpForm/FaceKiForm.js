@@ -1,17 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
-import { livenessCheck, enroll } from "../../API/API";
-import OvalImage from '../../images/oval/oval.png';
+import { fasEnroll, getFASToken, fasMigrationStatus } from '../../API/API';
 import "./SignUpForm.css";
-import { Camera } from 'react-camera-pro';
 import useWidth from '../../lib/useWidth';
+import { TASK } from '../../modules/biometric-auth/constants/constants';
+import FASClient from '../../modules/biometric-auth/FASClient';
 
 export default function FaceKiForm(props) {
+  const { email, privKey, accountName, token: fasToken } = props;
+
   const webcamRef = useRef(null);
   const [faceKISuccess, setFaceKISuccess] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [devices, setDevices] = useState([]);
   const [activeDeviceId, setActiveDeviceId] = useState('');
   const [numberOfCameras, setNumberOfCameras] = useState(0);
+  const [task, setTask] = useState(TASK.REGISTER);
+  const [token, setToken] = useState(fasToken);
 
   const width = useWidth();
 
@@ -34,6 +38,32 @@ export default function FaceKiForm(props) {
       'It is not possible to switch camera to different one because there is only one video device accessible.',
     canvas: 'Canvas is not supported.',
   }
+
+  useEffect(() => {
+    if (!fasToken) {
+      (async () => {
+        const { doesUserExistsInFAS } = await fasMigrationStatus(email);
+        setTask(doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER);
+
+        const { token } = await getFASToken({
+          account: doesUserExistsInFAS ? accountName : null,
+          email,
+          task: doesUserExistsInFAS ? TASK.VERIFY : TASK.REGISTER
+        });
+        setToken(token);
+      })()
+    }
+  }, [fasToken]);
+
+  const fasClient = useRef();
+  useEffect(() => {
+    if (token) {
+      console.log('Loading fas');
+      if (fasClient.current) {
+        fasClient.current.load();
+      }
+    }
+  }, [token]);
 
   useEffect(() => {
     loadVideo(true);
@@ -77,66 +107,42 @@ export default function FaceKiForm(props) {
     return window.innerWidth < window.innerHeight;
   }
 
-  const dataURL2File = async (dataurl, filename) => {
-    var arr = dataurl.split(','),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]),
-      n = bstr.length,
-      u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new File([u8arr], filename, { type: mime });
-  }
-
-  const checkAndEnroll = async (photoIndex) => {
-    const { privKey, email } = props;
-    if (!email || !privKey) return;
-
+  const faceEnroll = async (token) => {
+    fasClient.current.unload()
     setVerifying(true);
-
-    const imageSrc = webcamRef.current.takePhoto();
-
-    if (!imageSrc) {
-      alert(errorCase['Camera Not Found']);
+    if (task === TASK.VERIFY) {
+      console.log(errorCase['Already Enrolled']);
+      localStorage.setItem('fastoken', token);
+      setFaceKISuccess(true);
       setVerifying(false);
-      return;
-    }
-
-    const file = await dataURL2File(imageSrc, 'a.jpg');
-    const response = await livenessCheck(file);
-
-    if (!response || !response.data) {
-      alert(errorCase['Biometic Server Error']);
-      setVerifying(false);
-      return;
-    }
-
-    if (response.data.liveness !== 'Genuine' && photoIndex === 5) {
-      alert(errorCase['Not Proper Condition']);
-      setVerifying(false);
-    } else if (response.data.liveness === 'Genuine') {
-      await faceEnroll(file);
     } else {
-      await checkAndEnroll(photoIndex + 1);
+      const response = await fasEnroll(email, privKey, token);
+
+      if (!response) {
+        console.log(errorCase['Biometic Server Error']);
+        setVerifying(false);
+      } else {
+        console.log(errorCase[response.message]);
+        if (response.message === 'Successfully Enrolled') {
+          localStorage.setItem('fastoken', token);
+          setFaceKISuccess(true);
+        }
+        setVerifying(false);
+      }
     }
   }
 
-  const faceEnroll = async (file) => {
-    const { privKey, email } = props;
-    const response = await enroll(file, email, privKey);
+  const onFailure = () => {
+    fasClient.current.unload()
+    // alert('Email is already enrolled, please verify yourself');
+    // setTask(TASK.REGISTER);
+  }
 
-    if (!response) {
-      alert(errorCase['Biometic Server Error']);
-      setVerifying(false);
-      return;
-    } else {
-      alert(errorCase[response.message]);
-      if (response.message === 'Successfully Enrolled' || response.message === 'Already Enrolled') {
-        setFaceKISuccess(true);
-      }
-      setVerifying(false);
-    }
+  const onCancel = () => {
+    fasClient.current.unload()
+    loadVideo(false).then(() => {
+      props.setStep('userform');
+    });
   }
 
   const camWidth = width > 576 ? 600 : width - 30;
@@ -152,54 +158,21 @@ export default function FaceKiForm(props) {
                 <h6 style={{ fontSize: '24px' }}>Bio-Metric 2 Factor Authentication</h6>
                 <p className='header_ptag'>Next, we will setup your Biometric two factor authentication, to ensure the security of your wallet</p>
               </div>
-              <div className='child-div' style={{ width: camWidth, height: camHeight }}>
-                <div style={{ width: '100%', display: 'flex', height: '30px', zIndex: '5' }}>
-                <div className="position-head color-black">{!isMobile() ? 'Position your face in the oval' : ''}</div>
-                <button className='btn_x'
-                    onClick={() => {
-                      loadVideo(false).then(() => {
-                        props.setStep('userform');
-                      });
-                    }}>X</button>
-                </div>
-                <img src={OvalImage} alt='oval-image' className='oval-image' />
-                <Camera
-                ref={webcamRef}
-                aspectRatio="cover"
-                numberOfCamerasCallback={(i) => setNumberOfCameras(i)}
-                videoSourceDeviceId={activeDeviceId}
-                errorMessages={{
-                  noCameraAccessible: errorCase.noCameraAccessible,
-                  permissionDenied: errorCase.permissionDenied,
-                  switchCamera: errorCase.switchCamera,
-                  canvas: errorCase.canvas,
-                }}
-              />
-                <div className='btn-div'>
-                  <p className={`span-class color-black margin-bottom-zero ${isMobile() ? 'verify-text-font-size' : ''}`}>{faceKISuccess === false ? 'Press verify to begin enrollment' : 'Verification Successful!'}</p>
-                  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
-                    Min camera resolution must be 720p
-                  </span>
-                  <span className={`span-class color-black margin-bottom-zero ${isMobile() ? 'camera-text-font-size' : ''}`}>
-                    Verifying will take 10 seconds as maximum.
-                  </span>
-                  <div className="btn-grp">
-                    <button className='btn-1' disabled={verifying} onClick={() => checkAndEnroll(0)}>{verifying ? "Verifying..." : "Verify"}</button>
-                  </div>
-                </div>
+              <div className='child-div' style={{ width: camWidth, height: '100%', color: 'var(--textBrown)' }}>
+                {(!token || !task)? 'loading ...' : (
+                  <FASClient
+                    ref={fasClient}
+                    token={token}
+                    username={email}
+                    task={task}
+                    activeDeviceId={activeDeviceId}
+                    onComplete={faceEnroll}
+                    onFailure={onFailure}
+                    onCancel={onCancel}
+                  />
+                )}
               </div>
             </div>
-            <select
-            onChange={(event) => {
-              setActiveDeviceId(event.target.value);
-            }}
-          >
-            {devices.map((d) => (
-              <option key={d.deviceId} value={d.deviceId}>
-                {d.label}
-              </option>
-            ))}
-          </select>
           </div>
         </div>
       </div>

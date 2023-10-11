@@ -25,7 +25,7 @@ import PaperWalletLogin from "./components/PaperWalletLogin/PaperWalletLogin";
 import { OrdersTable } from "./components/Wallet/OrdersTable";
 import CheckPassword from "./lib/CheckPassword";
 import { Button, Modal } from "semantic-ui-react";
-import { getAccessToken } from "./utils/localstorage";
+import { getAccessToken } from './utils/localstorage';
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, loaderSelector, isLoginSelector, loginErrorSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService, getNotificationsRequest } from "./store/account/actions";
@@ -148,7 +148,7 @@ function Application(props) {
 
   const urlParams = window.location.search.replace('?', '').split('&');
   const signatureParam = urlParams[0].split('=');
-  
+
   // Online state
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -205,15 +205,7 @@ function Application(props) {
           // { tradeExcuted: true },
           // { tradeCanceled: true },
         ],
-        coinMovements: [
-          {
-            meta1: {
-              toggle: true,
-              tendency: 'up',
-              comparator: ['percentage', 1]
-            }
-          }
-        ]
+        coinMovements: []
       }
     }
     localStorage.setItem('noti_conf', JSON.stringify(conf));
@@ -286,10 +278,10 @@ function Application(props) {
   //   }
   // }, [urlParams])
 
-  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", web3Token = "", web3PubKey = "") => {
+  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", web3Token = "", web3PubKey = "", fasToken) => {
     setIsLoading(true);
     if (clicked) {
-      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, web3Token, web3PubKey }));
+      dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, web3Token, web3PubKey, fasToken }));
     }
     if (getAccessToken()) {
       console.log('loging', getAccessToken())
@@ -513,14 +505,17 @@ function Application(props) {
     }, 2000);
   }
 
-  const onRegistration = async (acc, pass, regEmail, web3Token, web3PubKey) => {
+  const onRegistration = async (acc, pass, regEmail, web3Token, web3PubKey, fasToken) => {
     setCredentials(acc, pass);
-    onLogin(acc, true, pass, true, regEmail, web3Token, web3PubKey);
+    localStorage.removeItem('fastoken');
+    onLogin(acc, true, pass, true, regEmail, web3Token, web3PubKey, fasToken);
     setActiveScreen("wallet");
   };
 
-  const _onSetupWebSocket = (accountName) => {
+  const _onSetupWebSocket = (accountName, curWebsocket=null) => {
     try {
+      curWebsocket && curWebsocket.close();
+
       const webSocketFactory = {
         connectionTries: 5,
         connect: function (url) {
@@ -540,12 +535,12 @@ function Application(props) {
         `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
 
+
       websocket.onmessage = (message) => {
-        console.log('@@@@message', message);
         var filter = filterNotifications([JSON.parse(message.data)], accountName);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
-          toast(content);
+          toast(<p dangerouslySetInnerHTML={{__html: content}} />);
           dispatch(getNotificationsRequest({ login: accountName }));
         }
       };
@@ -557,7 +552,7 @@ function Application(props) {
           webSocketFactory.connectionTries = webSocketFactory.connectionTries - 1;
 
           if (webSocketFactory.connectionTries > 0) {
-            setTimeout(() => _onSetupWebSocket(accountName), 5000);
+            setTimeout(() => _onSetupWebSocket(accountName, websocket), 5000);
           } else {
             throw new Error(
               'Maximum number of connection trials has been reached'

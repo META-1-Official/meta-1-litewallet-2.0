@@ -11,6 +11,7 @@
   border-bottom-right-radius: 8px;
   width: 440px;
   padding-bottom: 20px;
+  overflow-y: auto;
 
   // Paddle
   &::after {
@@ -83,6 +84,14 @@
   }
 }
 
+.contentHtml {
+  max-width: 350px;
+
+  img {
+    max-width: 100% !important;
+  }
+}
+
 .time {
   display: flex;
   color: var(--textBrown);
@@ -94,6 +103,29 @@
   text-transform: capitalize;
   justify-content: space-between;
   align-items: center;
+
+  div {
+    &:first-child {
+      width: 100%;
+
+      p {
+        background: transparent;
+
+        table {
+          background: transparent !important;
+
+          td {
+            background: transparent !important;
+          }
+        }
+      }
+    }
+
+    &:last-child {
+      min-width: 150px;
+      margin-left: 30px;
+    }
+  }
 }
 
 .logo {

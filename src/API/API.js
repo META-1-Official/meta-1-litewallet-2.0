@@ -187,11 +187,11 @@ export async function sendEmail(emailType, emailData) {
   }
 }
 
-export async function loginRequest(accountName, email, web3Token, web3PubKey) {
+export async function loginRequest(accountName, email, web3Token, web3PubKey, fasToken) {
   try {
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/login`,
-      { accountName, email, idToken: web3Token, appPubKey: web3PubKey }
+      { accountName, email, idToken: web3Token, appPubKey: web3PubKey, fasToken }
     );
     return { ...data, error: false };
   } catch (e) {
@@ -317,7 +317,7 @@ export async function livenessCheck(image) {
 //     let form_data = new FormData();
 //     form_data.append('image', image);
 //     form_data.append('name', name);
-
+//
 //     const { data } = await axios.post(
 //       `${process.env.REACT_APP_BACK_URL}/enroll_user`,
 //       form_data,
@@ -329,17 +329,11 @@ export async function livenessCheck(image) {
 //   }
 // };
 
-export async function enroll(image, email, privKey) {
+export async function enroll(email, privKey, task) {
   try {
-    let form_data = new FormData();
-    form_data.append('image', image);
-    form_data.append('email', email);
-    form_data.append('privKey', privKey);
-
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/face_enroll`,
-      form_data,
-      { headers: { 'content-type': 'multipart/form-data' } },
+      { email, privKey, task },
     );
     return data;
   } catch (e) {
@@ -412,16 +406,18 @@ export async function checkMigrationable(accountName) {
 }
 
 export async function migrate(accountName, password) {
-  try {
-    const payload = await buildSignature(accountName, password, true);
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_BACK_URL}/migrate`,
-      payload
-    );
-    return data;
-  } catch (e) {
-    return { message: "Something is wrong", error: true };
-  }
+  const payload = await buildSignature(accountName, password, true);
+  return axios.post(`${process.env.REACT_APP_BACK_URL}/migrate`, payload)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((e) => {
+      if (e.response && e.response.data && e.response.data.msg) {
+        return { message: e.response.data.msg, error: true };
+      } else {
+        return { message: "Something is wrong", error: true };
+      }
+    });
 }
 
 export async function createQRPoll(qr_hash) {
@@ -596,5 +592,42 @@ export async function getNotifications(login) {
     return data;
   } catch (err) {
     return { message: "Something is wrong", error: true };
+  }
+}
+
+export async function getFASToken({
+  account= null,
+  email,
+  task,
+  publicKey= null,
+  signature= null,
+  signatureContent= null
+}) {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getFASToken`, {
+      account, email, task, publicKey, signature, signatureContent
+    })
+    return data;
+  } catch (error) {
+    return { message: "Something went wrong", error, }
+  }
+}
+
+
+export async function fasEnroll(email, privKey, fasToken) {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/fasEnroll`, { email, privKey, fasToken })
+    return data;
+  } catch (error) {
+    return { message: "Something went wrong", error, }
+  }
+}
+
+export async function fasMigrationStatus(email) {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getFASMigrationStatus`, { email });
+    return data
+  } catch (error) {
+    return { message: "Something went wrong", error, }
   }
 }
