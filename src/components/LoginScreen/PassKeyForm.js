@@ -12,6 +12,9 @@ export default function PassKeyForm(props) {
       <div className="migration_title">
         Input Your Passkey
       </div>
+      <div className="migration_desc">
+        To complete the one time biometrics upgrade, please enter your passkey to migrate your 2 Factor Biometric Authentication.
+      </div>
       <Grid.Column width={16} className="singup-grid">
         <Form autoComplete="off">
           <div className="field">
