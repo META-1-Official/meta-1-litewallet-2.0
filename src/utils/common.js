@@ -77,10 +77,9 @@ export const filterNotifications = (n, accountName) => {
             var symbol = str_array[0].toLowerCase();
             var tendency = str_array[2].toLowerCase();
             var change = Math.abs(str_array[3].substring(0, str_array[3].length - 1));
-
             const obj_value = coinMove[symbol];
 
-            if (!obj_value) return true;
+            if (!obj_value) return false;
             if (obj_value.toggle === false) { // filter enabled                        
                 flag = true;
             } else {

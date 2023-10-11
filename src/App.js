@@ -205,15 +205,7 @@ function Application(props) {
           // { tradeExcuted: true },
           // { tradeCanceled: true },
         ],
-        coinMovements: [
-          {
-            meta1: {
-              toggle: true,
-              tendency: 'up',
-              comparator: ['percentage', 1]
-            }
-          }
-        ]
+        coinMovements: []
       }
     }
     localStorage.setItem('noti_conf', JSON.stringify(conf));
