@@ -23,6 +23,8 @@
   height: 19rem;
   @media (max-width: 600px) {
     width: 100%;
+    height: auto;
+    flex-direction: column;
   }
 }
 .rightBlockContent {
@@ -91,6 +93,9 @@
       text-decoration: underline var(--textGold);
     }
   }
+  @media (max-width: 600px) {
+    width: auto;
+  }
 }
 .crypto {
   display: flex;
@@ -139,7 +144,7 @@
     border: 1px solid var(--inputBorderColor) !important;
   }
   @media (max-width: 600px) {
-    width: 100%;
+    width: 100% !important;
     margin-top: 0.5rem;
   }
 }
