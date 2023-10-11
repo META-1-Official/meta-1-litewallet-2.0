@@ -15,10 +15,12 @@
   padding: 1.1rem 2rem;
   background: transparent;
 }
+.loginBlock {
+  display: flex;
+}
 .leftBlockContent {
   display: flex;
-  flex-direction: column;
-  width: 60%;
+  height: 19rem;
   @media (max-width: 600px) {
     width: 100%;
   }
@@ -26,7 +28,6 @@
 .rightBlockContent {
   display: flex;
   flex-direction: column;
-  width: 40%;
   @media (max-width: 600px) {
     flex-direction: column !important;
     width: 100%;
@@ -34,7 +35,8 @@
 }
 .mainBlockContent {
   display: flex;
-  flex-direction: row;
+  width: 50%;
+  flex-direction: column;
   @media (max-width: 600px) {
     flex-direction: column !important;
     width: 100%;
@@ -68,6 +70,7 @@
 .intro,
 .newCrypto {
   margin: 1rem;
+  width: 50%;
   background: var(--blockBgColor);
   border-radius: 5px;
   border: 1px solid var(--borderColor);

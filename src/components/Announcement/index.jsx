@@ -34,7 +34,7 @@ export const Announcement = (props) => {
         <div>
             {
                 isLoginState === false ? <div>Need to login</div> : loading ? <MetaLoader size="mini" /> : data ? data.map((ele, index) => {
-                    return index < 3 && <AnnouncementCard
+                    return index < 5 && <AnnouncementCard
                         title={ele.title}
                         description={ele.description}
                         time={moment(ele.created_at).fromNow()}

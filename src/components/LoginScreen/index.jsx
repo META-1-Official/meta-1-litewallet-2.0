@@ -266,8 +266,8 @@ export default function LoginScreen(props) {
 
   const renderLoginScreen = () => {
     return (
-      <>
-        <div className={styles.mainBlockContent}>
+      <div className={styles.loginBlock}>
+        <div className={styles.mainBlockContent} style={{width: isLoginState ? '50%' : '100%'}}>
           <div className={styles.leftBlockContent}>
             <div className={styles.createMeta}>
               <h5>
@@ -458,7 +458,7 @@ export default function LoginScreen(props) {
             login={login}
           />
         }
-      </>
+      </div>
     )
   }
 
