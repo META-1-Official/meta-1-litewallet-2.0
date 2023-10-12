@@ -20,7 +20,7 @@
 }
 .leftBlockContent {
   display: flex;
-  height: 19rem;
+  height: auto;
   @media (max-width: 600px) {
     width: 100%;
     height: auto;
@@ -48,10 +48,11 @@
   border: 2px solid rgb(255, 192, 0);
   border-radius: 6px;
   height: 3rem;
-  padding: 0.6rem 2rem;
+  padding: 0 5px;
   font-weight: bold;
   color: var(--textBrown);
   background: var(--gold);
+  font-size: 12px;
   cursor: pointer;
   box-shadow: var(--boxShadowIndex);
 
