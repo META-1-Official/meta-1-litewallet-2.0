@@ -197,8 +197,8 @@ function Application(props) {
     if (!conf) {
       conf = {
         specNotification: [
-          { events: true },
-          { announcements: true },
+          // { events: true },
+          // { announcements: true },
           // { deposits: true },
           { send: true },
           { receive: true },

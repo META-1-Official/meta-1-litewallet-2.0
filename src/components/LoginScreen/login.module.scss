@@ -33,6 +33,7 @@
 .rightBlockContent {
   display: flex;
   flex-direction: column;
+  display: none;
   @media (max-width: 600px) {
     flex-direction: column !important;
     width: 100%;
