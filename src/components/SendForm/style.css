@@ -80,6 +80,11 @@ input::-webkit-inner-spin-button {
   }
   .buttSend {
     padding: 1rem 2rem 1rem 0.1rem !important;
+    margin-left: 0px !important;
+  }
+  .buttonSend {
+    width: 100%;
+    margin: 0px !important;
   }
 }
 

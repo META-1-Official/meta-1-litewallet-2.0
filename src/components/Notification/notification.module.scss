@@ -13,6 +13,12 @@
   padding-bottom: 20px;
   overflow-y: auto;
 
+  @media (max-width: 600px) {
+    top: 110px;
+    width: calc(100% - 50px);
+    left: 25px;
+  }
+
   // Paddle
   &::after {
     content: '\a';
@@ -23,6 +29,11 @@
     transform: rotate(90deg);
     right: 50%;
     top: -25px;
+
+    @media (max-width: 600px) {
+      top: -100px;
+      left: 70px
+    }
   }
 }
 
@@ -33,6 +44,10 @@
   border: 1px solid var(--borderColor);
   border-radius: 5px;
   height: 100%;
+
+  @media (max-width: 600px) {
+    margin: 20px;
+  }
 
   // Paddle
   &::after {
