@@ -21,6 +21,10 @@
 
     p {
         color: var(--textBrown) !important;
+
+        @media (max-width: 600px) {
+            overflow-x: auto;
+        }
     }
 
     table {
@@ -70,6 +74,10 @@
     align-items: center;
     justify-content: center;
     padding: 5px;
+
+    @media (max-width: 600px) {
+        display: none;
+    }
 }
 
 // upcoming events
@@ -385,4 +393,8 @@
     border-radius: 5px;
     height: 100%;
     padding: 20px;
+
+    @media (max-width: 600px) {
+        margin: 20px;
+    }
 }
