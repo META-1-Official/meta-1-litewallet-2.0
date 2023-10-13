@@ -206,14 +206,16 @@ export default function LoginScreen(props) {
   }
 
   const handlePassKeyFormSubmit = async (passkey) => {
-    const result = await buildSignature4Fas(login, passkey, email);
-    const {publicKey, signature, signatureContent} = result;
+    let result;
 
-    if (!publicKey || !signature) {
+    try {
+      result = await buildSignature4Fas(login, passkey, email);
+    } catch {
       toast('Passkey is not valid!');
       return;
     }
 
+    const {publicKey, signature, signatureContent} = result;
     const { token } = await getFASToken({
       email,
       task: TASK.REGISTER,
@@ -223,7 +225,9 @@ export default function LoginScreen(props) {
     });
 
     if (!token) {
-      toast('Passkey is not valid!');
+      console.log('Could not get FAS token!');
+      toast('Something went wrong!');
+      setStep('userform');
       return;
     }
 
@@ -238,6 +242,7 @@ export default function LoginScreen(props) {
         onSubmit={handlePassKeyFormSubmit}
         accountName={login || 'user-x01-1'}
         email={email || 'user-x01@yopmail.com'}
+        setStep={setStep}
       />
     )
   }
