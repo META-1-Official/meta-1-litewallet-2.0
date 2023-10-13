@@ -13,6 +13,7 @@ const ProcessingCanvasComponent = React.forwardRef(
 		const [frameRate, setFrameRate] = useState(2);
 		const [frameSize, setFrameSize] = useState({width: 720, height: 480});
 		const [fillColor, setFillColor] = useState([255, 255, 255]);
+		const [originalStream, setOriginalStream] = useState(null)
 
 		const startResampling = (newStream) => {
 			console.log('PCC', 'stream updated', newStream);
@@ -69,7 +70,17 @@ const ProcessingCanvasComponent = React.forwardRef(
 
 		useImperativeHandle(ref, () => ({
 			updateOriginalStream: (newStream) => {
+				setOriginalStream(newStream)
 				startResampling(newStream)
+			},
+			stopOriginalStream:  () => {
+				if (originalStream) {
+					console.log("Closing original stream/camera")
+					originalStream.getTracks().forEach(function(track) {
+						track.stop();
+					});
+					setOriginalStream(null)
+				}
 			}
 		}));
 
