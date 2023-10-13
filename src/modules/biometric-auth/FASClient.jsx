@@ -437,6 +437,11 @@ const FASClient = forwardRef((props, ref) => {
 			setLoading(false);
 		}
 
+		// close camera
+		if (processingCanvasComponentref.current) {
+			processingCanvasComponentref.current.stopOriginalStream()
+		}
+
 		// if (jwtTokenRef.current !== null) {
 		// 	jwtTokenRef.current = null;
 		// }
@@ -567,7 +572,6 @@ const FASClient = forwardRef((props, ref) => {
 	};
 
 	const onClickCross = () => {
-		emptyStreamRef.current.getTracks()[0].stop();
 		onCancel();
 	}
 
