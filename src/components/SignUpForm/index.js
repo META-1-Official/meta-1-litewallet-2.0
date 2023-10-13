@@ -110,13 +110,16 @@ export default function SignUpForm(props) {
   };
 
   const handlePassKeyFormSubmit = async (passkey, existingAccountName) => {
-    const result = await buildSignature4Fas(existingAccountName, passkey, email);
-    const {publicKey, signature, signatureContent} = result;
+    let result;
 
-    if (!publicKey || !signature) {
+    try {
+      result = await buildSignature4Fas(existingAccountName, passkey, email);
+    } catch {
       toast('Passkey is not valid!');
       return;
     }
+
+    const {publicKey, signature, signatureContent} = result;
 
     const { token } = await getFASToken({
       account: accountName,
@@ -128,7 +131,9 @@ export default function SignUpForm(props) {
     });
 
     if (!token) {
-      toast('Passkey is not valid!');
+      console.log('Could not get FAS token!');
+      toast('Something went wrong!');
+      setStep('userform');
       return;
     }
 
