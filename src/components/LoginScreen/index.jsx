@@ -32,8 +32,8 @@ export default function LoginScreen(props) {
     onClickResetIsSignatureProcessing,
     onClickExchangeAssetHandler
   } = props;
-  const [login, setLogin] = useState("antman-new-bio15");
-  const [email, setEmail] = useState("antman-new-bio15@yopmail.com");
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [migrationMsg, setMigrationMsg] = useState('');
   const [openVideoModal, setOpenVideoModal] = useState(false);
@@ -45,8 +45,8 @@ export default function LoginScreen(props) {
     errorMsg: '',
     error: false
   });
-  // const [step, setStep] = useState('userform');
-  const [step, setStep] = useState('faceki');
+  const [step, setStep] = useState('userform');
+  // const [step, setStep] = useState('faceki');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
   const [loader, setLoader] = useState(false);
