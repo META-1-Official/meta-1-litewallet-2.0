@@ -630,7 +630,6 @@ function Application(props) {
           setIsSignatureProcessing(false);
         }}
         onClickOpenOrderHandler={(e) => {
-          console.log('@@@@@@the reason');
           e.preventDefault();
           dispatch(getUserRequest(login));
           setActiveScreen("openOrder");
