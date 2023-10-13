@@ -566,6 +566,10 @@ const FASClient = forwardRef((props, ref) => {
 		stop();
 	};
 
+	const onClickCross = () => {
+		onCancel();
+	}
+
 	useImperativeHandle(ref, () => ({
 		load: __load,
 		start: __start,
@@ -752,7 +756,7 @@ const FASClient = forwardRef((props, ref) => {
 								margin: '0 auto',
 							}}
 						>
-							<button className='btn_x' onClick={() => onCancel()}>X</button>
+							<button className='btn_x' onClick={() => onClickCross()}>X</button>
 							{ isSupported &&
 								<Webcam
 									audio={false}

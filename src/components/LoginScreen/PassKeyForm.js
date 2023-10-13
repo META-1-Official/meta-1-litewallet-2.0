@@ -57,7 +57,7 @@ export default function PassKeyForm(props) {
             <Button
               className="red"
               style={{ color: "#240000", marginTop: '1em' }}
-              onClick={() => props.onSubmit(passkey)}
+              onClick={() => props.setStep('userform')}
             >
               Back
             </Button>
