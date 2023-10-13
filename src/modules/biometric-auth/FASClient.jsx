@@ -572,8 +572,8 @@ const FASClient = forwardRef((props, ref) => {
 	};
 
 	const onClickCross = () => {
-		emptyStreamRef.current.getTracks().forEach(function (track) {track.stop();});
-		webcamRef.current.video.srcObject.getTracks().forEach(function (track) {track.stop();});
+		emptyStreamRef?.current?.getTracks().forEach(function (track) {track.stop();});
+		webcamRef?.current?.video?.srcObject?.getTracks().forEach(function (track) {track.stop();});
 		onCancel();
 	}
 
