@@ -567,6 +567,7 @@ const FASClient = forwardRef((props, ref) => {
 	};
 
 	const onClickCross = () => {
+		emptyStreamRef.current.getTracks()[0].stop();
 		onCancel();
 	}
 
@@ -773,7 +774,7 @@ const FASClient = forwardRef((props, ref) => {
 										deviceId: selectedDevice,
 									}}
 									onUserMedia={() => {
-										console.log("On user media called")
+										console.log("@On user media called")
 										const interval = setInterval(() => {
 											if (typeof webcamRef.current.video === "undefined") {
 												console.log("Video element not rendered")

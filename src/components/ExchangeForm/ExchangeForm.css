@@ -59,7 +59,7 @@
 .wallet-option-picture img {
   width: 40px;
   margin-right: 15px;
-  z-index: 100;
+  /* z-index: 100; */
 }
 
 .wallet-option-content {
@@ -113,7 +113,7 @@
 
 .select-withdrawal .css-g1d714-ValueContainer {
   height: 100%;
-  border-right: 1px solid hsl(0, 0%, 80%);
+  border-right: 1px solid var(--inputBorderColor);
   overflow: visible !important;
   border-radius: 0px !important;
 }
@@ -131,9 +131,11 @@
   background-color: var(--blockBgColor) !important;
   border: 1px solid var(--borderColor);
 }
+
 .css-4ljt47-MenuList {
   height: 275px !important;
 }
+
 .css-1pahdxg-control:hover {
   border-color: var(--gold) !important;
 }
@@ -394,6 +396,45 @@ input {
 
 .headerTitle {
   background: transparent;
-	border-bottom: 1px solid var(--borderColor);
+  border-bottom: 1px solid var(--borderColor);
   color: var(--textBrown);
+}
+
+.submit-info {
+  display: flex;
+}
+
+.submit-info-wrapper {
+  display: flex;
+}
+
+.submit-info-icon {
+  height: 30px;
+  border-radius: 50%;
+  padding: 4px 12px;
+  margin-top: 8px;
+  background-color: #fbbd08;
+  margin-left: 1rem;
+  color: white;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.submit-info-red {
+  color: lightcoral;
+  text-align: left;
+  margin-left: 20px;
+  max-width: 300px;
+}
+
+@media (max-width: 600px) {
+  .submit-info {
+    flex-direction: column;
+    align-items: center;
+  }
+  .submit-info-wrapper {
+    margin-top: 15px;
+  }
 }

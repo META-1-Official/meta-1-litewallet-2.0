@@ -115,7 +115,8 @@ export const filterNotifications = (n, accountName) => {
         }
 
         if (category === 'announcements' || category === 'events' )
-            if (accountName === null) flag = true;
+            // if (accountName === null) flag = true;
+            flag = true;
 
         return !flag;
     });

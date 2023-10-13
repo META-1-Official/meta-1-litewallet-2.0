@@ -286,6 +286,7 @@ const Navbar = (props) => {
                 onClickSettingsHandler={onClickSettingsHandler}
                 onClickHistoryHandler={onClickHistoryHandler}
                 onClickResetIsSignatureProcessing={onClickResetIsSignatureProcessing}
+                onClickOpenOrderHandler={onClickOpenOrderHandler}
                 portfolio={portfolio}
                 name={name}
                 onClick={handleClickLogout}

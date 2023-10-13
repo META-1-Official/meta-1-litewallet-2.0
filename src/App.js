@@ -197,8 +197,8 @@ function Application(props) {
     if (!conf) {
       conf = {
         specNotification: [
-          { events: true },
-          { announcements: true },
+          // { events: true },
+          // { announcements: true },
           // { deposits: true },
           { send: true },
           { receive: true },
@@ -1125,10 +1125,10 @@ function Application(props) {
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
-                    height: "100%",
+                    height: "100%"
                   }}
                 >
-                  <div>
+                  <div style={{height: '100%'}}>
                     <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
                       <div>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>

@@ -78,29 +78,23 @@ export default function FaceKiForm(props) {
   }, [faceKISuccess])
 
   const loadVideo = async (flag) => {
-    const videoTag = document.querySelector('video');
-
-    if (flag) {
-      return navigator.mediaDevices
-        .enumerateDevices()
-        .then((devices) => {
-          const videoDevices = devices.filter((i) => i.kind == 'videoinput');
-          setDevices(videoDevices);
-          setActiveDeviceId(videoDevices[0]?.deviceId);
-        })
-        .finally(() => {
-          return true;
-        });
-    } else {
-      try {
-        for (const track of videoTag.srcObject.getTracks()) track.stop();
-        videoTag.srcObject = null;
-      } catch (err) {
-        console.log('[loadVideo]', err);
-      }
-
-      return Promise.resolve();
-    }
+    const video = document.querySelector('video');
+    navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: true
+    })
+      .then(stream => {
+        if (flag) {
+          setActiveDeviceId(stream.getVideoTracks()[0].getSettings().deviceId);
+        } else {
+          stream.getVideoTracks()[0].stop();
+          video.srcObject = null;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return Promise.resolve();
   }
 
   const isMobile = () => {
