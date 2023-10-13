@@ -81,26 +81,22 @@ export default function FaceKiForm(props) {
 
   const loadVideo = async (flag) => {
     const video = document.querySelector('video');
-
-    if (flag) {
-      navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: true
-      })
-        .then(stream => {
-          window.localStream = stream;
-          video.srcObject = stream;
+    navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: true
+    })
+      .then(stream => {
+        if (flag) {
           setActiveDeviceId(stream.getVideoTracks()[0].getSettings().deviceId);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      window.localStream.getVideoTracks()[0].stop();
-      video.srcObject = null;
-
-      return Promise.resolve();
-    }
+        } else {
+          stream.getVideoTracks()[0].stop();
+          video.srcObject = null;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return Promise.resolve();
   }
 
   const isMobile = () => {
