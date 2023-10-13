@@ -112,10 +112,7 @@ export default function FaceKiForm(props) {
   }
 
   const onCancel = () => {
-    fasClient.current.unload();
-    loadVideo(false).then(() => {
       props.setStep('userform');
-    });
   }
 
   const camWidth = width > 576 ? 600 : width - 30;

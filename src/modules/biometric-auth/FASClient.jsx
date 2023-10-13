@@ -8,8 +8,8 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
-import {PauseCircleOutlined, PlayCircleOutlined} from '@ant-design/icons';
-import {Button, message, Select} from 'antd';
+import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { Button, message, Select } from 'antd';
 import Webcam from 'react-webcam';
 import useDevices from './hooks/useDevices';
 import ProgressScores from './hud/ProgressScores';
@@ -50,7 +50,7 @@ const FASClient = forwardRef((props, ref) => {
 		activeDeviceId,
 		onComplete,
 		onCancel,
-		onFailure = () => {},
+		onFailure = () => { },
 	} = props;
 
 	const updateWindowWidth = () => {
@@ -205,7 +205,7 @@ const FASClient = forwardRef((props, ref) => {
 			}
 
 			hudFacemagnetRef.current.setData(msg.message);
-			setLogs((prevLogs) => [...prevLogs, {msg, timestamp: new Date()}]);
+			setLogs((prevLogs) => [...prevLogs, { msg, timestamp: new Date() }]);
 		} else if (typeof msg.type !== 'undefined' && msg.type === 'task-state') {
 			hudFacemagnetRef.current.setTaskState(msg.state)
 		}
@@ -298,7 +298,7 @@ const FASClient = forwardRef((props, ref) => {
 		pc.current.onicecandidate = (event) => {
 			if (event.candidate) {
 				console.log('New local candidate', event.candidate);
-				ws.current.send(JSON.stringify({candidate: event.candidate}));
+				ws.current.send(JSON.stringify({ candidate: event.candidate }));
 			}
 		};
 
@@ -356,7 +356,7 @@ const FASClient = forwardRef((props, ref) => {
 		setLoading(false);
 
 		if (pc.current && emptyStreamRef.current) {
-			sendMessageToServer({type: 'msg', message: {fas: 'stop'}});
+			sendMessageToServer({ type: 'msg', message: { fas: 'stop' } });
 			let currentTrack = null;
 			const currentSender = pc.current
 				.getSenders()
@@ -387,7 +387,7 @@ const FASClient = forwardRef((props, ref) => {
 			if (pc.current.connectionState === 'connected') {
 				sendMessageToServer({
 					type: 'msg',
-					message: {fas: 'start', token: jwtTokenRef.current, task: task},
+					message: { fas: 'start', token: jwtTokenRef.current, task: task },
 				});
 			} else {
 				pc.current.onconnectionstatechange = (event) => {
@@ -396,7 +396,7 @@ const FASClient = forwardRef((props, ref) => {
 					if (pc.current.connectionState === 'connected') {
 						sendMessageToServer({
 							type: 'msg',
-							message: {fas: 'start', token: jwtTokenRef.current, task: task},
+							message: { fas: 'start', token: jwtTokenRef.current, task: task },
 						});
 					}
 				};
@@ -520,7 +520,7 @@ const FASClient = forwardRef((props, ref) => {
 
 
 	const __load = () => {
-		loadDetectRTC().then( () => {
+		loadDetectRTC().then(() => {
 			checkForSupport().then(supported => {
 				if (supported) {
 					setIsSupported(supported)
@@ -572,6 +572,8 @@ const FASClient = forwardRef((props, ref) => {
 	};
 
 	const onClickCross = () => {
+		emptyStreamRef.current.getTracks().forEach(function (track) {track.stop();});
+		webcamRef.current.video.srcObject.getTracks().forEach(function (track) {track.stop();});
 		onCancel();
 	}
 
@@ -680,13 +682,13 @@ const FASClient = forwardRef((props, ref) => {
 
 	return (
 		<div>
-			<div className="FASClient" style={{maxWidth: '900px', margin: 'auto'}}>
-				<div style={{maxWidth: '900px', margin: 'auto', position: 'relative'}}>
+			<div className="FASClient" style={{ maxWidth: '900px', margin: 'auto' }}>
+				<div style={{ maxWidth: '900px', margin: 'auto', position: 'relative' }}>
 					<div>
-						<div style={{marginTop: 15, position: 'relative', zIndex: 1}}>
+						<div style={{ marginTop: 15, position: 'relative', zIndex: 1 }}>
 							{devices.length > 0 ? (
 								<Select
-									style={{width: '100%'}}
+									style={{ width: '100%' }}
 									placeholder="Please select a camera"
 									value={selectedDevice}
 									onChange={(value) => setSelectedDevice(value)}
@@ -762,7 +764,7 @@ const FASClient = forwardRef((props, ref) => {
 							}}
 						>
 							<button className='btn_x' onClick={() => onClickCross()}>X</button>
-							{ isSupported &&
+							{isSupported &&
 								<Webcam
 									audio={false}
 									ref={webcamRef}
