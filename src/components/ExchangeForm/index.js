@@ -1032,7 +1032,7 @@ export default function ExchangeForm(props) {
               )}
               {tradeInProgress && <MetaLoader size={"small"} />}
               {!passwordShouldBeProvided && !tradeInProgress && (
-                <div>
+                <div className="submit-info">
                   <Button
                     className={"btnExch"}
                     disabled={
@@ -1049,24 +1049,15 @@ export default function ExchangeForm(props) {
                   >
                     Exchange
                   </Button>
-                  <div style={{
-                    position: "absolute",
-                    display: "inline-block",
-                    borderRadius: "50%",
-                    padding: "4px 12px",
-                    marginTop: "8px",
-                    backgroundColor: "#fbbd08",
-                    marginLeft: "1rem"
-                  }}
-                  >
+                  <div className="submit-info-wrapper">
                     <i
-                      className="fa fa-info"
-                      style={{ color: "#FFF" }}
+                      className="fa fa-info submit-info-icon"
                     />
-                  </div>
-                  <span style={{ color: "lightcoral", textAlign: "left", position: "absolute", marginLeft: "50px" }}>
+
+                  <span className="submit-info-red">
                     Market order rate is not guaranteed due to slippage. Click <a href={process.env.REACT_APP_HOW_TO_TRADE} style={{ color: "lightcoral", textDecoration: "underline" }} target="_blank">here</a> to learn more.
                   </span>
+                  </div>
                 </div>
               )}
             </div>
