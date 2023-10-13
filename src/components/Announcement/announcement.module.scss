@@ -10,6 +10,7 @@
 
 .info {
     width: 100%;
+
     h4 {
         color: var(--textBrown) !important;
 
@@ -20,6 +21,10 @@
 
     p {
         color: var(--textBrown) !important;
+
+        @media (max-width: 600px) {
+            overflow-x: auto;
+        }
     }
 
     table {
@@ -39,7 +44,7 @@
     margin-top: 10px;
     text-align: center;
     cursor: pointer;
-  }
+}
 
 .time {
     padding: 5px;
@@ -69,6 +74,10 @@
     align-items: center;
     justify-content: center;
     padding: 5px;
+
+    @media (max-width: 600px) {
+        display: none;
+    }
 }
 
 // upcoming events
@@ -79,6 +88,11 @@
     border: 1px solid var(--borderColor);
     border-radius: 4px;
     box-shadow: var(--boxShadowIndex);
+    display: none;
+
+    @media (max-width: 600px) {
+        width: 100% !important;
+    }
 }
 
 .calendarHeader {
@@ -271,7 +285,7 @@
         padding: 20px 40px;
         overflow-y: auto;
         margin-bottom: 30px;
-        
+
         p {
             color: var(--textBrown);
             font-family: Poppins;
@@ -380,4 +394,8 @@
     border-radius: 5px;
     height: 100%;
     padding: 20px;
-  }
+
+    @media (max-width: 600px) {
+        margin: 20px;
+    }
+}
