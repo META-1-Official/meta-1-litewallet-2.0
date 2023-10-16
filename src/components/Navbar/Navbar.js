@@ -55,7 +55,7 @@ const Navbar = (props) => {
   }
 
   const showNotifications = () => {
-    setShowNotiDropDown(!showNotiDropDown);
+    notifications && notifications?.length !== 0 && setShowNotiDropDown(!showNotiDropDown);
   }
 
   const showAllNotifications = () => {
