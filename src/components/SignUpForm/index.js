@@ -115,7 +115,7 @@ export default function SignUpForm(props) {
     try {
       result = await buildSignature4Fas(existingAccountName, passkey, email);
     } catch {
-      toast('Passkey is not valid!');
+      toast('Wallet name and Passkey not match!');
       return;
     }
 
