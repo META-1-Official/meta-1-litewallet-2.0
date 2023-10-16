@@ -12,8 +12,6 @@ import { PauseCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { Button, message, Select } from 'antd';
 import Webcam from 'react-webcam';
 import useDevices from './hooks/useDevices';
-import ProgressScores from './hud/ProgressScores';
-import Loader from './LoaderComponent';
 import parseTurnServer from './helpers/parseTurnServer';
 import calculateCompletionPercentage from './helpers/calculateTasksProgress';
 import HudNotification from './hud/HudNotification';
@@ -27,7 +25,7 @@ const WSSignalingServer = process.env.REACT_APP_SIGNALIG_SERVER;
 
 const IceServer = parseTurnServer();
 
-// console.log('ICE Turn Server', IceServer);
+console.log('ICE Turn Server', IceServer);
 
 const FASClient = forwardRef((props, ref) => {
 	message.config({
@@ -43,13 +41,16 @@ const FASClient = forwardRef((props, ref) => {
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	const [progress, setProgress] = useState(0.0);
 	const [isSupported, setIsSupported] = useState(false);
+
+	const [dcpcbinded, setDcPcBinded] = useState(false)
+
 	const {
 		token,
 		username,
 		task,
 		activeDeviceId,
-		onComplete,
-		onCancel,
+		onComplete = () => {},
+		onCancel = () => {},
 		onFailure = () => { },
 	} = props;
 
@@ -98,7 +99,7 @@ const FASClient = forwardRef((props, ref) => {
 		if (emptyStreamRef.current && wsOpened) {
 			beginSession()
 		}
-	}, [webCamOpened, wsOpened])
+	}, [webCamOpened, wsOpened]);
 
 	const bindWSEvents = () => {
 		ws.current.onclose = (event) => {
@@ -645,8 +646,12 @@ const FASClient = forwardRef((props, ref) => {
 				.then((success) => console.log(success))
 				.catch((err) => console.log('Failed to set params'));
 
-			openAndBindDCEvents();
-			bindRTCEvents();
+			if (!dcpcbinded) {
+				openAndBindDCEvents();
+				bindRTCEvents();
+
+				setDcPcBinded(true)
+			}
 		});
 	};
 
@@ -826,13 +831,11 @@ const FASClient = forwardRef((props, ref) => {
 												hudFacemagnetRef.current.setCanvasHeight(getCanvasHeight());
 											}, 1000);
 
-											setWebCamOpened(true)
-
-										}, 100)
+											setWebCamOpened(true);
+										}, 100);
 									}}
-
 									onUserMediaError={() => {
-										setWebCamOpened(false)
+										setWebCamOpened(false);
 									}}
 								/>
 							}

@@ -7,6 +7,7 @@ const HudBitrateMonitor = React.forwardRef((props, ref) => {
 	const [downBitrate, setDownBitrate] = useState(0);
 	const [downBps, setDownBps] = useState(0);
 	const [upBps, setUpBps] = useState(0);
+	const [interval, setInterval] = useState(null);
 
 	useImperativeHandle(ref, () => ({
 		setPc: (pc) => {
@@ -14,7 +15,8 @@ const HudBitrateMonitor = React.forwardRef((props, ref) => {
 			let lastBytesReceived = 0;
 			let lastTimestamp = Date.now();
 
-			setInterval(async () => {
+			if (interval) clearInterval(interval)
+			const _interval = setInterval(async () => {
 				const stats = await pc.getStats();
 				let bytesSent = 0;
 				let bytesReceived = 0;
@@ -63,6 +65,8 @@ const HudBitrateMonitor = React.forwardRef((props, ref) => {
 					}
 				});
 			}, 1000);
+
+			setInterval(_interval)
 		},
 	}));
 
