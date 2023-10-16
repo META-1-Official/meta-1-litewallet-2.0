@@ -535,3 +535,7 @@ select {
 .none {
   display: none;
 }
+
+.migration_desc {
+  color: var(--textBrown);
+}
