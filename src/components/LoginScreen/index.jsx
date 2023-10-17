@@ -216,7 +216,7 @@ export default function LoginScreen(props) {
     }
 
     const {publicKey, signature, signatureContent} = result;
-    const { token } = await getFASToken({
+    const { token, message } = await getFASToken({
       email,
       task: TASK.REGISTER,
       publicKey,
@@ -225,8 +225,8 @@ export default function LoginScreen(props) {
     });
 
     if (!token) {
-      console.log('Could not get FAS token!');
-      toast('Something went wrong!');
+      console.log('Could not get FAS token!', token, message);
+      toast(message);
       setStep('userform');
       return;
     }

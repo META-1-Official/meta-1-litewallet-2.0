@@ -121,7 +121,7 @@ export default function SignUpForm(props) {
 
     const {publicKey, signature, signatureContent} = result;
 
-    const { token } = await getFASToken({
+    const { token, message } = await getFASToken({
       account: accountName,
       email,
       task: TASK.REGISTER,
@@ -131,8 +131,8 @@ export default function SignUpForm(props) {
     });
 
     if (!token) {
-      console.log('Could not get FAS token!');
-      toast('Something went wrong!');
+      console.log('Could not get FAS token!', token, message);
+      toast(message);
       setStep('userform');
       return;
     }

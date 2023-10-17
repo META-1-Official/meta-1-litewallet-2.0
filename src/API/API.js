@@ -603,14 +603,18 @@ export async function getFASToken({
   signature= null,
   signatureContent= null
 }) {
-  try {
-    const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/getFASToken`, {
-      account, email, task, publicKey, signature, signatureContent
+  const payload = {account, email, task, publicKey, signature, signatureContent};
+  return axios.post(`${process.env.REACT_APP_BACK_URL}/getFASToken`, payload)
+    .then((res) => {
+      return res.data;
     })
-    return data;
-  } catch (error) {
-    return { message: "Something went wrong", error, }
-  }
+    .catch((e) => {
+      if (e.response && e.response.data && e.response.data.message) {
+        return { message: e.response.data.message, error: true };
+      } else {
+        return { message: "Something is wrong", error: true };
+      }
+    });
 }
 
 
