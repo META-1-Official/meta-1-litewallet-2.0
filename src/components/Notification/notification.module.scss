@@ -11,6 +11,13 @@
   border-bottom-right-radius: 8px;
   width: 440px;
   padding-bottom: 20px;
+  overflow-y: auto;
+
+  @media (max-width: 600px) {
+    top: 110px;
+    width: calc(100% - 50px);
+    left: 25px;
+  }
 
   // Paddle
   &::after {
@@ -22,6 +29,11 @@
     transform: rotate(90deg);
     right: 50%;
     top: -25px;
+
+    @media (max-width: 600px) {
+      top: -100px;
+      left: 70px
+    }
   }
 }
 
@@ -32,6 +44,10 @@
   border: 1px solid var(--borderColor);
   border-radius: 5px;
   height: 100%;
+
+  @media (max-width: 600px) {
+    margin: 20px;
+  }
 
   // Paddle
   &::after {
@@ -83,6 +99,14 @@
   }
 }
 
+.contentHtml {
+  max-width: 350px;
+
+  img {
+    max-width: 100% !important;
+  }
+}
+
 .time {
   display: flex;
   color: var(--textBrown);
@@ -94,6 +118,29 @@
   text-transform: capitalize;
   justify-content: space-between;
   align-items: center;
+
+  div {
+    &:first-child {
+      width: 100%;
+
+      p {
+        background: transparent;
+
+        table {
+          background: transparent !important;
+
+          td {
+            background: transparent !important;
+          }
+        }
+      }
+    }
+
+    &:last-child {
+      min-width: 150px;
+      margin-left: 30px;
+    }
+  }
 }
 
 .logo {
