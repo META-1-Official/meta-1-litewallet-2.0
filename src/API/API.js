@@ -67,7 +67,7 @@ export async function uploadAvatar(formData) {
       formData,
       config
     );
-    return {...data, error: false};
+    return { ...data, error: false };
   } catch (err) {
     if (err?.response?.data?.error.toLowerCase() === 'unauthorized') {
       tokenFail();
@@ -87,7 +87,7 @@ export async function deleteAvatar(login) {
     const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/deleteAvatar`, {
       login: login,
     }, config);
-    return {...data, error: false};
+    return { ...data, error: false };
   } catch (err) {
     if (err.response?.data?.error.toLowerCase() === 'unauthorized') {
       tokenFail();
@@ -295,6 +295,32 @@ export async function getESigToken(email) {
   }
 };
 
+export async function createLinkPoll(dto) {
+  const { email, firstName, lastName, phoneNumber, walletName, token, redirectUrl } = dto;
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/poling/`,
+      {
+        email, firstName, lastName, phoneNumber, walletName, token, redirectUrl
+      }
+    );
+    return data;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+};
+
+export async function deleteLinkPoll(token) {
+  try {
+    const response = await axios.delete(
+      `${process.env.REACT_APP_ESIGNATURE_URL}/apiewallet/poling/remove?token=${token}`,
+    );
+    return response;
+  } catch (e) {
+    return { message: "Something is wrong", error: true };
+  }
+};
+
 // FACEKI
 export async function livenessCheck(image) {
   try {
@@ -424,7 +450,7 @@ export async function createQRPoll(qr_hash) {
   try {
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACK_URL}/createPoll`,
-      {qr_hash}
+      { qr_hash }
     );
     return data;
   } catch (e) {
@@ -471,7 +497,7 @@ export async function removeQRPoll(qr_hash) {
 }
 
 // ANNOUNCEMENT & EVENTS CALENDAR
-export async function addEvent(title, description, location, location_bg_url, start, end ) {
+export async function addEvent(title, description, location, location_bg_url, start, end) {
   const config = {
     headers: {
       authorization: getAccessToken()
@@ -510,7 +536,7 @@ export async function updateEvent(id, title, description, location, location_bg_
   try {
     const { data } = await axios.patch(
       `${process.env.REACT_APP_BACK_URL}/update_event?id=${id}`,
-      {title, description, location, location_bg_url, start, end},
+      { title, description, location, location_bg_url, start, end },
       {
         headers: {
           authorization: getAccessToken()
@@ -570,7 +596,7 @@ export async function updateAnnouncement(id, type, title, description, announced
   try {
     const { data } = await axios.patch(
       `${process.env.REACT_APP_BACK_URL}/update_announcement?id=${id}`,
-      {type, title, description, announced_time},
+      { type, title, description, announced_time },
       {
         headers: {
           authorization: getAccessToken()
@@ -596,14 +622,14 @@ export async function getNotifications(login) {
 }
 
 export async function getFASToken({
-  account= null,
+  account = null,
   email,
   task,
-  publicKey= null,
-  signature= null,
-  signatureContent= null
+  publicKey = null,
+  signature = null,
+  signatureContent = null
 }) {
-  const payload = {account, email, task, publicKey, signature, signatureContent};
+  const payload = { account, email, task, publicKey, signature, signatureContent };
   return axios.post(`${process.env.REACT_APP_BACK_URL}/getFASToken`, payload)
     .then((res) => {
       return res.data;

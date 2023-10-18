@@ -68,6 +68,9 @@ const privateKeyProvider = new EthereumPrivateKeyProvider({
 });
 
 const openloginAdapter = new OpenloginAdapter({
+  loginSettings: {
+    mfaLevel: "none",
+  },
   adapterSettings: {
     uxMode: "popup",
     whiteLabel: {
