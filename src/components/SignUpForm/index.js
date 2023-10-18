@@ -5,7 +5,7 @@ import createAccountWithPassword, { generateKeyFromPassword } from "../../lib/cr
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 import { PrivateKey, ChainStore } from "meta1-vision-js";
-import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken, signUp, fasMigrationStatus, getFASToken } from "../../API/API";
+import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken, signUp, fasMigrationStatus, getFASToken, deleteLinkPoll } from "../../API/API";
 
 import "./SignUpForm.css";
 import styles from "./SignUpForm.module.scss";
@@ -119,7 +119,7 @@ export default function SignUpForm(props) {
       return;
     }
 
-    const {publicKey, signature, signatureContent} = result;
+    const { publicKey, signature, signatureContent } = result;
 
     const { token, message } = await getFASToken({
       account: accountName,
@@ -158,7 +158,7 @@ export default function SignUpForm(props) {
 
   const goPassKeyOrFaceKi = async (email) => {
     const fasMigrationStatusRes = await fasMigrationStatus(email);
-    const {doesUserExistsInFAS, wasUserEnrolledInOldBiometric} = fasMigrationStatusRes;
+    const { doesUserExistsInFAS, wasUserEnrolledInOldBiometric } = fasMigrationStatusRes;
 
     if (doesUserExistsInFAS == false && wasUserEnrolledInOldBiometric == true) {
       setStep('passkey');
@@ -252,6 +252,12 @@ export default function SignUpForm(props) {
         localStorage.removeItem('stored');
         localStorage.removeItem('living');
         localStorage.removeItem('subscription');
+
+        const e_tk = localStorage.getItem('e-signing-token');
+        if (e_tk) {
+          await deleteLinkPoll(e_tk);
+          localStorage.removeItem('e-signing-token');
+        }
         setDownloadPaperWalletModal(true);
       } else {
         return;
