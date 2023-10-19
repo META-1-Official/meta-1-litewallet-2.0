@@ -71,11 +71,13 @@ const LoginProvidersModal = (props) => {
                 setLoader(false);
                 return;
             } else {
-                if (user.email.toLowerCase() !== email.toLowerCase() && provider === "email_passwordless") {
-                    alert('Email and wallet name are not matched.');
-                    setLoader(false);
-                    return;
-                }
+                if (provider === "email_passwordless") {
+                    if (user.email.toLowerCase() !== email.toLowerCase()) {
+                        alert('Email and wallet name are not matched.');
+                        setLoader(false);
+                        return;
+                    }
+                }                
             }
         }
 
