@@ -657,7 +657,7 @@ const Settings = (props) => {
                     <div className={styles.common_margin}>
                       <label className={styles.label_same}>Movement:</label>
                       <select value={selectedTendency} onChange={handleTendencyChange} className={styles.select_same}>
-                        <option value='up'>Greator Than</option>
+                        <option value='up'>Greater Than</option>
                         <option value='down'>Less Than</option>
                       </select>
                     </div>
