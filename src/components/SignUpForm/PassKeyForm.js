@@ -47,7 +47,7 @@ export default function PassKeyForm(props) {
                     value={existingAccountName}
                     type="text"
                     onChange={(event) => {
-                      setExistingAccountName(event.target.value);
+                      setExistingAccountName(event.target.value.toLowerCase());
                     }}
                   />
                 </Form.Field>
