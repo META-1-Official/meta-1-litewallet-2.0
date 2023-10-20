@@ -10,9 +10,16 @@ ant-message-top *,
 	transition-duration: 0s !important;
 }
 
-.btn_x {
+.btn_refresh {
   position: absolute;
   z-index: 10;
-  right: 3px;
-  top: 5px;
+  right: 42px;
+  top: 6px;
+}
+
+.btn_close {
+    position: absolute;
+    z-index: 10;
+    right: 6px;
+    top: 6px;
 }
