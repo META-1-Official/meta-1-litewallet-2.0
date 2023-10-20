@@ -55,7 +55,7 @@ const FASClient = forwardRef((props, ref) => {
   const polite = true; // Set whether this peer is the polite peer
 
   const [devices, selectedDevice, setSelectedDevice] =
-    useDevices(activeDeviceId);
+      useDevices(activeDeviceId);
 
   const [makingOffer, setMakingOffer] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -79,8 +79,6 @@ const FASClient = forwardRef((props, ref) => {
   const processingCanvasComponentref = useRef(null);
   // const preloadCanvasRef = useRef(null);
   const emptyStreamRef = useRef(null);
-
-  let jwtTokenRef = useRef(token);
 
   const checkAndAddDir = (description) => {
     // if (!description.sdp.includes('a=sendrecv')) {
@@ -121,8 +119,8 @@ const FASClient = forwardRef((props, ref) => {
 
       if (msg.description) {
         const offerCollision =
-          msg.description.type === 'offer' &&
-          (makingOffer || (!polite && pc.current.signalingState !== 'stable'));
+            msg.description.type === 'offer' &&
+            (makingOffer || (!polite && pc.current.signalingState !== 'stable'));
 
         setMakingOffer(false);
 
@@ -136,11 +134,11 @@ const FASClient = forwardRef((props, ref) => {
         if (msg.description.type === 'offer') {
           await pc.current.setLocalDescription();
           ws.current.send(
-            JSON.stringify({
-              description: checkAndAddDir(pc.current.localDescription),
-              token: jwtTokenRef.current,
-              task: task,
-            }),
+              JSON.stringify({
+                description: checkAndAddDir(pc.current.localDescription),
+                token: token,
+                task: task,
+              }),
           );
         }
       } else if (msg.candidate) {
@@ -161,28 +159,28 @@ const FASClient = forwardRef((props, ref) => {
   const handleFASData = (msg) => {
     console.log('MSG: ', msg);
     if (
-      typeof msg.type !== 'undefined' &&
-      ['success', 'error', 'info', 'warning'].indexOf(String(msg.type)) !== -1
+        typeof msg.type !== 'undefined' &&
+        ['success', 'error', 'info', 'warning'].indexOf(String(msg.type)) !== -1
     ) {
       notificationRef.current.showNotification(
-        msg.message,
-        msg.type.toLowerCase(),
+          msg.message,
+          msg.type.toLowerCase(),
       );
       if (
-        msg.type === 'success' &&
-        ['Verification successful!!', 'Biometric Enrollment Successful'].includes(
-          msg.message,
-        )
+          msg.type === 'success' &&
+          ['Verification successful!!', 'Biometric Enrollment Successful'].includes(
+              msg.message,
+          )
       ) {
         console.log('Message: ', msg);
         // message.success(msg.message, 10000);
         hudUserGuidanceAlertRef.current.clear();
         onComplete(msg.token);
       } else if (
-        (msg.type === 'error' &&
-          (msg.message === 'Timed out, try again' ||
-            msg.message === 'Liveness failed, move your face')) ||
-        (msg.type === 'warning' && msg.message === 'Liveliness check failed!!!')
+          (msg.type === 'error' &&
+              (msg.message === 'Timed out, try again' ||
+                  msg.message === 'Liveness failed, move your face')) ||
+          (msg.type === 'warning' && msg.message === 'Liveliness check failed!!!')
       ) {
         hudUserGuidanceAlertRef.current.clear();
         // message.error(msg.message, 10000);
@@ -207,9 +205,9 @@ const FASClient = forwardRef((props, ref) => {
     }
 
     if (
-      typeof msg.type !== 'undefined' &&
-      msg.type === 'msg' &&
-      msg.message.fas === 'stop'
+        typeof msg.type !== 'undefined' &&
+        msg.type === 'msg' &&
+        msg.message.fas === 'stop'
     ) {
       forceCleanUp();
       hudUserGuidanceAlertRef.current.clear();
@@ -217,9 +215,9 @@ const FASClient = forwardRef((props, ref) => {
     }
 
     if (
-      typeof msg.type !== 'undefined' &&
-      msg.type === 'info' &&
-      msg.message === 'Session completed!!!'
+        typeof msg.type !== 'undefined' &&
+        msg.type === 'info' &&
+        msg.message === 'Session completed!!!'
     ) {
       forceCleanUp();
       hudUserGuidanceAlertRef.current.clear();
@@ -269,12 +267,12 @@ const FASClient = forwardRef((props, ref) => {
       // }
     };
     pc.current.onicegatheringstatechange = (event) =>
-      console.log('Current icegathering state', pc.current.iceGatheringState);
+        console.log('Current icegathering state', pc.current.iceGatheringState);
     pc.current.oniceconnectionstatechange = (event) =>
-      console.log('Current iceconnection state', pc.current.iceConnectionState);
+        console.log('Current iceconnection state', pc.current.iceConnectionState);
 
     pc.current.onicecandidateerror = (event) =>
-      console.error('ICE candidate error', event);
+        console.error('ICE candidate error', event);
 
     pc.current.onconnectionstatechange = (event) => {
       console.log('Current connection state', pc.current.connectionState);
@@ -305,11 +303,11 @@ const FASClient = forwardRef((props, ref) => {
           setMakingOffer(true);
           await pc.current.setLocalDescription();
           ws.current.send(
-            JSON.stringify({
-              description: checkAndAddDir(pc.current.localDescription),
-              token: jwtTokenRef.current,
-              task: task,
-            }),
+              JSON.stringify({
+                description: checkAndAddDir(pc.current.localDescription),
+                token: token,
+                task: task,
+              }),
           );
         }
       } catch (err) {
@@ -330,16 +328,16 @@ const FASClient = forwardRef((props, ref) => {
     const senders = pc.current.getSenders();
 
     const videoSender = senders.find(
-      (sender) => sender.track && sender.track.kind === 'video',
+        (sender) => sender.track && sender.track.kind === 'video',
     );
     if (videoSender) {
       console.log('Replacing track!!!!', track.readyState);
       videoSender
-        .replaceTrack(track)
-        .then((r) => {
-          console.log('Track replaced');
-        })
-        .catch((e) => console.log(e));
+          .replaceTrack(track)
+          .then((r) => {
+            console.log('Track replaced');
+          })
+          .catch((e) => console.log(e));
     } else {
       // If there was no previous video track to replace, just add the new one
       console.log('Adding track!!!!', track.readyState);
@@ -355,16 +353,16 @@ const FASClient = forwardRef((props, ref) => {
       sendMessageToServer({ type: 'msg', message: { fas: 'stop' } });
       let currentTrack = null;
       const currentSender = pc.current
-        .getSenders()
-        .find((sender) => sender.track && sender.track.kind === 'video');
+          .getSenders()
+          .find((sender) => sender.track && sender.track.kind === 'video');
       if (currentSender) {
         currentTrack = currentSender.track;
       }
 
       if (shouldCloseCamera) {
         addOrReplaceTrack(
-          emptyStreamRef.current.getTracks()[0],
-          emptyStreamRef.current,
+            emptyStreamRef.current.getTracks()[0],
+            emptyStreamRef.current,
         );
       }
 
@@ -383,7 +381,7 @@ const FASClient = forwardRef((props, ref) => {
       if (pc.current.connectionState === 'connected') {
         sendMessageToServer({
           type: 'msg',
-          message: { fas: 'start', token: jwtTokenRef.current, task: task },
+          message: { fas: 'start', token: token, task: task },
         });
       } else {
         pc.current.onconnectionstatechange = (event) => {
@@ -392,7 +390,7 @@ const FASClient = forwardRef((props, ref) => {
           if (pc.current.connectionState === 'connected') {
             sendMessageToServer({
               type: 'msg',
-              message: { fas: 'start', token: jwtTokenRef.current, task: task },
+              message: { fas: 'start', token: token, task: task },
             });
           }
         };
@@ -433,8 +431,8 @@ const FASClient = forwardRef((props, ref) => {
       setLoading(false);
     }
 
-    // if (jwtTokenRef.current !== null) {
-    // 	jwtTokenRef.current = null;
+    // if (token !== null) {
+    // 	token = null;
     // }
   };
 
@@ -469,41 +467,41 @@ const FASClient = forwardRef((props, ref) => {
   const checkForSupport = async () => {
     console.log(DetectRTC);
     if (
-      DetectRTC.isWebRTCSupported === false ||
-      DetectRTC.isWebSocketsSupported === false ||
-      DetectRTC.isCanvasSupportsStreamCapturing === false
+        DetectRTC.isWebRTCSupported === false ||
+        DetectRTC.isWebSocketsSupported === false ||
+        DetectRTC.isCanvasSupportsStreamCapturing === false
     ) {
       notificationRef.current.showNotification(
-        'Biometric is not supported on this browser',
-        'error',
+          'Biometric is not supported on this browser',
+          'error',
       );
       return false;
     }
 
     if (DetectRTC.hasWebcam === false) {
       notificationRef.current.showNotification(
-        "Your device doesn't seems to have a camera, We need camera enabled device to proceed with biometric authentication",
-        'error',
+          "Your device doesn't seems to have a camera, We need camera enabled device to proceed with biometric authentication",
+          'error',
       );
       return false;
     }
 
     if (DetectRTC.isWebSocketsBlocked === true) {
       notificationRef.current.showNotification(
-        'Your device seems to be blocking websocket connections, please restart your browser and your system if the problem persists',
-        'error',
+          'Your device seems to be blocking websocket connections, please restart your browser and your system if the problem persists',
+          'error',
       );
       return false;
     }
 
     try {
       await navigator.mediaDevices
-        .getUserMedia({video: true})
+          .getUserMedia({video: true})
     } catch (e) {
       console.log("Video device issue ==> ", e)
       notificationRef.current.showNotification(
-        'Failed to get video stream from your webcam, please restart your browser and your system if the problem persists',
-        'error',
+          'Failed to get video stream from your webcam, please restart your browser and your system if the problem persists',
+          'error',
       );
       return false
     }
@@ -511,8 +509,8 @@ const FASClient = forwardRef((props, ref) => {
 
     if (DetectRTC.isWebsiteHasWebcamPermissions === false) {
       notificationRef.current.showNotification(
-        "We don't have camera permissions yet, please allow camera permissions to proceed",
-        'warning',
+          "We don't have camera permissions yet, please allow camera permissions to proceed",
+          'warning',
       );
       return false;
     }
@@ -550,18 +548,17 @@ const FASClient = forwardRef((props, ref) => {
 
     if (!username) {
       message['error'](
-        'Username required, Username should be at-least 3 char long',
+          'Username required, Username should be at-least 3 char long',
       );
       return toggleConnected();
     }
 
     if (username.length < 3) {
       message['error'](
-        'Invalid username, Username should be at-least 3 char long',
+          'Invalid username, Username should be at-least 3 char long',
       );
       return toggleConnected();
     } else {
-      jwtTokenRef.current = token;
       console.log('Token set', token);
       start();
     }
@@ -617,8 +614,8 @@ const FASClient = forwardRef((props, ref) => {
       setCurrentStream('empty');
 
       const sender = pc.current
-        .getSenders()
-        .find((s) => s.track.kind === 'video');
+          .getSenders()
+          .find((s) => s.track.kind === 'video');
 
       const parameters = sender.getParameters();
 
@@ -636,9 +633,9 @@ const FASClient = forwardRef((props, ref) => {
       }
 
       sender
-        .setParameters(parameters)
-        .then((success) => console.log(success))
-        .catch((err) => console.log('Failed to set params'));
+          .setParameters(parameters)
+          .then((success) => console.log(success))
+          .catch((err) => console.log('Failed to set params'));
 
       if (!dcpcbinded) {
         openAndBindDCEvents();
@@ -653,7 +650,7 @@ const FASClient = forwardRef((props, ref) => {
     console.log('Beginning session', emptyStreamRef.current);
 
     processingCanvasComponentref.current.updateOriginalStream(
-      emptyStreamRef.current,
+        emptyStreamRef.current,
     );
 
     hudBirateMonitorRef.current.setPc(pc.current);
@@ -662,8 +659,8 @@ const FASClient = forwardRef((props, ref) => {
   const getCanvasWidth = () => {
     if (!document.getElementsByClassName('camera-container').length) return 0;
     const width = parseInt(
-      getComputedStyle(document.getElementsByClassName('camera-container')[0])
-        .width,
+        getComputedStyle(document.getElementsByClassName('camera-container')[0])
+            .width,
     );
     // console.log("Canvas Width", width)
     return width;
@@ -672,70 +669,70 @@ const FASClient = forwardRef((props, ref) => {
   const getCanvasHeight = () => {
     if (!document.getElementsByClassName('camera-container').length) return 0;
     const height = parseInt(
-      getComputedStyle(document.getElementsByClassName('camera-container')[0])
-        .height,
+        getComputedStyle(document.getElementsByClassName('camera-container')[0])
+            .height,
     );
     // console.log("Canvas Height", height)
     return height;
   };
 
   return (
-    <div>
-      <div className="FASClient" style={{ maxWidth: '900px', margin: 'auto' }}>
-        <div
-          style={{ maxWidth: '900px', margin: 'auto', position: 'relative' }}
-        >
-          <div>
-            <div style={{ marginTop: 15, position: 'relative', zIndex: 1 }}>
-              {devices.length > 0 ? (
-                <Select
-                  style={{ width: '100%' }}
-                  placeholder="Please select a camera"
-                  value={selectedDevice}
-                  onChange={(value) => setSelectedDevice(value)}
-                  options={devices.map((device, index) => {
-                    return {
-                      value: device.deviceId,
-                      label: device.label || `Camera #${index + 1}`,
-                    };
-                  })}
-                />
-              ) : null}
-            </div>
+      <div>
+        <div className="FASClient" style={{ maxWidth: '900px', margin: 'auto' }}>
+          <div
+              style={{ maxWidth: '900px', margin: 'auto', position: 'relative' }}
+          >
+            <div>
+              <div style={{ marginTop: 15, position: 'relative', zIndex: 1 }}>
+                {devices.length > 0 ? (
+                    <Select
+                        style={{ width: '100%' }}
+                        placeholder="Please select a camera"
+                        value={selectedDevice}
+                        onChange={(value) => setSelectedDevice(value)}
+                        options={devices.map((device, index) => {
+                          return {
+                            value: device.deviceId,
+                            label: device.label || `Camera #${index + 1}`,
+                          };
+                        })}
+                    />
+                ) : null}
+              </div>
 
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 10,
-                left: 0,
-                zIndex: 1,
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <Button
-                // type="success"
-                icon={
-                  connected ? <PauseCircleOutlined /> : <PlayCircleOutlined />
-                }
-                onClick={toggleConnected}
-                style={{
-                  background: '#07bc0c',
-                  outline: 'none',
-                  width: 100,
-                  color: 'white',
-                  border: 'none',
-                  height: 40,
-                  fontWeight: 600,
-                }}
-                disabled={!dataChannelOpened}
+              <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 10,
+                    left: 0,
+                    zIndex: 1,
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
               >
-                {connected ? 'Stop' : 'Start'}
-              </Button>
-            </div>
+                <Button
+                    // type="success"
+                    icon={
+                      connected ? <PauseCircleOutlined /> : <PlayCircleOutlined />
+                    }
+                    onClick={toggleConnected}
+                    style={{
+                      background: '#07bc0c',
+                      outline: 'none',
+                      width: 100,
+                      color: 'white',
+                      border: 'none',
+                      height: 40,
+                      fontWeight: 600,
+                    }}
+                    disabled={!dataChannelOpened}
+                >
+                  {connected ? 'Stop' : 'Start'}
+                </Button>
+              </div>
 
-            {/* {!!progress && (
+              {/* {!!progress && (
               <div
                 style={{
                   position: 'absolute',
@@ -753,199 +750,199 @@ const FASClient = forwardRef((props, ref) => {
               </div>
             )} */}
 
-            <div
-              className="camera-container"
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                height: 640,
-                backgroundColor: '#f0f0f0',
-                position: 'relative',
-                margin: '0 auto',
-              }}
-            >
-              <Button
-                className="btn_refresh"
-                icon={<SyncOutlined />}
-                onClick={() => {
-                  const currentUrl = window.location.href;
-                  window.location.href = currentUrl;
-                }}
-              ></Button>
-              <Button
-                className="btn_close"
-                icon={<CloseCircleOutlined />}
-                onClick={() => onCancel()}
-              ></Button>
-              {isSupported && (
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  mirrored
-                  screenshotFormat="image/jpeg"
-                  className="cropped-video"
+              <div
+                  className="camera-container"
                   style={{
-                    width: '100%',
-                    maxHeight: '100%',
-                    objectFit: 'cover',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    height: 640,
+                    backgroundColor: '#f0f0f0',
+                    position: 'relative',
+                    margin: '0 auto',
                   }}
-                  videoConstraints={{
-                    deviceId: selectedDevice,
-                  }}
-                  onUserMedia={() => {
-                    console.log('On user media called');
-                    const interval = setInterval(() => {
-                      console.log(webcamRef.current);
-                      if (typeof webcamRef.current.video === 'undefined') {
-                        console.log('Video element not rendered');
-                        return;
-                      }
-
-                      const video = webcamRef.current.video;
-
-                      if (
-                        typeof video === 'undefined' ||
-                        !video ||
-                        typeof video.srcObject === 'undefined' ||
-                        !video.srcObject.active
-                      ) {
-                        console.log('Video element is not ready yet');
-                        return;
-                      }
-
-                      const stream = video.srcObject;
-
-                      if (
-                        typeof stream === 'undefined' ||
-                        !stream ||
-                        stream.getVideoTracks().length <= 0
-                      ) {
-                        console.log('Stream is not ready yet');
-                        return;
-                      }
-
-                      const track = stream.getVideoTracks()[0];
-
-                      if (
-                        typeof track === 'undefined' ||
-                        track.readyState !== 'live'
-                      ) {
-                        console.log('Track is not ready yet');
-                        return;
-                      }
-
-                      console.log(
-                        'Video, Stream and Track is ready, Hooking stream to WebRTC',
-                      );
-
-                      clearInterval(interval);
-
-                      const currentSettings = track.getSettings();
-
-                      console.log('Video:', video);
-                      console.log('Current stream:', stream);
-                      console.log('Current track:', track);
-                      console.log('Current settings:', currentSettings);
-                      emptyStreamRef.current = stream;
-
-                      setTimeout(() => {
-                        hudFacemagnetRef.current.setCanvasWidth(
-                          getCanvasWidth(),
-                        );
-                        hudFacemagnetRef.current.setCanvasHeight(
-                          getCanvasHeight(),
-                        );
-                      }, 1000);
-
-                      setWebCamStream(stream);
-                    }, 100);
-                  }}
-                  onUserMediaError={() => {
-                    setWebCamStream(false);
-                  }}
-                />
-              )}
-
-              <div id="hud-bitrate-monitor">
-                <HudBitrateMonitor
-                  ref={hudBirateMonitorRef}
-                ></HudBitrateMonitor>
-              </div>
-
-              <div
-                id="hud-facemagnet-container"
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                }}
               >
-                <HudFaceMagnetProgress ref={hudFacemagnetRef} />
-              </div>
-              <div
-                id="notification-container"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  paddingTop: '7%',
-                  width: '100%',
-                  height: '100%',
-                }}
-              ></div>
-              <div
-                id="hud-notification-container"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                }}
-              >
-                <HudNotification ref={notificationRef} duration={1000} />
-              </div>
-              <div
-                id="hud-user-guidance-text-container"
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                }}
-              >
-                <HudUserGuidanceAlert ref={hudUserGuidanceAlertRef} />
-              </div>
+                <Button
+                    className="btn_refresh"
+                    icon={<SyncOutlined />}
+                    onClick={() => {
+                      const currentUrl = window.location.href;
+                      window.location.href = currentUrl;
+                    }}
+                ></Button>
+                <Button
+                    className="btn_close"
+                    icon={<CloseCircleOutlined />}
+                    onClick={() => onCancel()}
+                ></Button>
+                {isSupported && (
+                    <Webcam
+                        audio={false}
+                        ref={webcamRef}
+                        mirrored
+                        screenshotFormat="image/jpeg"
+                        className="cropped-video"
+                        style={{
+                          width: '100%',
+                          maxHeight: '100%',
+                          objectFit: 'cover',
+                        }}
+                        videoConstraints={{
+                          deviceId: selectedDevice,
+                        }}
+                        onUserMedia={() => {
+                          console.log('On user media called');
+                          const interval = setInterval(() => {
+                            console.log(webcamRef.current);
+                            if (typeof webcamRef.current.video === 'undefined') {
+                              console.log('Video element not rendered');
+                              return;
+                            }
 
-              <div
-                id="hud-processing-canvas-component"
-                style={{
-                  display: 'none',
-                  bottom: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                }}
-              >
-                <ProcessingCanvasComponent
-                  onTrackReady={onProcessingTrackReady}
-                  ref={processingCanvasComponentref}
-                />
+                            const video = webcamRef.current.video;
+
+                            if (
+                                typeof video === 'undefined' ||
+                                !video ||
+                                typeof video.srcObject === 'undefined' ||
+                                !video.srcObject.active
+                            ) {
+                              console.log('Video element is not ready yet');
+                              return;
+                            }
+
+                            const stream = video.srcObject;
+
+                            if (
+                                typeof stream === 'undefined' ||
+                                !stream ||
+                                stream.getVideoTracks().length <= 0
+                            ) {
+                              console.log('Stream is not ready yet');
+                              return;
+                            }
+
+                            const track = stream.getVideoTracks()[0];
+
+                            if (
+                                typeof track === 'undefined' ||
+                                track.readyState !== 'live'
+                            ) {
+                              console.log('Track is not ready yet');
+                              return;
+                            }
+
+                            console.log(
+                                'Video, Stream and Track is ready, Hooking stream to WebRTC',
+                            );
+
+                            clearInterval(interval);
+
+                            const currentSettings = track.getSettings();
+
+                            console.log('Video:', video);
+                            console.log('Current stream:', stream);
+                            console.log('Current track:', track);
+                            console.log('Current settings:', currentSettings);
+                            emptyStreamRef.current = stream;
+
+                            setTimeout(() => {
+                              hudFacemagnetRef.current.setCanvasWidth(
+                                  getCanvasWidth(),
+                              );
+                              hudFacemagnetRef.current.setCanvasHeight(
+                                  getCanvasHeight(),
+                              );
+                            }, 1000);
+
+                            setWebCamStream(stream);
+                          }, 100);
+                        }}
+                        onUserMediaError={() => {
+                          setWebCamStream(false);
+                        }}
+                    />
+                )}
+
+                <div id="hud-bitrate-monitor">
+                  <HudBitrateMonitor
+                      ref={hudBirateMonitorRef}
+                  ></HudBitrateMonitor>
+                </div>
+
+                <div
+                    id="hud-facemagnet-container"
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                    }}
+                >
+                  <HudFaceMagnetProgress ref={hudFacemagnetRef} />
+                </div>
+                <div
+                    id="notification-container"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      paddingTop: '7%',
+                      width: '100%',
+                      height: '100%',
+                    }}
+                ></div>
+                <div
+                    id="hud-notification-container"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                    }}
+                >
+                  <HudNotification ref={notificationRef} duration={1000} />
+                </div>
+                <div
+                    id="hud-user-guidance-text-container"
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                    }}
+                >
+                  <HudUserGuidanceAlert ref={hudUserGuidanceAlertRef} />
+                </div>
+
+                <div
+                    id="hud-processing-canvas-component"
+                    style={{
+                      display: 'none',
+                      bottom: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                    }}
+                >
+                  <ProcessingCanvasComponent
+                      onTrackReady={onProcessingTrackReady}
+                      ref={processingCanvasComponentref}
+                  />
+                </div>
               </div>
-            </div>
-            {/* <div
+              {/* <div
               className="aspect-3-2"
               style={{ position: 'absolute', top: 40, left: 0, width: '100%' }}
             >
               <ProgressScores logs={logs}></ProgressScores>
             </div> */}
+            </div>
           </div>
         </div>
       </div>
-    </div>
   );
 });
 
