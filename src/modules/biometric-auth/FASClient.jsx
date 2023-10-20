@@ -177,7 +177,7 @@ const FASClient = forwardRef((props, ref) => {
 			);
 			if (
 				msg.type === 'success' &&
-				['Verification successful!!', 'Registration successful!!!'].includes(
+				['Verification successful!!', 'Biometric Enrollment Successful'].includes(
 					msg.message
 				)
 			) {
