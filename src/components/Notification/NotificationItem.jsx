@@ -11,7 +11,7 @@ export const NotificationItem = (props) => {
             </div>
             <div className={styles.info}>
                 <h4>{props.title}</h4>
-                {props.category !== 'Events' && props.category !== 'Announcements' && <p dangerouslySetInnerHTML={{__html: props.description}} className={styles.contentHtml} />}
+                <p>{props.description}</p>
                 <div className={styles.time}>
                     <span>{props.category}</span>
                     <span>{props.time}</span>

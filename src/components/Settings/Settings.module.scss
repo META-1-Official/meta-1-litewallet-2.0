@@ -419,10 +419,6 @@ hr {
   .rightItem {
     .switch {
       margin: 0 0 0 2rem !important;
-
-      @media (max-width: 600px) {
-        margin: 0 !important;
-      }
     }
   }
 }
@@ -470,11 +466,7 @@ hr {
     }
   }
 
-  .rightItem {    
-    display: flex;     
-    flex-direction: column;
-    align-items: flex-end;
-
+  .rightItem {
     .switch {
       margin: 0 0 0 2rem !important;
     }
@@ -485,7 +477,6 @@ hr {
       width: 30px;
       height: 30px;
       color: red;
-      margin-right: 10px;
     }
   }
 }

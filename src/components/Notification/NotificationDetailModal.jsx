@@ -48,7 +48,7 @@ export const NotificationDetailModal = (props) => {
               <div className={styles.cancelBtn} onClick={handleClick}>X</div>
             </div>
             <div className={styles.modalBody}>
-            <p dangerouslySetInnerHTML={{__html: detail?.content}} />
+              <p>{detail?.content}</p>
             </div>
           </div>
         </Modal.Content>

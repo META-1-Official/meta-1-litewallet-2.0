@@ -197,15 +197,23 @@ function Application(props) {
     if (!conf) {
       conf = {
         specNotification: [
-          // { events: true },
-          // { announcements: true },
+          { events: true },
+          { announcements: true },
           // { deposits: true },
           { send: true },
           { receive: true },
           // { tradeExcuted: true },
           // { tradeCanceled: true },
         ],
-        coinMovements: []
+        coinMovements: [
+          {
+            meta1: {
+              toggle: true,
+              tendency: 'up',
+              comparator: ['percentage', 1]
+            }
+          }
+        ]
       }
     }
     localStorage.setItem('noti_conf', JSON.stringify(conf));
@@ -511,10 +519,8 @@ function Application(props) {
     setActiveScreen("wallet");
   };
 
-  const _onSetupWebSocket = (accountName, curWebsocket=null) => {
+  const _onSetupWebSocket = (accountName) => {
     try {
-      curWebsocket && curWebsocket.close();
-
       const webSocketFactory = {
         connectionTries: 5,
         connect: function (url) {
@@ -534,12 +540,12 @@ function Application(props) {
         `${process.env.REACT_APP_NOTIFICATION_WS_URL}?account=${accountName}`
       );
 
-
       websocket.onmessage = (message) => {
+        console.log('@@@@message', message);
         var filter = filterNotifications([JSON.parse(message.data)], accountName);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
-          toast(<p dangerouslySetInnerHTML={{__html: content}} />);
+          toast(content);
           dispatch(getNotificationsRequest({ login: accountName }));
         }
       };
@@ -551,7 +557,7 @@ function Application(props) {
           webSocketFactory.connectionTries = webSocketFactory.connectionTries - 1;
 
           if (webSocketFactory.connectionTries > 0) {
-            setTimeout(() => _onSetupWebSocket(accountName, websocket), 5000);
+            setTimeout(() => _onSetupWebSocket(accountName), 5000);
           } else {
             throw new Error(
               'Maximum number of connection trials has been reached'
@@ -1127,7 +1133,7 @@ function Application(props) {
                     height: "100%",
                   }}
                 >
-                  <div style={{height: '100%'}}>
+                  <div>
                     <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
                       <div>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
