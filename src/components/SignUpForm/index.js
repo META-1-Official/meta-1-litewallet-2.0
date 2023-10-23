@@ -347,6 +347,7 @@ export default function SignUpForm(props) {
   }
 
   const renderStep = () => {
+    console.log('@@@@step', step);
     switch (step) {
       case 'userform':
         return <UserInformationForm
