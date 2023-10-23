@@ -11,9 +11,10 @@
     flex-direction: row;
     width: 30rem;
     li{
+      width: 7rem;
       text-align: center;
       font-size: .7rem;
-      padding: 1rem 0.5rem;
+      padding: 1rem 0;
       cursor: pointer;
     }
   }
@@ -22,19 +23,8 @@
     flex-direction: column;
   }
 }
-
 .mainDiv {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-
-.copyrightPc {
-  padding: .9rem 0 .9rem 3rem;
-  width: 13rem;
-}
-
-.copyrightMobile {
-  padding: 1rem;
-  margin: 0 auto;
 }

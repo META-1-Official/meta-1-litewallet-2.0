@@ -61,7 +61,7 @@ input {
   box-shadow: var(--boxShadowIndex);
   background: var(--blockBgColor);
   border: 1px solid var(--borderColor);
-  width: 100%;
+  width: 70%;
   position: relative;
   margin-right: 1rem;
 }
@@ -71,7 +71,6 @@ input {
   flex-direction: column;
   width: 30%;
   position: relative;
-  display: none;
 }
 
 .copyButton {
@@ -83,7 +82,7 @@ input {
   flex-direction: row;
 }
 
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 450px) {
   .adaptThing {
     flex-direction: column;
     width: 100%;
@@ -91,11 +90,6 @@ input {
 
   .justFlexAndDirect {
     flex-direction: column;
-  }
-
-  .regForm {
-    width: 100%;
-    margin: 30px;
   }
 }
 
@@ -136,6 +130,7 @@ input {
 .child-div {
   margin: auto;
   border-radius: 10px;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -198,6 +193,7 @@ input {
   background-color: transparent;
   float: right;
   color: #eb7134;
+  width: 40px !important;
   opacity: 1;
   font-size: 20px;
 }
@@ -530,12 +526,4 @@ select {
 
 .margin-bottom-zero {
   margin-bottom: 0 !important;
-}
-
-.none {
-  display: none;
-}
-
-.migration_desc {
-  color: var(--textBrown);
 }

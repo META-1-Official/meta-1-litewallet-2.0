@@ -5,13 +5,13 @@
     padding: 24px 0px;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
 }
 
 .info {
-    width: 100%;
+    // max-width: 520px;
 
     h4 {
+        cursor: pointer;
         color: var(--textBrown) !important;
 
         &:hover {
@@ -21,14 +21,6 @@
 
     p {
         color: var(--textBrown) !important;
-
-        @media (max-width: 600px) {
-            overflow-x: auto;
-        }
-    }
-
-    table {
-        background: transparent !important;
     }
 }
 
@@ -44,7 +36,7 @@
     margin-top: 10px;
     text-align: center;
     cursor: pointer;
-}
+  }
 
 .time {
     padding: 5px;
@@ -74,39 +66,30 @@
     align-items: center;
     justify-content: center;
     padding: 5px;
-
-    @media (max-width: 600px) {
-        display: none;
-    }
 }
 
 // upcoming events
 .block {
     margin: 1rem;
-    width: 60%;
     background: var(--blockBgColor) !important;
     border: 1px solid var(--borderColor);
     border-radius: 4px;
     box-shadow: var(--boxShadowIndex);
-    display: none;
 
-    @media (max-width: 600px) {
-        width: 100% !important;
-    }
+    min-height: 800px;
 }
 
 .calendarHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 25px;
+    padding: 10px 25px;
 }
 
 .headerTitle {
     font-size: 1rem;
     font-weight: 600;
     color: var(--textBrown);
-    text-transform: uppercase;
 }
 
 .addEvBtn {
@@ -123,8 +106,8 @@
 }
 
 .eventCard {
-    height: 7.5rem;
-    padding: 0px 5px;
+    height: 240px;
+    padding: 20px 15px;
     display: flex;
     flex-direction: column;
 }
@@ -150,32 +133,25 @@
 
 .dateText {
     font-family: Dosis;
-    font-size: 24px;
+    font-size: 36px;
     font-style: normal;
     font-weight: 600;
     line-height: normal;
     text-transform: uppercase;
-    margin-bottom: 5px;
 }
 
 .cardInfo {
     display: flex;
     flex-direction: column;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
 }
 
 .title {
     color: var(--textBrown);
     font-family: Poppins;
-    font-size: 12px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 100%;
-}
-
-.title:hover {
-    text-decoration: underline;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
 }
 
 .location {
@@ -285,7 +261,7 @@
         padding: 20px 40px;
         overflow-y: auto;
         margin-bottom: 30px;
-
+        
         p {
             color: var(--textBrown);
             font-family: Poppins;
@@ -303,8 +279,9 @@
 // Event Modal
 .modalContent {
     display: flex;
-    padding: 30px 20px;
+    padding: 20px;
     flex-direction: column;
+    width: 468px;
 
     .locationImage {
         width: 428px;
@@ -369,23 +346,6 @@
     }
 }
 
-.closeBtn {
-    width: 25px;
-    height: 25px;
-    border-radius: 5px;
-    background: #FC0;
-    color: var(--textBrown);
-    text-align: center;
-    font-family: Poppins;
-    font-size: 16px;
-    text-transform: uppercase;
-    border: none;
-    font-weight: 600;
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
 .announcementsWrapper {
     width: 100%;
     background: var(--blockBgColor);
@@ -394,8 +354,4 @@
     border-radius: 5px;
     height: 100%;
     padding: 20px;
-
-    @media (max-width: 600px) {
-        margin: 20px;
-    }
-}
+  }
