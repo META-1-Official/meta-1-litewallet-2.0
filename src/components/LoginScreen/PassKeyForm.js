@@ -21,7 +21,7 @@ export default function PassKeyForm(props) {
             <Grid stackable>
               <Grid.Column>
                 <Form.Field>
-                  <label>New Wallet Name</label>
+                  <label>Wallet Name</label>
                   <input
                     control={Input}
                     value={props.accountName}
