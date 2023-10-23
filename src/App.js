@@ -287,7 +287,6 @@ function Application(props) {
       dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, web3Token, web3PubKey, fasToken }));
     }
     if (getAccessToken()) {
-      console.log('loging', getAccessToken())
       dispatch(checkTransferableRequest({ login }))
       await getAvatarFromBack(login);
       setLoginError(null);
@@ -441,8 +440,6 @@ function Application(props) {
             if (localStorage.getItem('isSignature')) {
               setActiveScreen("registration");
               localStorage.removeItem('isSignature');
-            } else if (urlParams[0] === 'onMobile=true' || localStorage.getItem("qr-bio")) {
-              setActiveScreen('qr-bio');
             }
           } else {
             setActiveScreen(
