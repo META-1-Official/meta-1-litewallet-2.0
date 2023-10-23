@@ -28,8 +28,8 @@ import { Button, Modal } from "semantic-ui-react";
 import { getAccessToken } from './utils/localstorage';
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, loaderSelector, isLoginSelector, loginErrorSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
-import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService, getNotificationsRequest } from "./store/account/actions";
-import {cryptoDataSelector, portfolioReceiverSelector } from "./store/meta1/selector";
+import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService, getNotificationsRequest, checkTokenRequest } from "./store/account/actions";
+import { cryptoDataSelector, portfolioReceiverSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder from "./components/OpenOrder";
 import Notifications from "./components/Notification/Notifications";
@@ -132,7 +132,6 @@ function Application(props) {
     setPassword(password);
   };
   const [login, setLogin] = useState();
-  const [token, setToken] = useState(null);
   const [loginError, setLoginError] = useState(null);
   const [loginDataError, setLoginDataError] = useState(false);
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
@@ -200,13 +199,8 @@ function Application(props) {
     if (!conf) {
       conf = {
         specNotification: [
-          // { events: true },
-          // { announcements: true },
-          // { deposits: true },
           { send: true },
           { receive: true },
-          // { tradeExcuted: true },
-          // { tradeCanceled: true },
         ],
         coinMovements: []
       }
@@ -265,30 +259,13 @@ function Application(props) {
     };
   }
 
-  // useEffect(() => {
-  //   if (urlParams[0] === 'onMobile=true') {
-  //     localStorage.setItem('qr-bio', true);
-
-  //     const accountName = urlParams[1].split('=')[1];
-  //     const email = urlParams[2].split('=')[1];
-
-  //     if (accountName && email) {
-  //       localStorage.setItem('qr-hash', `${accountName}_${email}`);
-  //       setActiveScreen('qr-bio');
-  //     } else {
-  //       alert("QR code is wrong or link has been edited. Try again.");
-  //     }
-  //   }
-  // }, [urlParams])
-
   const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", web3Token = "", web3PubKey = "", fasToken) => {
     setIsLoading(true);
     if (clicked) {
       dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, web3Token, web3PubKey, fasToken }));
     }
     if (getAccessToken()) {
-      console.log('loging', getAccessToken())
-      dispatch(checkTransferableRequest({ login }))
+      dispatch(checkTransferableRequest({ login }));
       await getAvatarFromBack(login);
       setLoginError(null);
       setAccountName(login);
@@ -341,27 +318,29 @@ function Application(props) {
         setRefreshData(prev => !prev);
         dispatch(resetMetaStore());
         setFromSignUp(false);
-        if (accountNameState) {
-          setActiveScreen("wallet");
-        }
       }
     }
     if (accountNameState === null) {
-      setAccountName(null);
-      setLogin(null);
-      setPortfolio(null);
-      const token = getAccessToken();
-      if (token) {
-        let login = await checkToken(token);
+      if (localStorage.getItem('isSignature')) {
+        setActiveScreen("registration");
+        localStorage.removeItem('isSignature');
+      } else {
+        setAccountName(null);
+        setLogin(null);
+        setPortfolio(null);
+        const token = getAccessToken();
 
-        if (login && login.accountName) {
-          setToken(token);
-          onLogin(login.accountName);
+        if (token) {
+          let login = await checkToken(token);
+
+          if (login && login.accountName) {
+            onLogin(login.accountName);
+          } else {
+            setActiveScreen("login");
+          }
         } else {
           setActiveScreen("login");
         }
-      } else {
-        setActiveScreen("login");
       }
     }
   }, [accountNameState, loginErrorState]);
@@ -434,53 +413,41 @@ function Application(props) {
       Meta1.connect(metaUrl || process.env.REACT_APP_MAIA).then(
         () => {
           setIsLoading(false);
-          if (
-            accountNameState == null ||
-            accountNameState.length === 0
-          ) {
-            if (localStorage.getItem('isSignature')) {
-              setActiveScreen("registration");
-              localStorage.removeItem('isSignature');
-            } else if (urlParams[0] === 'onMobile=true' || localStorage.getItem("qr-bio")) {
-              setActiveScreen('qr-bio');
-            }
-          } else {
-            setActiveScreen(
-              sessionStorage.getItem("location") != null
-                ? sessionStorage.getItem("location")
-                : "wallet"
-            );
-            setFetchDepositFn((asset) => (asset) => {
-              return fetchDepositAddress({ accountName: accountNameState, asset });
-            });
-            const portfolioObj = new Portfolio({
-              metaApi: Meta1,
-              accountName: accountNameState,
-              setFetchAssetModalOpen
-            });
-            const tradeWithPasswordObj = new TradeWithPassword({
-              metaApi: Meta1,
-              login: accountNameState,
-            });
+          setActiveScreen(
+            sessionStorage.getItem("location") != null
+              ? sessionStorage.getItem("location")
+              : "wallet"
+          );
+          setFetchDepositFn((asset) => (asset) => {
+            return fetchDepositAddress({ accountName: login, asset });
+          });
+          const portfolioObj = new Portfolio({
+            metaApi: Meta1,
+            accountName: login,
+            setFetchAssetModalOpen
+          });
+          const tradeWithPasswordObj = new TradeWithPassword({
+            metaApi: Meta1,
+            login: login,
+          });
 
-            const checkPasswordObj = new CheckPassword({
-              metaApi: Meta1,
-              login: accountNameState,
-            });
+          const checkPasswordObj = new CheckPassword({
+            metaApi: Meta1,
+            login: login,
+          });
 
-            const sendWithPasswordObj = new SendWithPassword({
-              metaApi: Meta1,
-              login: accountNameState,
-            });
-            const obj = {
-              portfolioReceiver: portfolioObj,
-              trader: tradeWithPasswordObj,
-              checkPasswordObj,
-              senderApi: sendWithPasswordObj
-            };
-            dispatch(meta1ConnectSuccess(obj));
-            console.log('meta1 node connected.');
-          }
+          const sendWithPasswordObj = new SendWithPassword({
+            metaApi: Meta1,
+            login: login,
+          });
+          const obj = {
+            portfolioReceiver: portfolioObj,
+            trader: tradeWithPasswordObj,
+            checkPasswordObj,
+            senderApi: sendWithPasswordObj
+          };
+          dispatch(meta1ConnectSuccess(obj));
+          console.log('meta1 node connected.');
         },
         () => {
           setActiveScreen("login");
@@ -488,9 +455,9 @@ function Application(props) {
         }
       );
     }
-    connect();
-    dispatch(getNotificationsRequest({ login: accountNameState }));
-  }, [accountNameState]);
+    login && connect();
+    dispatch(getNotificationsRequest({ login }));
+  }, [login]);
 
   function refetchPortfolio() {
     setTimeout(async () => {
@@ -515,7 +482,7 @@ function Application(props) {
     setActiveScreen("wallet");
   };
 
-  const _onSetupWebSocket = (accountName, curWebsocket=null) => {
+  const _onSetupWebSocket = (accountName, curWebsocket = null) => {
     try {
       curWebsocket && curWebsocket.close();
 
@@ -543,7 +510,7 @@ function Application(props) {
         var filter = filterNotifications([JSON.parse(message.data)], accountName);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
-          toast(<p dangerouslySetInnerHTML={{__html: content}} />);
+          toast(<p dangerouslySetInnerHTML={{ __html: content }} />);
           dispatch(getNotificationsRequest({ login: accountName }));
         }
       };
@@ -1131,7 +1098,7 @@ function Application(props) {
                     height: "100%"
                   }}
                 >
-                  <div style={{height: '100%'}}>
+                  <div style={{ height: '100%' }}>
                     <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
                       <div>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
