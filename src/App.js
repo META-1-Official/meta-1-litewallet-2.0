@@ -438,7 +438,6 @@ function Application(props) {
             accountNameState.length === 0
           ) {
             if (localStorage.getItem('isSignature')) {
-              console.log('@@@@@reg1');
               setActiveScreen("registration");
               localStorage.removeItem('isSignature');
             }
