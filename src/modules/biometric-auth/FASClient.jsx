@@ -761,14 +761,14 @@ const FASClient = forwardRef((props, ref) => {
                     margin: '0 auto',
                   }}
               >
-                <Button
+                {/* <Button
                     className="btn_refresh"
                     icon={<SyncOutlined />}
                     onClick={() => {
                       const currentUrl = window.location.href;
                       window.location.href = currentUrl;
                     }}
-                ></Button>
+                ></Button> */}
                 <Button
                     className="btn_close"
                     icon={<CloseCircleOutlined />}
