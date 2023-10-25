@@ -88,6 +88,14 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
+    return () => {
+      console.log('@@@@unmount camera');
+      emptyStreamRef && emptyStreamRef.current.getTracks().forEach(function (track) {track.stop();});
+		  webcamRef && webcamRef.current.video.srcObject.getTracks().forEach(function (track) {track.stop();});
+    }
+  }, [])
+
+  useEffect(() => {
     if (emptyStreamRef.current && wsOpened) {
       beginSession();
     }
