@@ -88,14 +88,6 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    return () => {
-      console.log('@@@@unmount camera', emptyStreamRef, webcamRef);
-      emptyStreamRef && emptyStreamRef.current && emptyStreamRef.current.getTracks()?.forEach(function (track) {track.stop();});
-		  webcamRef && webcamRef.current && webcamRef.current.video?.srcObject?.getTracks()?.forEach(function (track) {track.stop();});
-    }
-  }, []);
-
-  useEffect(() => {
     if (emptyStreamRef.current && wsOpened) {
       beginSession();
     }
@@ -589,6 +581,9 @@ const FASClient = forwardRef((props, ref) => {
   useEffect(() => {
     window.addEventListener('resize', updateWindowWidth);
     return () => {
+      console.log('@@@@unmount camera', emptyStreamRef, webcamRef);
+      emptyStreamRef && emptyStreamRef.current && emptyStreamRef.current.getTracks()?.forEach(function (track) {track.stop();});
+		  webcamRef && webcamRef.current && webcamRef.current.video?.srcObject?.getTracks()?.forEach(function (track) {track.stop();});
       window.removeEventListener('resize', updateWindowWidth);
     };
   }, []);
