@@ -241,8 +241,8 @@ const FASClient = forwardRef((props, ref) => {
 
     dc.current.onclose = () => {
       setDataChannelOpened(false);
-      __unload();
-      __load();
+      // __unload();
+      // __load();
       console.log('data channel closed');
     };
 
@@ -437,6 +437,8 @@ const FASClient = forwardRef((props, ref) => {
       pc.current = null;
 
       setLoading(false);
+      setDcPcBinded(false)
+      setConnected(false)
     }
 
     // if (token !== null) {
