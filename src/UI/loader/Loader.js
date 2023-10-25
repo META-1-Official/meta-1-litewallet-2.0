@@ -25,6 +25,12 @@ const MetaLoader = (props) => {
       margin: "3rem auto",
       display: "block",
     },
+    mini: {
+      width: "100px",
+      height: "100px",
+      margin: "3rem auto",
+      display: "block",
+    },
   };
 
   return (
@@ -32,19 +38,25 @@ const MetaLoader = (props) => {
       style={
         size === "small"
           ? {
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }
-          : {
-              width: "100%",
-              height: "100vh",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }
+          : size === "mini" ? {
+            width: "100%",
+            height: "auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          } : {
+            width: "100%",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }
       }
     >
       <img
@@ -52,8 +64,8 @@ const MetaLoader = (props) => {
           size === "large" && isMobile
             ? sizes["largeMobile"]
             : size === "large" && !isMobile
-            ? sizes["large"]
-            : sizes["small"]
+              ? sizes["large"]
+              : sizes["small"]
         }
         src={loader}
         alt="Meta1 Loader"

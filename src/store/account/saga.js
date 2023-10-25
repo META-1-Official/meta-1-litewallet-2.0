@@ -14,7 +14,7 @@ function* loginHandler(data) {
                 return;
             }
         }
-        const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail: data.payload.emailOrPassword, data.payload.web3Token, data.payload.web3PubKey);
+        const response = yield call(loginRequest, data.payload.login, data.payload.signUpEmail ? data.payload.signUpEmail: data.payload.emailOrPassword, data.payload.web3Token, data.payload.web3PubKey, data.payload.fasToken);
         if (!response.error) {
             setAccessToken(response.token);
             setLocation('wallet');
@@ -66,7 +66,7 @@ function* deleteAvatarHandler(data) {
         } else {
             yield put(deleteAvatarSuccess());
         }
-            
+
     }
 }
 function* sendMailHandler(data) {

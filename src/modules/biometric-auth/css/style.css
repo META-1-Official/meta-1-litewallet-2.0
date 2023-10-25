@@ -1,0 +1,25 @@
+#notification-container > .ant-message.ant-message-top {
+	position: static !important;
+	transform: translateY(10px) !important;
+}
+
+ant-message *,
+ant-message-top *,
+.ant-message-notice-content * {
+	animation-duration: 0s !important;
+	transition-duration: 0s !important;
+}
+
+.btn_refresh {
+  position: absolute;
+  z-index: 10;
+  right: 42px;
+  top: 6px;
+}
+
+.btn_close {
+    position: absolute;
+    z-index: 10;
+    right: 6px;
+    top: 6px;
+}

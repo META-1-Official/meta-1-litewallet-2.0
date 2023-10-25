@@ -2,10 +2,13 @@ import React from "react";
 import styles from "./RightSideHelpMenuFirstType.module.scss";
 import { getImage } from "../../lib/images";
 import { Announcement } from "../Announcement";
+import { isLoginSelector } from "../../store/account/selector";
+import { useSelector } from "react-redux";
 
 const RightSideHelpMenuFirstType = (props) => {
   const { onClickExchangeAssetHandler, portfolio } = props;
   const new_crypto_info = process.env.REACT_APP_NEWCRYPTOS_INFO.split(',');
+  const isLoginState = useSelector(isLoginSelector);
 
   const calculateDate = (date) => {
     return Math.floor((new Date() / 1000 - date) / 86400);
@@ -79,13 +82,13 @@ const RightSideHelpMenuFirstType = (props) => {
           })}
         </div>
       </div> */}
-      <div className={styles.announcements}>
+      {isLoginState && <div className={styles.announcements}>
         <h5 style={{ fontWeight: "bold", fontSize: "1rem" }}>Announcements</h5>
         <hr />
         <div className={styles.helpBlock}>
-          <Announcement setActiveScreen={props.setActiveScreen}/>
+          <Announcement setActiveScreen={props.setActiveScreen} />
         </div>
-      </div>
+      </div>}
     </>
   );
 };

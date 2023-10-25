@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { getUserKycProfile, getESigToken } from "../../API/API";
+import { getUserKycProfile, getESigToken, createLinkPoll } from "../../API/API";
 
 import {
   Button,
@@ -22,7 +22,7 @@ export default function SubmitForm(props) {
   const [paid, setPaid] = useState(props.signatureResult !== 'success' ? false : true);
   const [subscription, setSubscription] = useState(localStorage.getItem('subscription') === 'false' ? false : true);
 
-  const {isSubmitted, setIsSubmitted, email, authData} = props;
+  const { isSubmitted, setIsSubmitted, email, authData } = props;
   const { phone, firstName, lastName, accountName, password } = props;
 
   const isAllChecked = access && recover && stored && living && signed && paid;
@@ -30,8 +30,8 @@ export default function SubmitForm(props) {
   useEffect(() => {
     const fetchData = async () => {
       const response = await getUserKycProfile(email);
-      if (response && response?.status?.isPayed === true ) setPaid(true);
-      if (response && response?.status?.isPaidByCrypto === true ) setPaid(true);
+      if (response && response?.status?.isPayed === true) setPaid(true);
+      if (response && response?.status?.isPaidByCrypto === true) setPaid(true);
       if (response && response?.status?.isSign === true) setSigned(true);
       if (response && response?.status?.isSign === true && response?.status?.isPayed === true) {
         props.setStep('signature');
@@ -43,7 +43,7 @@ export default function SubmitForm(props) {
 
   const handleSign = async (e) => {
     if (signed && paid) {
-      alert ('You already signed and paid with the current email');
+      alert('You already signed and paid with the current email');
     }
     else {
       try {
@@ -63,24 +63,31 @@ export default function SubmitForm(props) {
         if (token.error === true) {
           return;
         } else if (token) {
-          localStorage.setItem('e-signing-user', accountName);
-          localStorage.setItem('password', password);
-          localStorage.setItem('firstname', firstName);
-          localStorage.setItem('lastname', lastName);
-          localStorage.setItem('phone', phone);
-          localStorage.setItem('email', email);
-          localStorage.setItem('authdata', JSON.stringify(authData));
-          localStorage.setItem('access', access);
-          localStorage.setItem('recover', recover);
-          localStorage.setItem('stored', stored);
-          localStorage.setItem('living', living);
-          localStorage.setItem('subscription', subscription);
+          const r_url = window.location.origin;
+          const link_p = await createLinkPoll({ email, firstName, lastName, phoneNumber: phone, walletName: accountName, token, redirectUrl: r_url });
 
-          window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL
-            }/e-sign?email=${encodeURIComponent(
-              email
-            )}&firstName=${firstName}&lastName=${lastName}&phoneNumber=${phone}&walletName=${accountName}&token=${token}&redirectUrl=${window.location.origin
-            }`;
+          if (link_p) {
+            localStorage.setItem('e-signing-user', accountName);
+            localStorage.setItem('password', password);
+            localStorage.setItem('firstname', firstName);
+            localStorage.setItem('lastname', lastName);
+            localStorage.setItem('phone', phone);
+            localStorage.setItem('email', email);
+            localStorage.setItem('authdata', JSON.stringify(authData));
+            localStorage.setItem('access', access);
+            localStorage.setItem('recover', recover);
+            localStorage.setItem('stored', stored);
+            localStorage.setItem('living', living);
+            localStorage.setItem('subscription', subscription);
+            localStorage.setItem('e-signing-token', token);
+
+            window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL
+              }/e-sign?email=${encodeURIComponent(
+                email
+              )}&firstName=${firstName}&lastName=${lastName}&phoneNumber=${phone}&walletName=${accountName}&token=${token}&redirectUrl=${r_url}`;
+          } else {
+            return;
+          }
         } else {
           return;
         }

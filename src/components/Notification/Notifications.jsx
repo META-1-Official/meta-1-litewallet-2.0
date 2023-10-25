@@ -94,7 +94,7 @@ const Notifications = (props) => {
         <div className={styles.notifications}>
             <div className={styles.notificationsWrapper}>
                 {
-                    notifications ? notifications.map((ele, index) => {
+                    (notifications && notifications.length > 0) ? notifications.map((ele, index) => {
                         if (index >= (page - 1) * 10 && (page) * 10 > index) {
                             var d = new Date(ele.createdAt);
                             return (<div className={styles.notificationCard} onClick={() => handleClick(index)}>
@@ -108,8 +108,8 @@ const Notifications = (props) => {
                                 <div className={styles.info}>
                                     <div className={styles.time}>
                                         <div>
-                                            <h4>{ele.category}</h4>
-                                            <p>{ele.content}</p>
+                                            <h4>{ele.title ?? ele.category}</h4>
+                                            <p dangerouslySetInnerHTML={{__html: ele.content}} />
                                         </div>
                                         <div>
                                             <span>{ele.time}</span>
@@ -127,7 +127,7 @@ const Notifications = (props) => {
                         }
                     }) : <div>No Notifications</div>
                 }
-                {notifications && <Pagination count={count} page={page} onChange={handlePageChange} />}
+                {(notifications && notifications.length > 0) && <Pagination count={count} page={page} onChange={handlePageChange} />}
             </div>
             <Tooltip id="time-tooltip" style={{ backgroundColor: "rgb(80, 80, 80)" }} />
             <NotificationDetailModal detail={detail} isOpen={modalOpened} setModalOpened={(value) => handleModalToggle(value)} />

@@ -5,11 +5,12 @@ import createAccountWithPassword, { generateKeyFromPassword } from "../../lib/cr
 import { Button } from "semantic-ui-react";
 import RightSideHelpMenuFirstType from "../RightSideHelpMenuFirstType/RightSideHelpMenuFirstType";
 import { PrivateKey, ChainStore } from "meta1-vision-js";
-import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken, signUp } from "../../API/API";
+import { checkOldUser, updateUserKycProfile, getUserKycProfile, getESigToken, signUp, fasMigrationStatus, getFASToken, deleteLinkPoll } from "../../API/API";
 
 import "./SignUpForm.css";
 import styles from "./SignUpForm.module.scss";
 import FaceKiForm from "./FaceKiForm.js";
+import PassKeyForm from "./PassKeyForm";
 import MigrationForm from "./MigrationForm.js";
 import { createPaperWalletAsPDF } from "../PaperWalletLogin/CreatePdfWallet.js";
 import { sleepHandler } from "../../utils/common.js";
@@ -20,6 +21,9 @@ import MetaLoader from "../../UI/loader/Loader.js";
 import LoginProvidersModal from "../Web3Auth"
 import sendXApi from '../../API/sendXApi';
 import { getTheme } from "../../utils/storage.js";
+import { buildSignature4Fas } from "../../utils/signature";
+import { toast } from 'react-toastify';
+import { TASK } from "../../modules/biometric-auth/constants/constants";
 
 export default function SignUpForm(props) {
   const {
@@ -42,6 +46,8 @@ export default function SignUpForm(props) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [step, setStep] = useState('userform');
+  const [fasToken, setFasToken] = useState(null);
+  // const [step, setStep] = useState('faceki');
   const [authData, setAuthData] = useState(null);
   const [privKey, setPrivKey] = useState(null);
   const [downloadPaperWalletModal, setDownloadPaperWalletModal] = useState(false);
@@ -103,6 +109,38 @@ export default function SignUpForm(props) {
     }
   };
 
+  const handlePassKeyFormSubmit = async (passkey, existingAccountName) => {
+    let result;
+
+    try {
+      result = await buildSignature4Fas(existingAccountName, passkey, email);
+    } catch {
+      toast('Wallet name and Passkey not match!');
+      return;
+    }
+
+    const { publicKey, signature, signatureContent } = result;
+
+    const { token, message } = await getFASToken({
+      account: accountName,
+      email,
+      task: TASK.REGISTER,
+      publicKey,
+      signature,
+      signatureContent
+    });
+
+    if (!token) {
+      console.log('Could not get FAS token!', token, message);
+      toast(message);
+      setStep('userform');
+      return;
+    }
+
+    setFasToken(token);
+    setStep('faceki');
+  }
+
   const stepGoToTorus = (
     accName,
     pass,
@@ -118,11 +156,23 @@ export default function SignUpForm(props) {
     setAuthModalOpen(true);
   };
 
+  const goPassKeyOrFaceKi = async (email) => {
+    const fasMigrationStatusRes = await fasMigrationStatus(email);
+    const { doesUserExistsInFAS, wasUserEnrolledInOldBiometric } = fasMigrationStatusRes;
+
+    if (doesUserExistsInFAS == false && wasUserEnrolledInOldBiometric == true) {
+      setStep('passkey');
+    } else {
+      setStep('faceki');
+    }
+  }
+
   const stepGoToFaceKi = (data) => {
     setAuthData(data);
     setPrivKey(data?.privateKey);
     setEmail(data?.email.toLowerCase());
-    setStep('faceki');
+    goPassKeyOrFaceKi(data?.email.toLowerCase());
+    // setStep('faceki');
   }
 
   const stepGoToEsignature = () => {
@@ -202,6 +252,12 @@ export default function SignUpForm(props) {
         localStorage.removeItem('stored');
         localStorage.removeItem('living');
         localStorage.removeItem('subscription');
+
+        const e_tk = localStorage.getItem('e-signing-token');
+        if (e_tk) {
+          await deleteLinkPoll(e_tk);
+          localStorage.removeItem('e-signing-token');
+        }
         setDownloadPaperWalletModal(true);
       } else {
         return;
@@ -305,6 +361,14 @@ export default function SignUpForm(props) {
           country={country}
           selectedCountryObj={selectedCountryObj}
         />
+      case 'passkey':
+        return <PassKeyForm
+          {...props}
+          onSubmit={handlePassKeyFormSubmit}
+          accountName={accountName}
+          email={email}
+          setStep={setStep}
+        />
       case 'faceki':
         return <FaceKiForm
           {...props}
@@ -317,6 +381,7 @@ export default function SignUpForm(props) {
           privKey={privKey}
           phone={phone}
           setStep={setStep}
+          token={fasToken}
         />
       case 'migration':
         return <MigrationForm

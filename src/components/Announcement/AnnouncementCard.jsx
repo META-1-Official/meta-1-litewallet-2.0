@@ -3,10 +3,10 @@ import styles from "./announcement.module.scss";
 
 export const AnnouncementCard = (props) => {
     return (
-        <div className={styles.announcementCard}>
+        <div className={styles.announcementCard} onClick={props.onClick}>
             <div className={styles.info}>
-                <h4 onClick={props.onClick}>{props.title}</h4>
-                <p>{props.description}</p>
+                <h4>{props.title}</h4>
+                {props.viewMode === 'all' && <p dangerouslySetInnerHTML={{__html: props.description}} />}
                 <div className={styles.time}>
                     {props.time}
                 </div>

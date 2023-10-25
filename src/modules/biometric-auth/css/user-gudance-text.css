@@ -1,0 +1,19 @@
+/*// Notification.css*/
+.hud-user-guidance-text {
+	position: absolute;
+	bottom: 2%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	transition: opacity 0.3s ease-in-out;
+	width: 100%;
+	/*opacity: 0;*/
+}
+
+.ant-alert {
+	background: transparent !important;
+	border: none;
+}
+
+.ant-alert-message {
+	color: white;
+}
