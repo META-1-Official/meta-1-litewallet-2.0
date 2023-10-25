@@ -12,32 +12,32 @@ const HudNotification = forwardRef((props, ref) => {
   const [notification, setNotification] = useState(null);
   const [visible, setVisible] = useState(false);
   const timeoutRef = React.useRef(null);
+  const timeout = props.duration || 2000;
 
   const resetTimeout = () => {
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(
-      () => setVisible(false),
-      props.duration || 1000,
+        () => setVisible(false),
+        timeout
     );
   };
 
   useImperativeHandle(ref, () => ({
     showNotification: (content, type) => {
       if (
-        notification &&
-        notification.content === content &&
-        notification.type === type
+          notification &&
+          notification.content === content &&
+          notification.type === type &&
+          visible === true
       ) {
-        resetTimeout(); // Reset the timeout if the notification is the same
+        resetTimeout(); // Reset the timeout if the notification is the same and still visible
         return;
-      } else {
-        toast(content, { type });
-        setNotification({ content, type });
-        resetTimeout();
       }
-      // setNotification({ content, type });
-      // setVisible(true);
-      // resetTimeout();
+
+      toast(content, { type });
+      setNotification({ content, type });
+      setVisible(true);
+      resetTimeout();
     },
   }));
 
@@ -62,15 +62,15 @@ const HudNotification = forwardRef((props, ref) => {
   }, [visible]);
 
   return (
-    <div className="hud-notification">
-      {/* {notification && visible && (
+      <div className="hud-notification">
+        {/* {notification && visible && (
         <Alert
           message={notification.content}
           type={notification.type}
           showIcon
         />
       )} */}
-    </div>
+      </div>
   );
 });
 
