@@ -56,9 +56,10 @@ import { filterNotifications } from "./utils/common";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
+  displayName: process.env.REACT_APP_DISPLAY_NAME,
   chainId: "0x1",
-  rpcTarget: "https://rpc.ankr.com/eth",
-  blockExplorer: "https://goerli.etherscan.io",
+  rpcTarget: process.env.REACT_APP_RPC_TARGET,
+  blockExplorer: process.env.REACT_APP_BLOCK_EXPLORER,
   ticker: "ETH",
   tickerName: "Ethereum",
 }
