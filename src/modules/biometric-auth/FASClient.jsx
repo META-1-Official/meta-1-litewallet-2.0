@@ -175,7 +175,9 @@ const FASClient = forwardRef((props, ref) => {
         console.log('Message: ', msg);
         // message.success(msg.message, 10000);
         hudUserGuidanceAlertRef.current.clear();
+        console.log('@@@handleFASData1', hudUserGuidanceAlertRef);
         onComplete(msg.token);
+        console.log('@@@handleFASData2');
       } else if (
           (msg.type === 'error' &&
               (msg.message === 'Timed out, try again' ||

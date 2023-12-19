@@ -102,7 +102,9 @@ export default function FaceKiForm(props) {
   }
 
   const faceEnroll = async (token) => {
-    fasClient.current.unload()
+    console.log('@@@log_faceEnroll1', fasClient);
+    fasClient.current.unload();
+    console.log('@@@log_faceEnroll2');
     setVerifying(true);
     if (task === TASK.VERIFY) {
       console.log(errorCase['Already Enrolled']);
@@ -110,7 +112,9 @@ export default function FaceKiForm(props) {
       setFaceKISuccess(true);
       setVerifying(false);
     } else {
+      console.log('@@@log_faceEnroll3', email, privKey, token);
       const response = await fasEnroll(email, privKey, token);
+      console.log('@@@log_faceEnroll4', response);
 
       if (!response) {
         console.log(errorCase['Biometic Server Error']);
@@ -118,6 +122,7 @@ export default function FaceKiForm(props) {
       } else {
         console.log(errorCase[response.message]);
         if (response.message === 'Successfully Enrolled') {
+          console.log('@@@log_faceEnroll5', response);
           localStorage.setItem('fastoken', token);
           setFaceKISuccess(true);
         }
