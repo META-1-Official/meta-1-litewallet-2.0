@@ -52,13 +52,13 @@ export default function PassKeyForm(props) {
                   />
                 </Form.Field>
                 <Form.Field>
-                  <label>Your Passkey</label>
+                  <label>Your Passkey or PrivateKey</label>
                   <input
                     required
                     control={Input}
                     value={passkey}
                     type="password"
-                    placeholder="Enter passkey"
+                    placeholder="Enter passkey or privatekey"
                     onChange={(event) => {
                       setPasskey(event.target.value);
                     }}
