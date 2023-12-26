@@ -63,7 +63,8 @@ export async function buildSignature4Fas(accountName, passkey, email) {
         try {
             const signerPkey = PrivateKey.fromWif(passkey);
             publicKey = signerPkey.toPublicKey().toString();
-            signature = Signature.sign(accountName, signerPkey).toHex();
+            publicKey = publicKey.replace('GPH7', process.env.REACT_APP_KEY_PREFIX);
+            signature = Signature.sign(signatureContent, signerPkey).toHex();
         } catch (err) {
             const account = await Login.generateKeys(
                 accountName,
