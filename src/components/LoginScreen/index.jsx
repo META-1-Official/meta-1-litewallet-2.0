@@ -211,7 +211,7 @@ export default function LoginScreen(props) {
     try {
       result = await buildSignature4Fas(login, passkey, email);
     } catch {
-      toast('Passkey is not valid!');
+      toast('Passkey or Owner Privatekey is not valid!');
       return;
     }
 
