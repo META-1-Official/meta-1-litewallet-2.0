@@ -210,8 +210,9 @@ export default function LoginScreen(props) {
 
     try {
       result = await buildSignature4Fas(login, passkey, email);
-    } catch {
+    } catch (err) {
       toast('Passkey or Owner Privatekey is not valid!');
+      console.log('buildSignature4Fas Error:', err);
       return;
     }
 
@@ -227,7 +228,6 @@ export default function LoginScreen(props) {
     if (!token) {
       console.log('Could not get FAS token!', token, message);
       toast(message);
-      setStep('userform');
       return;
     }
 

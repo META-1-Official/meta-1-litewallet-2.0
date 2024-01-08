@@ -133,7 +133,6 @@ export default function SignUpForm(props) {
     if (!token) {
       console.log('Could not get FAS token!', token, message);
       toast(message);
-      setStep('userform');
       return;
     }
 
