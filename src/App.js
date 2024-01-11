@@ -75,10 +75,11 @@ const openloginAdapter = new OpenloginAdapter({
   adapterSettings: {
     uxMode: "popup",
     whiteLabel: {
-      name: "META1",
+      appName: "META1",
       logoLight: "https://pbs.twimg.com/profile_images/980143928769839105/hK3RnAff_400x400.jpg",
       defaultLanguage: "en",
-      dark: getTheme('theme') === "dark" ? true : false,
+      mode: getTheme('theme'),
+      useLogoLoader: true
     }
   },
   privateKeyProvider
