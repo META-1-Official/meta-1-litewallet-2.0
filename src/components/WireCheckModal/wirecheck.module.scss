@@ -1,0 +1,111 @@
+.contentWrapper {
+  border-radius: 10px;
+  box-shadow: 0px 5px 20px 0px rgba(51, 0, 0, 0.20);
+  min-width: 520px;
+
+  .modalContent {
+    .modalHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .headerTitle {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .cancelBtn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        background-color: #C40000;
+        color: white;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+    }
+
+    .modalBody {
+      margin-top: 10px;
+      
+      .amount_walletname {
+        padding: 20px;
+        border-radius: 10px;
+        background: var(--blockBgColor6);
+
+        .amount {
+          display: flex;
+          width: 100%;
+          background: var(--backgroundColor);
+          align-items: center;
+          border-radius: 4px;
+          margin-bottom: 20px;
+
+          .vSpliter {
+            width: 1px;
+            height: 35px;
+            background: var(--inputBorderColor);
+          }
+        }
+
+        .walletname {
+          display: flex;
+          background: var(--backgroundColor);
+          border-radius: 4px;
+          height: 50px;
+          align-items: center;
+        }
+      }
+
+      .name {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+
+        .firstname {
+          width: 50%;
+          margin-right: 10px;
+        }
+
+        .lastname {
+          width: 50%;
+          margin-left: 10px;
+        }
+      }
+
+      .email {
+        margin-top: 20px;
+      }
+
+      .label {
+        color: var(--textColor2);
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.5;
+      }
+
+      .txtfld {
+        display: flex;
+        background: var(--backgroundColor);
+        border-radius: 4px;
+        height: 50px;
+        align-items: center;
+        border: 1px solid var(--inputBorderColor)
+      }
+
+      .submitButton {
+        background: var(--textGold);
+        color: var(--textBrown);
+        text-transform: uppercase;
+        font-size: 20px;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 20px;
+        height: 60px;
+      }
+    }
+  }
+}

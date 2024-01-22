@@ -80,7 +80,7 @@ const openloginAdapter = new OpenloginAdapter({
       defaultLanguage: "en",
       mode: getTheme('theme'),
       useLogoLoader: true
-    }
+    },
   },
   privateKeyProvider
 });

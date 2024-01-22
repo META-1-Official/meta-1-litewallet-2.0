@@ -87,7 +87,6 @@ const LoginProvidersModal = (props) => {
             }
 
             const web3authProvider = await web3auth.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
-                mfaLevel: "none",
                 loginProvider: provider,
                 extraLoginOptions: (provider === "email_passwordless" || provider === "sms_passwordless") ? {
                     login_hint: provider === "email_passwordless" ? email : phoneNumber,
