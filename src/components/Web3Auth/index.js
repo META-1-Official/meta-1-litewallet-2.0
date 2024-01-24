@@ -77,7 +77,7 @@ const LoginProvidersModal = (props) => {
                         setLoader(false);
                         return;
                     }
-                }                
+                }
             }
         }
 
@@ -192,13 +192,21 @@ const LoginProvidersModal = (props) => {
                                     <div></div>
                                 </div> */}
                                 <div className={moreProviders ? styles.providersBlockMP : styles.providersBlock}>
-                                    {moreProviders ? providers.map(item => (
-                                        <ProvidersBlock item={item} moreProviders={moreProviders} key={item.id} onClick={() => handleContinueWithProvider(item)} />
-                                    )) : providers.map((item, index) => {
+                                    {moreProviders ? providers.map(item => {
+                                        if (props.authMode === 'login')
+                                            return <ProvidersBlock item={item} moreProviders={moreProviders} key={item.id} onClick={() => handleContinueWithProvider(item)} />
+                                        else {
+                                            if (item.name !== 'apple')
+                                                return <ProvidersBlock item={item} moreProviders={moreProviders} key={item.id} onClick={() => handleContinueWithProvider(item)} />
+                                        }
+                                    }) : providers.map((item, index) => {
                                         if (index < 6) {
-                                            return (
-                                                <ProvidersBlock item={item} key={item.id} onClick={() => handleContinueWithProvider(item)} />
-                                            );
+                                            if (props.authMode === 'login')
+                                                return <ProvidersBlock item={item} key={item.id} onClick={() => handleContinueWithProvider(item)} />
+                                            else {
+                                                if (item.name !== 'apple')
+                                                return <ProvidersBlock item={item} key={item.id} onClick={() => handleContinueWithProvider(item)} />
+                                            }
                                         } else return null;
                                     })}
                                 </div>
