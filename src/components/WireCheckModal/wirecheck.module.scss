@@ -30,7 +30,7 @@
 
     .modalBody {
       margin-top: 10px;
-      
+
       .amount_walletname {
         padding: 20px;
         border-radius: 10px;
@@ -106,6 +106,81 @@
         margin-top: 20px;
         height: 60px;
       }
+
+      .alert_label {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        color: #a94442;
+        font-size: 12px;
+        text-align: center;
+      }
+    }
+  }
+
+  .backgroundWrapper {
+    background: url('../../images/congratulations.png'), lightgray 50% / cover no-repeat;
+  }
+}
+
+.congWrapper {
+  border-radius: 10px;
+  box-shadow: 0px 5px 20px 0px rgba(51, 0, 0, 0.20);
+  max-width: 520px !important;
+  padding: 0 !important;
+
+  .backgroundWrapper {
+    background: url('../../images/congratulations.png'), lightgray 50% / cover no-repeat;
+    padding: 15px;
+    height: 320px;
+
+    .modalHeader {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;      
+
+      .cancelBtn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        background-color: #C40000;
+        color: white;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .congModalContent {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 10px;
+    padding-bottom: 50px;
+    padding-left: 30px;
+    padding-right: 30px;
+
+    .successText {
+      text-align: center;
+      font-size: 23px;
+      line-height: 36px;
+      flex-wrap: wrap;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .doneButton {
+      background: var(--textGold);
+      color: var(--textBrown);
+      text-transform: uppercase;
+      font-size: 20px;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 20px;
+      height: 60px;
     }
   }
 }

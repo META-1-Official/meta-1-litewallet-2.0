@@ -338,23 +338,6 @@ export async function livenessCheck(image) {
   }
 };
 
-// export async function enroll(image, name) {
-//   try {
-//     let form_data = new FormData();
-//     form_data.append('image', image);
-//     form_data.append('name', name);
-//
-//     const { data } = await axios.post(
-//       `${process.env.REACT_APP_BACK_URL}/enroll_user`,
-//       form_data,
-//       { headers: { 'content-type': 'multipart/form-data' } },
-//     );
-//     return data;
-//   } catch (e) {
-//     return { message: "Something is wrong", error: true };
-//   }
-// };
-
 export async function enroll(email, privKey, task) {
   try {
     const { data } = await axios.post(
@@ -660,4 +643,32 @@ export async function fasMigrationStatus(email) {
   } catch (error) {
     return { message: "Something went wrong", error, }
   }
+}
+
+export async function generateWireCheckToken(wallet) {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_WIRECHECK_URL}/token`, { wallet, key:  process.env.REACT_APP_WIRECHECK_SECRET})
+    return data;
+  } catch (error) {
+    return { message: "Something went wrong", error, }
+  }
+}
+
+export async function createWireCheckOrder(email, amount, wallet, name) {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_WIRECHECK_URL}/`, { email, amount, wallet, name });
+    return data
+  } catch (error) {
+    return { message: "Something went wrong", error, }
+  }
+}
+
+export async function getWireCheckOrder(id, corelationid) {
+  const { data } = await axios.get(`${process.env.REACT_APP_WIRECHECK_URL}/?id=${id}&corelationid=${corelationid}`);
+  return data;
+}
+
+export async function getAllWireCheckOrders() {
+  const { data } = await axios.get(`${process.env.REACT_APP_WIRECHECK_URL}/`);
+  return data;
 }
