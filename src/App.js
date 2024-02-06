@@ -29,7 +29,7 @@ import { getAccessToken } from './utils/localstorage';
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, loaderSelector, isLoginSelector, loginErrorSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService, getNotificationsRequest } from "./store/account/actions";
-import {cryptoDataSelector, portfolioReceiverSelector } from "./store/meta1/selector";
+import { cryptoDataSelector, portfolioReceiverSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder from "./components/OpenOrder";
 import Notifications from "./components/Notification/Notifications";
@@ -514,7 +514,7 @@ function Application(props) {
     setActiveScreen("wallet");
   };
 
-  const _onSetupWebSocket = (accountName, curWebsocket=null) => {
+  const _onSetupWebSocket = (accountName, curWebsocket = null) => {
     try {
       curWebsocket && curWebsocket.close();
 
@@ -542,7 +542,7 @@ function Application(props) {
         var filter = filterNotifications([JSON.parse(message.data)], accountName);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
-          toast(<p dangerouslySetInnerHTML={{__html: content}} />);
+          toast(<p dangerouslySetInnerHTML={{ __html: content }} />);
           dispatch(getNotificationsRequest({ login: accountName }));
         }
       };
@@ -1130,7 +1130,7 @@ function Application(props) {
                     height: "100%"
                   }}
                 >
-                  <div style={{height: '100%'}}>
+                  <div style={{ height: '100%' }}>
                     <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
                       <div>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
