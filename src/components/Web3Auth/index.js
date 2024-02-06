@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './loginProviders.module.scss';
 import arrow from '../../images/arrow.jpg';
 import { providers } from "./providers";
-// import CountryNumber from "./GetCountry/countryNumber";
 import { Modal } from "semantic-ui-react";
 import { WALLET_ADAPTERS } from "@web3auth/base";
 import MetaLoader from "../../UI/loader/Loader";
 import { getPublicCompressed } from "@toruslabs/eccrypto";
-import { getTheme, setTheme } from '../../utils/storage';
 import { getUserKycProfileByAccount } from "../../API/API";
+import { toast } from 'react-toastify';
 
 const ProvidersBlock = ({ item, moreProviders, onClick }) => {
     return (
@@ -48,7 +47,6 @@ const LoginProvidersModal = (props) => {
     const [moreProviders, setMoreProviders] = useState(false);
     const [email, setEmail] = useState(props.email || null);
     const [phoneNumber, setMobilePhoneNumber] = useState(props.phoneNumber || null);
-    // const [continueMode, setContinueMode] = useState(false);
     const [loader, setLoader] = useState(false);
     const [emailError, setEmailError] = useState(null);
 
@@ -92,6 +90,7 @@ const LoginProvidersModal = (props) => {
                     login_hint: provider === "email_passwordless" ? email : phoneNumber,
                 } : {}
             });
+
             if (web3authProvider) {
                 const data = await web3auth.getUserInfo();
 
@@ -119,8 +118,11 @@ const LoginProvidersModal = (props) => {
                 }, 2000);
             }
         } catch (error) {
+            console.log('@@@@@arrororor', error);
             setLoader(false);
         }
+
+
     }
 
     const handleClose = async () => {
@@ -205,7 +207,7 @@ const LoginProvidersModal = (props) => {
                                                 return <ProvidersBlock item={item} key={item.id} onClick={() => handleContinueWithProvider(item)} />
                                             else {
                                                 if (item.name !== 'apple')
-                                                return <ProvidersBlock item={item} key={item.id} onClick={() => handleContinueWithProvider(item)} />
+                                                    return <ProvidersBlock item={item} key={item.id} onClick={() => handleContinueWithProvider(item)} />
                                             }
                                         } else return null;
                                     })}
