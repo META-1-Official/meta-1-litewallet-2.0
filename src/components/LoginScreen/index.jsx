@@ -83,7 +83,7 @@ export default function LoginScreen(props) {
 
     if (popUp == null || typeof (popUp) == 'undefined') {
       setPopUpEnabled(false);
-      toast('Please disable your browser pop-up blocker first and reload the page to continue.');
+      toast('Please enable your browser Pop-ups and reload the page to continue.', {autoClose: false, closeButton: true});
     }
     else {
       setPopUpEnabled(true);
