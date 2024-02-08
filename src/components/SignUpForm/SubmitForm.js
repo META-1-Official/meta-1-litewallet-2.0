@@ -78,7 +78,7 @@ export default function SubmitForm(props) {
           localStorage.setItem('subscription', subscription);
           localStorage.setItem('e-signing-token', token);
 
-          window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL}/e-sign?token=${token}&redirectUrl=${r_url}`;
+          window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL}/e-sign?token=${token}`;
         } else {
           return;
         }
