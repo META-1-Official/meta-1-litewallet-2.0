@@ -2,7 +2,6 @@
   "name": "lite-wallet",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3000/",
   "homepage": ".",
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
