@@ -6,8 +6,7 @@ import { accountsSelector } from "../../store/account/selector";
 import { getImage } from "../../lib/images";
 import { MenuItem, TextField, Select, InputAdornment, Button } from '@mui/material';
 import { UserOutlined, WalletOutlined, MailOutlined } from '@ant-design/icons';
-import { getUserKycProfileByAccount, createWireCheckOrder } from "../../API/API";
-import Congratulations from "../../images/congratulations.png";
+import { getUserKycProfileByAccount, createWireCheckOrder, generateWireCheckToken, getWireCheckOrder, getAllWireCheckOrders } from "../../API/API";
 
 import './wirecheck.css';
 import { toast } from 'react-toastify';
@@ -23,7 +22,8 @@ export const WireCheckModal = (props) => {
     const [firstNameError, setFirstNameError] = useState('');
     const [lastName, setLastName] = useState('');
     const [lastNameError, setLastNameError] = useState('');
-    const [congModalOpened, setCongModalOpend] = useState(true);
+    const [congModalOpened, setCongModalOpend] = useState(false);
+    const [token, setToken] = useState();
 
     const handleCloseClick = () => {
         props.setModalOpened(false);
@@ -98,21 +98,35 @@ export const WireCheckModal = (props) => {
             return;
         }
 
-        createWireCheckOrder(email, amount, accountNameState, `${firstName} ${lastName}`).then((res) => {
-            if (res) {
-                setCongModalOpend(true);
+        if (email && token) {
+            let dto = {
+                email,
+                amount,
+                wallet: accountNameState,
+                firstName,
+                lastName
             }
-        })
-            .catch(err => {
-                console.log('ERROR')
-            });
+            createWireCheckOrder(dto, token)
+                .then((res) => {
+                    setCongModalOpend(true);
+                })
+                .catch(err => {
+                    console.log('CONSOLE_WIRECHECK', err)
+                });
+        } else {
+            alert('Something went wrong. try again.');
+        }
     };
 
     useEffect(async () => {
         if (accountNameState) {
             let res = await getUserKycProfileByAccount(accountNameState);
-            console.log('@@@@', res, accountNameState);
-            setEmail(res?.email);
+
+            if (res) {
+                let tok_res = await generateWireCheckToken(res.email);
+                setEmail(res.email);
+                tok_res && setToken(tok_res.Token);
+            }
         }
     }, []);
 
