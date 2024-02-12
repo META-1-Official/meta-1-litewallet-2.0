@@ -130,6 +130,130 @@ export const WireCheckModal = (props) => {
         }
     }, []);
 
+    const renderWireCheckListModal = () => <Modal.Content className={styles.contentWrapper}>
+        <div className={styles.modalContent} >
+            <div className={styles.modalHeader}>
+                <div className={styles.headerTitle}>Wire/Check</div>
+                <div className={styles.cancelBtn} onClick={handleCloseClick}>X</div>
+            </div>
+            <div className={styles.modalBody}>
+                <div className={styles.amount_walletname}>
+                    <div className={styles.label}>Amount*</div>
+                    <div className={styles.amount}>
+                        <Select
+                            value={selectedAsset}
+                            onChange={(event) => setSelectedAsset(event.target.value)}
+                        >
+                            {['USDT'].map(ele => {
+                                return <MenuItem value={ele} className="wallet-option">
+                                    <div className="wallet-option-picture">
+                                        <img alt="eth" src={getImage(ele)} />
+                                    </div>
+                                    <span className="wallet-option-name">
+                                        {ele}{" "}
+                                    </span>
+                                </MenuItem>
+                            })}
+                        </Select>
+                        <div className={styles.vSpliter}></div>
+                        <TextField
+                            InputProps={{ disableUnderline: true }}
+                            value={amount}
+                            onChange={handleAmount}
+                            variant="standard"
+                            type='number'
+                            error={Boolean(amountError)}
+                            helperText={amountError}
+                        />
+                    </div>
+                    <div className={styles.label}>Wallet Name*</div>
+                    <div className={styles.walletname}>
+                        <TextField
+                            InputProps={{
+                                disableUnderline: true,
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <WalletOutlined />
+                                    </InputAdornment>
+                            }}
+                            value={accountNameState}
+                            variant="standard"
+                            readOnly
+                        />
+                    </div>
+                </div>
+                <div className={styles.name}>
+                    <div className={styles.firstname}>
+                        <div className={styles.label}>First Name*</div>
+                        <div className={styles.txtfld}>
+                            <TextField
+                                InputProps={{
+                                    disableUnderline: true,
+                                    startAdornment:
+                                        <InputAdornment position="start">
+                                            <UserOutlined />
+                                        </InputAdornment>
+                                }}
+                                value={firstName}
+                                onChange={handleFirstName}
+                                variant="standard"
+                                placeholder='Jhon'
+                                error={Boolean(firstNameError)}
+                                helperText={firstNameError}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.lastname}>
+                        <div className={styles.label}>Last Name*</div>
+                        <div className={styles.txtfld}>
+                            <TextField
+                                InputProps={{
+                                    disableUnderline: true,
+                                    startAdornment:
+                                        <InputAdornment position="start">
+                                            <UserOutlined />
+                                        </InputAdornment>
+                                }}
+                                value={lastName}
+                                onChange={handleLastName}
+                                variant="standard"
+                                placeholder='Doe'
+                                error={Boolean(lastNameError)}
+                                helperText={lastNameError}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className={styles.email}>
+                    <div className={styles.label}>Email*</div>
+                    <div className={styles.txtfld}>
+                        <TextField
+                            InputProps={{
+                                disableUnderline: true,
+                                startAdornment:
+                                    <InputAdornment position="start">
+                                        <MailOutlined />
+                                    </InputAdornment>
+                            }}
+                            value={email}
+                            // onChange={(e) => { setEmail(e.target.value) }}
+                            variant="standard"
+                            readOnly
+                        />
+                    </div>
+                </div>
+                <Button
+                    className={styles.submitButton}
+                    onClick={handleSubmit}
+                    disabled={Boolean(firstNameError) || Boolean(lastNameError) || Boolean(amountError) || amount === 0}
+                >
+                    submit
+                </Button>
+                {!accountNameState && <div className={styles.alert_label}>You need to be login to proceed *</div>}
+            </div>
+        </div>
+    </Modal.Content>
+
     const renderWireCheckSumbitModal = () => <Modal.Content className={styles.contentWrapper}>
         <div className={styles.modalContent} >
             <div className={styles.modalHeader}>
