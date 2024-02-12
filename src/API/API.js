@@ -614,7 +614,6 @@ export async function getFASToken({
     });
 }
 
-
 export async function fasEnroll(email, privKey, fasToken) {
   try {
     const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/fasEnroll`, { email, privKey, fasToken })
@@ -660,7 +659,7 @@ export async function createWireCheckOrder(dto, token) {
       LastName: lastName,
       Email: email,
       Price: amount,
-      Password: "",
+      Password: process.env.REACT_APP_ABLECOMMERCE_SECRET,
       CorrelationId: null,
       WalletId: wallet
     }, config);
