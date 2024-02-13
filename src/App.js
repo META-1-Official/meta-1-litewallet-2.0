@@ -53,6 +53,7 @@ import AppStore from "./images/app-store.png";
 import GooglePlay from "./images/google-play.png";
 import OfflineIcon from "./images/offline.png";
 import { filterNotifications } from "./utils/common";
+import WireCheck from "./components/WireCheck";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -1211,6 +1212,36 @@ function Application(props) {
                     </div>
                     <div className={"justFlexAndDirect justFlexAndDirectMobile"} style={{ backgroundColor: 'var(--backgroundColor2)' }} >
                       <Announcements />
+                    </div>
+                  </div>
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                      setIsSignatureProcessing(false);
+                    }}
+                  />
+                </div>
+              </>
+            )}
+            {activeScreen === "wirecheck" && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <div>
+                    <div className="wireCheckMainFlex" style={{ padding: "1.1rem 2rem" }}>
+                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                        <strong>Wire/Check</strong>
+                      </h5>
+                    </div>
+                    <div className={"justFlexAndDirect justFlexAndDirectMobile"} >
+                      <WireCheck />
                     </div>
                   </div>
                   <Footer

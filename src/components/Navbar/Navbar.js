@@ -12,13 +12,11 @@ import { filterNotifications } from "../../utils/common";
 import Notification from "../Notification";
 import sunIcon from "../../images/sun.png";
 import moonIcon from "../../images/moon.png";
-import { WireCheckModal } from "../WireCheckModal";
 
 
 const Navbar = (props) => {
   const dispatch = useDispatch();
   const [showNotiDropDown, setShowNotiDropDown] = useState(false);
-  const [showWireCheckModal, setShowWireCheckModal] = useState(false);
   const navbarProfileImageState = useSelector(navbarProfileImageSelector);
   const [notifications, setNotifications] = useState();
   const notificationState = useSelector(notificationsSelector);
@@ -208,7 +206,9 @@ const Navbar = (props) => {
                       <button
                         className="dropdown-item"
                         style={{ textAlign: "center" }}
-                        onClick={() => setShowWireCheckModal(true)}
+                        onClick={() => {
+                          setActiveScreen('wirecheck');
+                        }}
                       >
                         Fund Wallet with Wire or Check
                       </button>
@@ -298,7 +298,6 @@ const Navbar = (props) => {
         </div>
       </nav>
       {showNotiDropDown && <div ref={ref}><Notification notifications={props.notifications} showAllNotifications={showAllNotifications} /></div>}
-      <WireCheckModal setModalOpened={(val) => setShowWireCheckModal(val)} isOpen={showWireCheckModal} />
     </>
   );
 };
