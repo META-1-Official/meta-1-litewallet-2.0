@@ -1,0 +1,37 @@
+.orderlist {
+  padding-left: 30px;
+  padding-right: 30px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .totalOrders {
+    width: 100%;
+    border-radius: 5px;
+    background: white;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    box-shadow: 0px 5px 20px 0px rgba(51, 0, 0, 0.20);
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .submitButton {
+    background: var(--textGold);
+    color: var(--textBrown);
+    text-transform: capitalize;
+    font-size: 20px;
+    font-weight: 600;
+    width: 300px;
+    margin-top: 20px;
+    height: 60px;
+  }
+
+  .noFoundImg {
+    width: 100px;
+  }
+}
