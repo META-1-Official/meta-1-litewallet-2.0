@@ -18,6 +18,7 @@
     margin-bottom: 10px;
     font-size: 14px;
     font-weight: 600;
+    justify-content: space-between;
   }
 
   .submitButton {
@@ -33,5 +34,11 @@
 
   .noFoundImg {
     width: 100px;
+  }
+
+  .refreshImg {
+    width: 20px;
+    margin-right: 20px;
+    cursor: pointer;
   }
 }

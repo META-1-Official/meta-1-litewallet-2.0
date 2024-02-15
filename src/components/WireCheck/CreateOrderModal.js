@@ -117,6 +117,12 @@ export const CreateOrderModal = (props) => {
         }
     };
 
+    const handleCongDone = () => {
+        setCongModalOpend(false);
+        props.setModalOpened(false);
+        props.refresh();
+    }
+
     const renderWireCheckSumbitModal = () => <Modal.Content className={styles.contentWrapper}>
         <div className={styles.modalContent} >
             <div className={styles.modalHeader}>
@@ -243,14 +249,14 @@ export const CreateOrderModal = (props) => {
     const renderCongModal = () => <Modal.Content className={styles.congWrapper}>
         <div className={styles.backgroundWrapper}>
             <div className={styles.modalHeader}>
-                <div className={styles.cancelBtn} onClick={() => setCongModalOpend(false)}>X</div>
+                <div className={styles.cancelBtn} onClick={handleCongDone}>X</div>
             </div>
         </div>
         <div className={styles.congModalContent}>
-            <p className={styles.successText}>Your Deposit order has been submitted, please check your email for details of completing payment.</p>
+            <p className={styles.successText}>Your Deposit order has been created and submitted.</p>
             <Button
                 className={styles.doneButton}
-                onClick={() => setCongModalOpend(false)}
+                onClick={handleCongDone}
             >
                 Done
             </Button>
