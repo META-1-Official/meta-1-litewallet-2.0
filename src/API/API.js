@@ -659,7 +659,6 @@ export async function createWireCheckOrder(dto, token) {
       LastName: lastName,
       Email: email,
       Price: amount,
-      Password: process.env.REACT_APP_ABLECOMMERCE_SECRET,
       CorrelationId: null,
       WalletId: wallet
     }, config);
@@ -679,7 +678,7 @@ export async function getWireCheckOrder(id, coId, token) {
   return data;
 }
 
-export async function getAllWireCheckOrders(token, page = 1, pageSize = 10, orderStatusId = 0) {
+export async function getAllWireCheckOrders(token, email, wallet, page = 1, pageSize = 10, orderStatusId = 0) {
   const config = {
     headers: {
       'Authorization': 'Bearer ' + token
@@ -688,7 +687,9 @@ export async function getAllWireCheckOrders(token, page = 1, pageSize = 10, orde
   const { data } = await axios.post(`${process.env.REACT_APP_ABLECOMMERCE_URL}/report`, {
     OrderStatusId: orderStatusId,
     Page: page,
-    PageSize: pageSize
+    PageSize: pageSize,
+    UserEmail: email,
+    WalletId: wallet
   }, config);
   return data;
 }

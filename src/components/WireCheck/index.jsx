@@ -12,7 +12,10 @@ import { useSelector } from 'react-redux';
 import { accountsSelector } from "../../store/account/selector";
 import { getUserKycProfileByAccount, generateWireCheckToken, getAllWireCheckOrders } from "../../API/API";
 import { CreateOrderModal } from "./CreateOrderModal";
+import MetaLoader from "../../UI/loader/Loader";
+
 import NoFoundImg from "../../images/no-found.png";
+import RefreshImg from "../../images/refresh.jpg";
 
 import './wirecheck.css';
 import styles from "./orderlist.module.scss";
@@ -20,15 +23,16 @@ import styles from "./orderlist.module.scss";
 const WireCheck = React.memo((props) => {
   const accountNameState = useSelector(accountsSelector);
 
+  const [forceUpdate, setForceUpdate] = useState(false);
   const [lists, setLists] = useState([]);
   const [token, setToken] = useState();
   const [email, setEmail] = useState();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(async () => {
     if (accountNameState) {
-      let res = await getUserKycProfileByAccount(accountNameState);
+      let res = await getUserKycProfileByAccount(accountNameState);     
 
       if (res) {
         let tok_res = await generateWireCheckToken(res.email);
@@ -38,10 +42,14 @@ const WireCheck = React.memo((props) => {
     }
   }, []);
 
-  useEffect(async () => {
-    if (token) {
+  useEffect(() => {
+    fetchData();
+  }, [token]);
+
+  const fetchData = async () => {
+    if (token && email && accountNameState) {
       setLoading(true);
-      let res = await getAllWireCheckOrders(token);
+      let res = await getAllWireCheckOrders(token, email, accountNameState);
 
       if (res?.Orders?.length !== 0) {
         setLists(res.Orders.filter(ele => ele.Details.WalletId === accountNameState));
@@ -50,33 +58,19 @@ const WireCheck = React.memo((props) => {
         console.log('somethign went wrong');
       }
     }
-  }, [token]);
+    setLoading(false);
+  }
 
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
+  const handleRefresh = () => {
+    fetchData();
+    setForceUpdate(prevState => !prevState);
+  }
 
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    "&:last-child td, &:last-child th": {
-      border: 0,
-    },
-  }));
-
-  return <div className={styles.orderlist}>
-    <div className={styles.totalOrders}>Total Orders: {lists?.length}</div>
-    {lists.length === 0 ?
-      <img alt="eth" src={NoFoundImg} width={100} style={{marginTop: '30px'}}/> :
-      <TableContainer
+  const renderTable = () => {
+    if (lists.length === 0) {
+      return <img alt="eth" src={NoFoundImg} width={100} style={{ marginTop: '30px' }} />;
+    } else {
+      return <TableContainer
         component={Paper}
         style={{
           borderRadius: "4px",
@@ -141,14 +135,43 @@ const WireCheck = React.memo((props) => {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>}
+      </TableContainer>
+    }
+  }
+
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
+
+  return <div className={styles.orderlist}>
+    <div className={styles.totalOrders}>
+      Total Orders: {lists?.length}
+      <img className={styles.refreshImg} src={RefreshImg} width={20} onClick={handleRefresh} />
+    </div>
+    {loading ? <MetaLoader size={"small"} /> : renderTable()}
     <Button
       className={styles.submitButton}
       onClick={() => setOpen(true)}
     >
       Create New Order
     </Button>
-    {open && <CreateOrderModal token email/>}
+    {open && <CreateOrderModal token={token} email={email} isOpen={open} setModalOpened={val => setOpen(val)} refresh={handleRefresh} />}
   </div>
 });
 
