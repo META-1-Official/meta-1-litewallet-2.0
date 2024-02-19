@@ -267,23 +267,7 @@ function Application(props) {
     };
   }
 
-  // useEffect(() => {
-  //   if (urlParams[0] === 'onMobile=true') {
-  //     localStorage.setItem('qr-bio', true);
-
-  //     const accountName = urlParams[1].split('=')[1];
-  //     const email = urlParams[2].split('=')[1];
-
-  //     if (accountName && email) {
-  //       localStorage.setItem('qr-hash', `${accountName}_${email}`);
-  //       setActiveScreen('qr-bio');
-  //     } else {
-  //       alert("QR code is wrong or link has been edited. Try again.");
-  //     }
-  //   }
-  // }, [urlParams])
-
-  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", web3Token = "", web3PubKey = "", fasToken) => {
+  const onLogin = async (login, clicked = false, emailOrPassword = '', fromSignUpFlag = false, signUpEmail = "", web3Token = "", web3PubKey = "", fasToken = "") => {
     setIsLoading(true);
     if (clicked) {
       dispatch(loginRequestService({ login, emailOrPassword, setLoginDataError, fromSignUpFlag, signUpEmail, web3Token, web3PubKey, fasToken }));

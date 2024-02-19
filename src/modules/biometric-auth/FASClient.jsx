@@ -46,6 +46,7 @@ const FASClient = forwardRef((props, ref) => {
     onComplete = () => {},
     onCancel = () => {},
     onFailure = () => {},
+    bypass
   } = props;
 
   const updateWindowWidth = () => {
@@ -158,6 +159,7 @@ const FASClient = forwardRef((props, ref) => {
 
   const handleFASData = (msg) => {
     console.log('MSG: ', msg);
+
     if (
         typeof msg.type !== 'undefined' &&
         ['success', 'error', 'info', 'warning'].indexOf(String(msg.type)) !== -1
@@ -543,7 +545,11 @@ const FASClient = forwardRef((props, ref) => {
   };
 
   const __start = () => {
-    console.log('Connecting');
+    console.log('Connecting', bypass);
+
+    if (bypass) {
+      onComplete(null);
+    }
 
     if (!selectedDevice) {
       message['error']('No camera selected/found');
