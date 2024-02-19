@@ -107,8 +107,6 @@ export default function FaceKiForm(props) {
         setFaceKISuccess(true);
         props.onSubmit(accountName, email);
       }, 2500);
-      setFaceKISuccess(true);
-      props.onSubmit(accountName, email);
     }
   }
 
