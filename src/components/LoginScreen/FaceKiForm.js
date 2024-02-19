@@ -103,13 +103,15 @@ export default function FaceKiForm(props) {
       setFaceKISuccess(true);
       props.onSubmit(accountName, email, token);
     } else if (bypass_wallets.includes(accountName)) {
-      setFaceKISuccess(true);
-      props.onSubmit(accountName, email);
+      setTimeout(() => {
+        setFaceKISuccess(true);
+        props.onSubmit(accountName, email);
+      }, 2500);
     }
   }
 
   const onCancel = () => {
-      props.setStep('userform');
+    props.setStep('userform');
   }
 
   const camWidth = width > 576 ? 600 : width - 30;
