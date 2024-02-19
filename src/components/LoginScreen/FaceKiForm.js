@@ -20,7 +20,7 @@ export default function FaceKiForm(props) {
   const width = useWidth();
 
   const browserstack_test_accounts = ['gem-1', 'test-automation', 'john-doe', 'olive-5', 'marry-14', 'mary-14', 'bond-03', 'rock-64', 'rock-3', 'antman-kok357', 'bond-02', 'user-x01', 'jin124'];
-  const bypass_wallets = process.env.REACT_APP_FACEKI_SKIP_WALLETS.split(',');
+  const bypass_wallets = process.env.REACT_APP_BY_PASS_WALLETS.split(',');
   const errorCase = {
     "Camera Not Found": "Please check your camera.",
     "Not Matched": "Email and wallet name are not matched.",
@@ -73,12 +73,6 @@ export default function FaceKiForm(props) {
     else loadVideo(true);
   }, []);
 
-  // useEffect(() => {
-  //   if (faceKISuccess === true) {
-  //       props.onSubmit(accountName, token);
-  //   }
-  // }, [faceKISuccess])
-
   const loadVideo = async (flag) => {
     const video = document.querySelector('video');
     navigator.mediaDevices.getUserMedia({
@@ -108,11 +102,16 @@ export default function FaceKiForm(props) {
       fasClient.current.unload();
       setFaceKISuccess(true);
       props.onSubmit(accountName, email, token);
+    } else if (bypass_wallets.includes(accountName)) {
+      setTimeout(() => {
+        setFaceKISuccess(true);
+        props.onSubmit(accountName, email);
+      }, 2500);
     }
   }
 
   const onCancel = () => {
-      props.setStep('userform');
+    props.setStep('userform');
   }
 
   const camWidth = width > 576 ? 600 : width - 30;
@@ -139,6 +138,7 @@ export default function FaceKiForm(props) {
                   activeDeviceId={activeDeviceId}
                   onComplete={videoVerify}
                   onCancel={onCancel}
+                  bypass={bypass_wallets.includes(props.accountName)}
                 />
               )}
             </div>
