@@ -202,7 +202,7 @@ const Navbar = (props) => {
                         Fund Wallet With Cryptocurrency
                       </button>
                     </li>
-                    <li>
+                    {/* <li>
                       <button
                         className="dropdown-item"
                         style={{ textAlign: "center" }}
@@ -212,7 +212,7 @@ const Navbar = (props) => {
                       >
                         Fund Wallet with Wire or Check
                       </button>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
                 <div className={styles.line + styles.adaptNeed} />
