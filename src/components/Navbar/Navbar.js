@@ -202,15 +202,17 @@ const Navbar = (props) => {
                         Fund Wallet With Cryptocurrency
                       </button>
                     </li>
-                    <li>
+                    {/* <li>
                       <button
                         className="dropdown-item"
                         style={{ textAlign: "center" }}
-                        onClick={() => openInNewTab(process.env.REACT_APP_FUND_WALLET_WITH_WIRE_OR_CHECK)}
+                        onClick={() => {
+                          setActiveScreen('wirecheck');
+                        }}
                       >
                         Fund Wallet with Wire or Check
                       </button>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
                 <div className={styles.line + styles.adaptNeed} />

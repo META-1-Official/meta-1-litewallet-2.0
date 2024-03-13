@@ -18,10 +18,8 @@ export default function FaceKiForm(props) {
   const [token, setToken] = useState(fasToken);
 
   const width = useWidth();
-
   const browserstack_test_accounts = process.env.REACT_APP_BROWSERSTACK_TEST_WALLETS.split(',') ?? [];
   const bypass_wallets = process.env.REACT_APP_BY_PASS_WALLETS.split(',') ?? [];
-
   const errorCase = {
     "Camera Not Found": "Please check your camera.",
     "Not Matched": "Email and wallet name are not matched.",

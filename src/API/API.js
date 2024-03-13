@@ -338,23 +338,6 @@ export async function livenessCheck(image) {
   }
 };
 
-// export async function enroll(image, name) {
-//   try {
-//     let form_data = new FormData();
-//     form_data.append('image', image);
-//     form_data.append('name', name);
-//
-//     const { data } = await axios.post(
-//       `${process.env.REACT_APP_BACK_URL}/enroll_user`,
-//       form_data,
-//       { headers: { 'content-type': 'multipart/form-data' } },
-//     );
-//     return data;
-//   } catch (e) {
-//     return { message: "Something is wrong", error: true };
-//   }
-// };
-
 export async function enroll(email, privKey, task) {
   try {
     const { data } = await axios.post(
@@ -382,18 +365,6 @@ export async function verify(image) {
     return { message: "Something is wrong", error: true };
   }
 };
-
-// export async function remove(name) {
-//   try {
-//     const { data } = await axios.post(
-//       `${process.env.REACT_APP_BACK_URL}/remove_user`,
-//       { name }
-//     );
-//     return data;
-//   } catch (e) {
-//     return { message: "Something is wrong", error: true };
-//   }
-// };
 
 // MIGRATION
 export async function checkOldUser(accountName) {
@@ -643,7 +614,6 @@ export async function getFASToken({
     });
 }
 
-
 export async function fasEnroll(email, privKey, fasToken) {
   try {
     const { data } = await axios.post(`${process.env.REACT_APP_BACK_URL}/fasEnroll`, { email, privKey, fasToken })
@@ -660,4 +630,66 @@ export async function fasMigrationStatus(email) {
   } catch (error) {
     return { message: "Something went wrong", error, }
   }
+}
+
+export async function generateWireCheckToken(email, wallet="testwallet") {
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_ABLECOMMERCE_URL}/authentication/requesttoken`, {
+      UserId: email,
+      JwtAudienceSecret: process.env.REACT_APP_ABLECOMMERCE_SECRET
+    }, {
+      headers: {"Access-Control-Allow-Origin": "*"}
+    });
+    return data;
+  } catch (error) {
+    return { message: "Something went wrong", error }
+  }
+}
+
+export async function createWireCheckOrder(dto, token) {
+  const { email, amount, wallet, firstName, lastName } = dto;
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  }
+  try {
+    const { data } = await axios.post(`${process.env.REACT_APP_ABLECOMMERCE_URL}/metaorder`, {
+      FirstName: firstName,
+      LastName: lastName,
+      Email: email,
+      Price: amount,
+      CorrelationId: null,
+      WalletId: wallet
+    }, config);
+    return data
+  } catch (error) {
+    return { message: "Something went wrong", error }
+  }
+}
+
+export async function getWireCheckOrder(id, coId, token) {
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  }
+  const { data } = await axios.get(`${process.env.REACT_APP_ABLECOMMERCE_URL}/report?orderId=${id}&correlationId=${coId}`, config);
+  return data;
+}
+
+export async function getAllWireCheckOrders(token, email, wallet, page = 1, pageSize = 10, orderStatusId = 0) {
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  }
+  const { data } = await axios.post(`${process.env.REACT_APP_ABLECOMMERCE_URL}/report`, {
+    OrderStatusId: orderStatusId,
+    Page: page,
+    PageSize: pageSize,
+    UserEmail: email,
+    WalletId: wallet
+  }, config);
+  return data;
 }

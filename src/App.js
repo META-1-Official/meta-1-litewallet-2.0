@@ -29,7 +29,7 @@ import { getAccessToken } from './utils/localstorage';
 import { useDispatch, useSelector } from "react-redux";
 import { accountsSelector, loaderSelector, isLoginSelector, loginErrorSelector, isTokenValidSelector, userDataSelector, errorMsgSelector, checkTransferableModelSelector, fromSignUpSelector } from "./store/account/selector";
 import { checkAccountSignatureReset, checkTransferableModelAction, checkTransferableRequest, getUserRequest, loginRequestService, logoutRequest, passKeyResetService, getNotificationsRequest } from "./store/account/actions";
-import {cryptoDataSelector, portfolioReceiverSelector } from "./store/meta1/selector";
+import { cryptoDataSelector, portfolioReceiverSelector } from "./store/meta1/selector";
 import { getCryptosChangeRequest, meta1ConnectSuccess, resetMetaStore, setUserCurrencyAction } from "./store/meta1/actions";
 import OpenOrder from "./components/OpenOrder";
 import Notifications from "./components/Notification/Notifications";
@@ -53,6 +53,7 @@ import AppStore from "./images/app-store.png";
 import GooglePlay from "./images/google-play.png";
 import OfflineIcon from "./images/offline.png";
 import { filterNotifications } from "./utils/common";
+import WireCheck from "./components/WireCheck";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -80,7 +81,7 @@ const openloginAdapter = new OpenloginAdapter({
       defaultLanguage: "en",
       mode: getTheme('theme'),
       useLogoLoader: true
-    }
+    },
   },
   privateKeyProvider
 });
@@ -498,7 +499,7 @@ function Application(props) {
     setActiveScreen("wallet");
   };
 
-  const _onSetupWebSocket = (accountName, curWebsocket=null) => {
+  const _onSetupWebSocket = (accountName, curWebsocket = null) => {
     try {
       curWebsocket && curWebsocket.close();
 
@@ -526,7 +527,7 @@ function Application(props) {
         var filter = filterNotifications([JSON.parse(message.data)], accountName);
         if (message && message.data && filter.length > 0) {
           const content = JSON.parse(message.data).content;
-          toast(<p dangerouslySetInnerHTML={{__html: content}} />);
+          toast(<p dangerouslySetInnerHTML={{ __html: content }} />);
           dispatch(getNotificationsRequest({ login: accountName }));
         }
       };
@@ -1114,7 +1115,7 @@ function Application(props) {
                     height: "100%"
                   }}
                 >
-                  <div style={{height: '100%'}}>
+                  <div style={{ height: '100%' }}>
                     <div className="openOrderMainFlex" style={{ padding: "1.1rem 2rem" }}>
                       <div>
                         <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
@@ -1195,6 +1196,36 @@ function Application(props) {
                     </div>
                     <div className={"justFlexAndDirect justFlexAndDirectMobile"} style={{ backgroundColor: 'var(--backgroundColor2)' }} >
                       <Announcements />
+                    </div>
+                  </div>
+                  <Footer
+                    onClickHomeHandler={(e) => {
+                      e.preventDefault();
+                      setActiveScreen("login");
+                      setIsSignatureProcessing(false);
+                    }}
+                  />
+                </div>
+              </>
+            )}
+            {activeScreen === "wirecheck" && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <div>
+                    <div className="wireCheckMainFlex" style={{ padding: "1.1rem 2rem" }}>
+                      <h5 style={{ fontSize: "1.15rem", fontWeight: "600" }}>
+                        <strong>Wire/Check</strong>
+                      </h5>
+                    </div>
+                    <div className={"justFlexAndDirect justFlexAndDirectMobile"} >
+                      <WireCheck />
                     </div>
                   </div>
                   <Footer

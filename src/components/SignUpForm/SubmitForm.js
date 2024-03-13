@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MetaLoader from "../../UI/loader/Loader";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { getUserKycProfile, getESigToken, createLinkPoll } from "../../API/API";
+import { getUserKycProfile, createLinkPoll } from "../../API/API";
 
 import {
   Button,
@@ -59,35 +59,26 @@ export default function SubmitForm(props) {
       }
 
       try {
-        const token = await getESigToken(email, 'testkey');
-        if (token.error === true) {
-          return;
-        } else if (token) {
-          const r_url = window.location.origin;
-          const link_p = await createLinkPoll({ email, firstName, lastName, phoneNumber: phone, walletName: accountName, token, redirectUrl: r_url });
+        const token = Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2);
+        const r_url = window.location.origin;
+        const link_p = await createLinkPoll({ email, firstName, lastName, phoneNumber: phone, walletName: accountName, token, redirectUrl: r_url });
 
-          if (link_p) {
-            localStorage.setItem('e-signing-user', accountName);
-            localStorage.setItem('password', password);
-            localStorage.setItem('firstname', firstName);
-            localStorage.setItem('lastname', lastName);
-            localStorage.setItem('phone', phone);
-            localStorage.setItem('email', email);
-            localStorage.setItem('authdata', JSON.stringify(authData));
-            localStorage.setItem('access', access);
-            localStorage.setItem('recover', recover);
-            localStorage.setItem('stored', stored);
-            localStorage.setItem('living', living);
-            localStorage.setItem('subscription', subscription);
-            localStorage.setItem('e-signing-token', token);
+        if (link_p) {
+          localStorage.setItem('e-signing-user', accountName);
+          localStorage.setItem('password', password);
+          localStorage.setItem('firstname', firstName);
+          localStorage.setItem('lastname', lastName);
+          localStorage.setItem('phone', phone);
+          localStorage.setItem('email', email);
+          localStorage.setItem('authdata', JSON.stringify(authData));
+          localStorage.setItem('access', access);
+          localStorage.setItem('recover', recover);
+          localStorage.setItem('stored', stored);
+          localStorage.setItem('living', living);
+          localStorage.setItem('subscription', subscription);
+          localStorage.setItem('e-signing-token', token);
 
-            window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL
-              }/e-sign?email=${encodeURIComponent(
-                email
-              )}&firstName=${firstName}&lastName=${lastName}&phoneNumber=${phone}&walletName=${accountName}&token=${token}&redirectUrl=${r_url}`;
-          } else {
-            return;
-          }
+          window.location.href = `${process.env.REACT_APP_ESIGNATURE_URL}/e-sign?token=${token}`;
         } else {
           return;
         }

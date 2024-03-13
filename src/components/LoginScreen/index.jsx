@@ -60,6 +60,7 @@ export default function LoginScreen(props) {
   const loginErrorMsgState = useSelector(loginErrorMsgSelector);
   const dispatch = useDispatch();
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [popUpEnabled, setPopUpEnabled] = useState(false);
 
   const browserstack_test_accounts = process.env.REACT_APP_BROWSERSTACK_TEST_WALLETS.split(',') ?? [];
   
@@ -76,6 +77,20 @@ export default function LoginScreen(props) {
   }, [signatureErrorState, isSignatureValidState])
 
   useEffect(async () => {
+    // popup force enable
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    var popUp = isSafari ? window.open('/google.com', '_blank') : window.open('/google.com', '_blank', 'width=100, height=100, left=24, top=24, scrollbars, resizable');
+
+    if (popUp == null || typeof (popUp) == 'undefined') {
+      setPopUpEnabled(false);
+      toast('Please enable your browser Pop-ups and reload the page to continue.', {autoClose: false, closeButton: true});
+    }
+    else {
+      setPopUpEnabled(true);
+      popUp.focus();
+      popUp.close();
+    }
+
     await checkTransferableAccount();
   }, []);
 
@@ -157,7 +172,7 @@ export default function LoginScreen(props) {
 
   const goPassKeyOrFaceKi = async (email, acc) => {
     const fasMigrationStatusRes = await fasMigrationStatus(email);
-    const {doesUserExistsInFAS, wasUserEnrolledInOldBiometric} = fasMigrationStatusRes;
+    const { doesUserExistsInFAS, wasUserEnrolledInOldBiometric } = fasMigrationStatusRes;
 
     if (doesUserExistsInFAS == false && wasUserEnrolledInOldBiometric == true && !(browserstack_test_accounts.includes(acc))) {
       setStep('passkey');
@@ -216,7 +231,7 @@ export default function LoginScreen(props) {
       return;
     }
 
-    const {publicKey, signature, signatureContent} = result;
+    const { publicKey, signature, signatureContent } = result;
     const { token, message } = await getFASToken({
       email,
       task: TASK.REGISTER,
@@ -273,7 +288,7 @@ export default function LoginScreen(props) {
     return (
       <div className={styles.loginBlock}>
         {/* <div className={styles.mainBlockContent} style={{width: isLoginState ? '40%' : '100%'}}> */}
-        <div className={styles.mainBlockContent} style={{width: '100%'}}>
+        <div className={styles.mainBlockContent} style={{ width: '100%' }}>
           <div className={styles.leftBlockContent}>
             <div className={styles.createMeta}>
               <h5>
@@ -289,8 +304,9 @@ export default function LoginScreen(props) {
               <br />
               <button
                 onClick={handleSignUpClick}
-                style={{ marginTop: "1rem" }}
+                style={{ marginTop: "1rem", cursor: popUpEnabled ? 'pointer' : 'not-allowed' }}
                 className={styles.Button}
+                disabled={!popUpEnabled}
               >
                 Create {portfolio != null ? "new" : null} META Wallet
               </button>
@@ -336,9 +352,10 @@ export default function LoginScreen(props) {
                   {errorAttr.notFound && !errorAttr.login ? <p className={styles.ErrorP}>Invalid Wallet Name</p> : null}
                   <button
                     className={styles.Button}
-                    style={{ fontSize: "100%", marginTop: "0" }}
+                    style={{ fontSize: "100%", marginTop: "0", cursor: popUpEnabled ? 'pointer' : 'not-allowed' }}
                     onClick={handleSubmit}
                     type={"submit"}
+                    disabled={!popUpEnabled}
                   >
                     Link META Wallet
                   </button>
